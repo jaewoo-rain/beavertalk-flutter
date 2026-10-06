@@ -48,6 +48,8 @@ import 'package:beavertalk/screens/mypage/settings.dart';
 import 'package:beavertalk/screens/onboarding/onboarding_reason.dart';
 import 'package:beavertalk/screens/payment/payment_history.dart';
 import 'package:beavertalk/screens/record/record_list.dart';
+import 'package:beavertalk/screens/home/learning_summary.dart';
+import 'package:beavertalk/screens/weak_sound/retry_sounds.dart';
 import 'package:beavertalk/screens/weak_sound/weak_sounds.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -202,6 +204,43 @@ Map<String, Widget Function()> i18nDataScreens() => {
           ),
 
       // 알람 목록 — 세 줄(학습 · 자유 대화 · 꺼짐 · 긴 상대 이름).
+      // 「자주 틀린 소리」 목록(A5 · M2 `6564:15449`) — 긴 통화 제목 부제 · 측정 전 카드 섞임.
+      'RetrySoundsData': () => ProviderScope(
+            overrides: [
+              pronunciationReportProvider.overrideWith((ref, id) async => LearningSummary(
+                    passed: 8,
+                    total: 10,
+                    date: DateTime(2026, 10, 4),
+                    overall: 77,
+                    pronunciation: 77,
+                    fluency: 77,
+                    rhythm: 77,
+                    hardestSound: '',
+                    hardestEvidence: '',
+                    l1Interference: '',
+                    phonemes: const [],
+                    sentences: const [],
+                    sessions: const [],
+                    retrySounds: const [
+                RetrySound(soundKey: 'coda_ㄹ', label: '받침 ㄹ', cardDesc: '혀끝을 붙이고 멈춰요', attempts: 7, misses: 4, score: 62),
+                RetrySound(soundKey: 'onset_ㅊ', label: '초성 ㅊ', cardDesc: 'ㅈ 자리에서 바람을 세게 터뜨리고 소리를 길게 이어요', attempts: 8, misses: 2, score: 54),
+                RetrySound(soundKey: 'rule_연음', label: '연음 규칙(받침이 다음 모음으로 넘어가는 소리)', cardDesc: '받침을 다음 글자 첫소리로 옮겨 읽어요', attempts: 8, misses: 2),
+              ],
+                  )),
+            ],
+            child: Navigator(
+              onGenerateRoute: (_) => MaterialPageRoute<void>(
+                settings: const RouteSettings(
+                  arguments: RetrySoundsArgs(
+                    callId: 1,
+                    callTitle: 'Ordering food at a restaurant and asking about the spicy menu',
+                  ),
+                ),
+                builder: (_) => const RetrySoundsScreen(),
+              ),
+            ),
+          ),
+
       'AlarmListData': () => ProviderScope(
             overrides: [alarmListControllerProvider.overrideWith(_FakeAlarmList.new)],
             child: const AlarmListScreen(),

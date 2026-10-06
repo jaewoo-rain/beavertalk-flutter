@@ -739,6 +739,7 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
           recordedWav: _recordedWav,
           origin: args.origin,
           callId: args.callId,
+          callTitle: args.callTitle,
         ),
       );
       return;

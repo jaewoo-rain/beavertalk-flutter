@@ -869,5 +869,15 @@
   "wsGoalOnly": "Meta {score}",
   "wsSoundOf": "Sonido {label}",
   "wsResultTip": "{desc}. Imagina esta forma cuando aparezca en una llamada.",
-  "wsNationalSubtitle": "Sonidos que los hablantes de {country} suelen pronunciar mal"
+  "wsNationalSubtitle": "Sonidos que los hablantes de {country} suelen pronunciar mal",
+  "wsRetryPackLabel": "Practica los sonidos que fallaste a menudo",
+  "wsRetryPackTitle": "{count, plural, =1{1 sonido que fallaste a menudo en esta sesión} other{{count} sonidos que fallaste a menudo en esta sesión}}",
+  "wsRetryPackBody": "Reunimos los sonidos que fallaste 2 veces o más. Practica cada uno en 4 pasos.",
+  "wsRetryPackCta": "Practicarlos todos",
+  "wsRetryListTitle": "Sonidos que fallaste a menudo",
+  "wsRetryListSection": "Sonidos de esta sesión",
+  "wsRetryListSub": "Sonidos que fallaste 2 veces o más en esta sesión",
+  "wsRetryListSubWithCall": "Sonidos que fallaste 2 veces o más en la llamada «{title}»",
+  "wsRetryListAllDone": "Practicaste todos los sonidos",
+  "wsRetryBackToReport": "Volver al informe"
 }

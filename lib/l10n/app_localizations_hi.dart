@@ -2910,4 +2910,45 @@ class AppLocalizationsHi extends AppLocalizations {
   String wsNationalSubtitle(String country) {
     return '$country के वक्ताओं से अक्सर गलत होने वाली ध्वनियाँ';
   }
+
+  @override
+  String get wsRetryPackLabel => 'अक्सर गलत होने वाली ध्वनियों का अभ्यास';
+
+  @override
+  String wsRetryPackTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'इस सत्र में अक्सर गलत हुई $count ध्वनियाँ',
+      one: 'इस सत्र में अक्सर गलत हुई 1 ध्वनि',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get wsRetryPackBody =>
+      'हमने वे ध्वनियाँ इकट्ठी कीं जो 2 या अधिक बार गलत हुईं। हर ध्वनि का 4 चरणों में अभ्यास करें।';
+
+  @override
+  String get wsRetryPackCta => 'सभी ध्वनियों का अभ्यास करें';
+
+  @override
+  String get wsRetryListTitle => 'अक्सर गलत होने वाली ध्वनियाँ';
+
+  @override
+  String get wsRetryListSection => 'इस सत्र की ध्वनियाँ';
+
+  @override
+  String get wsRetryListSub => 'इस सत्र में 2 या अधिक बार गलत हुई ध्वनियाँ';
+
+  @override
+  String wsRetryListSubWithCall(String title) {
+    return '“$title” कॉल में 2 या अधिक बार गलत हुई ध्वनियाँ';
+  }
+
+  @override
+  String get wsRetryListAllDone => 'आपने सभी ध्वनियों का अभ्यास कर लिया';
+
+  @override
+  String get wsRetryBackToReport => 'रिपोर्ट पर वापस जाएँ';
 }

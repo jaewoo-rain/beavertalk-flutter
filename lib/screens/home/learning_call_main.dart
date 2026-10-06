@@ -12,12 +12,14 @@ import '../../components/molecules/pronunciation_result.dart';
 import '../../components/organisms/gnb.dart';
 import '../../features/classroom/presentation/classroom_providers.dart';
 import '../../features/normalcall/presentation/normalcall_providers.dart';
+import '../../features/weak_sound/presentation/widgets/retry_pack_card.dart';
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_color_tokens.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 import '../system/network_error.dart';
+import '../weak_sound/retry_sounds.dart';
 import 'learning_args.dart';
 import 'learning_call_main_loading.dart';
 import 'learning_summary.dart';
@@ -188,6 +190,7 @@ class LearningCallMainScreen extends ConsumerWidget {
                     ),
                   ),
                   ..._oneFix(context, l10n, s),
+                  ..._retryPack(context, l10n, s, callId: callId),
                   ..._phonemes(context, l10n, s),
                   ..._sentences(context, ref, l10n, s),
                   ..._trend(context, l10n, s, callId: callId),
@@ -282,6 +285,28 @@ class LearningCallMainScreen extends ConsumerWidget {
           ),
         ),
       );
+  }
+
+  /// Section/RetryPack (`6564:15403`) — 이번 학습에서 2번 이상 틀린 소리 모아 연습(A5 · M1).
+  ///
+  /// 「가장 어려웠던 소리」 바로 아래(PM-DEC-333 A안). 서버가 고른 소리가 없으면(구서버 · 해당
+  /// 소리 0개 · 과제 리포트처럼 통화가 없는 경우) 섹션째 그리지 않는다 — 현행 리포트와 같다.
+  List<Widget> _retryPack(BuildContext context, AppLocalizations l10n,
+      LearningSummary s, {int? callId}) {
+    if (s.retrySounds.isEmpty || callId == null) return const [];
+    final args = ModalRoute.of(context)?.settings.arguments;
+    final callTitle = args is LearningArgs ? args.callTitle : null;
+    return _section(
+      context,
+      label: l10n.wsRetryPackLabel,
+      child: RetryPackCard(
+        sounds: s.retrySounds,
+        onStart: () => Navigator.of(context).pushNamed(
+          Routes.weakSoundRetry,
+          arguments: RetrySoundsArgs(callId: callId, callTitle: callTitle),
+        ),
+      ),
+    );
   }
 
   /// Section/Phonemes (`3569:15122`).

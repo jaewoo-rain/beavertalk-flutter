@@ -2890,4 +2890,45 @@ class AppLocalizationsTh extends AppLocalizations {
   String wsNationalSubtitle(String country) {
     return 'เสียงที่ผู้พูดจาก $country มักออกเสียงผิด';
   }
+
+  @override
+  String get wsRetryPackLabel => 'ฝึกเสียงที่ออกผิดบ่อย';
+
+  @override
+  String wsRetryPackTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'เสียงที่ออกผิดบ่อยในการเรียนครั้งนี้ $count เสียง',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get wsRetryPackBody =>
+      'รวบรวมเฉพาะเสียงที่ออกผิดตั้งแต่ 2 ครั้งขึ้นไป ฝึกแต่ละเสียงใน 4 ขั้นตอน';
+
+  @override
+  String get wsRetryPackCta => 'ฝึกเสียงที่รวบรวมไว้';
+
+  @override
+  String get wsRetryListTitle => 'เสียงที่ออกผิดบ่อย';
+
+  @override
+  String get wsRetryListSection => 'เสียงที่รวบรวมจากการเรียนครั้งนี้';
+
+  @override
+  String get wsRetryListSub =>
+      'เสียงที่ออกผิดตั้งแต่ 2 ครั้งขึ้นไปในการเรียนครั้งนี้';
+
+  @override
+  String wsRetryListSubWithCall(String title) {
+    return 'เสียงที่ออกผิดตั้งแต่ 2 ครั้งขึ้นไปในการโทร “$title”';
+  }
+
+  @override
+  String get wsRetryListAllDone => 'ฝึกครบทุกเสียงแล้ว';
+
+  @override
+  String get wsRetryBackToReport => 'กลับไปที่รายงาน';
 }

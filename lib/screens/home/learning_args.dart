@@ -61,6 +61,7 @@ class LearningArgs {
     this.origin = LearningOrigin.sentence,
     this.callId,
     this.assignmentId,
+    this.callTitle,
   });
 
   /// The sentence sequence for this session (1+ items).
@@ -95,6 +96,11 @@ class LearningArgs {
   /// 제출할 때 읽는다.
   final int? assignmentId;
 
+  /// 이 복습이 속한 통화의 제목(통화 요약) — 「자주 틀린 소리」 목록 부제에 쓴다
+  /// (A5 · Figma `6564:15466` 「{제목} 통화에서 2번 이상 틀린 소리예요」). 없으면 null →
+  /// 제목 없는 부제. [callId] 처럼 세션 끝까지 살아 있어야 한다.
+  final String? callTitle;
+
   /// Scored feedback for the current sentence's latest attempt, or null before
   /// the user has recorded.
   final ReviewFeedback? feedback;
@@ -125,6 +131,7 @@ class LearningArgs {
         origin: origin,
         callId: callId,
         assignmentId: assignmentId,
+        callTitle: callTitle,
       );
 
   /// A copy carrying the freshly-scored [feedback] and [recordedWav].
@@ -137,5 +144,6 @@ class LearningArgs {
         origin: origin,
         callId: callId,
         assignmentId: assignmentId,
+        callTitle: callTitle,
       );
 }

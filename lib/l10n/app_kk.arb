@@ -869,5 +869,15 @@
   "wsGoalOnly": "Мақсат {score}",
   "wsSoundOf": "{label} дыбысы",
   "wsResultTip": "{desc}. Қоңырауда кездескенде осы пішінді есіңізге түсіріңіз.",
-  "wsNationalSubtitle": "{country} сөйлеушілері жиі қателесетін дыбыстар"
+  "wsNationalSubtitle": "{country} сөйлеушілері жиі қателесетін дыбыстар",
+  "wsRetryPackLabel": "Жиі қателесетін дыбыстарды жаттықтыру",
+  "wsRetryPackTitle": "{count, plural, other{Бұл сабақта жиі қателескен {count} дыбыс}}",
+  "wsRetryPackBody": "2 не одан көп рет қателескен дыбыстарды жинадық. Әр дыбысты 4 қадаммен жаттықтырыңыз.",
+  "wsRetryPackCta": "Барлығын жаттықтыру",
+  "wsRetryListTitle": "Жиі қателесетін дыбыстар",
+  "wsRetryListSection": "Осы сабақтың дыбыстары",
+  "wsRetryListSub": "Бұл сабақта 2 не одан көп рет қателескен дыбыстар",
+  "wsRetryListSubWithCall": "«{title}» қоңырауында 2 не одан көп рет қателескен дыбыстар",
+  "wsRetryListAllDone": "Барлық дыбысты жаттықтырдыңыз",
+  "wsRetryBackToReport": "Есепке оралу"
 }

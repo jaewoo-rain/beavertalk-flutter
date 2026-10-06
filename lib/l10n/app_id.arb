@@ -869,5 +869,15 @@
   "wsGoalOnly": "Target {score}",
   "wsSoundOf": "Bunyi {label}",
   "wsResultTip": "{desc}. Bayangkan bentuk ini saat bunyinya muncul dalam panggilan.",
-  "wsNationalSubtitle": "Bunyi yang sering salah diucapkan penutur dari {country}"
+  "wsNationalSubtitle": "Bunyi yang sering salah diucapkan penutur dari {country}",
+  "wsRetryPackLabel": "Latihan bunyi yang sering salah",
+  "wsRetryPackTitle": "{count, plural, other{{count} bunyi yang sering salah di sesi ini}}",
+  "wsRetryPackBody": "Kami kumpulkan bunyi yang salah 2 kali atau lebih. Latih tiap bunyi dalam 4 langkah.",
+  "wsRetryPackCta": "Latih sekaligus",
+  "wsRetryListTitle": "Bunyi yang sering salah",
+  "wsRetryListSection": "Bunyi dari sesi ini",
+  "wsRetryListSub": "Bunyi yang salah 2 kali atau lebih di sesi ini",
+  "wsRetryListSubWithCall": "Bunyi yang salah 2 kali atau lebih di panggilan “{title}”",
+  "wsRetryListAllDone": "Kamu sudah melatih semua bunyi",
+  "wsRetryBackToReport": "Kembali ke laporan"
 }

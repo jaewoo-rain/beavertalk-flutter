@@ -869,5 +869,15 @@
   "wsGoalOnly": "Mục tiêu {score}",
   "wsSoundOf": "Âm {label}",
   "wsResultTip": "{desc}. Gặp lại âm này trong cuộc gọi thì hãy nhớ tới hình dạng này.",
-  "wsNationalSubtitle": "Những âm người {country} hay phát âm sai"
+  "wsNationalSubtitle": "Những âm người {country} hay phát âm sai",
+  "wsRetryPackLabel": "Luyện các âm hay sai",
+  "wsRetryPackTitle": "{count, plural, other{{count} âm bạn hay sai trong buổi học này}}",
+  "wsRetryPackBody": "Chúng tôi đã gom các âm bạn sai từ 2 lần trở lên. Luyện mỗi âm qua 4 bước.",
+  "wsRetryPackCta": "Luyện các âm đã gom",
+  "wsRetryListTitle": "Âm hay sai",
+  "wsRetryListSection": "Âm gom được trong buổi học này",
+  "wsRetryListSub": "Các âm bạn sai từ 2 lần trở lên trong buổi học này",
+  "wsRetryListSubWithCall": "Các âm bạn sai từ 2 lần trở lên trong cuộc gọi “{title}”",
+  "wsRetryListAllDone": "Bạn đã luyện tất cả các âm",
+  "wsRetryBackToReport": "Quay lại báo cáo"
 }

@@ -869,5 +869,15 @@
   "wsGoalOnly": "ඉලක්කය {score}",
   "wsSoundOf": "{label} ශබ්දය",
   "wsResultTip": "{desc}. ඇමතුමකදී නැවත හමු වූ විට මේ හැඩය සිහිපත් කරන්න.",
-  "wsNationalSubtitle": "{country} කථිකයන් බොහෝ විට වැරදි කරන ශබ්ද"
+  "wsNationalSubtitle": "{country} කථිකයන් බොහෝ විට වැරදි කරන ශබ්ද",
+  "wsRetryPackLabel": "නිතර වැරදෙන ශබ්ද පුහුණුව",
+  "wsRetryPackTitle": "{count, plural, other{මෙම සැසියේ නිතර වැරදුණු ශබ්ද {count}}}",
+  "wsRetryPackBody": "2 වතාවක් හෝ වැඩියෙන් වැරදුණු ශබ්ද එකතු කළා. සෑම ශබ්දයක්ම පියවර 4කින් පුහුණු වන්න.",
+  "wsRetryPackCta": "සියලු ශබ්ද පුහුණු වන්න",
+  "wsRetryListTitle": "නිතර වැරදෙන ශබ්ද",
+  "wsRetryListSection": "මෙම සැසියේ ශබ්ද",
+  "wsRetryListSub": "මෙම සැසියේ 2 වතාවක් හෝ වැඩියෙන් වැරදුණු ශබ්ද",
+  "wsRetryListSubWithCall": "“{title}” ඇමතුමේ 2 වතාවක් හෝ වැඩියෙන් වැරදුණු ශබ්ද",
+  "wsRetryListAllDone": "ඔබ සියලු ශබ්ද පුහුණු වුණා",
+  "wsRetryBackToReport": "වාර්තාවට ආපසු"
 }

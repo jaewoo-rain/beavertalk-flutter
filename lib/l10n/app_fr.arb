@@ -869,5 +869,15 @@
   "wsGoalOnly": "Objectif {score}",
   "wsSoundOf": "Son {label}",
   "wsResultTip": "{desc}. Imaginez cette forme quand ce son revient dans un appel.",
-  "wsNationalSubtitle": "{country} : sons souvent mal prononcés par les locuteurs"
+  "wsNationalSubtitle": "{country} : sons souvent mal prononcés par les locuteurs",
+  "wsRetryPackLabel": "Entraînez-vous sur les sons souvent ratés",
+  "wsRetryPackTitle": "{count, plural, =1{1 son souvent raté pendant cette session} other{{count} sons souvent ratés pendant cette session}}",
+  "wsRetryPackBody": "Nous avons réuni les sons ratés 2 fois ou plus. Travaillez chacun en 4 étapes.",
+  "wsRetryPackCta": "S’entraîner sur tous",
+  "wsRetryListTitle": "Sons souvent ratés",
+  "wsRetryListSection": "Sons de cette session",
+  "wsRetryListSub": "Sons ratés 2 fois ou plus pendant cette session",
+  "wsRetryListSubWithCall": "Sons ratés 2 fois ou plus pendant l’appel « {title} »",
+  "wsRetryListAllDone": "Vous avez travaillé tous les sons",
+  "wsRetryBackToReport": "Retour au rapport"
 }

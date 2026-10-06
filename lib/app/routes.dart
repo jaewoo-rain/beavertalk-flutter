@@ -49,6 +49,7 @@ import '../screens/weak_sound/learn_sentence.dart';
 import '../screens/weak_sound/learn_test.dart';
 import '../screens/weak_sound/learn_understand.dart';
 import '../screens/weak_sound/learn_words.dart';
+import '../screens/weak_sound/retry_sounds.dart';
 import '../screens/weak_sound/weak_sounds.dart';
 import '../screens/record/record_list.dart';
 import '../screens/report/report_content.dart';
@@ -120,6 +121,9 @@ abstract final class Routes {
   static const weakSoundWords = '/weak-sounds/learn/words';
   static const weakSoundSentence = '/weak-sounds/learn/sentence';
   static const weakSoundTest = '/weak-sounds/learn/test';
+
+  /// 리포트에서 모은 「자주 틀린 소리」 목록(A5 · M2). 학습 결과 「목록으로」가 여기서도 멈춘다.
+  static const weakSoundRetry = '/weak-sounds/retry';
 
   // ── 학습 달력(홈 불꽃 칩) ──
   static const streakCalendar = '/streak-calendar';
@@ -255,6 +259,7 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
     Routes.weakSoundWords: (_) => const LearnWordsScreen(),
     Routes.weakSoundSentence: (_) => const LearnSentenceScreen(),
     Routes.weakSoundTest: (_) => const LearnTestScreen(),
+    Routes.weakSoundRetry: (_) => const RetrySoundsScreen(),
     Routes.callLoading: (_) => const CallLoadingScreen(),
     Routes.call: (_) => const CallScreen(),
     Routes.callFinish: (_) => const CallFinishScreen(),

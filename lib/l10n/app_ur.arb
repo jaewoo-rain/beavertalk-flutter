@@ -869,5 +869,15 @@
   "wsGoalOnly": "ہدف {score}",
   "wsSoundOf": "{label} کی آواز",
   "wsResultTip": "{desc}۔ کال میں دوبارہ ملے تو یہ شکل یاد کریں۔",
-  "wsNationalSubtitle": "{country} کے بولنے والوں سے اکثر غلط ہونے والی آوازیں"
+  "wsNationalSubtitle": "{country} کے بولنے والوں سے اکثر غلط ہونے والی آوازیں",
+  "wsRetryPackLabel": "اکثر غلط ہونے والی آوازوں کی مشق",
+  "wsRetryPackTitle": "{count, plural, =1{اس سیشن میں اکثر غلط ہونے والی 1 آواز} other{اس سیشن میں اکثر غلط ہونے والی {count} آوازیں}}",
+  "wsRetryPackBody": "ہم نے وہ آوازیں جمع کیں جو 2 یا زیادہ بار غلط ہوئیں۔ ہر آواز کی 4 مراحل میں مشق کریں۔",
+  "wsRetryPackCta": "سب آوازوں کی مشق کریں",
+  "wsRetryListTitle": "اکثر غلط ہونے والی آوازیں",
+  "wsRetryListSection": "اس سیشن کی آوازیں",
+  "wsRetryListSub": "اس سیشن میں 2 یا زیادہ بار غلط ہونے والی آوازیں",
+  "wsRetryListSubWithCall": "“{title}” کال میں 2 یا زیادہ بار غلط ہونے والی آوازیں",
+  "wsRetryListAllDone": "آپ نے سب آوازوں کی مشق کر لی",
+  "wsRetryBackToReport": "رپورٹ پر واپس جائیں"
 }

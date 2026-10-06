@@ -869,5 +869,15 @@
   "wsGoalOnly": "Cél {score}",
   "wsSoundOf": "{label} hang",
   "wsResultTip": "{desc}. Idézd fel ezt a formát, amikor előjön egy hívásban.",
-  "wsNationalSubtitle": "{country} – a beszélők által gyakran elrontott hangok"
+  "wsNationalSubtitle": "{country} – a beszélők által gyakran elrontott hangok",
+  "wsRetryPackLabel": "Gyakran rontott hangok gyakorlása",
+  "wsRetryPackTitle": "{count, plural, other{{count} gyakran rontott hang ebben a leckében}}",
+  "wsRetryPackBody": "Összegyűjtöttük a legalább 2-szer rontott hangokat. Mindegyiket 4 lépésben gyakorolhatod.",
+  "wsRetryPackCta": "Hangok gyakorlása",
+  "wsRetryListTitle": "Gyakran rontott hangok",
+  "wsRetryListSection": "Ebből a leckéből gyűjtött hangok",
+  "wsRetryListSub": "Az ebben a leckében legalább 2-szer rontott hangok",
+  "wsRetryListSubWithCall": "A(z) „{title}” hívásban legalább 2-szer rontott hangok",
+  "wsRetryListAllDone": "Minden hangot begyakoroltál",
+  "wsRetryBackToReport": "Vissza az elemzéshez"
 }

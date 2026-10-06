@@ -2891,4 +2891,47 @@ class AppLocalizationsAr extends AppLocalizations {
   String wsNationalSubtitle(String country) {
     return 'أصوات يخطئ فيها كثيرًا المتحدثون من $country';
   }
+
+  @override
+  String get wsRetryPackLabel => 'تدرّب على الأصوات التي تخطئ فيها كثيرًا';
+
+  @override
+  String wsRetryPackTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count أصوات أخطأت فيها كثيرًا في هذه الجلسة',
+      few: '$count أصوات أخطأت فيها كثيرًا في هذه الجلسة',
+      two: 'صوتان أخطأت فيهما كثيرًا في هذه الجلسة',
+      one: 'صوت واحد أخطأت فيه كثيرًا في هذه الجلسة',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get wsRetryPackBody =>
+      'جمعنا الأصوات التي أخطأت فيها مرتين أو أكثر. تدرّب على كل صوت في 4 خطوات.';
+
+  @override
+  String get wsRetryPackCta => 'تدرّب عليها كلها';
+
+  @override
+  String get wsRetryListTitle => 'أصوات تخطئ فيها كثيرًا';
+
+  @override
+  String get wsRetryListSection => 'أصوات من هذه الجلسة';
+
+  @override
+  String get wsRetryListSub => 'أصوات أخطأت فيها مرتين أو أكثر في هذه الجلسة';
+
+  @override
+  String wsRetryListSubWithCall(String title) {
+    return 'أصوات أخطأت فيها مرتين أو أكثر في مكالمة «$title»';
+  }
+
+  @override
+  String get wsRetryListAllDone => 'تدرّبت على كل الأصوات';
+
+  @override
+  String get wsRetryBackToReport => 'العودة إلى التقرير';
 }

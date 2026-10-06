@@ -869,5 +869,15 @@
   "wsGoalOnly": "เป้าหมาย {score}",
   "wsSoundOf": "เสียง {label}",
   "wsResultTip": "{desc} ถ้าเจอเสียงนี้อีกตอนโทร ให้นึกถึงรูปปากแบบนี้",
-  "wsNationalSubtitle": "เสียงที่ผู้พูดจาก {country} มักออกเสียงผิด"
+  "wsNationalSubtitle": "เสียงที่ผู้พูดจาก {country} มักออกเสียงผิด",
+  "wsRetryPackLabel": "ฝึกเสียงที่ออกผิดบ่อย",
+  "wsRetryPackTitle": "{count, plural, other{เสียงที่ออกผิดบ่อยในการเรียนครั้งนี้ {count} เสียง}}",
+  "wsRetryPackBody": "รวบรวมเฉพาะเสียงที่ออกผิดตั้งแต่ 2 ครั้งขึ้นไป ฝึกแต่ละเสียงใน 4 ขั้นตอน",
+  "wsRetryPackCta": "ฝึกเสียงที่รวบรวมไว้",
+  "wsRetryListTitle": "เสียงที่ออกผิดบ่อย",
+  "wsRetryListSection": "เสียงที่รวบรวมจากการเรียนครั้งนี้",
+  "wsRetryListSub": "เสียงที่ออกผิดตั้งแต่ 2 ครั้งขึ้นไปในการเรียนครั้งนี้",
+  "wsRetryListSubWithCall": "เสียงที่ออกผิดตั้งแต่ 2 ครั้งขึ้นไปในการโทร “{title}”",
+  "wsRetryListAllDone": "ฝึกครบทุกเสียงแล้ว",
+  "wsRetryBackToReport": "กลับไปที่รายงาน"
 }

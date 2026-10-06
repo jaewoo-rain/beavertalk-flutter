@@ -869,5 +869,15 @@
   "wsGoalOnly": "लक्ष्य {score}",
   "wsSoundOf": "{label} ध्वनि",
   "wsResultTip": "{desc}। कॉल में यह ध्वनि आए तो यही आकार याद करें।",
-  "wsNationalSubtitle": "{country} के वक्ताओं से अक्सर गलत होने वाली ध्वनियाँ"
+  "wsNationalSubtitle": "{country} के वक्ताओं से अक्सर गलत होने वाली ध्वनियाँ",
+  "wsRetryPackLabel": "अक्सर गलत होने वाली ध्वनियों का अभ्यास",
+  "wsRetryPackTitle": "{count, plural, =1{इस सत्र में अक्सर गलत हुई 1 ध्वनि} other{इस सत्र में अक्सर गलत हुई {count} ध्वनियाँ}}",
+  "wsRetryPackBody": "हमने वे ध्वनियाँ इकट्ठी कीं जो 2 या अधिक बार गलत हुईं। हर ध्वनि का 4 चरणों में अभ्यास करें।",
+  "wsRetryPackCta": "सभी ध्वनियों का अभ्यास करें",
+  "wsRetryListTitle": "अक्सर गलत होने वाली ध्वनियाँ",
+  "wsRetryListSection": "इस सत्र की ध्वनियाँ",
+  "wsRetryListSub": "इस सत्र में 2 या अधिक बार गलत हुई ध्वनियाँ",
+  "wsRetryListSubWithCall": "“{title}” कॉल में 2 या अधिक बार गलत हुई ध्वनियाँ",
+  "wsRetryListAllDone": "आपने सभी ध्वनियों का अभ्यास कर लिया",
+  "wsRetryBackToReport": "रिपोर्ट पर वापस जाएँ"
 }

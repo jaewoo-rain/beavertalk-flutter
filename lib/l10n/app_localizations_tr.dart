@@ -2908,4 +2908,45 @@ class AppLocalizationsTr extends AppLocalizations {
   String wsNationalSubtitle(String country) {
     return '$country – konuşanların sık yanlış söylediği sesler';
   }
+
+  @override
+  String get wsRetryPackLabel => 'Sık hata yaptığın sesleri çalış';
+
+  @override
+  String wsRetryPackTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Bu oturumda sık hata yaptığın $count ses',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get wsRetryPackBody =>
+      '2 veya daha fazla kez hata yaptığın sesleri topladık. Her birini 4 adımda çalış.';
+
+  @override
+  String get wsRetryPackCta => 'Hepsini çalış';
+
+  @override
+  String get wsRetryListTitle => 'Sık hata yaptığın sesler';
+
+  @override
+  String get wsRetryListSection => 'Bu oturumdan sesler';
+
+  @override
+  String get wsRetryListSub =>
+      'Bu oturumda 2 veya daha fazla kez hata yaptığın sesler';
+
+  @override
+  String wsRetryListSubWithCall(String title) {
+    return '“$title” görüşmesinde 2 veya daha fazla kez hata yaptığın sesler';
+  }
+
+  @override
+  String get wsRetryListAllDone => 'Tüm sesleri çalıştın';
+
+  @override
+  String get wsRetryBackToReport => 'Rapora dön';
 }

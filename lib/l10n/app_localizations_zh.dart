@@ -2823,4 +2823,43 @@ class AppLocalizationsZh extends AppLocalizations {
   String wsNationalSubtitle(String country) {
     return '来自 $country 的人常发错的音';
   }
+
+  @override
+  String get wsRetryPackLabel => '常错发音练习';
+
+  @override
+  String wsRetryPackTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '本次学习中常错的发音 $count 个',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get wsRetryPackBody => '只收集了出错两次及以上的发音。每个发音分 4 个步骤练习。';
+
+  @override
+  String get wsRetryPackCta => '集中练习';
+
+  @override
+  String get wsRetryListTitle => '常错发音';
+
+  @override
+  String get wsRetryListSection => '本次学习收集的发音';
+
+  @override
+  String get wsRetryListSub => '本次学习中出错两次及以上的发音';
+
+  @override
+  String wsRetryListSubWithCall(String title) {
+    return '在“$title”通话中出错两次及以上的发音';
+  }
+
+  @override
+  String get wsRetryListAllDone => '已练习完所有收集的发音';
+
+  @override
+  String get wsRetryBackToReport => '返回报告';
 }
