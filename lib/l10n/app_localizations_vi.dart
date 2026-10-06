@@ -1308,6 +1308,12 @@ class AppLocalizationsVi extends AppLocalizations {
   String get practicePronunciation => 'Luyện phát âm';
 
   @override
+  String get learnResultView => 'Xem kết quả học';
+
+  @override
+  String get learnAgain => 'Học lại';
+
+  @override
   String get analysisNoScoreReview => 'Luyện tập các câu để nhận điểm phát âm';
 
   @override

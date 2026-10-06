@@ -1317,6 +1317,12 @@ class AppLocalizationsUz extends AppLocalizations {
   String get practicePronunciation => 'Talaffuzni mashq qilish';
 
   @override
+  String get learnResultView => 'Oʻrganish natijalarini koʻrish';
+
+  @override
+  String get learnAgain => 'Qayta oʻrganish';
+
+  @override
   String get analysisNoScoreReview => 'Mashq qilsangiz, talaffuz balli chiqadi';
 
   @override

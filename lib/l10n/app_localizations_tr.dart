@@ -1306,6 +1306,12 @@ class AppLocalizationsTr extends AppLocalizations {
   String get practicePronunciation => 'Telaffuz çalış';
 
   @override
+  String get learnResultView => 'Öğrenme sonuçlarını gör';
+
+  @override
+  String get learnAgain => 'Yeniden çalış';
+
+  @override
   String get analysisNoScoreReview =>
       'Cümleleri çalışınca telaffuz puanın çıkar';
 

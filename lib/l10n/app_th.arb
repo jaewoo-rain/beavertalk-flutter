@@ -393,6 +393,8 @@
   "levelRetakeKeep": "เก็บความคืบหน้าไว้",
   "levelRetakeConfirm": "ทำแบบทดสอบใหม่",
   "practicePronunciation": "ฝึกการออกเสียง",
+  "learnResultView": "ดูผลการเรียน",
+  "learnAgain": "เรียนอีกครั้ง",
   "analysisNoScoreReview": "ฝึกประโยคแล้วจะได้คะแนนการออกเสียง",
   "analysisNoScoreEmpty": "ไม่มีประโยคให้ให้คะแนน",
   "billingGroupPlanPurchases": "แพ็กเกจและการซื้อ",

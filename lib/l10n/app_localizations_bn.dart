@@ -1308,6 +1308,12 @@ class AppLocalizationsBn extends AppLocalizations {
   String get practicePronunciation => 'উচ্চারণ অনুশীলন করুন';
 
   @override
+  String get learnResultView => 'শেখার ফলাফল দেখুন';
+
+  @override
+  String get learnAgain => 'আবার শিখুন';
+
+  @override
   String get analysisNoScoreReview => 'অনুশীলন করলে উচ্চারণের স্কোর দেখাবে';
 
   @override

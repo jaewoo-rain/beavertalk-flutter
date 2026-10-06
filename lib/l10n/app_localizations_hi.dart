@@ -1307,6 +1307,12 @@ class AppLocalizationsHi extends AppLocalizations {
   String get practicePronunciation => 'उच्चारण अभ्यास करें';
 
   @override
+  String get learnResultView => 'सीखने के नतीजे देखें';
+
+  @override
+  String get learnAgain => 'फिर से सीखें';
+
+  @override
   String get analysisNoScoreReview => 'अभ्यास करें, तब उच्चारण स्कोर दिखेगा';
 
   @override

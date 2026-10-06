@@ -393,6 +393,8 @@
   "levelRetakeKeep": "Сохранить прогресс",
   "levelRetakeConfirm": "Пройти заново",
   "practicePronunciation": "Тренировать произношение",
+  "learnResultView": "Результаты занятия",
+  "learnAgain": "Пройти заново",
   "analysisNoScoreReview": "Потренируйте фразы, чтобы получить оценку произношения",
   "analysisNoScoreEmpty": "Нет фраз для оценки",
   "billingGroupPlanPurchases": "План и покупки",

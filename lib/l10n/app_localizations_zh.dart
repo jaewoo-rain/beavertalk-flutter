@@ -1275,6 +1275,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get practicePronunciation => '练习发音';
 
   @override
+  String get learnResultView => '查看学习结果';
+
+  @override
+  String get learnAgain => '重新学习';
+
+  @override
   String get analysisNoScoreReview => '复习后就会出现发音分数';
 
   @override

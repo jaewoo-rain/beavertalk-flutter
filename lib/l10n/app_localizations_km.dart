@@ -1308,6 +1308,12 @@ class AppLocalizationsKm extends AppLocalizations {
   String get practicePronunciation => 'អនុវត្តការបញ្ចេញសំឡេង';
 
   @override
+  String get learnResultView => 'មើលលទ្ធផលនៃការរៀន';
+
+  @override
+  String get learnAgain => 'រៀនម្ដងទៀត';
+
+  @override
   String get analysisNoScoreReview =>
       'ហាត់ប្រយោគ ដើម្បីទទួលបានពិន្ទុបញ្ចេញសំឡេង';
 

@@ -1300,6 +1300,12 @@ class AppLocalizationsTh extends AppLocalizations {
   String get practicePronunciation => 'ฝึกการออกเสียง';
 
   @override
+  String get learnResultView => 'ดูผลการเรียน';
+
+  @override
+  String get learnAgain => 'เรียนอีกครั้ง';
+
+  @override
   String get analysisNoScoreReview => 'ฝึกประโยคแล้วจะได้คะแนนการออกเสียง';
 
   @override

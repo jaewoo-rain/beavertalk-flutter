@@ -393,6 +393,8 @@
   "levelRetakeKeep": "অগ্রগতি রাখুন",
   "levelRetakeConfirm": "আবার টেস্ট দিন",
   "practicePronunciation": "উচ্চারণ অনুশীলন করুন",
+  "learnResultView": "শেখার ফলাফল দেখুন",
+  "learnAgain": "আবার শিখুন",
   "analysisNoScoreReview": "অনুশীলন করলে উচ্চারণের স্কোর দেখাবে",
   "analysisNoScoreEmpty": "স্কোর দেওয়ার মতো বাক্য নেই",
   "billingGroupPlanPurchases": "প্ল্যান ও কেনাকাটা",
