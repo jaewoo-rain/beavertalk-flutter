@@ -49,6 +49,7 @@ import '../domain/entities/call_channel.dart';
 import '../domain/entities/call_course.dart';
 import '../domain/entities/call_hint.dart';
 import '../domain/entities/playback_ledger.dart';
+import '../domain/pcm_gain.dart';
 import 'avatar_assets.dart' show kIdleWait, kIdleListen, kIdleThink;
 import 'cascade_auto_talk.dart';
 import 'cascade_experiment.dart'
@@ -57,7 +58,8 @@ import 'cascade_experiment.dart'
         CascadeMicAlwaysGated,
         CascadeMicNoAec,
         CascadeMicOff,
-        CascadeMicToFile;
+        CascadeMicToFile,
+        CallPlaybackGainOff;
 import 'normalcall_providers.dart';
 
 /// `call_ended.call_id` 정규화 — **빈 값은 없는 것**이다.
@@ -2887,7 +2889,40 @@ class NormalCallController extends Notifier<CallState> {
       _cancelledResidualBytes += chunk.length;
       return;
     }
-    _feedPlayer(chunk);
+    _feedPlayer(_withPlaybackGain(chunk));
+  }
+
+  static final double _playbackGain = dbToGain(kCallPlaybackGainDb);
+
+  /// [A2] 통화 재생 음량 보정 — 서버 PCM 에 +[kCallPlaybackGainDb] 와 리미터를 건다
+  /// (10-03 사용자 「앱 수정 해」 · PM-DEC-352 · 근거와 한계는 `domain/pcm_gain.dart`).
+  ///
+  /// 바이트 수는 그대로다 — 재생 장부(played_server_bytes)·쿠션 계산은 안 바뀐다.
+  ///
+  /// ⛔ 이번 통화에 홀수 길이 프레임이 **한 번이라도** 왔으면 끝까지 끈다. 큐는 다음 청크와
+  ///   이어붙여 재생하지만, 청크 단위로 샘플을 읽는 여기서는 그 뒤로 바이트 짝이 어긋나
+  ///   상위·하위 바이트를 바꿔 읽게 된다 — 그러면 키우는 게 아니라 잡음을 만든다.
+  Uint8List _withPlaybackGain(Uint8List chunk) {
+    if (!kCallPlaybackGainOn ||
+        CallPlaybackGainOff.enabled ||
+        _oddFrames > 0 ||
+        !playbackGainApplies(_lastReportedRoute)) {
+      return chunk;
+    }
+    final n = chunk.length ~/ 2;
+    if (n == 0) return chunk;
+    // 소켓 버퍼는 짝수 오프셋이 보장되지 않는다 — Int16List 뷰 대신 바이트로 읽는다.
+    final src = ByteData.sublistView(chunk);
+    final samples = Int16List(n);
+    for (var i = 0; i < n; i++) {
+      samples[i] = src.getInt16(i * 2, Endian.little);
+    }
+    final out = applyPcmGain(samples, _playbackGain);
+    final bytes = ByteData(n * 2);
+    for (var i = 0; i < n; i++) {
+      bytes.setInt16(i * 2, out[i], Endian.little);
+    }
+    return bytes.buffer.asUint8List();
   }
 
   /// [계측] 취소 후 버린 잔여 바이트. 서버 페이서가 취소에 얼마나 빨리 반응하는지가

@@ -333,6 +333,13 @@ class MyPageScreen extends ConsumerWidget {
             ),
             _devSwitch(
               context,
+              title: '└ 통화 게인 끔',
+              description: '통화 재생 음량 보정(+5dB · 리미터)을 끄고 원음 그대로 냅니다. '
+                  '전/후 비교용입니다. 통화 중에도 바로 적용.',
+              flag: CallPlaybackGainOff.toggle,
+            ),
+            _devSwitch(
+              context,
               title: '└ 마이크 끔',
               description: '레코더를 **아예 열지 않습니다**(게이팅과 다릅니다 — 게이팅은 '
                   '프레임을 받은 뒤 버립니다). ⛔ 내 목소리가 서버에 안 갑니다. '
