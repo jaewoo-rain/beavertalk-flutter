@@ -629,39 +629,43 @@ class _BillingRow extends StatelessWidget {
           _StoreRowLabel.manage => l10n.billingManageInTheStore,
           _StoreRowLabel.refund => l10n.billingRefundHelp,
         };
-    return GestureDetector(
-      onTap: onTap ?? () => _open(context),
-      behavior: HitTestBehavior.opaque,
-      child: Container(
-        // 높이 하한. 「스토어에서 관리」·「환불 문의」는 언어에 따라 두 줄이 되고,
-        // 고정 56 이면 둘째 줄이 잘려 무슨 동작인지 알 수 없게 된다.
-        constraints: const BoxConstraints(minHeight: 56),
-        padding: const EdgeInsets.symmetric(horizontal: 12),
-        decoration: last
-            ? null
-            : BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(color: c.lineAlternative, width: 0.5),
+    // 줄 전체가 눌리는 자리다 — 누른 순간 줄 전체에 눌림 효과를 보여 준다
+    // (10-06 사용자 「아이콘에서만 눌리는 것 같다」 · 예전 GestureDetector 는 반응이 없었다).
+    return Material(
+      type: MaterialType.transparency,
+      child: InkWell(
+        onTap: onTap ?? () => _open(context),
+        child: Container(
+          // 높이 하한. 「스토어에서 관리」·「환불 문의」는 언어에 따라 두 줄이 되고,
+          // 고정 56 이면 둘째 줄이 잘려 무슨 동작인지 알 수 없게 된다.
+          constraints: const BoxConstraints(minHeight: 56),
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          decoration: last
+              ? null
+              : BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(color: c.lineAlternative, width: 0.5),
+                  ),
+                ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  text,
+                  style: AppType.label1.r.copyWith(color: c.commonWhiteAndDark),
                 ),
               ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Text(
-                text,
-                style: AppType.label1.r.copyWith(color: c.commonWhiteAndDark),
+              SizedBox(
+                width: 24,
+                height: 24,
+                child: Center(
+                  child: external
+                      ? AppIcons.externalLink(size: 20, color: c.labelNormal)
+                      : AppIcons.chevronRight(size: 20, color: c.labelNormal),
+                ),
               ),
-            ),
-            SizedBox(
-              width: 24,
-              height: 24,
-              child: Center(
-                child: external
-                    ? AppIcons.externalLink(size: 20, color: c.labelNormal)
-                    : AppIcons.chevronRight(size: 20, color: c.labelNormal),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

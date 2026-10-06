@@ -99,9 +99,8 @@ class PlansCompareScreen extends ConsumerWidget {
                     face: c.backgroundSurfaceAlternative,
                   ),
                   const SizedBox(height: AppSpacing.s24),
-                  Text(l10n.noteCallLength,
-                      style: AppType.caption1.r.copyWith(color: c.labelNormal)),
-                  const SizedBox(height: AppSpacing.s4),
+                  // 「Premium: 하루 15분 — 그 안에서는 몇 번이든 통화할 수 있어요.」 줄은 뺐다
+                  // (10-06 사용자 「이 내용 삭제해」). 복원하지 않는다.
                   Text(l10n.noteCharactersSeparate,
                       style: AppType.caption1.r.copyWith(color: c.labelNormal)),
                 ],
