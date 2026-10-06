@@ -79,6 +79,23 @@ void main() {
     expect(find.byType(SignupScreen), findsNothing);
   });
 
+  testWidgets('PM-DEC-429 — 이메일 로그인 폼에도 페이스북 · 순서는 가입 화면과 같다', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(375, 1200));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    _calls.clear();
+    await tester.pumpWidget(_app(const LoginFormScreen(),
+        overrides: [authControllerProvider.overrideWith(_RecordingAuth.new)]));
+    await tester.pump();
+    final xs = [KakaoIcon, GoogleIcon, FacebookIcon, AppleIcon]
+        .map((t) => tester.getCenter(find.byType(t)).dx)
+        .toList();
+    expect(xs, [...xs]..sort(), reason: '카카오·구글·페이스북·애플 순서');
+    await tester.tap(find.byType(FacebookIcon));
+    await tester.pump();
+    expect(_calls, ['facebook']);
+    expect(find.byType(SignupScreen), findsNothing);
+  });
+
   testWidgets('F120 — 가입 화면에서 브라우저 SNS 로그인이 끝나면 인증 흐름을 닫는다', (tester) async {
     await tester.binding.setSurfaceSize(const Size(375, 1200));
     addTearDown(() => tester.binding.setSurfaceSize(null));
