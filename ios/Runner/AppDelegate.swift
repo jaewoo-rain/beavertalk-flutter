@@ -366,16 +366,24 @@ import flutter_callkit_incoming
           let raw = info[AVAudioSessionRouteChangeReasonKey] as? UInt,
           let reason = AVAudioSession.RouteChangeReason(rawValue: raw)
     else { return }
-    // React ONLY to a headset being physically added/removed (AirPods connect/
-    // disconnect). Ignore Control Center / overrides / config changes — reacting
-    // there (re-activating the session) drops the live call.
+    // Steer the input ONLY when a headset is physically added/removed (AirPods
+    // connect/disconnect). Never re-apply the session here — re-activating it on
+    // Control Center / overrides / config changes dropped the live call (453b5b97).
+    // Output-selection changes are only *reported* to Dart (see below).
     switch reason {
     case .newDeviceAvailable, .oldDeviceUnavailable:
       steerInputToHeadset()
       // Tell Dart the route moved. We deliberately do NOT send the route itself:
       // the notification fires before the session settles, so Dart re-reads it
-      // (one 5-15ms round trip) and reports that. Same reasons filter as above —
-      // Control Center / override / config changes must not trigger this.
+      // (one 5-15ms round trip) and reports that.
+      audioChannel?.invokeMethod("routeChanged", arguments: nil)
+    case .override, .categoryChange, .routeConfigurationChange:
+      // 10-06 실기기 R7: AirPods 연결은 그대로 둔 채 출력만 스피커로 고르면(출력 선택)
+      // 이 사유들로 온다. 예전엔 버려서 Dart 가 레코더를 다시 열지 못했고 마이크가 죽었다.
+      // ⛔ 여기서도 세션·카테고리는 건드리지 않는다(453b5b97 — 재적용이 통화를 끊었다).
+      //   입력도 조정하지 않는다 — 사용자가 고른 출력을 BT 로 되돌려 버린다.
+      //   Dart 는 출력 문자열이 실제로 바뀐 경우에만 레코더를 다시 연다(같은 값이면 무시) —
+      //   레코더 재오픈이 낳는 categoryChange 로 되도는 일도 그 비교에서 끊긴다.
       audioChannel?.invokeMethod("routeChanged", arguments: nil)
     default:
       break

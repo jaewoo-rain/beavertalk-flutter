@@ -2003,7 +2003,7 @@ class NormalCallController extends Notifier<CallState> {
     // 32,000 B/s 고정) — 서버 로그와 정수로 대조할 수 있다.
     _log('route (미전송) → ${route.isEmpty ? '(못 읽음)' : route} '
         'uplink=${_uplinkBytes}B (=${_uplinkBytes ~/ 32}ms)');
-    _scheduleMicReopenForRoute();
+    _scheduleMicReopenForRoute(route);
   }
 
   /// iOS: 통화 중 헤드셋이 붙거나 떨어지면 마이크를 다시 연다(10-06 실기기 R7).
@@ -2020,8 +2020,10 @@ class NormalCallController extends Notifier<CallState> {
   /// 새 레코더가 프레임을 못 내면 기존 복구(최대 [_micRestartMaxAttempts]회)가 이어받는다.
   ///
   /// ⛔ Android 는 여기서 하지 않는다 — 네이티브가 SCO 를 직접 다룬다(9a72d5c).
-  void _scheduleMicReopenForRoute() {
+  void _scheduleMicReopenForRoute(String route) {
     if (kIsWeb || defaultTargetPlatform != TargetPlatform.iOS) return;
+    // 출력을 못 읽었으면(빈 값) 시작 때 규칙(헤드셋 연결 여부)으로 돌아간다.
+    _micRouteVoiceProcessing = route.isEmpty ? null : route != 'headset';
     _micRouteReopenTimer?.cancel();
     _micRouteReopenTimer = Timer(_micRouteReopenDelay, () async {
       _micRouteReopenTimer = null;
@@ -2052,6 +2054,10 @@ class NormalCallController extends Notifier<CallState> {
   static const Duration _micRouteReopenDelay = Duration(milliseconds: 600);
   Timer? _micRouteReopenTimer;
   bool _micRouteReopening = false;
+
+  /// 통화 중 출력이 바뀐 뒤 정한 음성처리 여부(헤드셋 출력 = 끔 · 그 밖 = 켬).
+  /// null 이면 [_openMicStream] 이 시작 때 규칙(헤드셋 연결 여부)을 쓴다. 통화마다 초기화.
+  bool? _micRouteVoiceProcessing;
 
   /// Opens the native PCM playback engine and starts the push pump.
   ///
@@ -2590,7 +2596,13 @@ class NormalCallController extends Notifier<CallState> {
       _log('⚠ [실험] MIC_NO_AEC — 음성처리/에코제거를 끄고 연다. '
           '에코가 안 걸리니 스피커폰에서 비버가 자기 목소리에 끊길 수 있다(계측 전용)');
     }
-    if (!CascadeMicNoAec.enabled &&
+    final routeVp = _micRouteVoiceProcessing;
+    if (!CascadeMicNoAec.enabled && routeVp != null) {
+      // 통화 중 출력이 바뀌어 다시 여는 경우 — 「헤드셋이 붙어 있나」가 아니라 **지금 소리가
+      // 나가는 곳**으로 정한다. AirPods 를 낀 채 출력만 스피커로 고르면 헤드셋은 여전히
+      // 「연결됨」이지만 입력은 내장 마이크다(10-06 실기기 R7).
+      useVoiceProcessing = routeVp;
+    } else if (!CascadeMicNoAec.enabled &&
         !kIsWeb &&
         defaultTargetPlatform == TargetPlatform.iOS) {
       try {
@@ -6226,6 +6238,7 @@ class NormalCallController extends Notifier<CallState> {
     _micWatchdogTimer = null;
     _micRouteReopenTimer?.cancel();
     _micRouteReopenTimer = null;
+    _micRouteVoiceProcessing = null;
     _micFramesReceived = 0;
     _micRestartCount = 0;
 
