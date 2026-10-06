@@ -37,6 +37,28 @@ void main() {
     expect(caption('per month'), findsNothing);
   });
 
+  // PM-DEC-405(App Review 3.1.2): 구독 구매 화면은 두 판 모두 구매 복원 · 이용약관 · 개인정보를
+  // 보여야 한다. 기본판(/paywall/max)에서 빠져 있던 것을 막는다 · 한도판은 회귀 확인.
+  for (final variant in PaywallVariant.values) {
+    testWidgets('$variant — 구매 복원 · 이용약관 · 개인정보 링크가 있다', (tester) async {
+      tester.view.physicalSize = const Size(375, 1600);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
+      await tester.pumpWidget(ProviderScope(
+        child: MaterialApp(
+          locale: const Locale('en'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: PaywallScreen(variant: variant),
+        ),
+      ));
+      await tester.pump(const Duration(milliseconds: 32));
+      for (final label in ['Restore purchases', 'Terms', 'Privacy']) {
+        expect(find.text(label), findsOneWidget, reason: '$variant 에 「$label」 이 없다');
+      }
+    });
+  }
+
   testWidgets('F078 — 스토어가 체험 오퍼를 준 경우에만 「7 days free」 (주기별)', (tester) async {
     tester.view.physicalSize = const Size(375, 1600);
     tester.view.devicePixelRatio = 1.0;

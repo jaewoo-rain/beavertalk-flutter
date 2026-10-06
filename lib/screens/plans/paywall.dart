@@ -211,10 +211,11 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                     textAlign: TextAlign.center,
                     style: AppType.caption1.r.copyWith(color: c.labelNormal),
                   ),
-                  if (_isLimit) ...[
-                    const SizedBox(height: AppSpacing.s24),
-                    _footerLinks(l10n, c),
-                  ],
+                  // 구매 복원 · 이용약관 · 개인정보는 **두 판 모두**(PM-DEC-405 · App Review 3.1.2 —
+                  // 구독 구매 화면 안에 약관·개인정보 링크가 있어야 한다). 예전에는 한도판에만
+                  // 그려 기본판(구독 관리·플랜 비교에서 여는 화면)에는 없었다.
+                  const SizedBox(height: AppSpacing.s24),
+                  _footerLinks(l10n, c),
                 ],
               ),
             ),
