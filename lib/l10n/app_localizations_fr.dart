@@ -2980,8 +2980,8 @@ class AppLocalizationsFr extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count sons souvent ratés pendant cette séance',
-      one: '1 son souvent raté pendant cette séance',
+      other: '$count sons souvent ratés pendant cette session',
+      one: '1 son souvent raté pendant cette session',
     );
     return '$_temp0';
   }
@@ -2997,10 +2997,11 @@ class AppLocalizationsFr extends AppLocalizations {
   String get wsRetryListTitle => 'Sons souvent ratés';
 
   @override
-  String get wsRetryListSection => 'Sons de cette séance';
+  String get wsRetryListSection => 'Sons de cette session';
 
   @override
-  String get wsRetryListSub => 'Sons ratés 2 fois ou plus pendant cette séance';
+  String get wsRetryListSub =>
+      'Sons ratés 2 fois ou plus pendant cette session';
 
   @override
   String wsRetryListSubWithCall(String title) {

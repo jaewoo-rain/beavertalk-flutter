@@ -2957,7 +2957,7 @@ class AppLocalizationsMs extends AppLocalizations {
       'Kami kumpulkan bunyi yang salah 2 kali atau lebih. Latih setiap bunyi dalam 4 langkah.';
 
   @override
-  String get wsRetryPackCta => 'Latih bersama';
+  String get wsRetryPackCta => 'Latih semua bunyi';
 
   @override
   String get wsRetryListTitle => 'Bunyi yang kerap salah';

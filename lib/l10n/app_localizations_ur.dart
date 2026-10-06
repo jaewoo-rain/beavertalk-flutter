@@ -2927,6 +2927,7 @@ class AppLocalizationsUr extends AppLocalizations {
       count,
       locale: localeName,
       other: 'اس سیشن میں اکثر غلط ہونے والی $count آوازیں',
+      one: 'اس سیشن میں اکثر غلط ہونے والی 1 آواز',
     );
     return '$_temp0';
   }
@@ -2936,7 +2937,7 @@ class AppLocalizationsUr extends AppLocalizations {
       'ہم نے وہ آوازیں جمع کیں جو 2 یا زیادہ بار غلط ہوئیں۔ ہر آواز کی 4 مراحل میں مشق کریں۔';
 
   @override
-  String get wsRetryPackCta => 'ایک ساتھ مشق کریں';
+  String get wsRetryPackCta => 'سب آوازوں کی مشق کریں';
 
   @override
   String get wsRetryListTitle => 'اکثر غلط ہونے والی آوازیں';

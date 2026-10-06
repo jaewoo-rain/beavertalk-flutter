@@ -2919,6 +2919,7 @@ class AppLocalizationsNe extends AppLocalizations {
       count,
       locale: localeName,
       other: 'यस सत्रमा प्रायः गल्ती भएका $count ध्वनि',
+      one: 'यस सत्रमा प्रायः गल्ती भएको 1 ध्वनि',
     );
     return '$_temp0';
   }
@@ -2928,7 +2929,7 @@ class AppLocalizationsNe extends AppLocalizations {
       '२ पटक वा बढी गल्ती भएका ध्वनि मात्र जम्मा गरियो। हरेक ध्वनि ४ चरणमा अभ्यास गर्नुहोस्।';
 
   @override
-  String get wsRetryPackCta => 'सँगै अभ्यास गर्नुहोस्';
+  String get wsRetryPackCta => 'सबै ध्वनि अभ्यास गर्नुहोस्';
 
   @override
   String get wsRetryListTitle => 'प्रायः गल्ती हुने ध्वनि';

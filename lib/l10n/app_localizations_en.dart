@@ -2942,7 +2942,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'We gathered the sounds you missed twice or more. Practice each in 4 steps.';
 
   @override
-  String get wsRetryPackCta => 'Practice them together';
+  String get wsRetryPackCta => 'Practice them all';
 
   @override
   String get wsRetryListTitle => 'Sounds you often missed';

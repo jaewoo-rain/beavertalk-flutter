@@ -2955,7 +2955,7 @@ class AppLocalizationsRu extends AppLocalizations {
       'Мы собрали звуки, в которых вы ошиблись 2 раза и больше. Отработайте каждый в 4 шага.';
 
   @override
-  String get wsRetryPackCta => 'Отработать вместе';
+  String get wsRetryPackCta => 'Отработать все звуки';
 
   @override
   String get wsRetryListTitle => 'Звуки с частыми ошибками';

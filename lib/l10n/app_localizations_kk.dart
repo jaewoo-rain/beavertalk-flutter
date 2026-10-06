@@ -2931,7 +2931,7 @@ class AppLocalizationsKk extends AppLocalizations {
       '2 не одан көп рет қателескен дыбыстарды жинадық. Әр дыбысты 4 қадаммен жаттықтырыңыз.';
 
   @override
-  String get wsRetryPackCta => 'Бірге жаттықтыру';
+  String get wsRetryPackCta => 'Барлығын жаттықтыру';
 
   @override
   String get wsRetryListTitle => 'Жиі қателесетін дыбыстар';

@@ -2973,8 +2973,8 @@ class AppLocalizationsDe extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count oft verfehlte Laute in dieser Einheit',
-      one: '1 oft verfehlter Laut in dieser Einheit',
+      other: '$count oft verfehlte Laute in dieser Sitzung',
+      one: '1 oft verfehlter Laut in dieser Sitzung',
     );
     return '$_temp0';
   }
@@ -2984,17 +2984,17 @@ class AppLocalizationsDe extends AppLocalizations {
       'Wir haben die Laute gesammelt, die du 2-mal oder öfter verfehlt hast. Übe jeden in 4 Schritten.';
 
   @override
-  String get wsRetryPackCta => 'Gemeinsam üben';
+  String get wsRetryPackCta => 'Alle Laute üben';
 
   @override
   String get wsRetryListTitle => 'Oft verfehlte Laute';
 
   @override
-  String get wsRetryListSection => 'Laute aus dieser Einheit';
+  String get wsRetryListSection => 'Laute aus dieser Sitzung';
 
   @override
   String get wsRetryListSub =>
-      'Laute, die du in dieser Einheit 2-mal oder öfter verfehlt hast';
+      'Laute, die du in dieser Sitzung 2-mal oder öfter verfehlt hast';
 
   @override
   String wsRetryListSubWithCall(String title) {

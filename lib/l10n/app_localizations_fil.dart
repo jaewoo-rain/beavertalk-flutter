@@ -2964,10 +2964,10 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get wsRetryPackBody =>
-      'Tinipon namin ang mga tunog na 2 beses o higit mong mali. Sanayin ang bawat isa sa 4 na hakbang.';
+      'Tanging ang mga tunog na nabigkas mo nang mali nang 2 beses o higit pa ang tinipon namin. Sanayin ang bawat isa sa 4 na hakbang.';
 
   @override
-  String get wsRetryPackCta => 'Sanayin nang sabay-sabay';
+  String get wsRetryPackCta => 'Sanayin ang lahat';
 
   @override
   String get wsRetryListTitle => 'Mga tunog na madalas mong mali';
@@ -2977,15 +2977,15 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get wsRetryListSub =>
-      'Mga tunog na 2 beses o higit mong mali sa session na ito';
+      'Mga tunog na nabigkas mo nang mali nang 2 beses o higit pa sa session na ito';
 
   @override
   String wsRetryListSubWithCall(String title) {
-    return 'Mga tunog na 2 beses o higit mong mali sa tawag na “$title”';
+    return 'Mga tunog na nabigkas mo nang mali nang 2 beses o higit pa sa tawag na “$title”';
   }
 
   @override
-  String get wsRetryListAllDone => 'Nasanay mo na ang lahat ng tunog';
+  String get wsRetryListAllDone => 'Na-practice mo na ang lahat ng tunog';
 
   @override
   String get wsRetryBackToReport => 'Bumalik sa ulat';

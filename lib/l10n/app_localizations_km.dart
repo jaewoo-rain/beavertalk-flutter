@@ -2907,41 +2907,41 @@ class AppLocalizationsKm extends AppLocalizations {
   }
 
   @override
-  String get wsRetryPackLabel => 'ហាត់សូរដែលច្រើនខុស';
+  String get wsRetryPackLabel => 'ហាត់សំឡេងដែលច្រើនខុស';
 
   @override
   String wsRetryPackTitle(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: 'សូរដែលច្រើនខុសក្នុងមេរៀននេះ $count',
+      other: '$count សំឡេងដែលច្រើនខុសក្នុងមេរៀននេះ',
     );
     return '$_temp0';
   }
 
   @override
   String get wsRetryPackBody =>
-      'យើងបានប្រមូលសូរដែលខុស 2 ដង ឬច្រើនជាងនេះ។ ហាត់សូរនីមួយៗតាម 4 ជំហាន។';
+      'យើងបានប្រមូលសំឡេងដែលខុស 2 ដង ឬច្រើនជាងនេះ។ ហាត់សំឡេងនីមួយៗតាម 4 ជំហាន។';
 
   @override
-  String get wsRetryPackCta => 'ហាត់ជាមួយគ្នា';
+  String get wsRetryPackCta => 'ហាត់សំឡេងដែលប្រមូលបាន';
 
   @override
-  String get wsRetryListTitle => 'សូរដែលច្រើនខុស';
+  String get wsRetryListTitle => 'សំឡេងដែលច្រើនខុស';
 
   @override
-  String get wsRetryListSection => 'សូរពីមេរៀននេះ';
+  String get wsRetryListSection => 'សំឡេងពីមេរៀននេះ';
 
   @override
-  String get wsRetryListSub => 'សូរដែលខុស 2 ដង ឬច្រើនជាងនេះក្នុងមេរៀននេះ';
+  String get wsRetryListSub => 'សំឡេងដែលខុស 2 ដង ឬច្រើនជាងនេះក្នុងមេរៀននេះ';
 
   @override
   String wsRetryListSubWithCall(String title) {
-    return 'សូរដែលខុស 2 ដង ឬច្រើនជាងនេះក្នុងការហៅ «$title»';
+    return 'សំឡេងដែលខុស 2 ដង ឬច្រើនជាងនេះក្នុងការហៅ «$title»';
   }
 
   @override
-  String get wsRetryListAllDone => 'អ្នកបានហាត់សូរទាំងអស់ហើយ';
+  String get wsRetryListAllDone => 'អ្នកបានហាត់សំឡេងទាំងអស់ហើយ';
 
   @override
   String get wsRetryBackToReport => 'ត្រឡប់ទៅរបាយការណ៍';

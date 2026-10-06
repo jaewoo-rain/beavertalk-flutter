@@ -2909,7 +2909,7 @@ class AppLocalizationsTh extends AppLocalizations {
       'รวบรวมเฉพาะเสียงที่ออกผิดตั้งแต่ 2 ครั้งขึ้นไป ฝึกแต่ละเสียงใน 4 ขั้นตอน';
 
   @override
-  String get wsRetryPackCta => 'ฝึกรวมกัน';
+  String get wsRetryPackCta => 'ฝึกเสียงที่รวบรวมไว้';
 
   @override
   String get wsRetryListTitle => 'เสียงที่ออกผิดบ่อย';

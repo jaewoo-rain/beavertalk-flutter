@@ -2838,7 +2838,7 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get wsRetryPackBody => '只收集了错误两次以上的发音。每个发音分 4 个步骤练习。';
+  String get wsRetryPackBody => '只收集了出错两次及以上的发音。每个发音分 4 个步骤练习。';
 
   @override
   String get wsRetryPackCta => '集中练习';
@@ -2850,11 +2850,11 @@ class AppLocalizationsZh extends AppLocalizations {
   String get wsRetryListSection => '本次学习收集的发音';
 
   @override
-  String get wsRetryListSub => '本次学习中错误两次以上的发音';
+  String get wsRetryListSub => '本次学习中出错两次及以上的发音';
 
   @override
   String wsRetryListSubWithCall(String title) {
-    return '在“$title”通话中错误两次以上的发音';
+    return '在“$title”通话中出错两次及以上的发音';
   }
 
   @override

@@ -2947,7 +2947,8 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
-  String get wsRetryPackLabel => 'Pratique os sons que você mais errou';
+  String get wsRetryPackLabel =>
+      'Pratique os sons que você errou com frequência';
 
   @override
   String wsRetryPackTitle(int count) {
@@ -2965,10 +2966,10 @@ class AppLocalizationsPt extends AppLocalizations {
       'Reunimos os sons que você errou 2 vezes ou mais. Pratique cada um em 4 etapas.';
 
   @override
-  String get wsRetryPackCta => 'Praticar juntos';
+  String get wsRetryPackCta => 'Praticar todos os sons';
 
   @override
-  String get wsRetryListTitle => 'Sons que você mais errou';
+  String get wsRetryListTitle => 'Sons que você errou com frequência';
 
   @override
   String get wsRetryListSection => 'Sons desta sessão';

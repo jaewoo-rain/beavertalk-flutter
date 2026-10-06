@@ -2912,7 +2912,7 @@ class AppLocalizationsMn extends AppLocalizations {
   }
 
   @override
-  String get wsRetryPackLabel => 'Байнга алддаг авиагаа давтах';
+  String get wsRetryPackLabel => 'Байнга алддаг авиагаа дадлагажих';
 
   @override
   String wsRetryPackTitle(int count) {
@@ -2926,10 +2926,10 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get wsRetryPackBody =>
-      '2 ба түүнээс олон удаа алдсан авиануудыг цуглууллаа. Авиа бүрийг 4 алхмаар давтана.';
+      '2 ба түүнээс олон удаа алдсан авиануудыг цуглууллаа. Авиа бүрийг 4 алхмаар дадлагажина.';
 
   @override
-  String get wsRetryPackCta => 'Хамтад нь давтах';
+  String get wsRetryPackCta => 'Бүгдийг нь дадлагажих';
 
   @override
   String get wsRetryListTitle => 'Байнга алддаг авиа';
@@ -2946,7 +2946,7 @@ class AppLocalizationsMn extends AppLocalizations {
   }
 
   @override
-  String get wsRetryListAllDone => 'Бүх авиагаа давтлаа';
+  String get wsRetryListAllDone => 'Бүх авиагаа дадлагажлаа';
 
   @override
   String get wsRetryBackToReport => 'Тайлан руу буцах';

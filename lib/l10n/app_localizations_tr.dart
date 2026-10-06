@@ -2927,7 +2927,7 @@ class AppLocalizationsTr extends AppLocalizations {
       '2 veya daha fazla kez hata yaptığın sesleri topladık. Her birini 4 adımda çalış.';
 
   @override
-  String get wsRetryPackCta => 'Birlikte çalış';
+  String get wsRetryPackCta => 'Hepsini çalış';
 
   @override
   String get wsRetryListTitle => 'Sık hata yaptığın sesler';

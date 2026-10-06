@@ -2920,6 +2920,7 @@ class AppLocalizationsHi extends AppLocalizations {
       count,
       locale: localeName,
       other: 'इस सत्र में अक्सर गलत हुई $count ध्वनियाँ',
+      one: 'इस सत्र में अक्सर गलत हुई 1 ध्वनि',
     );
     return '$_temp0';
   }
@@ -2929,7 +2930,7 @@ class AppLocalizationsHi extends AppLocalizations {
       'हमने वे ध्वनियाँ इकट्ठी कीं जो 2 या अधिक बार गलत हुईं। हर ध्वनि का 4 चरणों में अभ्यास करें।';
 
   @override
-  String get wsRetryPackCta => 'साथ में अभ्यास करें';
+  String get wsRetryPackCta => 'सभी ध्वनियों का अभ्यास करें';
 
   @override
   String get wsRetryListTitle => 'अक्सर गलत होने वाली ध्वनियाँ';

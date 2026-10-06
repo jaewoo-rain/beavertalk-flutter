@@ -873,7 +873,7 @@
   "wsRetryPackLabel": "Luyện các âm hay sai",
   "wsRetryPackTitle": "{count, plural, other{{count} âm bạn hay sai trong buổi học này}}",
   "wsRetryPackBody": "Chúng tôi đã gom các âm bạn sai từ 2 lần trở lên. Luyện mỗi âm qua 4 bước.",
-  "wsRetryPackCta": "Luyện tập cùng lúc",
+  "wsRetryPackCta": "Luyện các âm đã gom",
   "wsRetryListTitle": "Âm hay sai",
   "wsRetryListSection": "Âm gom được trong buổi học này",
   "wsRetryListSub": "Các âm bạn sai từ 2 lần trở lên trong buổi học này",

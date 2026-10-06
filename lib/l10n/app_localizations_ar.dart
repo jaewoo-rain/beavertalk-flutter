@@ -2901,6 +2901,9 @@ class AppLocalizationsAr extends AppLocalizations {
       count,
       locale: localeName,
       other: '$count أصوات أخطأت فيها كثيرًا في هذه الجلسة',
+      few: '$count أصوات أخطأت فيها كثيرًا في هذه الجلسة',
+      two: 'صوتان أخطأت فيهما كثيرًا في هذه الجلسة',
+      one: 'صوت واحد أخطأت فيه كثيرًا في هذه الجلسة',
     );
     return '$_temp0';
   }
@@ -2910,7 +2913,7 @@ class AppLocalizationsAr extends AppLocalizations {
       'جمعنا الأصوات التي أخطأت فيها مرتين أو أكثر. تدرّب على كل صوت في 4 خطوات.';
 
   @override
-  String get wsRetryPackCta => 'تدرّب عليها معًا';
+  String get wsRetryPackCta => 'تدرّب عليها كلها';
 
   @override
   String get wsRetryListTitle => 'أصوات تخطئ فيها كثيرًا';

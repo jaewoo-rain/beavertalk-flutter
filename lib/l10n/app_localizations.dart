@@ -5395,7 +5395,7 @@ abstract class AppLocalizations {
   /// No description provided for @wsRetryPackCta.
   ///
   /// In en, this message translates to:
-  /// **'Practice them together'**
+  /// **'Practice them all'**
   String get wsRetryPackCta;
 
   /// No description provided for @wsRetryListTitle.

@@ -2932,7 +2932,7 @@ class AppLocalizationsVi extends AppLocalizations {
       'Chúng tôi đã gom các âm bạn sai từ 2 lần trở lên. Luyện mỗi âm qua 4 bước.';
 
   @override
-  String get wsRetryPackCta => 'Luyện tập cùng lúc';
+  String get wsRetryPackCta => 'Luyện các âm đã gom';
 
   @override
   String get wsRetryListTitle => 'Âm hay sai';

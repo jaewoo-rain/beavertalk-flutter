@@ -873,7 +873,7 @@
   "wsRetryPackLabel": "Sık hata yaptığın sesleri çalış",
   "wsRetryPackTitle": "{count, plural, other{Bu oturumda sık hata yaptığın {count} ses}}",
   "wsRetryPackBody": "2 veya daha fazla kez hata yaptığın sesleri topladık. Her birini 4 adımda çalış.",
-  "wsRetryPackCta": "Birlikte çalış",
+  "wsRetryPackCta": "Hepsini çalış",
   "wsRetryListTitle": "Sık hata yaptığın sesler",
   "wsRetryListSection": "Bu oturumdan sesler",
   "wsRetryListSub": "Bu oturumda 2 veya daha fazla kez hata yaptığın sesler",

@@ -2938,38 +2938,38 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get wsRetryPackLabel =>
-      'Ko‘p xato qilinadigan tovushlarni mashq qilish';
+      'Koʻp xato qilinadigan tovushlarni mashq qilish';
 
   @override
   String wsRetryPackTitle(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: 'Bu darsda ko‘p xato qilgan $count ta tovush',
+      other: 'Bu darsda koʻp xato qilgan $count ta tovush',
     );
     return '$_temp0';
   }
 
   @override
   String get wsRetryPackBody =>
-      '2 va undan ko‘p marta xato qilgan tovushlarni yig‘dik. Har birini 4 bosqichda mashq qiling.';
+      '2 va undan koʻp marta xato qilgan tovushlarni yigʻdik. Har birini 4 bosqichda mashq qiling.';
 
   @override
-  String get wsRetryPackCta => 'Birga mashq qilish';
+  String get wsRetryPackCta => 'Hammasini mashq qilish';
 
   @override
-  String get wsRetryListTitle => 'Ko‘p xato qilinadigan tovushlar';
+  String get wsRetryListTitle => 'Koʻp xato qilinadigan tovushlar';
 
   @override
   String get wsRetryListSection => 'Bu darsdagi tovushlar';
 
   @override
   String get wsRetryListSub =>
-      'Bu darsda 2 va undan ko‘p marta xato qilgan tovushlar';
+      'Bu darsda 2 va undan koʻp marta xato qilgan tovushlar';
 
   @override
   String wsRetryListSubWithCall(String title) {
-    return '“$title” qo‘ng‘irog‘ida 2 va undan ko‘p marta xato qilgan tovushlar';
+    return '“$title” qoʻngʻirogʻida 2 va undan koʻp marta xato qilgan tovushlar';
   }
 
   @override

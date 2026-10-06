@@ -2954,13 +2954,13 @@ class AppLocalizationsHu extends AppLocalizations {
       'Összegyűjtöttük a legalább 2-szer rontott hangokat. Mindegyiket 4 lépésben gyakorolhatod.';
 
   @override
-  String get wsRetryPackCta => 'Gyakorlás együtt';
+  String get wsRetryPackCta => 'Hangok gyakorlása';
 
   @override
   String get wsRetryListTitle => 'Gyakran rontott hangok';
 
   @override
-  String get wsRetryListSection => 'A lecke hangjai';
+  String get wsRetryListSection => 'Ebből a leckéből gyűjtött hangok';
 
   @override
   String get wsRetryListSub =>
@@ -2975,5 +2975,5 @@ class AppLocalizationsHu extends AppLocalizations {
   String get wsRetryListAllDone => 'Minden hangot begyakoroltál';
 
   @override
-  String get wsRetryBackToReport => 'Vissza a jelentéshez';
+  String get wsRetryBackToReport => 'Vissza az elemzéshez';
 }

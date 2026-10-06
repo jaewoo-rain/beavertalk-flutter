@@ -2921,7 +2921,7 @@ class AppLocalizationsKy extends AppLocalizations {
   }
 
   @override
-  String get wsRetryPackLabel => 'Көп жаңылган тыбыштарды машыктоо';
+  String get wsRetryPackLabel => 'Көп жаңылган тыбыштарды көнүгүү';
 
   @override
   String wsRetryPackTitle(int count) {
@@ -2935,10 +2935,10 @@ class AppLocalizationsKy extends AppLocalizations {
 
   @override
   String get wsRetryPackBody =>
-      '2 же андан көп жолу жаңылган тыбыштарды чогулттук. Ар бир тыбышты 4 кадам менен машыктаңыз.';
+      '2 же андан көп жолу жаңылган тыбыштарды чогулттук. Ар бир тыбышты 4 кадам менен көнүгүңүз.';
 
   @override
-  String get wsRetryPackCta => 'Чогуу машыктоо';
+  String get wsRetryPackCta => 'Баарын көнүгүү';
 
   @override
   String get wsRetryListTitle => 'Көп жаңылган тыбыштар';
@@ -2956,7 +2956,7 @@ class AppLocalizationsKy extends AppLocalizations {
   }
 
   @override
-  String get wsRetryListAllDone => 'Бардык тыбыштарды машыктадыңыз';
+  String get wsRetryListAllDone => 'Бардык тыбыштар боюнча көнүгүү бүттү';
 
   @override
   String get wsRetryBackToReport => 'Отчетко кайтуу';

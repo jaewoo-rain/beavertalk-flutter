@@ -2922,10 +2922,10 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get wsRetryPackBody =>
-      '২ বা তার বেশি বার ভুল হওয়া ধ্বনিগুলো একসাথে করেছি। প্রতিটি ধ্বনি ৪ ধাপে অনুশীলন করুন।';
+      '২ বা তার বেশি বার ভুল হওয়া ধ্বনিগুলোই একত্র করেছি। প্রতিটি ধ্বনি ৪ ধাপে অনুশীলন করুন।';
 
   @override
-  String get wsRetryPackCta => 'একসাথে অনুশীলন করুন';
+  String get wsRetryPackCta => 'সব ধ্বনি অনুশীলন করুন';
 
   @override
   String get wsRetryListTitle => 'বারবার ভুল হওয়া ধ্বনি';

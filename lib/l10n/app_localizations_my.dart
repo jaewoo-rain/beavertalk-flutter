@@ -2945,7 +2945,7 @@ class AppLocalizationsMy extends AppLocalizations {
       '၂ ကြိမ်နှင့်အထက် မှားသော အသံများကို စုထားသည်။ အသံတစ်ခုစီကို အဆင့် ၄ ဆင့်ဖြင့် လေ့ကျင့်ပါ။';
 
   @override
-  String get wsRetryPackCta => 'အတူ လေ့ကျင့်ရန်';
+  String get wsRetryPackCta => 'စုပြီး လေ့ကျင့်ရန်';
 
   @override
   String get wsRetryListTitle => 'မကြာခဏ မှားသော အသံများ';

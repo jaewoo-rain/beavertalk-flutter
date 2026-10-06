@@ -2264,7 +2264,7 @@
     }
   },
   "wsRetryPackBody": "We gathered the sounds you missed twice or more. Practice each in 4 steps.",
-  "wsRetryPackCta": "Practice them together",
+  "wsRetryPackCta": "Practice them all",
   "wsRetryListTitle": "Sounds you often missed",
   "wsRetryListSection": "Sounds from this session",
   "wsRetryListSub": "Sounds you missed twice or more this session",

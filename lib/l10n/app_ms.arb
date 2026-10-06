@@ -873,7 +873,7 @@
   "wsRetryPackLabel": "Latih bunyi yang kerap salah",
   "wsRetryPackTitle": "{count, plural, other{{count} bunyi yang kerap salah dalam sesi ini}}",
   "wsRetryPackBody": "Kami kumpulkan bunyi yang salah 2 kali atau lebih. Latih setiap bunyi dalam 4 langkah.",
-  "wsRetryPackCta": "Latih bersama",
+  "wsRetryPackCta": "Latih semua bunyi",
   "wsRetryListTitle": "Bunyi yang kerap salah",
   "wsRetryListSection": "Bunyi daripada sesi ini",
   "wsRetryListSub": "Bunyi yang salah 2 kali atau lebih dalam sesi ini",

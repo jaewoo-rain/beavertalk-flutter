@@ -2923,7 +2923,7 @@ class AppLocalizationsSi extends AppLocalizations {
       '2 වතාවක් හෝ වැඩියෙන් වැරදුණු ශබ්ද එකතු කළා. සෑම ශබ්දයක්ම පියවර 4කින් පුහුණු වන්න.';
 
   @override
-  String get wsRetryPackCta => 'එකට පුහුණු වන්න';
+  String get wsRetryPackCta => 'සියලු ශබ්ද පුහුණු වන්න';
 
   @override
   String get wsRetryListTitle => 'නිතර වැරදෙන ශබ්ද';

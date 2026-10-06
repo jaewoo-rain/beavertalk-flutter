@@ -2933,7 +2933,7 @@ class AppLocalizationsFi extends AppLocalizations {
   }
 
   @override
-  String get wsRetryPackLabel => 'Harjoittele usein menneitä väärin -äänteitä';
+  String get wsRetryPackLabel => 'Harjoittele usein väärin menneitä äänteitä';
 
   @override
   String wsRetryPackTitle(int count) {
@@ -2951,7 +2951,7 @@ class AppLocalizationsFi extends AppLocalizations {
       'Keräsimme äänteet, jotka menivät väärin vähintään 2 kertaa. Harjoittele jokaista 4 vaiheessa.';
 
   @override
-  String get wsRetryPackCta => 'Harjoittele yhdessä';
+  String get wsRetryPackCta => 'Harjoittele äänteitä';
 
   @override
   String get wsRetryListTitle => 'Usein väärin menneet äänteet';
