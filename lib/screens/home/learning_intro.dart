@@ -34,6 +34,7 @@ import '../../features/normalcall/presentation/sync_avatar.dart';
 import '../../features/pronunciation/domain/phoneme_diagram.dart';
 import '../../features/normalcall/presentation/normalcall_providers.dart';
 import '../../features/pronunciation/presentation/articulation_sheet.dart';
+import '../../features/pronunciation/presentation/review_word_chip.dart';
 import '../../features/review/data/audio_player.dart';
 import '../../features/review/data/audio_recorder.dart';
 import '../../features/review/data/wav_writer.dart';
@@ -327,83 +328,24 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
       taken.sort((x, y) => x.score.score.compareTo(y.score.score));
       final worst = taken.first;
       if (worst.score.grade == CharGrade.high) continue;
-      final diagram = diagramForSyllable(worst.score.char);
-      chips.add(_wordChip(context, word, worst.score, diagram, worst.index));
+      chips.add(
+        ReviewWordChip(
+          word: word,
+          worst: worst.score,
+          charIndex: worst.index,
+          misses: _feedback?.phonemeMisses ?? const <PhonemeMiss>[],
+          onOpen: (target, current) => _openArticulation(word, target, current),
+        ),
+      );
     }
     return chips;
   }
 
-  Widget _wordChip(
-    BuildContext context,
-    String word,
-    CharScore worst,
-    PhonemeDiagram? diagram,
-    int charIndex,
-  ) {
-    final c = context.c;
-    final low = worst.grade == CharGrade.low;
-    final dot = low ? c.statusNegative : c.statusCautionary;
-    return GestureDetector(
-      onTap: diagram == null
-          ? null
-          : () => _openArticulation(word, diagram, charIndex, worst.char),
-      behavior: HitTestBehavior.opaque,
-      child: Container(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.s12,
-          vertical: 7,
-        ),
-        decoration: BoxDecoration(
-          color: low ? c.statusNegative6 : c.backgroundSurfaceAlternative,
-          border: Border.all(
-            color: low ? c.statusNegative : c.lineNeutral,
-            width: low ? 1.5 : 1,
-          ),
-          borderRadius: BorderRadius.circular(999),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 8,
-              height: 8,
-              decoration: BoxDecoration(color: dot, shape: BoxShape.circle),
-            ),
-            const SizedBox(width: AppSpacing.s8),
-            Text(word, style: AppType.label2.b.copyWith(color: c.labelNormal)),
-          ],
-        ),
-      ),
-    );
-  }
-
-  /// 칩을 누르면 발음 교정 시트가 열린다.
-  ///
-  /// 「내 발음」 컷은 서버가 `phoneme_misses` 를 줄 때만 그린다. 안 주면 목표 한
-  /// 컷이다 — 무엇으로 잘못 냈는지 모르면서 두 컷을 그리면 도해가 거짓말을 한다.
-  ///
-  /// ★ 계열 선택은 [diagramPair] 에 맡긴다. 긴장도만 다른 쌍(ㄱ↔ㅋ)을 Airflow 로
-  ///   그리면 **같은 그림 두 장**이 나온다(실측 0.02%). 그 판단을 화면이 하지 않는다.
   void _openArticulation(
     String word,
-    PhonemeDiagram fallback,
-    int charIndex,
-    String char,
+    PhonemeDiagram target,
+    PhonemeDiagram? current,
   ) {
-    var target = fallback;
-    PhonemeDiagram? current;
-    for (final miss in _feedback?.phonemeMisses ?? const <PhonemeMiss>[]) {
-      if (miss.charIndex != charIndex) continue;
-      final parts = splitJamo(char);
-      final isCoda =
-          parts != null && parts.coda.isNotEmpty && parts.coda == miss.expected;
-      final pair = diagramPair(miss.expected, miss.actual, isCoda: isCoda);
-      if (pair.target != null) {
-        target = pair.target!;
-        current = pair.current;
-      }
-      break;
-    }
     showArticulationSheet(
       context,
       data: ArticulationSheetData(word: word, target: target, current: current),
