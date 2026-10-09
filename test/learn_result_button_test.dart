@@ -42,7 +42,7 @@ LearningSummary _summary(List<SentenceScore> sentences) => LearningSummary(
     );
 
 void main() {
-  group('판정 — 기본 문장 전부에 점수', () {
+  group('판정 — 현지인 표현 포함 모든 항목에 점수', () {
     test('전부 채점 → 마침', () {
       expect(_summary([_s(80), _s(60)]).learningFinished, isTrue);
     });
@@ -52,11 +52,34 @@ void main() {
     test('학습 안 함 → 아직', () {
       expect(_summary([_s(null), _s(null)]).learningFinished, isFalse);
     });
-    test('현지인 짝(kind=native)은 세지 않는다', () {
-      expect(_summary([_s(80), _s(null, kind: 'native')]).learningFinished, isTrue);
+    test('현지인 짝(kind=native)이 미채점이면 아직', () {
+      expect(_summary([_s(80), _s(null, kind: 'native')]).learningFinished, isFalse);
+    });
+    test('기본 6개와 현지인 6개를 모두 채점해야 마침', () {
+      final base = List.generate(6, (_) => _s(80));
+      final native = List.generate(6, (_) => _s(60, kind: 'native'));
+      expect(_summary([...base, ...native]).learningFinished, isTrue);
+      expect(_summary([...base, ...native.take(5), _s(null, kind: 'native')])
+          .learningFinished, isFalse);
     });
     test('문장 0개 → 아직', () {
       expect(_summary(const []).learningFinished, isFalse);
+    });
+    test('범위 밖 점수는 완료로 세지 않으며 실제 0점은 채점임', () {
+      expect(_summary([_s(-1)]).learningFinished, isFalse);
+      expect(_summary([_s(101)]).learningFinished, isFalse);
+      expect(_summary([_s(0)]).learningFinished, isTrue);
+    });
+    test('새 항목 ID와 총점은 읽고 구형 응답은 없는 값을 유지함', () {
+      final s = SentenceScore.fromJson({
+        'sentence_id': 10, 'sentence': '문장', 'total_score': 85,
+        'pronunciation': 80,
+      });
+      expect(s.sentenceId, 10);
+      expect(s.totalScore, 85);
+      final old = SentenceScore.fromJson({'sentence': '문장'});
+      expect(old.sentenceId, isNull);
+      expect(old.totalScore, isNull);
     });
     test('kind 를 읽는다', () {
       final s = SentenceScore.fromJson({
@@ -74,10 +97,10 @@ void main() {
   group('분석 화면 카드', () {
     final pushed = <String>[];
 
-    Widget host(LearningSummary? report) => ProviderScope(
+    Widget host(LearningSummary? report, {LearningSummary Function()? load}) => ProviderScope(
           overrides: [
             pronunciationReportProvider.overrideWith(
-              (ref, id) async => report ?? (throw StateError('리포트 없음')),
+              (ref, id) async => load?.call() ?? report ?? (throw StateError('리포트 없음')),
             ),
           ],
           child: MaterialApp(
@@ -144,6 +167,37 @@ void main() {
       await pump(tester, null);
       expect(find.text('Practice pronunciation'), findsOneWidget);
       expect(find.text('See learning results'), findsNothing);
+    });
+    testWidgets('완료된 다른 항목 ID의 보고서로 결과 버튼을 켜지 않는다', (tester) async {
+      await pump(tester, _summary([
+        const SentenceScore(sentence: '다른 문장', pronunciation: 80,
+            fluency: 80, rhythm: 80, sentenceId: 99),
+      ]));
+      expect(find.text('See learning results'), findsNothing);
+      expect(find.text('Practice pronunciation'), findsOneWidget);
+    });
+    testWidgets('학습에서 돌아오면 캐시를 새로 받아 완료 버튼이 바뀐다', (tester) async {
+      var reads = 0;
+      var saved = _summary([_s(null)]);
+      tester.view.physicalSize = const Size(375, 1600);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      await tester.pumpWidget(host(null, load: () { reads++; return saved; }));
+      await tester.pumpAndSettle();
+      expect(reads, 1);
+      final card = tester.widget<CardStudy>(find.ancestor(
+        of: find.text('Practice pronunciation'), matching: find.byType(CardStudy),
+      ));
+      card.onTap!();
+      await tester.pumpAndSettle();
+      saved = _summary([_s(80)]);
+      final context = tester.element(find.text('pushed'));
+      Navigator.of(context).pop();
+      await tester.pumpAndSettle();
+      expect(reads, greaterThan(1));
+      expect(find.text('See learning results'), findsOneWidget);
+      expect(find.text('Practice pronunciation'), findsNothing);
+      await tester.pumpWidget(const SizedBox.shrink());
     });
   });
 

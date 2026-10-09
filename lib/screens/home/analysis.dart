@@ -115,8 +115,11 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
     if (args is CallResult) {
       final result = _kDesignPreview ? _withDesignPreview(args) : args;
       _result = result;
-      _learningSentences =
-          result.sentences.map(_toMockSentence).toList(growable: false);
+      final seenIds = <int>{};
+      _learningSentences = result.sentences
+          .where((s) => (s.korean?.trim().isNotEmpty ?? false) &&
+              seenIds.add(s.sentenceId))
+          .map(_toMockSentence).toList(growable: false);
       // Defer provider/notifier mutations out of the lifecycle phase: Riverpod
       // forbids modifying a provider during build/initState/didChangeDependencies.
       // Runs exactly once (guarded by the `_result == null` capture above).
@@ -208,8 +211,21 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
   bool _learningFinished(WidgetRef ref) {
     final callId = _result?.callId;
     if (callId == null) return false;
-    return ref.watch(pronunciationReportProvider(callId)).valueOrNull?.learningFinished ??
-        false;
+    final report = ref.watch(pronunciationReportProvider(callId)).valueOrNull;
+    if (report == null || !report.learningFinished ||
+        report.sentences.length != _learningSentences.length) {
+      return false;
+    }
+    // 새 계약은 실제 ID로 대조한다. 구형 응답에는 ID가 없어 개수까지만 확인한다.
+    if (report.sentences.any((s) => s.sentenceId != null)) {
+      if (report.sentences.any((s) => s.sentenceId == null)) return false;
+      final expected = _learningSentences.map((s) => s.id).toSet();
+      final actual = report.sentences.map((s) => s.sentenceId!).toSet();
+      return actual.length == report.sentences.length &&
+          expected.length == _learningSentences.length &&
+          actual.length == expected.length && actual.containsAll(expected);
+    }
+    return true;
   }
 
   /// Formats a nullable 0–100 score as a rounded percent, or `-%` when null.

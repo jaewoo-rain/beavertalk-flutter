@@ -32,6 +32,7 @@ import '../../features/normalcall/presentation/avatar_assets.dart'
         kIdleWait;
 import '../../features/normalcall/presentation/sync_avatar.dart';
 import '../../features/pronunciation/domain/phoneme_diagram.dart';
+import '../../features/normalcall/presentation/normalcall_providers.dart';
 import '../../features/pronunciation/presentation/articulation_sheet.dart';
 import '../../features/review/data/audio_player.dart';
 import '../../features/review/data/audio_recorder.dart';
@@ -727,6 +728,10 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
     }
 
     if (_index >= args.sentences.length - 1) {
+      // 분석 화면이 보던 이전 리포트 대신 마지막 채점까지 저장된 결과를 받는다.
+      if (args.origin == LearningOrigin.callReview && args.callId != null) {
+        ref.invalidate(pronunciationReportProvider(args.callId!));
+      }
       Navigator.pushNamed(
         context,
         args.origin == LearningOrigin.callReview
