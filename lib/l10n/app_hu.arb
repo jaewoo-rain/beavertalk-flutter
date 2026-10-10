@@ -881,5 +881,15 @@
   "wsRetryListSub": "Az ebben a leckében legalább 2-szer rontott hangok",
   "wsRetryListSubWithCall": "A(z) „{title}” hívásban legalább 2-szer rontott hangok",
   "wsRetryListAllDone": "Minden hangot begyakoroltál",
-  "wsRetryBackToReport": "Vissza az elemzéshez"
+  "wsRetryBackToReport": "Vissza az elemzéshez",
+  "callHintTabConversation": "Ez a beszélgetés",
+  "callHintTabLessons": "Leckék",
+  "callHintSituation": "Helyzet",
+  "callHintPartner": "Beszélgetőtárs",
+  "callHintNowBadge": "Most",
+  "callHintLevelSurvival": "Túlélő koreai",
+  "callHintLessonsLoadError": "Nem sikerült betölteni a leckéket",
+  "callLockReleaseHint": "Nyomd hosszan a feloldáshoz",
+  "callLockA11y": "Képernyő zárolása",
+  "callUnlockA11y": "Feloldás"
 }

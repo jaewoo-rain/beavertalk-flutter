@@ -881,5 +881,15 @@
   "wsRetryListSub": "Бул сабакта 2 же андан көп жолу жаңылган тыбыштар",
   "wsRetryListSubWithCall": "«{title}» чалуусунда 2 же андан көп жолу жаңылган тыбыштар",
   "wsRetryListAllDone": "Бардык тыбыштар боюнча көнүгүү бүттү",
-  "wsRetryBackToReport": "Отчетко кайтуу"
+  "wsRetryBackToReport": "Отчетко кайтуу",
+  "callHintTabConversation": "Бул маек",
+  "callHintTabLessons": "Сабактардын тизмеси",
+  "callHintSituation": "Кырдаал",
+  "callHintPartner": "Маектеш",
+  "callHintNowBadge": "Азыр",
+  "callHintLevelSurvival": "Жашоо үчүн корей тили",
+  "callHintLessonsLoadError": "Сабактар жүктөлгөн жок",
+  "callLockReleaseHint": "Кулпуну ачуу үчүн басып туруңуз",
+  "callLockA11y": "Экранды кулпулоо",
+  "callUnlockA11y": "Кулпуну ачуу"
 }

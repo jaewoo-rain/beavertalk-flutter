@@ -2965,4 +2965,34 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get wsRetryBackToReport => 'رپورٹ پر واپس جائیں';
+
+  @override
+  String get callHintTabConversation => 'یہ گفتگو';
+
+  @override
+  String get callHintTabLessons => 'اسباق کی فہرست';
+
+  @override
+  String get callHintSituation => 'صورتِ حال';
+
+  @override
+  String get callHintPartner => 'مخاطب';
+
+  @override
+  String get callHintNowBadge => 'ابھی';
+
+  @override
+  String get callHintLevelSurvival => 'بنیادی بقا کی کوریائی';
+
+  @override
+  String get callHintLessonsLoadError => 'اسباق لوڈ نہیں ہو سکے';
+
+  @override
+  String get callLockReleaseHint => 'کھولنے کے لیے دبا کر رکھیں';
+
+  @override
+  String get callLockA11y => 'اسکرین لاک کریں';
+
+  @override
+  String get callUnlockA11y => 'لاک کھولیں';
 }

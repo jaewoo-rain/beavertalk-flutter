@@ -881,5 +881,15 @@
   "wsRetryListSub": "Suoni sbagliati 2 o più volte in questa sessione",
   "wsRetryListSubWithCall": "Suoni sbagliati 2 o più volte nella chiamata «{title}»",
   "wsRetryListAllDone": "Ti sei esercitato su tutti i suoni",
-  "wsRetryBackToReport": "Torna al report"
+  "wsRetryBackToReport": "Torna al report",
+  "callHintTabConversation": "Questa conversazione",
+  "callHintTabLessons": "Lezioni",
+  "callHintSituation": "Situazione",
+  "callHintPartner": "Interlocutore",
+  "callHintNowBadge": "Ora",
+  "callHintLevelSurvival": "Coreano di sopravvivenza",
+  "callHintLessonsLoadError": "Impossibile caricare le lezioni",
+  "callLockReleaseHint": "Tieni premuto per sbloccare",
+  "callLockA11y": "Blocca schermo",
+  "callUnlockA11y": "Sblocca"
 }

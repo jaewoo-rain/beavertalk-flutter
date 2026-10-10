@@ -2868,4 +2868,34 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get wsRetryBackToReport => '返回报告';
+
+  @override
+  String get callHintTabConversation => '本次对话';
+
+  @override
+  String get callHintTabLessons => '课程列表';
+
+  @override
+  String get callHintSituation => '情景';
+
+  @override
+  String get callHintPartner => '对方';
+
+  @override
+  String get callHintNowBadge => '当前对话';
+
+  @override
+  String get callHintLevelSurvival => '生存会话';
+
+  @override
+  String get callHintLessonsLoadError => '无法加载课程列表';
+
+  @override
+  String get callLockReleaseHint => '长按解锁';
+
+  @override
+  String get callLockA11y => '锁定屏幕';
+
+  @override
+  String get callUnlockA11y => '解锁';
 }

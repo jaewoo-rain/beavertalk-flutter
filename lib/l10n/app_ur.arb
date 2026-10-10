@@ -881,5 +881,15 @@
   "wsRetryListSub": "اس سیشن میں 2 یا زیادہ بار غلط ہونے والی آوازیں",
   "wsRetryListSubWithCall": "“{title}” کال میں 2 یا زیادہ بار غلط ہونے والی آوازیں",
   "wsRetryListAllDone": "آپ نے سب آوازوں کی مشق کر لی",
-  "wsRetryBackToReport": "رپورٹ پر واپس جائیں"
+  "wsRetryBackToReport": "رپورٹ پر واپس جائیں",
+  "callHintTabConversation": "یہ گفتگو",
+  "callHintTabLessons": "اسباق کی فہرست",
+  "callHintSituation": "صورتِ حال",
+  "callHintPartner": "مخاطب",
+  "callHintNowBadge": "ابھی",
+  "callHintLevelSurvival": "بنیادی بقا کی کوریائی",
+  "callHintLessonsLoadError": "اسباق لوڈ نہیں ہو سکے",
+  "callLockReleaseHint": "کھولنے کے لیے دبا کر رکھیں",
+  "callLockA11y": "اسکرین لاک کریں",
+  "callUnlockA11y": "لاک کھولیں"
 }

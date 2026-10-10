@@ -881,5 +881,15 @@
   "wsRetryListSub": "Bu darsda 2 va undan koʻp marta xato qilgan tovushlar",
   "wsRetryListSubWithCall": "“{title}” qoʻngʻirogʻida 2 va undan koʻp marta xato qilgan tovushlar",
   "wsRetryListAllDone": "Barcha tovushlarni mashq qildingiz",
-  "wsRetryBackToReport": "Hisobotga qaytish"
+  "wsRetryBackToReport": "Hisobotga qaytish",
+  "callHintTabConversation": "Bu suhbat",
+  "callHintTabLessons": "Darslar ro'yxati",
+  "callHintSituation": "Vaziyat",
+  "callHintPartner": "Suhbatdosh",
+  "callHintNowBadge": "Hozir",
+  "callHintLevelSurvival": "Omon qolish uchun koreys tili",
+  "callHintLessonsLoadError": "Darslarni yuklab bo'lmadi",
+  "callLockReleaseHint": "Qulfni ochish uchun bosib turing",
+  "callLockA11y": "Ekranni qulflash",
+  "callUnlockA11y": "Qulfni ochish"
 }

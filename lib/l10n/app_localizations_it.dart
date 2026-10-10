@@ -3000,4 +3000,34 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get wsRetryBackToReport => 'Torna al report';
+
+  @override
+  String get callHintTabConversation => 'Questa conversazione';
+
+  @override
+  String get callHintTabLessons => 'Lezioni';
+
+  @override
+  String get callHintSituation => 'Situazione';
+
+  @override
+  String get callHintPartner => 'Interlocutore';
+
+  @override
+  String get callHintNowBadge => 'Ora';
+
+  @override
+  String get callHintLevelSurvival => 'Coreano di sopravvivenza';
+
+  @override
+  String get callHintLessonsLoadError => 'Impossibile caricare le lezioni';
+
+  @override
+  String get callLockReleaseHint => 'Tieni premuto per sbloccare';
+
+  @override
+  String get callLockA11y => 'Blocca schermo';
+
+  @override
+  String get callUnlockA11y => 'Sblocca';
 }

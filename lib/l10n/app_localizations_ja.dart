@@ -2877,4 +2877,34 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get wsRetryBackToReport => 'レポートに戻る';
+
+  @override
+  String get callHintTabConversation => '今回の会話';
+
+  @override
+  String get callHintTabLessons => 'レッスン一覧';
+
+  @override
+  String get callHintSituation => '状況';
+
+  @override
+  String get callHintPartner => '相手';
+
+  @override
+  String get callHintNowBadge => '今の会話';
+
+  @override
+  String get callHintLevelSurvival => 'サバイバル会話';
+
+  @override
+  String get callHintLessonsLoadError => 'レッスン一覧を読み込めませんでした';
+
+  @override
+  String get callLockReleaseHint => '長押しでロック解除';
+
+  @override
+  String get callLockA11y => '画面ロック';
+
+  @override
+  String get callUnlockA11y => 'ロック解除';
 }

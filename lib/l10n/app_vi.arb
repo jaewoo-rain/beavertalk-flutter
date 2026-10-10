@@ -881,5 +881,15 @@
   "wsRetryListSub": "Các âm bạn sai từ 2 lần trở lên trong buổi học này",
   "wsRetryListSubWithCall": "Các âm bạn sai từ 2 lần trở lên trong cuộc gọi “{title}”",
   "wsRetryListAllDone": "Bạn đã luyện tất cả các âm",
-  "wsRetryBackToReport": "Quay lại báo cáo"
+  "wsRetryBackToReport": "Quay lại báo cáo",
+  "callHintTabConversation": "Cuộc hội thoại này",
+  "callHintTabLessons": "Danh sách bài học",
+  "callHintSituation": "Tình huống",
+  "callHintPartner": "Đối phương",
+  "callHintNowBadge": "Đang học",
+  "callHintLevelSurvival": "Hội thoại sinh tồn",
+  "callHintLessonsLoadError": "Không tải được danh sách bài học",
+  "callLockReleaseHint": "Nhấn giữ để mở khóa",
+  "callLockA11y": "Khóa màn hình",
+  "callUnlockA11y": "Mở khóa"
 }

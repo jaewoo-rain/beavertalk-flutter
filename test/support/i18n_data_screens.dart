@@ -25,6 +25,7 @@ import 'package:beavertalk/features/classroom/domain/entities/classroom_membersh
 import 'package:beavertalk/features/classroom/presentation/classroom_providers.dart';
 import 'package:beavertalk/features/classroom/presentation/join_draft_provider.dart';
 import 'package:beavertalk/features/normalcall/domain/entities/call_result.dart';
+import 'package:beavertalk/components/organisms/bottom_sheet_call_lesson_hint.dart';
 import 'package:beavertalk/features/normalcall/domain/entities/cur_me.dart';
 import 'package:beavertalk/features/normalcall/domain/entities/pron_summary.dart';
 import 'package:beavertalk/features/normalcall/presentation/normalcall_providers.dart';
@@ -332,7 +333,39 @@ Map<String, Widget Function()> i18nDataScreens() => {
             overrides: [myAssignmentsProvider.overrideWith((ref) async => _assignments)],
             child: const AssignmentListScreen(),
           ),
+
+      // 회화학습 힌트 시트(`BottomSheet/CallLessonHint` · 10-10) — 긴 상황·상대역 번역 · 두 줄 차시.
+      'CallLessonHintConversation': () => _lessonHintHost(tab: 0),
+      'CallLessonHintLessons': () => _lessonHintHost(tab: 1),
     };
+
+Widget _lessonHintHost({required int tab}) => Scaffold(
+      body: Align(
+        alignment: Alignment.bottomCenter,
+        child: BottomSheetCallLessonHint(
+          initialTab: tab,
+          situation: '처음 만난 반 친구와 이름과 출신 나라를 묻고 답하기',
+          situationTranslation:
+              'Fragen und Antworten zu Namen und Herkunftsland mit einem neuen Klassenkameraden',
+          partner: '한국어 수업에서 처음 만난 반 친구',
+          partnerTranslation: 'Ein Klassenkamerad, den du gerade im Koreanischkurs kennengelernt hast',
+          partnerImage: null,
+          levelNo: 2,
+          currentNo: 5,
+          lessons: [
+            for (var no = 4; no <= 12; no++)
+              CurLessonRow(
+                no: no,
+                code: 'A1-T01-$no',
+                levelNo: 2,
+                situation: no == 5
+                    ? '식당에서 메뉴를 고르고 매운 정도를 물어보며 주문하기'
+                    : '상황 $no',
+              ),
+          ],
+        ),
+      ),
+    );
 
 /// 결제 내역 한 쪽 — 이번 달 · 지난달 · 날짜 없음.
 final _paymentPage = PaymentPage(

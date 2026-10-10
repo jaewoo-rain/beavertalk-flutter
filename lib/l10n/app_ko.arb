@@ -881,5 +881,15 @@
   "wsRetryListSub": "이번 학습에서 2번 이상 틀린 소리예요",
   "wsRetryListSubWithCall": "{title} 통화에서 2번 이상 틀린 소리예요",
   "wsRetryListAllDone": "모은 소리를 모두 연습했어요",
-  "wsRetryBackToReport": "리포트로 돌아가기"
+  "wsRetryBackToReport": "리포트로 돌아가기",
+  "callHintTabConversation": "이번 대화",
+  "callHintTabLessons": "차시 목록",
+  "callHintSituation": "상황",
+  "callHintPartner": "상대",
+  "callHintNowBadge": "지금 대화",
+  "callHintLevelSurvival": "생존회화",
+  "callHintLessonsLoadError": "차시 목록을 불러오지 못했어요",
+  "callLockReleaseHint": "길게 누르면 잠금이 풀려요",
+  "callLockA11y": "화면 잠금",
+  "callUnlockA11y": "잠금 해제"
 }

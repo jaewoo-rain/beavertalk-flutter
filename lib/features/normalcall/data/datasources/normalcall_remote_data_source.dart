@@ -128,6 +128,18 @@ class NormalcallRemoteDataSource {
     return CurMe.fromJson(res.data ?? const {});
   }
 
+  /// `GET /cur/lessons?level=` — 그 레벨 차시 목록(no 순). 회화학습 힌트 시트 「차시 목록」.
+  Future<List<CurLessonRow>> getCurLessons({int? level}) async {
+    final res = await _dio.get<List<dynamic>>(
+      ApiEndpoints.curLessons,
+      queryParameters: {'level': ?level},
+    );
+    return [
+      for (final r in res.data ?? const [])
+        if (r is Map<String, dynamic>) CurLessonRow.fromJson(r),
+    ];
+  }
+
   /// `POST /__dev/cur-reset` — 내 커리큘럼 2단계 진도 백지화(dev 도구).
   ///
   /// ⚠ **루트 경로**다. `/api/v1` 아래가 아니라 `Env.apiRootUrl` 로 절대 URL 을 만들어

@@ -2960,4 +2960,34 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get wsRetryBackToReport => 'Quay lại báo cáo';
+
+  @override
+  String get callHintTabConversation => 'Cuộc hội thoại này';
+
+  @override
+  String get callHintTabLessons => 'Danh sách bài học';
+
+  @override
+  String get callHintSituation => 'Tình huống';
+
+  @override
+  String get callHintPartner => 'Đối phương';
+
+  @override
+  String get callHintNowBadge => 'Đang học';
+
+  @override
+  String get callHintLevelSurvival => 'Hội thoại sinh tồn';
+
+  @override
+  String get callHintLessonsLoadError => 'Không tải được danh sách bài học';
+
+  @override
+  String get callLockReleaseHint => 'Nhấn giữ để mở khóa';
+
+  @override
+  String get callLockA11y => 'Khóa màn hình';
+
+  @override
+  String get callUnlockA11y => 'Mở khóa';
 }

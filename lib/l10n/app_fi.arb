@@ -881,5 +881,15 @@
   "wsRetryListSub": "Äänteet, jotka menivät väärin vähintään 2 kertaa tällä kerralla",
   "wsRetryListSubWithCall": "Äänteet, jotka menivät väärin vähintään 2 kertaa puhelussa ”{title}”",
   "wsRetryListAllDone": "Harjoittelit kaikki äänteet",
-  "wsRetryBackToReport": "Takaisin raporttiin"
+  "wsRetryBackToReport": "Takaisin raporttiin",
+  "callHintTabConversation": "Tämä keskustelu",
+  "callHintTabLessons": "Oppitunnit",
+  "callHintSituation": "Tilanne",
+  "callHintPartner": "Keskustelukumppani",
+  "callHintNowBadge": "Nyt",
+  "callHintLevelSurvival": "Selviytymiskorea",
+  "callHintLessonsLoadError": "Oppitunteja ei voitu ladata",
+  "callLockReleaseHint": "Avaa lukitus painamalla pitkään",
+  "callLockA11y": "Lukitse näyttö",
+  "callUnlockA11y": "Avaa lukitus"
 }

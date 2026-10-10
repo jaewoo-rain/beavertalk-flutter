@@ -881,5 +881,15 @@
   "wsRetryListSub": "本次学习中出错两次及以上的发音",
   "wsRetryListSubWithCall": "在“{title}”通话中出错两次及以上的发音",
   "wsRetryListAllDone": "已练习完所有收集的发音",
-  "wsRetryBackToReport": "返回报告"
+  "wsRetryBackToReport": "返回报告",
+  "callHintTabConversation": "本次对话",
+  "callHintTabLessons": "课程列表",
+  "callHintSituation": "情景",
+  "callHintPartner": "对方",
+  "callHintNowBadge": "当前对话",
+  "callHintLevelSurvival": "生存会话",
+  "callHintLessonsLoadError": "无法加载课程列表",
+  "callLockReleaseHint": "长按解锁",
+  "callLockA11y": "锁定屏幕",
+  "callUnlockA11y": "解锁"
 }

@@ -881,5 +881,15 @@
   "wsRetryListSub": "Звуки, в которых вы ошиблись 2 раза и больше в этом занятии",
   "wsRetryListSubWithCall": "Звуки, в которых вы ошиблись 2 раза и больше в звонке «{title}»",
   "wsRetryListAllDone": "Вы отработали все звуки",
-  "wsRetryBackToReport": "Назад к отчёту"
+  "wsRetryBackToReport": "Назад к отчёту",
+  "callHintTabConversation": "Этот разговор",
+  "callHintTabLessons": "Уроки",
+  "callHintSituation": "Ситуация",
+  "callHintPartner": "Собеседник",
+  "callHintNowBadge": "Сейчас",
+  "callHintLevelSurvival": "Корейский для выживания",
+  "callHintLessonsLoadError": "Не удалось загрузить уроки",
+  "callLockReleaseHint": "Нажмите и удерживайте, чтобы разблокировать",
+  "callLockA11y": "Заблокировать экран",
+  "callUnlockA11y": "Разблокировать"
 }

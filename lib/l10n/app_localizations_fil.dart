@@ -2995,4 +2995,34 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get wsRetryBackToReport => 'Bumalik sa ulat';
+
+  @override
+  String get callHintTabConversation => 'Ang usapang ito';
+
+  @override
+  String get callHintTabLessons => 'Listahan ng aralin';
+
+  @override
+  String get callHintSituation => 'Sitwasyon';
+
+  @override
+  String get callHintPartner => 'Kausap';
+
+  @override
+  String get callHintNowBadge => 'Ngayon';
+
+  @override
+  String get callHintLevelSurvival => 'Survival Korean';
+
+  @override
+  String get callHintLessonsLoadError => 'Hindi ma-load ang mga aralin';
+
+  @override
+  String get callLockReleaseHint => 'Pindutin nang matagal para i-unlock';
+
+  @override
+  String get callLockA11y => 'I-lock ang screen';
+
+  @override
+  String get callUnlockA11y => 'I-unlock';
 }

@@ -881,5 +881,15 @@
   "wsRetryListSub": "এই সেশনে ২ বা তার বেশি বার ভুল হওয়া ধ্বনি",
   "wsRetryListSubWithCall": "“{title}” কলে ২ বা তার বেশি বার ভুল হওয়া ধ্বনি",
   "wsRetryListAllDone": "আপনি সব ধ্বনি অনুশীলন করেছেন",
-  "wsRetryBackToReport": "রিপোর্টে ফিরে যান"
+  "wsRetryBackToReport": "রিপোর্টে ফিরে যান",
+  "callHintTabConversation": "এই কথোপকথন",
+  "callHintTabLessons": "পাঠের তালিকা",
+  "callHintSituation": "পরিস্থিতি",
+  "callHintPartner": "অপর পক্ষ",
+  "callHintNowBadge": "এখন",
+  "callHintLevelSurvival": "সারভাইভাল কোরিয়ান",
+  "callHintLessonsLoadError": "পাঠগুলো লোড করা যায়নি",
+  "callLockReleaseHint": "আনলক করতে চেপে ধরে রাখুন",
+  "callLockA11y": "স্ক্রিন লক করুন",
+  "callUnlockA11y": "আনলক করুন"
 }

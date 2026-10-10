@@ -19,9 +19,12 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:beavertalk/components/molecules/hint_card.dart';
 import 'package:beavertalk/components/molecules/tooltip_bubble.dart';
+import 'package:beavertalk/components/organisms/bottom_sheet_call_lesson_hint.dart';
 import 'package:beavertalk/features/normalcall/domain/entities/call_course.dart';
 import 'package:beavertalk/features/normalcall/domain/entities/call_hint.dart';
+import 'package:beavertalk/features/normalcall/domain/entities/cur_me.dart';
 import 'package:beavertalk/features/normalcall/presentation/normalcall_controller.dart';
+import 'package:beavertalk/features/normalcall/presentation/normalcall_providers.dart';
 import 'package:beavertalk/features/subscription/domain/entities/subscription_state.dart';
 import 'package:beavertalk/features/subscription/domain/subscription_status_resolver.dart';
 import 'package:beavertalk/features/subscription/presentation/providers/subscription_state_providers.dart';
@@ -63,6 +66,7 @@ const _dwell = Duration(milliseconds: 2500);
 Future<_StubCallController> _pump(
   WidgetTester tester, {
   CallCourse? course,
+  bool partner = true,
 }) async {
   tester.view.physicalSize = const Size(375, 812);
   tester.view.devicePixelRatio = 1.0;
@@ -81,6 +85,24 @@ Future<_StubCallController> _pump(
       overrides: [
         normalCallControllerProvider.overrideWith(() => controller),
         subscriptionStatusProvider.overrideWithValue(_max),
+        // 회화학습 힌트 시트가 읽는 서버 값(구서버면 partner 키가 없다).
+        curMeProvider.overrideWith((ref) async => CurMe.fromJson({
+              'lesson': {
+                'no': 5,
+                'code': 'A1-T01-2',
+                'level_no': 2,
+                'situation': '처음 만난 반 친구와 이름을 묻고 답하기',
+                'situation_translation': 'Ask and answer names with a new classmate',
+                if (partner) 'partner': '한국어 수업에서 처음 만난 반 친구',
+                if (partner)
+                  'partner_translation': 'A classmate you just met in Korean class',
+              },
+              'status': 'expression_done',
+            })),
+        curLessonsProvider.overrideWith((ref, level) async => [
+              for (var no = 4; no <= 7; no++)
+                CurLessonRow(no: no, code: 'A1-T01-$no', levelNo: level, situation: '상황 $no'),
+            ]),
       ],
       child: MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -107,6 +129,12 @@ Finder get _bubble => find.byType(TooltipBubble);
 Future<void> _settle(WidgetTester tester) async {
   await tester.pump();
   await tester.pump(AppMotion.page + const Duration(milliseconds: 16));
+}
+
+/// 시트 등장 모션(≈300ms)을 흘린다 — 통화 화면은 음성 막대가 계속 돌아 `pumpAndSettle` 이 끝나지 않는다.
+Future<void> _flush(WidgetTester tester) async {
+  await tester.pump();
+  await tester.pump(const Duration(milliseconds: 500));
 }
 
 void main() {
@@ -189,19 +217,45 @@ void main() {
     expect(_bubble, findsOneWidget);
   });
 
-  testWidgets('⭐ course=freetalk — 일반 통화와 **같이** 힌트 토글·카드가 있고 말풍선은 없다',
+  testWidgets('⭐ course=freetalk(회화학습) — 힌트 카드 없이 버튼이 시트를 연다',
       (tester) async {
-    // 처음 판(11c420b)은 여기서 findsNothing 이었다. 사장님이 뒤집으셨다.
+    // 09-12 「프리토킹엔 힌트 카드」 → 10-10 사용자 「회화학습에서는 시트만 띄우자」로 바뀌었다
+    // (디자인 `BottomSheet/CallLessonHint` · PM-DEC-485).
     final controller = await _pump(tester, course: CallCourse.freetalk);
 
-    expect(_hintToggle, findsOneWidget, reason: '프리토킹엔 힌트가 보여야 한다');
-    expect(find.byType(HintCard), findsOneWidget);
+    expect(_hintToggle, findsOneWidget, reason: '버튼은 그대로 있다');
+    expect(find.byType(HintCard), findsNothing,
+        reason: '힌트가 와 있고 토글이 켜져 있어도 회화학습은 카드를 안 그린다');
     expect(_subtitleToggle, findsOneWidget);
 
     await tester.tap(_hintToggle);
-    await _settle(tester);
-    expect(_bubble, findsNothing, reason: '프리토킹의 힌트 버튼은 평소대로 토글이다');
-    expect(controller.hintOnCalls, [false]);
+    await _flush(tester);
+    expect(find.byType(BottomSheetCallLessonHint), findsOneWidget);
+    expect(_bubble, findsNothing);
+    expect(controller.hintOnCalls, isEmpty, reason: '시트를 여는 버튼이지 토글이 아니다');
+
+    // 「이번 대화」 — 상황·번역·상대역·번역이 /cur/me 값 그대로.
+    expect(find.text('처음 만난 반 친구와 이름을 묻고 답하기'), findsOneWidget);
+    expect(find.text('Ask and answer names with a new classmate'), findsOneWidget);
+    expect(find.text('한국어 수업에서 처음 만난 반 친구'), findsOneWidget);
+    expect(find.text('A classmate you just met in Korean class'), findsOneWidget);
+
+    // 「차시 목록」 — 레벨명 A1(level_no 2) · 현재 차시만 「지금 대화」.
+    final l10n = AppLocalizations.of(tester.element(find.byType(BottomSheetCallLessonHint)));
+    await tester.tap(find.text(l10n.callHintTabLessons));
+    await _flush(tester);
+    expect(find.text('A1'), findsOneWidget);
+    expect(find.text('5'), findsOneWidget, reason: '번호는 DB cur_lesson.no 그대로');
+    expect(find.text(l10n.callHintNowBadge), findsOneWidget);
+  });
+
+  testWidgets('course=freetalk · 구서버(partner 없음) — 상대 줄을 숨긴다', (tester) async {
+    await _pump(tester, course: CallCourse.freetalk, partner: false);
+    await tester.tap(_hintToggle);
+    await _flush(tester);
+    final l10n = AppLocalizations.of(tester.element(find.byType(BottomSheetCallLessonHint)));
+    expect(find.text('처음 만난 반 친구와 이름을 묻고 답하기'), findsOneWidget);
+    expect(find.text(l10n.callHintPartner), findsNothing);
   });
 
   testWidgets('course=auto(call_started 전) — 가리지 않는다. 깜빡임 방지', (tester) async {

@@ -881,5 +881,15 @@
   "wsRetryListSub": "Энэ хичээлд 2 ба түүнээс олон удаа алдсан авиа",
   "wsRetryListSubWithCall": "“{title}” дуудлагад 2 ба түүнээс олон удаа алдсан авиа",
   "wsRetryListAllDone": "Бүх авиагаа дадлагажлаа",
-  "wsRetryBackToReport": "Тайлан руу буцах"
+  "wsRetryBackToReport": "Тайлан руу буцах",
+  "callHintTabConversation": "Энэ харилцан яриа",
+  "callHintTabLessons": "Хичээлийн жагсаалт",
+  "callHintSituation": "Нөхцөл байдал",
+  "callHintPartner": "Харилцагч",
+  "callHintNowBadge": "Одоо",
+  "callHintLevelSurvival": "Амьдралын солонгос хэл",
+  "callHintLessonsLoadError": "Хичээлүүдийг ачаалж чадсангүй",
+  "callLockReleaseHint": "Түгжээг тайлахын тулд удаан дарна уу",
+  "callLockA11y": "Дэлгэц түгжих",
+  "callUnlockA11y": "Түгжээ тайлах"
 }

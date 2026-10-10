@@ -2994,4 +2994,34 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get wsRetryBackToReport => 'Voltar ao relatório';
+
+  @override
+  String get callHintTabConversation => 'Esta conversa';
+
+  @override
+  String get callHintTabLessons => 'Lições';
+
+  @override
+  String get callHintSituation => 'Situação';
+
+  @override
+  String get callHintPartner => 'Interlocutor';
+
+  @override
+  String get callHintNowBadge => 'Agora';
+
+  @override
+  String get callHintLevelSurvival => 'Coreano de sobrevivência';
+
+  @override
+  String get callHintLessonsLoadError => 'Não foi possível carregar as lições';
+
+  @override
+  String get callLockReleaseHint => 'Toque e segure para desbloquear';
+
+  @override
+  String get callLockA11y => 'Bloquear tela';
+
+  @override
+  String get callUnlockA11y => 'Desbloquear';
 }
