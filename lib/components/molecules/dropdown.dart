@@ -285,7 +285,9 @@ class _DropdownState<T> extends State<Dropdown<T>> {
             Expanded(
               child: Text(
                 _selected?.label ?? widget.hintText ?? '',
-                maxLines: 1,
+                // 고른 값(언어 이름 등)은 식별자다. 잘리면 무엇을 골랐는지
+                // 모른다 — 상자는 패딩으로 크므로 두 줄이 들어간다.
+                maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: labelStyle,
               ),
@@ -396,7 +398,8 @@ class _OptionPanelState<T> extends State<_OptionPanel<T>> {
             behavior: HitTestBehavior.opaque,
             onTap: () => widget.onSelect(item),
             child: Container(
-              height: spec.rowHeight,
+              // 높이 하한. 항목 이름이 두 줄이 되면 고정 높이가 둘째 줄을 먹는다.
+              constraints: BoxConstraints(minHeight: spec.rowHeight),
               alignment: AlignmentDirectional.centerStart,
               padding: EdgeInsets.symmetric(horizontal: spec.padH),
               decoration: BoxDecoration(
@@ -408,7 +411,7 @@ class _OptionPanelState<T> extends State<_OptionPanel<T>> {
               ),
               child: Text(
                 item.label,
-                maxLines: 1,
+                maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: style,
               ),

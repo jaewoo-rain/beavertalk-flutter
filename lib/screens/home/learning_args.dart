@@ -15,6 +15,27 @@ enum LearningOrigin {
   /// the session ends on the sentence result (`learning_main__word`,
   /// [Routes.learningSentenceMain]).
   sentence,
+
+  /// 숙제 상세의 발음 과제. 문장은 통화가 아니라 **과제 출제 스냅샷**에서 온다.
+  ///
+  /// 셋이 다르다.
+  /// - 채점 경로 — 과제 전용 무상태 엔드포인트를 쓴다. 통화 발화가 아니라
+  ///   `sentence` 행이 없고, 그 행은 `call_id` 가 NOT NULL 이라 만들 수도 없다.
+  /// - 북마크 — 끈다. 문장 id 가 아니라 학습 항목 id 라 그대로 누르면 **남의
+  ///   문장 id 로 서버를 때린다.**
+  /// - 끝난 뒤 — 결과 화면으로 가지 않고 숙제 상세로 돌아온다. 거기 과제 카드가
+  ///   방금 친 결과를 보여준다.
+  assignment,
+}
+
+/// 이 발음 시도가 **통화 기록의 점수**(분석 게이지 · 서버 문장 공식점수)에 들어가나.
+///
+/// 「발음 학습하기」(callReview)만 들어간다. 문장 하나 연습(「새로 배운 표현」 카드 · 보관함의
+/// 연습하기)은 연습 모드라 안 들어가고, 과제는 과제 카드가 따로 센다(09-24 사장님 「문장만 단일
+/// 발음하면 conversation record 의 score 에는 반영되어서는 안돼」). 서버 `apply_score` 와 앱 게이지가
+/// **같은 규칙**을 쓰도록 여기 하나로 둔다 — 둘이 갈리면 서버 평균과 화면 게이지가 어긋난다.
+extension LearningOriginScore on LearningOrigin {
+  bool get countsTowardCallScore => this == LearningOrigin.callReview;
 }
 
 /// Navigation payload shared across the learning flow
@@ -39,6 +60,8 @@ class LearningArgs {
     this.recordedWav,
     this.origin = LearningOrigin.sentence,
     this.callId,
+    this.assignmentId,
+    this.callTitle,
   });
 
   /// The sentence sequence for this session (1+ items).
@@ -66,6 +89,17 @@ class LearningArgs {
   /// (연습하기) origin. Like [origin], it must survive the whole sequence —
   /// it is only read at the end.
   final int? callId;
+
+  /// 이 세션이 수행하는 과제 id — [LearningOrigin.assignment] 일 때만 있다.
+  ///
+  /// [origin] 과 같은 이유로 세션 끝까지 살아 있어야 한다. 마지막 문장에서
+  /// 제출할 때 읽는다.
+  final int? assignmentId;
+
+  /// 이 복습이 속한 통화의 제목(통화 요약) — 「자주 틀린 소리」 목록 부제에 쓴다
+  /// (A5 · Figma `6564:15466` 「{제목} 통화에서 2번 이상 틀린 소리예요」). 없으면 null →
+  /// 제목 없는 부제. [callId] 처럼 세션 끝까지 살아 있어야 한다.
+  final String? callTitle;
 
   /// Scored feedback for the current sentence's latest attempt, or null before
   /// the user has recorded.
@@ -96,6 +130,8 @@ class LearningArgs {
         index: index + 1,
         origin: origin,
         callId: callId,
+        assignmentId: assignmentId,
+        callTitle: callTitle,
       );
 
   /// A copy carrying the freshly-scored [feedback] and [recordedWav].
@@ -107,5 +143,7 @@ class LearningArgs {
         recordedWav: recordedWav,
         origin: origin,
         callId: callId,
+        assignmentId: assignmentId,
+        callTitle: callTitle,
       );
 }

@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'dart:ui' show ImageFilter;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +8,7 @@ import '../../../theme/app_typography.dart';
 import '../domain/challenge_card.dart';
 import '../domain/challenge_engine.dart';
 import '../domain/game_config.dart';
+import '../domain/word_layout.dart';
 
 /// Renders the Pronunciation Challenge simulation into a `1080×1920` space.
 ///
@@ -14,8 +16,11 @@ import '../domain/game_config.dart';
 /// (`size.width / 1080`), so every draw call below keeps the web game's verbatim
 /// constants. Hosted inside an `AspectRatio(9/16)` so width/height stay in sync.
 ///
-/// Draw order mirrors the web game `render()` (lines 576–586):
-/// bg → belt → zone → non-live cards → live cards → flash → HUD → hit-texts.
+/// **원근 터널 판 (정본 시안 2026-08-31).** Words do not slide sideways on a
+/// belt and there are no wooden planks — a word is white text with a thick
+/// outline that grows out of the vanishing point straight at the viewer. Draw
+/// order mirrors the web game `render()` (lines 1245–1258): camera → tunnel →
+/// gate → dying words → live words (far first) → flash → HUD → hit-texts.
 class ChallengePainter extends CustomPainter {
   /// Creates the painter, repainting whenever [engine]'s controller notifies.
   ChallengePainter({
@@ -40,18 +45,6 @@ class ChallengePainter extends CustomPainter {
   /// Read on every frame so the gauge tracks without rebuilding the painter.
   final ValueListenable<double>? micLevel;
 
-  /// Card-colour palette (web game `CARD_COLORS`, line 212). Indexed by
-  /// [ChallengeCard.colorIndex]. Length must equal
-  /// `CuratedWordSource.paletteSize`.
-  static const List<Color> cardColors = <Color>[
-    Color(0xFFE4572E),
-    Color(0xFF2E86E4),
-    Color(0xFF00FFB2),
-    Color(0xFFE4B72E),
-    Color(0xFFB04FE6),
-    Color(0xFFE64F92),
-  ];
-
   /// `Primary/Normal` for the current mode, handed in by the widget — a
   /// painter has no context, and a `static` could only ever hold one mode.
   final Color _mint;
@@ -59,34 +52,46 @@ class ChallengePainter extends CustomPainter {
   /// `Background/Normal/Normal` for the current mode — the game canvas fill.
   final Color _background;
 
-  /// Per-word cache of the (outline, fill) layers — avoids re-layout each frame.
+  /// Cache of the (outline, fill) text layers, keyed by word, quantised font
+  /// size and outline colour.
+  ///
+  /// The tunnel scales text continuously, so this is bucketed rather than
+  /// one-entry-per-word: an unbucketed cache would grow without bound, and
+  /// laying the text out every frame would show up on a low-end device.
   static final Map<String, (TextPainter, TextPainter)> _wordCache =
       <String, (TextPainter, TextPainter)>{};
 
-  /// In-plane twist about the Z axis (radians) — the diagonal slant of the
-  /// floating sentence. Negative = counter-clockwise (reads upward to the
-  /// right). Flat rotation only (no 3D fold), per the chosen design.
-  static const double _kTextTilt = -0.38;
+  /// Font-size bucket (design px) for [_wordCache]. 6px steps are below the
+  /// eye's threshold at these sizes.
+  static const double _kSizeBucket = 6;
 
-  /// Wrap width (design px): the sentence lays out across multiple lines at this
-  /// width instead of shrinking onto one line, so long text stays readable.
-  static const double _kWrapWidth = 360;
+  /// Hard cap on [_wordCache] entries, cleared wholesale when exceeded.
+  ///
+  /// A passing word keeps growing (`k` accelerates past the viewer), so its
+  /// font size runs well past the judgment-point 190 and mints a fresh bucket
+  /// every 6px on the way out. Without this cap a 30s session leaves behind
+  /// four figures' worth of laid-out paragraphs — the exact shape of the
+  /// out-of-memory failure this game already hit once on the low-end device.
+  static const int _kWordCacheMax = 192;
 
-  /// Caps on the wrapped text block; only if it exceeds these does it scale down
-  /// (a very long sentence with many lines), so it never overruns the belt.
-  static const double _kMaxTextWidth = 360;
-  static const double _kMaxTextHeight = 470;
+  /// Above this size a word is on its way out of frame and no longer read, so
+  /// it reuses the judgment-point layout scaled by the canvas instead of
+  /// laying out a new one.
+  static const double _kMaxCachedSize = GameConfig.wordSizeNear;
 
-  /// Design-space font size of the floating card text.
-  static const double _kTextFontSize = 62;
+  /// Word fill / outline colours (web `WORD_FILL` … `WORD_MISS`, lines 350–353).
+  static const Color _kWordFill = Color(0xFFFFFFFF); // Static/White
+  static const Color _kWordOutline = Color(0xFF0B0F14); // Background/Normal/Deep
+  static const Color _kWordLate = Color(0xFFFFB548); // Status/Cautionary-Surface
+  static const Color _kWordMiss = Color(0xFFFF7070); // Status/Negative
 
-  /// Outline (stroke) width around the floating white text — keeps it legible
-  /// over the camera selfie / belt regardless of what's behind it.
-  static const double _kTextOutline = 11;
+  /// Opacity of a word at [GameConfig.kSpawn], ramping to 1 at the judgment
+  /// point. The design samples it at 50% / 72% / 100%.
+  static const double _kFarAlpha = 0.5;
 
-  /// Fill + outline colours for the floating text (design A: white on dark).
-  static const Color _kTextFill = Color(0xFFFFFFFF);
-  static const Color _kTextOutlineColor = Color(0xFF0C0F14);
+  /// Tunnel wedge / rail spread at the bottom edge (web lines 1116–1124).
+  static const double _kRailLeft = -160;
+  static const double _kRailRight = 1240;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -94,23 +99,41 @@ class ChallengePainter extends CustomPainter {
     canvas.scale(size.width / GameConfig.w); // design space → widget space
 
     _drawBackground(canvas);
-    _drawBelt(canvas);
-    final listening =
-        engine.running && engine.frontmostInZoneCard() != null;
-    _drawZone(canvas, listening);
-    for (final c in engine.cards) {
-      if (c.state != CardState.live) _drawCard(canvas, c);
+    // 화면 흔들림(웹 `render`) — 통과 살짝 · 미스·5콤보 크게. 진폭은 제곱으로 줄어 끝이 부드럽다.
+    // 캔버스 장면만 흔든다 — 뒤로·타이머·점수·2행 HUD 는 위젯이라 그대로다(요청서 §4.4).
+    // 배경은 흔들기 전에 깐다 — 같이 흔들면 가장자리에 빈 띠가 비친다.
+    final amp = 18 * engine.shake * engine.shake;
+    final shaking = amp > 0.3;
+    if (shaking) {
+      canvas.save();
+      canvas.translate(
+        (_shakeRandom.nextDouble() * 2 - 1) * amp,
+        (_shakeRandom.nextDouble() * 2 - 1) * amp,
+      );
     }
+    _drawTunnel(canvas);
+    final listening = engine.running && engine.frontmostInZoneCard() != null;
+    _drawGate(canvas, listening);
+    // Dying words (pass/miss/grace) go down first, live words on top, far
+    // before near. A grace word sits frozen at kMiss for 0.7s and can overlap
+    // the follower; this order keeps a dying word off the one being judged.
     for (final c in engine.cards) {
-      if (c.state == CardState.live) _drawCard(canvas, c);
+      if (c.state != CardState.live) _drawWord(canvas, c);
     }
+    final live = engine.cards.where((c) => c.state == CardState.live).toList()
+      ..sort((a, b) => a.k.compareTo(b.k));
+    for (final c in live) {
+      _drawWord(canvas, c);
+    }
+    _drawLateChip(canvas);
     _drawFlash(canvas);
-    _drawHud(canvas);
-    if (micLevel != null && engine.running) _drawMic(canvas);
     _drawHits(canvas);
+    if (shaking) canvas.restore();
 
     canvas.restore();
   }
+
+  static final math.Random _shakeRandom = math.Random();
 
   // ── background (solid; replaces the web game's camera feed) ─────────
   void _drawBackground(Canvas canvas) {
@@ -123,172 +146,310 @@ class ChallengePainter extends CustomPainter {
     );
   }
 
-  // ── mic level gauge (web drawHUD mic indicator, lines 548–554) ──────
-  void _drawMic(Canvas canvas) {
-    final level = (micLevel?.value ?? 0).clamp(0.0, 1.0);
-    const micY = GameConfig.h - 215;
-    const micIconX = GameConfig.w / 2 - 108;
-    // Mint mic dot.
-    canvas.drawCircle(
-      const Offset(micIconX, micY),
-      32,
-      Paint()..color = _mint.withValues(alpha: 0.9),
-    );
-    // Level gauge.
-    const gw = 190.0;
-    const gx = micIconX + 52;
-    const gy = micY - 13;
-    canvas.drawRRect(
-      RRect.fromRectAndRadius(
-        Rect.fromLTWH(gx, gy, gw * level, 26),
-        const Radius.circular(13),
-      ),
-      Paint()..color = _mint.withValues(alpha: 0.85),
-    );
-    canvas.drawRRect(
-      RRect.fromRectAndRadius(
-        const Rect.fromLTWH(gx, gy, gw, 26),
-        const Radius.circular(13),
-      ),
-      Paint()
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 2
-        ..color = const Color(0x40FFFFFF),
-    );
-  }
-
-  // ── belt (web game drawBelt, 491–503) ──────────────────────────────
-  void _drawBelt(Canvas canvas) {
-    final top = GameConfig.beltY + GameConfig.cardH / 2 - 20;
-    final bot = top + 330;
-
-    // Band.
-    canvas.drawRect(
-      Rect.fromLTWH(0, top, GameConfig.w, bot - top),
-      Paint()..color = const Color(0xFF20262C),
+  // ── tunnel (web drawTunnel, 1110–1136) ──────────────────────────────
+  void _drawTunnel(Canvas canvas) {
+    const vp = Offset(GameConfig.vpX, GameConfig.vpY);
+    // Both gradients run down Y only, matching
+    // `ctx.createLinearGradient(0, VP_Y, 0, H)`.
+    const gradientRect = Rect.fromLTRB(
+      0,
+      GameConfig.vpY,
+      GameConfig.w,
+      GameConfig.h,
     );
 
-    // Moving diagonal stripes (clipped to the band, minus the front edge).
-    canvas.save();
-    canvas.clipRect(Rect.fromLTWH(0, top, GameConfig.w, bot - top - 40));
-    final stripe = Paint()
-      ..color = const Color(0x0DFFFFFF) // rgba(255,255,255,.05)
-      ..strokeWidth = 26
-      ..style = PaintingStyle.stroke;
-    for (var x = -80 + engine.beltOffset; x < GameConfig.w + 120; x += 80) {
-      canvas.drawLine(Offset(x, top - 20), Offset(x - 60, bot), stripe);
-    }
-    canvas.restore();
-
-    // Red/white front edge.
-    final ey = bot - 40;
-    final edge = Paint();
-    for (var x = -40 + engine.beltOffset * .5;
-        x < GameConfig.w + 40;
-        x += 56) {
-      edge.color = ((x / 56).floor() % 2 == 0)
-          ? const Color(0xFFE23B3B)
-          : const Color(0xFFF2F2F2);
-      canvas.drawRect(Rect.fromLTWH(x, ey, 56, 40), edge);
-    }
-  }
-
-  // ── judgment zone (dashed; web game drawZone, 504–511) ──────────────
-  void _drawZone(Canvas canvas, bool listening) {
-    final x = GameConfig.zoneCx - GameConfig.zoneHalf;
-    final y = GameConfig.beltY - GameConfig.cardH / 2 - 16;
-    final w = GameConfig.zoneHalf * 2;
-    final h = GameConfig.cardH + 32;
-    final glow = listening
-        ? (0.5 + 0.5 * (math.sin(engine.clock * 1000 / 260)).abs())
-        : 0.25;
-    final rrect = RRect.fromRectAndRadius(
-      Rect.fromLTWH(x, y, w, h),
-      const Radius.circular(26),
-    );
-    final base = Path()..addRRect(rrect);
+    // Floor wedge — fans out from the vanishing point to the bottom edge.
+    final wedge = Path()
+      ..moveTo(vp.dx, vp.dy)
+      ..lineTo(_kRailLeft, GameConfig.h)
+      ..lineTo(_kRailRight, GameConfig.h)
+      ..close();
     canvas.drawPath(
-      _dashPath(base, const <double>[18, 12]),
+      wedge,
+      Paint()
+        ..shader = LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: <Color>[
+            _mint.withValues(alpha: 0),
+            _mint.withValues(alpha: 0.030),
+            _mint.withValues(alpha: 0.085),
+          ],
+          stops: const <double>[0, 0.6, 1],
+        ).createShader(gradientRect),
+    );
+
+    // Rails.
+    final railPaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 4
+      ..shader = LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: <Color>[
+          _mint.withValues(alpha: 0.04),
+          _mint.withValues(alpha: 0.55),
+        ],
+      ).createShader(gradientRect);
+    for (final x2 in const <double>[_kRailLeft, _kRailRight]) {
+      canvas.drawLine(vp, Offset(x2, GameConfig.h), railPaint);
+    }
+
+    // Rungs — without these the tunnel reads as a still image. They accelerate
+    // toward the viewer (quadratic easing = perspective).
+    final rung = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 3;
+    for (var i = 0; i < 4; i++) {
+      final t = ((i / 4) + engine.rungPhase) % 1;
+      final e = t * t;
+      final y = GameConfig.vpY + (GameConfig.h - GameConfig.vpY) * e;
+      final half = 700 * e;
+      rung.color = _mint.withValues(alpha: 0.05 + e * 0.11);
+      canvas.drawLine(
+        Offset(GameConfig.vpX - half, y),
+        Offset(GameConfig.vpX + half, y),
+        rung,
+      );
+    }
+  }
+
+  // ── gate (web drawGate, 1137–1158) ──────────────────────────────────
+  void _drawGate(Canvas canvas, bool listening) {
+    final glow = listening
+        ? (0.5 + 0.5 * math.sin(engine.clock * 1000 / 260).abs())
+        : 0.25;
+    const l = GameConfig.gateX;
+    const t = GameConfig.gateY;
+    const r = GameConfig.gateX + GameConfig.gateW;
+    const b = GameConfig.gateY + GameConfig.gateH;
+
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        const Rect.fromLTWH(l, t, GameConfig.gateW, GameConfig.gateH),
+        const Radius.circular(32),
+      ),
       Paint()
         ..style = PaintingStyle.stroke
-        ..strokeWidth = 6
-        ..color = _mint.withValues(alpha: (0.35 + glow * 0.6).clamp(0.0, 1.0)),
+        ..strokeWidth = listening ? 5 : 3
+        ..color = _mint.withValues(alpha: (0.18 + glow * 0.55).clamp(0.0, 1.0)),
+    );
+
+    // Corner brackets. A dashed rectangle was unreadable in a still frame, and
+    // the shared clip gets consumed as a thumbnail first.
+    final bracket = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 8
+      ..strokeCap = StrokeCap.round
+      ..color = _mint.withValues(alpha: (0.55 + glow * 0.40).clamp(0.0, 1.0));
+    const armLen = 70.0;
+    for (final corner in const <List<double>>[
+      <double>[l, t, 1, 1],
+      <double>[r, t, -1, 1],
+      <double>[l, b, 1, -1],
+      <double>[r, b, -1, -1],
+    ]) {
+      final cx = corner[0];
+      final cy = corner[1];
+      canvas.drawLine(
+        Offset(cx, cy),
+        Offset(cx + armLen * corner[2], cy),
+        bracket,
+      );
+      canvas.drawLine(
+        Offset(cx, cy),
+        Offset(cx, cy + armLen * corner[3]),
+        bracket,
+      );
+    }
+
+    // Glowing floor line. Canvas `shadowBlur` is roughly twice a Skia blur
+    // sigma, so the glow pass uses half the web's value.
+    final bw = listening ? 700.0 : 560.0;
+    final bh = listening ? 14.0 : 10.0;
+    final bar = RRect.fromRectAndRadius(
+      Rect.fromLTWH(GameConfig.vpX - bw / 2, b - bh, bw, bh),
+      Radius.circular(bh / 2),
+    );
+    canvas.drawRRect(
+      bar,
+      Paint()
+        ..color = _mint.withValues(alpha: listening ? 0.95 : 0.9)
+        ..maskFilter = MaskFilter.blur(BlurStyle.normal, listening ? 30 : 17),
+    );
+    canvas.drawRRect(
+      bar,
+      Paint()..color = _mint.withValues(alpha: listening ? 0.95 : 0.9),
     );
   }
 
-  // ── card = floating outlined sentence (design A: white text + dark outline,
-  //    no plank; the word/sentence just floats on the belt, tilted on the Z
-  //    axis so it reads on a diagonal) ─────────────────────────────────────
-  void _drawCard(Canvas canvas, ChallengeCard c) {
-    final cy = c.state == CardState.live ? GameConfig.beltY : c.y;
-    final a = c.alpha.clamp(0.0, 1.0);
-    canvas.save();
-    canvas.translate(c.x, cy);
-    if (c.rot != 0) canvas.rotate(c.rot);
+  // ── word (web drawWord, 1159–1175) ──────────────────────────────────
+  //
+  // No plank: white fill over a thick dark outline, centred on the vanishing
+  // axis. Both size and Y come from `k`.
+  void _drawWord(Canvas canvas, ChallengeCard c) {
+    final k = math.max(0.02, c.k);
+    // 긴 학습 문장은 두 줄 · 축소(요청서 §4.6 · 웹 `layoutWord`). 카드 글자마다 한 번만 잰다.
+    final lay = _layoutFor(c.word);
+    final size = GameConfig.wordSize(k) * lay.scale;
+    final y = GameConfig.wordY(k);
+    // Depth fade (Figma `screen/pron_play`: 50% far, 72% mid, 100% at the
+    // gate). Distance has to read as distance — drawn at full opacity the
+    // queue looked like three words stacked, not one approaching.
+    final depth = c.state == CardState.live
+        ? _kFarAlpha +
+            (1 - _kFarAlpha) *
+                (((k - GameConfig.kSpawn) /
+                        (1 - GameConfig.kSpawn))
+                    .clamp(0.0, 1.0))
+        : 1.0;
+    final a = c.alpha.clamp(0.0, 1.0) *
+        depth *
+        (c.state == CardState.grace ? 0.55 : 1.0);
+    if (a <= 0) return;
 
-    final (outline, fill) = _wordLayers(c.word);
-    // Fade via a save-layer when passing/missing. Bounds are generous (the
-    // rotated text has no card box to clip to).
+    final outlineColor = switch (c.state) {
+      CardState.grace => _kWordLate,
+      CardState.miss => _kWordMiss,
+      _ => _kWordOutline,
+    };
+    final (outline, fill) = _wordLayers(lay.text, size, outlineColor);
+    // Past the cache ceiling the layers stop growing, so the canvas carries the
+    // rest of the scale. Only a passing word gets here, on its way out of
+    // frame, where re-laying-out the glyphs would buy nothing.
+    final overshoot = size > _kMaxCachedSize ? size / _kMaxCachedSize : 1.0;
+
+    canvas.save();
+    canvas.translate(GameConfig.vpX, y);
+    if (overshoot > 1) canvas.scale(overshoot);
+
+    // Layer bounds hug the glyphs plus one font-size of slack (local coords, so
+    // the scale above applies to them too). The blur spreads about 3*sigma
+    // (= 66*k), which that slack covers. Full-width bounds made every glowing
+    // word a 2160px-wide blurred layer — the kind of per-frame cost that shows
+    // up on the low-end target device.
+    final pad = math.min(size, _kMaxCachedSize);
+    final bounds = Rect.fromCenter(
+      center: Offset.zero,
+      width: outline.width + pad * 2,
+      height: outline.height + pad * 2,
+    );
+    final at = Offset(-outline.width / 2, -outline.height / 2);
+
     final needLayer = a < 0.999;
     if (needLayer) {
       canvas.saveLayer(
-        Rect.fromCenter(center: Offset.zero, width: 460, height: 460),
+        bounds,
         Paint()..color = Color.fromRGBO(255, 255, 255, a),
       );
     }
-    canvas.save();
-    canvas.rotate(_kTextTilt); // twist the sentence onto its diagonal (Z axis)
-    // The text already wrapped to [_kWrapWidth]; only scale down if the wrapped
-    // block still overruns the width/height caps (a very long sentence).
-    final scale = math.min(
-      1.0,
-      math.min(
-        _kMaxTextWidth / outline.width,
-        _kMaxTextHeight / outline.height,
-      ),
-    );
-    if (scale < 1.0) canvas.scale(scale);
-    // Outline first (behind), then the white fill on top.
-    outline.paint(canvas, Offset(-outline.width / 2, -outline.height / 2));
+    // A word inside the accept range glows — that is the "speak now" cue.
+    if (c.state == CardState.live && k >= GameConfig.kAccept) {
+      canvas.saveLayer(
+        bounds,
+        Paint()
+          ..imageFilter = ImageFilter.blur(sigmaX: 22 * k, sigmaY: 22 * k),
+      );
+      outline.paint(canvas, at);
+      canvas.restore();
+    }
+    outline.paint(canvas, at);
     fill.paint(canvas, Offset(-fill.width / 2, -fill.height / 2));
-    canvas.restore();
     if (needLayer) canvas.restore();
-
     canvas.restore();
   }
 
-  /// Builds (and caches) the two text layers for [word]: a thick dark outline
-  /// and the white fill on top, so the floating text stays legible over the
-  /// camera selfie / belt.
-  (TextPainter, TextPainter) _wordLayers(String word) {
-    return _wordCache.putIfAbsent(word, () {
+  /// 글자별 배치(한 줄/두 줄 · 배율) 캐시. 카드는 사라져도 같은 문장이 다시 나오므로 글자로
+  /// 묶는다. 학습 문장 수가 한 판에 수십 개 이하라 상한은 넉넉히 둔다.
+  static final Map<String, ({String text, double scale})> _layoutCache =
+      <String, ({String text, double scale})>{};
+  static const int _kLayoutCacheMax = 256;
+
+  /// [word] 를 판정 지점 글자 크기([GameConfig.wordSizeNear])로 재서, 폭이
+  /// [GameConfig.wordMaxW] 를 넘으면 두 줄([splitInTwoLines])로 접고 [GameConfig.longWordScale]
+  /// 로 줄인다. 두 줄로도 넘치면 폭에 맞춰 더 줄인다. 세 줄 이상은 만들지 않는다.
+  ///
+  /// 예전엔 판정 구역 폭(−80)에서 `TextPainter` 가 알아서 줄을 바꿨다 — 190 크기 그대로 두세 줄이
+  /// 되어 뒤 단어와 겹칠 수 있었다(겹침 불변식: 앞 반높이 + 뒤 반높이 < k 간격 거리).
+  static ({String text, double scale}) _layoutFor(String word) {
+    if (_layoutCache.length > _kLayoutCacheMax) _layoutCache.clear();
+    return _layoutCache.putIfAbsent(word, () {
+      double widthOf(String s) {
+        final tp = TextPainter(
+          text: TextSpan(
+            text: s,
+            style: const TextStyle(
+              fontFamily: kFontFamily,
+              fontSize: GameConfig.wordSizeNear,
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+          textDirection: TextDirection.ltr,
+        )..layout();
+        final w = tp.width;
+        tp.dispose();
+        return w;
+      }
+
+      final single = widthOf(word);
+      if (single <= GameConfig.wordMaxW) return (text: word, scale: 1.0);
+      final parts = splitInTwoLines(word);
+      if (parts == null) {
+        return (text: word, scale: GameConfig.wordMaxW / single);
+      }
+      final widest = math.max(widthOf(parts.$1), widthOf(parts.$2));
+      final scale = math.min(
+        GameConfig.longWordScale,
+        GameConfig.wordMaxW / (widest == 0 ? 1 : widest),
+      );
+      return (text: '${parts.$1}\n${parts.$2}', scale: scale);
+    });
+  }
+
+  /// Builds (and caches) the two text layers for [word] at [size]: a thick
+  /// outline in [outlineColor] and the white fill on top.
+  ///
+  /// [word] is already laid out by [_layoutFor] — one line, or two joined by a
+  /// newline with the tighter [GameConfig.wordLineH] spacing. No width limit
+  /// here: the scale from [_layoutFor] already fits it to the gate, and a
+  /// second wrap would break a line the split chose on purpose.
+  (TextPainter, TextPainter) _wordLayers(
+    String word,
+    double size,
+    Color outlineColor,
+  ) {
+    final fontSize = math.max(
+      _kSizeBucket,
+      math.min(_kMaxCachedSize, (size / _kSizeBucket).round() * _kSizeBucket),
+    );
+    final key = '$word|$fontSize|${outlineColor.toARGB32()}';
+    if (_wordCache.length > _kWordCacheMax) _wordCache.clear();
+    return _wordCache.putIfAbsent(key, () {
       TextPainter make(Paint paint) => TextPainter(
             text: TextSpan(
               text: word,
               style: TextStyle(
                 fontFamily: kFontFamily,
-                fontSize: _kTextFontSize,
+                fontSize: fontSize,
                 fontWeight: FontWeight.w900,
-                height: 1.15,
+                height: word.contains('\n') ? GameConfig.wordLineH : 1.15,
                 foreground: paint,
               ),
             ),
             textAlign: TextAlign.center,
             textDirection: TextDirection.ltr,
-            // Wrap long sentences across lines (identical layout for both
-            // layers so the outline sits exactly under the fill).
-          )..layout(maxWidth: _kWrapWidth);
+          )..layout();
       final outline = make(Paint()
         ..style = PaintingStyle.stroke
-        ..strokeWidth = _kTextOutline
+        ..strokeWidth = math.max(4, fontSize * 0.085)
         ..strokeJoin = StrokeJoin.round
-        ..color = _kTextOutlineColor);
-      final fill = make(Paint()..color = _kTextFill);
+        ..color = outlineColor);
+      final fill = make(Paint()..color = _kWordFill);
       return (outline, fill);
     });
   }
 
-  // ── flash (web game drawFlash, 571–574) ─────────────────────────────
+  // ── flash (web drawFlash, 1240–1243) ────────────────────────────────
   void _drawFlash(Canvas canvas) {
     const full = Rect.fromLTWH(0, 0, GameConfig.w, GameConfig.h);
     if (engine.flashPass > 0) {
@@ -303,177 +464,164 @@ class ChallengePainter extends CustomPainter {
       canvas.drawRect(
         full,
         Paint()
+          // 0.45, not the web's 0.22: the design calls for a wash that reads
+          // as a miss without erasing the scene (its own 100% did erase it).
           ..color = Color.fromRGBO(
-              255, 60, 60, (engine.flashMiss * 0.22).clamp(0.0, 1.0)),
+              255, 60, 60, (engine.flashMiss * 0.45).clamp(0.0, 1.0)),
       );
     }
   }
 
-  // ── HUD (timer / score / combo / backlog; web game drawHUD, 531–561) ─
-  void _drawHud(Canvas canvas) {
-    final mm = (engine.sessionLeft / 60).floor();
-    final ss = (engine.sessionLeft % 60).floor();
-    final tstr = '$mm:${ss.toString().padLeft(2, '0')}';
-
-    // Timer pill.
+  // ── LATE stamp (Figma `screen/pron_late`) ───────────────────────
+  //
+  // Sits on the gate's top-left corner while a word is in its grace window.
+  // Opaque, not the design's first pass at amber-10% with #111 ink — that was
+  // one of the two contrast defects the design run recorded.
+  void _drawLateChip(Canvas canvas) {
+    final late = engine.cards.any((c) => c.state == CardState.grace);
+    if (!late) return;
+    final tp = _layout('LATE OK', 34, FontWeight.w900, const Color(0xFF111111));
+    final w = tp.width + 40;
+    const h = 52.0;
+    final rect = Rect.fromLTWH(GameConfig.gateX + 8, GameConfig.gateY - h / 2, w, h);
     canvas.drawRRect(
-      RRect.fromRectAndRadius(
-        const Rect.fromLTWH(GameConfig.w / 2 - 130, 52, 260, 92),
-        const Radius.circular(46),
-      ),
-      Paint()..color = const Color(0xB80A0E12), // rgba(10,14,18,.72)
+      RRect.fromRectAndRadius(rect, const Radius.circular(10)),
+      Paint()..color = _kWordLate,
     );
-    _text(
+    tp.paint(
       canvas,
-      tstr,
-      x: GameConfig.w / 2,
-      y: 100,
-      fontSize: 60,
-      weight: FontWeight.w800,
-      color: engine.sessionLeft <= 10 ? const Color(0xFFFF6B6B) : Colors.white,
+      Offset(rect.center.dx - tp.width / 2, rect.center.dy - tp.height / 2),
     );
-
-    // Score (right aligned).
-    _text(
-      canvas,
-      _thousands(engine.score),
-      x: GameConfig.w - 56,
-      y: 100,
-      fontSize: 46,
-      weight: FontWeight.w800,
-      color: Colors.white,
-      align: _HAlign.right,
-    );
-
-    // Combo.
-    if (engine.combo > 1) {
-      _text(
-        canvas,
-        'COMBO ×${engine.combo}',
-        x: GameConfig.w / 2,
-        y: 210,
-        fontSize: 48,
-        weight: FontWeight.w900,
-        color: _mint,
-      );
-    }
-
-    // Backlog (MISS label + slots).
-    _text(
-      canvas,
-      'MISS',
-      x: 56,
-      y: GameConfig.h - 70,
-      fontSize: 34,
-      weight: FontWeight.w800,
-      color: const Color(0xFFCFD6DC),
-      align: _HAlign.left,
-    );
-    for (var i = 0; i < GameConfig.maxBacklog; i++) {
-      canvas.drawRRect(
-        RRect.fromRectAndRadius(
-          Rect.fromLTWH(170 + i * 54, GameConfig.h - 92, 44, 44),
-          const Radius.circular(10),
-        ),
-        Paint()
-          ..color = i < engine.backlog
-              ? const Color(0xFFFF5555)
-              : const Color(0x33FFFFFF),
-      );
-    }
   }
 
-  // ── hit texts (web game drawHits, 562–570) ──────────────────────────
+
+
+  // ── judgments · milestones (web drawHits, 2026-09-25) ────────────────
+  //
+  // `PERFECT`/`GREAT`/`GOOD`/`MISS` with the points under it, and `N COMBO!`
+  // every [GameConfig.comboMilestone]. Each pops out (×1.6, milestone ×1.9 →
+  // ×1 over 0.14s, ease-out cubic), then rises and fades. Replaces the old
+  // `+112` / `COMBO x3` / `LATE · …` lines (요청서 §4.2·4.3).
   void _drawHits(Canvas canvas) {
     for (final h in engine.hitTexts) {
-      final a = h.life.clamp(0.0, 1.0);
-      _text(
-        canvas,
-        h.text,
-        x: h.x,
-        y: h.y,
-        fontSize: 72,
-        weight: FontWeight.w900,
-        color: (h.miss ? const Color(0xFFFF6B6B) : _mint).withValues(alpha: a),
-      );
-      if (h.sub.isNotEmpty) {
-        _text(
-          canvas,
-          h.sub,
-          x: h.x,
-          y: h.y + 58,
-          fontSize: 40,
-          weight: FontWeight.w800,
-          color: Colors.white.withValues(alpha: a),
-        );
+      final age = h.life0 - h.life;
+      final p = math.min(1.0, age / 0.14);
+      final ease = 1 - math.pow(1 - p, 3).toDouble();
+      final pop = 1 + (1 - ease) * (h.isMilestone ? 0.9 : 0.6);
+      final alpha = (h.life / 0.35).clamp(0.0, 1.0);
+      canvas.save();
+      canvas.translate(h.x, h.y);
+      canvas.scale(pop);
+      if (h.isMilestone) {
+        final color = h.combo >= 20
+            ? _kWordFill
+            : h.combo >= 10
+                ? _kWordLate
+                : _mint;
+        _outlined(canvas, '${h.combo} COMBO!',
+            fontSize: 150,
+            weight: FontWeight.w900,
+            stroke: 18,
+            fill: color,
+            glow: 40,
+            alpha: alpha);
+      } else {
+        final judge = h.judge!;
+        final (label, color) = switch (judge) {
+          Judge.perfect => ('PERFECT', _mint),
+          Judge.great => ('GREAT', _kWordFill),
+          Judge.good => ('GOOD', _kWordLate),
+          Judge.miss => ('MISS', _kWordMiss),
+        };
+        _outlined(canvas, label,
+            fontSize: 104,
+            weight: FontWeight.w900,
+            stroke: 14,
+            fill: color,
+            glow: judge == Judge.miss ? 0 : 30,
+            alpha: alpha);
+        if (h.points > 0) {
+          _outlined(canvas, '+${thousands(h.points)}',
+              fontSize: 52,
+              weight: FontWeight.w800,
+              stroke: 10,
+              fill: _kWordFill,
+              glow: 0,
+              alpha: alpha,
+              dy: 84);
+        }
       }
+      canvas.restore();
     }
+  }
+
+  /// Draws [text] centred on the origin (+[dy]): a [stroke]-wide
+  /// [_kWordOutline] outline, an optional [glow] in the fill colour, then the
+  /// fill. [glow] is the web's `shadowBlur`; a Skia blur sigma is about half
+  /// of it (same conversion as the gate glow).
+  void _outlined(
+    Canvas canvas,
+    String text, {
+    required double fontSize,
+    required FontWeight weight,
+    required double stroke,
+    required Color fill,
+    required double glow,
+    required double alpha,
+    double dy = 0,
+  }) {
+    if (alpha <= 0) return;
+    TextPainter make(Paint paint) => TextPainter(
+          text: TextSpan(
+            text: text,
+            style: TextStyle(
+              fontFamily: kFontFamily,
+              fontSize: fontSize,
+              fontWeight: weight,
+              foreground: paint,
+            ),
+          ),
+          textDirection: TextDirection.ltr,
+        )..layout();
+    final outline = make(Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = stroke
+      ..strokeJoin = StrokeJoin.round
+      ..color = _kWordOutline.withValues(alpha: alpha));
+    final at = Offset(-outline.width / 2, dy - outline.height / 2);
+    outline.paint(canvas, at);
+    if (glow > 0) {
+      final halo = make(Paint()
+        ..color = fill.withValues(alpha: alpha)
+        ..maskFilter = MaskFilter.blur(BlurStyle.normal, glow / 2));
+      halo.paint(canvas, at);
+      halo.dispose();
+    }
+    final face = make(Paint()..color = fill.withValues(alpha: alpha));
+    face.paint(canvas, at);
+    outline.dispose();
+    face.dispose();
   }
 
   // ── helpers ─────────────────────────────────────────────────────────
-  void _text(
-    Canvas canvas,
-    String s, {
-    required double x,
-    required double y,
-    required double fontSize,
-    required FontWeight weight,
-    required Color color,
-    _HAlign align = _HAlign.center,
-  }) {
-    final tp = TextPainter(
-      text: TextSpan(
-        text: s,
-        style: TextStyle(
-          fontFamily: kFontFamily,
-          fontSize: fontSize,
-          fontWeight: weight,
-          color: color,
+  TextPainter _layout(
+    String s,
+    double fontSize,
+    FontWeight weight,
+    Color color,
+  ) =>
+      TextPainter(
+        text: TextSpan(
+          text: s,
+          style: TextStyle(
+            fontFamily: kFontFamily,
+            fontSize: fontSize,
+            fontWeight: weight,
+            color: color,
+          ),
         ),
-      ),
-      textDirection: TextDirection.ltr,
-    )..layout();
-    final double dx;
-    switch (align) {
-      case _HAlign.left:
-        dx = x;
-      case _HAlign.center:
-        dx = x - tp.width / 2;
-      case _HAlign.right:
-        dx = x - tp.width;
-    }
-    tp.paint(canvas, Offset(dx, y - tp.height / 2)); // baseline≈middle
-  }
-
-  /// Formats an int with thousands separators (`toLocaleString` parity).
-  String _thousands(int n) {
-    final s = n.toString();
-    final buf = StringBuffer();
-    for (var i = 0; i < s.length; i++) {
-      if (i > 0 && (s.length - i) % 3 == 0) buf.write(',');
-      buf.write(s[i]);
-    }
-    return buf.toString();
-  }
-
-  /// Emulates `ctx.setLineDash([on, off])` by extracting dashed sub-paths.
-  Path _dashPath(Path source, List<double> pattern) {
-    final dest = Path();
-    for (final metric in source.computeMetrics()) {
-      var dist = 0.0;
-      var draw = true;
-      var idx = 0;
-      while (dist < metric.length) {
-        final len = pattern[idx % pattern.length];
-        final end = math.min(dist + len, metric.length);
-        if (draw) dest.addPath(metric.extractPath(dist, end), Offset.zero);
-        dist += len;
-        idx++;
-        draw = !draw;
-      }
-    }
-    return dest;
-  }
+        textDirection: TextDirection.ltr,
+      )..layout();
 
   @override
   bool shouldRepaint(covariant ChallengePainter oldDelegate) =>
@@ -482,4 +630,15 @@ class ChallengePainter extends CustomPainter {
       oldDelegate.micLevel != micLevel;
 }
 
-enum _HAlign { left, center, right }
+
+/// `5500` → `5,500` (웹 `toLocaleString` — 게임 글자는 로캘과 무관하게 쉼표).
+@visibleForTesting
+String thousands(int n) {
+  final s = n.toString();
+  final b = StringBuffer();
+  for (var i = 0; i < s.length; i++) {
+    if (i > 0 && (s.length - i) % 3 == 0) b.write(',');
+    b.write(s[i]);
+  }
+  return b.toString();
+}

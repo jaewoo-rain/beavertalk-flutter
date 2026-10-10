@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../theme/app_color_tokens.dart';
+import '../../theme/app_motion.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_typography.dart';
 
@@ -66,13 +67,18 @@ class SelectBox extends StatelessWidget {
         color: bg,
         borderRadius: BorderRadius.circular(AppRadius.xs),
       ),
-      child: Text(
-        label,
-        textAlign: TextAlign.center,
+      // 이 칩도 선택을 **글자색으로만** 말한다 — 배경이 두 상태에서 같다.
+      child: AnimatedDefaultTextStyle(
+        duration: AppMotion.medium,
+        curve: AppMotion.toggle,
         style: base.copyWith(color: fg),
-        maxLines: 1,
-        softWrap: false,
-        overflow: TextOverflow.ellipsis,
+        child: Text(
+          label,
+          textAlign: TextAlign.center,
+          maxLines: 1,
+          softWrap: false,
+          overflow: TextOverflow.ellipsis,
+        ),
       ),
     );
 

@@ -15,111 +15,12 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:beavertalk/l10n/app_localizations.dart';
 
-import 'package:beavertalk/screens/alarm/alarm_add.dart';
-import 'package:beavertalk/screens/alarm/alarm_empty.dart';
-import 'package:beavertalk/screens/alarm/alarm_list.dart';
-import 'package:beavertalk/screens/auth/login.dart';
-import 'package:beavertalk/screens/auth/login_form.dart';
-import 'package:beavertalk/screens/auth/password_code.dart';
-import 'package:beavertalk/screens/auth/password_complete.dart';
-import 'package:beavertalk/screens/auth/password_method.dart';
-import 'package:beavertalk/screens/auth/password_new.dart';
-import 'package:beavertalk/screens/auth/signup.dart';
-import 'package:beavertalk/screens/home/call_finish.dart';
-import 'package:beavertalk/features/subscription/domain/entities/subscription_state.dart';
-import 'package:beavertalk/screens/mypage/avatar_detail.dart';
-import 'package:beavertalk/screens/mypage/edit_nickname.dart';
-import 'package:beavertalk/screens/mypage/mypage.dart';
-import 'package:beavertalk/screens/mypage/settings.dart';
-import 'package:beavertalk/screens/mypage/subscription_manage.dart';
-import 'package:beavertalk/screens/plans/paywall.dart';
-import 'package:beavertalk/screens/plans/plan_change.dart';
-import 'package:beavertalk/screens/plans/plans_compare.dart';
-import 'package:beavertalk/screens/plans/purchase_flow.dart';
-import 'package:beavertalk/screens/onboarding/onboarding_done.dart';
-import 'package:beavertalk/screens/onboarding/onboarding_language.dart';
-import 'package:beavertalk/screens/onboarding/onboarding_name.dart';
-import 'package:beavertalk/screens/onboarding/onboarding_reason.dart';
-import 'package:beavertalk/screens/record/record_empty.dart';
-import 'package:beavertalk/screens/home/learning_call_main.dart';
-import 'package:beavertalk/screens/home/learning_call_main_loading.dart';
-import 'package:beavertalk/screens/record/record_list.dart';
-import 'package:beavertalk/screens/system/mic_denied.dart';
-import 'package:beavertalk/screens/system/network_error.dart';
-import 'package:beavertalk/screens/system/permission.dart';
+import 'support/i18n_screens.dart';
 
 void main() {
-  final screens = <String, Widget Function()>{
-    'AlarmAdd': () => const AlarmAddScreen(),
-    'AlarmEmpty': () => const AlarmEmptyScreen(),
-    'AlarmList': () => const AlarmListScreen(),
-    'Login': () => const LoginScreen(),
-    'LoginForm': () => const LoginFormScreen(),
-    'PasswordCode': () => const PasswordCodeScreen(),
-    'PasswordComplete': () => const PasswordCompleteScreen(),
-    'PasswordMethod': () => const PasswordMethodScreen(),
-    'PasswordNew': () => const PasswordNewScreen(),
-    'Signup': () => const SignupScreen(),
-    'CallFinish': () => const CallFinishScreen(),
-    // Worst case for the detail screen's name row: name + the long
-    // "Available to purchase" badge + a "-N%" marker, all on one line.
-    'AvatarDetailDiscount': () => const AvatarDetailScreen(
-          state: AvatarDetailState.unownedDiscount,
-          name: 'Baba',
-          tags: ['Savage', 'Blunt', 'Tsundere'],
-          summary: 'A sharp-tongued master.',
-          description: 'Baba, a beaver famous for his flawless dams.',
-          price: '₩4,900',
-          discountPrice: '₩2,450',
-          discountPercent: 50,
-        ),
-    'AvatarDetailOwned': () => const AvatarDetailScreen(
-          state: AvatarDetailState.ownedUnused,
-          name: 'Baba',
-          tags: ['Savage', 'Blunt', 'Tsundere'],
-          summary: 'A sharp-tongued master.',
-          description: 'Baba, a beaver famous for his flawless dams.',
-        ),
-    'MyPage': () => const MyPageScreen(),
-    'MyPageSettings': () => const MyPageSettingsScreen(),
-    // The subscription manage screen (P2 redesign). With no server data in
-    // the harness it renders the Free state; its copy is confirmed-English in
-    // every locale, but the layout still gets audited at 320×640.
-    'SubscriptionManage': () => const SubscriptionManageScreen(),
-    // P3 conversion screens (this run's l10n pass). PurchaseProcessing is
-    // excluded (it fires the mock purchase and navigates by named route);
-    // the Pro success screen is excluded too — its one-time-offer timer
-    // (Future.delayed 800ms) is exactly the timer-heavy case the scope note
-    // rules out, and the Max variant covers the identical layout.
-    'PaywallPro': () => const PaywallScreen(variant: PaywallVariant.pro),
-    'PaywallProLimit': () =>
-        const PaywallScreen(variant: PaywallVariant.proLimit),
-    'PaywallMax': () => const PaywallScreen(variant: PaywallVariant.max),
-    'PlansCompare': () => const PlansCompareScreen(),
-    'PlanChangeUpgrade': () =>
-        const PlanChangeScreen(direction: PlanChangeDirection.upgrade),
-    'PlanChangeDowngrade': () =>
-        const PlanChangeScreen(direction: PlanChangeDirection.downgrade),
-    'PurchaseSuccessMax': () =>
-        const PurchaseSuccessScreen(tier: SubscriptionTier.max),
-    'PlansError': () => const PlansErrorScreen(),
-    'WinbackSurvey': () => const WinbackSurveyScreen(),
-    'EditNickname': () => const EditNicknameScreen(),
-    'OnboardingDone': () => const OnboardingDoneScreen(),
-    'OnboardingLanguage': () => const OnboardingLanguageScreen(),
-    'OnboardingName': () => const OnboardingNameScreen(),
-    'OnboardingReason': () => const OnboardingReasonScreen(),
-    'RecordEmpty': () => const RecordEmptyScreen(),
-    'RecordList': () => const RecordListScreen(),
-    'RecordArchiveTab': () => const RecordListScreen(initialTab: 1),
-    // Densest screen in the app — three tables and a chart, all fixed-width
-    // number columns. Narrow locales break here first.
-    'LearningCallMain': () => const LearningCallMainScreen(),
-    'LearningCallMainLoading': () => const LearningCallMainLoadingScreen(),
-    'MicDenied': () => const MicDeniedScreen(),
-    'NetworkError': () => const NetworkErrorScreen(),
-    'Permission': () => const PermissionScreen(),
-  };
+  // ⛔ 화면 목록을 여기 두지 마라 — `test/support/i18n_screens.dart` 가 정본이다.
+  //    잘림 시험이 같은 목록을 본다.
+  final screens = i18nScreens();
 
   // Narrow phone (iPhone SE / small Android). Horizontal overflow surfaces here.
   //

@@ -23,6 +23,12 @@ class AppLocalizationsTr extends AppLocalizations {
   String get callErrorGeneric => 'Arama sırasında bir hata oluştu.';
 
   @override
+  String get callDailyLimit => 'Bugünkü öğrenme süreni doldurdun.';
+
+  @override
+  String get callAlreadyInCall => 'Zaten bir aramadasın.';
+
+  @override
   String get callNetworkError => 'Ağ hatası oluştu.';
 
   @override
@@ -54,6 +60,16 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get callRatingPrompt => 'Arama nasıldı?';
+
+  @override
+  String get callRatingBody =>
+      'Puanın bir dahaki sefere daha iyi konuşmamıza yardımcı olur.';
+
+  @override
+  String get callRatingSubmit => 'Gönder';
+
+  @override
+  String get callRatingSkip => 'Atla';
 
   @override
   String get ratingBad => 'İyi değildi';
@@ -124,6 +140,24 @@ class AppLocalizationsTr extends AppLocalizations {
   String get alarms => 'Alarmlar';
 
   @override
+  String get alarmAdd => 'Alarm ekle';
+
+  @override
+  String get alarmEdit => 'Alarmı düzenle';
+
+  @override
+  String get alarmEveryDay => 'Her gün';
+
+  @override
+  String get alarmWeekdays => 'Hafta içi';
+
+  @override
+  String get alarmWeekend => 'Hafta sonu';
+
+  @override
+  String get alarmNoRepeat => 'Tekrar yok';
+
+  @override
   String get addSchedule => 'Program Ekle';
 
   @override
@@ -149,6 +183,12 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get callPartner => 'Karakter';
+
+  @override
+  String get alarmModeLearnSub => 'Müfredattaki ifadeleri çalış';
+
+  @override
+  String get alarmModeChatSub => 'Her şey hakkında konuş';
 
   @override
   String get quickStart => 'Hızlı başlangıç';
@@ -198,13 +238,51 @@ class AppLocalizationsTr extends AppLocalizations {
   String get conversation => 'Konuşma';
 
   @override
-  String get review => 'İnceleme';
-
-  @override
-  String get pronunciationChallenge => 'Telaffuz Mücadelesi';
-
-  @override
   String get newExpressions => 'Yeni İfadeler';
+
+  @override
+  String get analysisPrepNote => 'Bugünkü görüşme gözden geçiriliyor.';
+
+  @override
+  String get analysisPrepNoteHint => 'Birazdan burada bir not görünecek';
+
+  @override
+  String get analysisPrepTitle => 'Kunduz bugünkü ifadeleri karta dönüştürüyor';
+
+  @override
+  String get analysisPrepSub => 'Hazır olunca tam burada görünecek.';
+
+  @override
+  String get analysisPrepStepSave => 'Konuşmayı kaydetme';
+
+  @override
+  String get analysisPrepStepCards => 'İfade kartları hazırlama';
+
+  @override
+  String get analysisPrepStateDone => 'Tamam';
+
+  @override
+  String get analysisPrepStateWorking => 'Sürüyor';
+
+  @override
+  String get analysisPrepStateWaiting => 'Bekliyor';
+
+  @override
+  String get usedExpressions => 'Kullandığın ifadeler';
+
+  @override
+  String quizExpressionsCount(int count) {
+    return 'Öğrendiğin ifadeler $count';
+  }
+
+  @override
+  String get quizPassed => 'Bildin';
+
+  @override
+  String get quizFailed => 'Tekrar bak';
+
+  @override
+  String get quizPending => 'Bir dahaki sefere devam';
 
   @override
   String get analysisResult => 'Analiz Sonucu';
@@ -214,6 +292,9 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get practice => 'Pratik';
+
+  @override
+  String get analysisNativeLabel => 'Yerli';
 
   @override
   String recentScore(int score) {
@@ -261,34 +342,6 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get cancel => 'İptal';
-
-  @override
-  String get selectTime => 'Saat seçin';
-
-  @override
-  String get getStarted => 'Başla';
-
-  @override
-  String get permissionTitle =>
-      'Sorunsuz bir deneyim için\nizinlere izin verin';
-
-  @override
-  String get permissionSubtitle =>
-      'Hizmeti kullanmak için gerekli izinler zorunludur.';
-
-  @override
-  String get permissionMicTitle => 'Mikrofon (zorunlu)';
-
-  @override
-  String get permissionMicDesc =>
-      'Yapay zeka ile İngilizce konuşmak için gereklidir.';
-
-  @override
-  String get permissionNotifTitle => 'Bildirimler (isteğe bağlı)';
-
-  @override
-  String get permissionNotifDesc =>
-      'Öğrenme hatırlatmaları ve arama programlarını size göndereceğiz.';
 
   @override
   String get micPermissionNeededTitle => 'Mikrofon erişimi gerekiyor';
@@ -439,13 +492,118 @@ class AppLocalizationsTr extends AppLocalizations {
   String get endLearning => 'Oturumu Bitir';
 
   @override
-  String get navCalendar => 'Takvim';
-
-  @override
   String get navCall => 'Arama';
 
   @override
-  String get navStats => 'İstatistikler';
+  String get homeCourseExpression => 'İfadeler';
+
+  @override
+  String get homeCourseFreetalk => 'Diyalog';
+
+  @override
+  String homeExpressionsLeft(int count) {
+    return 'Diyaloğa $count ifade kaldı';
+  }
+
+  @override
+  String get homeFreetalkNote => 'Öğrendiklerini kullanarak serbestçe konuş';
+
+  @override
+  String get homeTalkTitle => 'Bugün neler oldu?';
+
+  @override
+  String get homeTalkNote => 'Serbestçe sohbet et, konuşurken öğren.';
+
+  @override
+  String get homeModeLearn => 'Öğren';
+
+  @override
+  String get homeModeTalk => 'Sohbet';
+
+  @override
+  String homeStreakDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count gün üst üste',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakCalendarTitle => 'Öğrenme takvimi';
+
+  @override
+  String streakDaysUnit(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'gün üst üste',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String streakBest(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'En iyi seri: $count gün',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakMetricCallTime => 'Arama süresi';
+
+  @override
+  String get streakMetricLearned => 'İfadeler';
+
+  @override
+  String get streakMetricWords => 'Söylenen kelimeler';
+
+  @override
+  String streakCountValue(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString';
+  }
+
+  @override
+  String streakMinutes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count dk',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakNoCallsThatDay => 'Bu gün arama yok.';
+
+  @override
+  String get homeLevelPending => 'Seviye belirsiz';
+
+  @override
+  String get homeNoLevelTitle => 'Henüz bir seviyen yok';
+
+  @override
+  String get homeNoLevelNote => 'İlk aramanı tamamla, seviyen belirlensin';
+
+  @override
+  String get homeCurriculumPendingBadge => 'Yakında';
+
+  @override
+  String homeCurriculumPendingTitle(String language) {
+    return '$language müfredatı hazırlanıyor';
+  }
+
+  @override
+  String get homeCurriculumPendingNote =>
+      'Aramalarında genel ifadeler çalışacaksın';
 
   @override
   String get myPage => 'Sayfam';
@@ -458,6 +616,27 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get changeAvatar => 'Avatarı Değiştir';
+
+  @override
+  String get avatarUseNow => 'Şimdi kullan';
+
+  @override
+  String get avatarPurchaseFailed => 'Satın alma tamamlanmadı';
+
+  @override
+  String avatarPromoTitle(int percent) {
+    return 'Sadece bugün · %$percent indirim';
+  }
+
+  @override
+  String avatarPromoLeft(String time) {
+    return '$time kaldı';
+  }
+
+  @override
+  String avatarPromoLeftDays(int days, String time) {
+    return '$days g $time kaldı';
+  }
 
   @override
   String get avatarIntro =>
@@ -501,9 +680,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String get subscriptionManage => 'Aboneliği Yönet';
 
   @override
-  String get changePlan => 'Planı Değiştir';
-
-  @override
   String get cancelSubscription => 'Aboneliği İptal Et';
 
   @override
@@ -522,18 +698,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get viewBillingHistory => 'Fatura Geçmişini Görüntüle';
 
   @override
-  String get keepUsingPro => 'Pro Kullanmaya Devam Et';
-
-  @override
-  String get proMembership => 'Pro Üyelik';
-
-  @override
   String pricePerMonth(String price) {
     return '$price / ay';
   }
-
-  @override
-  String get benefitUnlimitedCalls => 'Sınırsız arama';
 
   @override
   String get benefitDetailedAnalysis =>
@@ -569,8 +736,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get challengeLoadingTitle => 'Yükleniyor…';
 
   @override
-  String get challengeLoadingNote =>
-      'İlk çalıştırmada Korece konuşma modeli indiriliyor (~82MB).\nLütfen bir süre bekleyin.';
+  String get challengeLoadingNote => 'Kamera ve mikrofon hazırlanıyor.';
 
   @override
   String get challengeSttFallback =>
@@ -678,6 +844,11 @@ class AppLocalizationsTr extends AppLocalizations {
   String get accentSoundsLike => 'Korece aksanınız şöyle geliyor';
 
   @override
+  String accentShareText(String country) {
+    return 'BeaverTalk ile Korece öğreniyorum — Korece aksanım şöyle çıktı: $country! 🦫 Sen de aksanını keşfet ve benimle öğren: https://beavertalk.im';
+  }
+
+  @override
   String get hintLabel => 'İpucu';
 
   @override
@@ -725,7 +896,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get home => 'Ana Sayfa';
 
   @override
-  String get callNow => 'Şimdi ara';
+  String get onboardingLevelTestCta => 'Seviye testine gir';
 
   @override
   String get pronunciation => 'Telaffuz';
@@ -735,10 +906,6 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get rhythm => 'Ritim';
-
-  @override
-  String get analysisTimeout =>
-      'Bu beklenenden uzun sürüyor. Lütfen biraz sonra tekrar deneyin.';
 
   @override
   String get analysisFailed =>
@@ -785,6 +952,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get loginAppleSignInFailed => 'Apple ile giriş başarısız oldu.';
 
   @override
+  String get loginFacebookSignInFailed => 'Facebook ile giriş başarısız oldu.';
+
+  @override
   String get loginKakaoSignInFailed => 'Kakao ile giriş başarısız oldu.';
 
   @override
@@ -792,6 +962,9 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get loginContinueWithGoogle => 'Google ile devam et';
+
+  @override
+  String get loginContinueWithFacebook => 'Facebook ile devam et';
 
   @override
   String get loginContinueWithApple => 'Apple ile devam et';
@@ -978,12 +1151,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get lastPayment => 'Son ödeme';
 
   @override
-  String subscriptionSwitchNote(String date) {
-    return 'Pro avantajlarını $date tarihine kadar kullanmaya devam edebilirsiniz; ardından planınız otomatik olarak Ücretsiz\'e geçer.';
-  }
-
-  @override
-  String get freePlanCallLimit => 'Günde 1 görüşme · 5 dk sınır';
+  String get freePlanCallLimit => 'Günde 5 dk görüşme';
 
   @override
   String get freePlanBasicCharacters => 'Temel karakterler dahil';
@@ -996,9 +1164,6 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get noPayments => 'Henüz ödeme yok';
-
-  @override
-  String get morePaymentsExist => 'Daha eski ödemeler henüz gösterilmiyor';
 
   @override
   String get undatedPayments => 'Tarihsiz';
@@ -1121,15 +1286,37 @@ class AppLocalizationsTr extends AppLocalizations {
   String get retakeLevelTest => 'Seviye testini tekrarla';
 
   @override
+  String get levelTestOncePerDay =>
+      'Seviye testine günde bir kez girebilirsin. Yarın tekrar dene.';
+
+  @override
+  String get levelRetakeTitle => 'Seviye testini yeniden yapmak ister misin?';
+
+  @override
+  String get levelRetakeBody =>
+      'Yeniden yaparsan ilerlemen o seviyenin ilk dersine döner — aynı seviye çıksa bile. Öğrendiğin ifadeler ve arama geçmişin kalır.';
+
+  @override
+  String get levelRetakeKeep => 'İlerlememi koru';
+
+  @override
+  String get levelRetakeConfirm => 'Testi yeniden yap';
+
+  @override
   String get practicePronunciation => 'Telaffuz çalış';
 
   @override
-  String get priceChangedTitle => 'Fiyat değişti';
+  String get learnResultView => 'Öğrenme sonuçlarını gör';
 
   @override
-  String priceChangedBody(String price) {
-    return 'Bu ürün artık $price. Devam etmek ister misin?';
-  }
+  String get learnAgain => 'Yeniden çalış';
+
+  @override
+  String get analysisNoScoreReview =>
+      'Cümleleri çalışınca telaffuz puanın çıkar';
+
+  @override
+  String get analysisNoScoreEmpty => 'Puanlanacak cümle yok';
 
   @override
   String get billingGroupPlanPurchases => 'Plan ve satın alımlar';
@@ -1138,16 +1325,16 @@ class AppLocalizationsTr extends AppLocalizations {
   String get billingGroupInTheStore => 'Mağazada';
 
   @override
-  String get billingChangePlan => 'Planı değiştir';
-
-  @override
-  String get billingCompareAllPlans => 'Tüm planları karşılaştır';
+  String get billingCompareAllPlans => 'Planları karşılaştır';
 
   @override
   String get billingBuyACharacter => 'Karakter satın al';
 
   @override
   String get billingRestorePurchases => 'Satın alımları geri yükle';
+
+  @override
+  String get billingRedeemCode => 'Kod kullan';
 
   @override
   String get billingPaymentHistory => 'Ödeme geçmişi';
@@ -1195,13 +1382,29 @@ class AppLocalizationsTr extends AppLocalizations {
   String get planPro => 'Pro';
 
   @override
-  String get planMax => 'Max';
+  String get planMax => 'Premium';
 
   @override
-  String get planMaxTrial => 'Max deneme';
+  String get premiumBulletVideo => 'Günde 15 dakika görüntülü arama';
 
   @override
-  String get freePlanPriceLine => '\$0.00 — günde bir arama';
+  String get premiumBulletAnalysis => 'Tekrarda sınırsız telaffuz puanlaması';
+
+  @override
+  String get premiumBulletWeakSounds => 'Dilin için zayıf ses alıştırmaları';
+
+  @override
+  String get noteCharactersSeparate =>
+      'Karakterler ayrı satılır. Satın aldıkların senin kalır.';
+
+  @override
+  String get ctaGetPremium => 'Premium al';
+
+  @override
+  String get planMaxTrial => 'Premium deneme';
+
+  @override
+  String get freePlanPriceLine => 'Ücretsiz — günde 5 dakika arama';
 
   @override
   String pricePerMonthLine(String amount) {
@@ -1214,11 +1417,11 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String get todaysCalls => 'Bugünkü aramalar';
+  String get todaysCalls => 'Bugünkü arama süresi';
 
   @override
   String callsUsedOfLimit(int used, int limit) {
-    return '$used/$limit kullanıldı';
+    return '$limit dakikanın $used dakikası kullanıldı';
   }
 
   @override
@@ -1239,35 +1442,22 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String get bannerGoUnlimitedTitle => 'Pro ile sınırsıza geç';
-
-  @override
-  String bannerGoUnlimitedSub(String price) {
-    return 'Sınırsız arama · her biri 15 dakika · aylık $price';
-  }
-
-  @override
-  String get bannerMaxUpsellTitle => 'Max ile videoyu aç';
+  String get bannerMaxUpsellTitle => 'Premium ile yüz yüze konuş';
 
   @override
   String bannerMaxUpsellSub(String price) {
-    return 'Yüz yüze aramalar · aylık $price';
+    return 'Görüntülü arama · günde 15 dakika · aylık $price';
   }
 
   @override
   String get bannerAnnualSwitchTitle => 'Yıllık plana geç';
 
   @override
-  String bannerAnnualSwitchSub(String yearly, String perMonth) {
-    return 'Yılda $yearly · aylık $perMonth';
-  }
-
-  @override
   String get bannerPaymentFailedTitle => 'Ödemeyi alamadık';
 
   @override
   String get bannerPaymentFailedSub =>
-      'Pro\'yu korumak için mağazadan ödeme yöntemini güncelle';
+      'Premium\'u korumak için mağazadan ödeme yöntemini güncelle';
 
   @override
   String get bannerPausedTitle => 'Planın duraklatıldı';
@@ -1284,10 +1474,6 @@ class AppLocalizationsTr extends AppLocalizations {
       'Ödeme yöntemi, plan değişiklikleri ve iptal işlemleri mağaza üzerinden yapılır.';
 
   @override
-  String get noteFairUse =>
-      'Sınırsız kullanım, adil kullanım politikamıza tabidir.';
-
-  @override
   String noteTrialEnds(String date) {
     return 'Denemen $date tarihinde bitiyor. Öncesinde mağazadan iptal edersen hiçbir ücret alınmaz.';
   }
@@ -1298,7 +1484,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get noteHold =>
-      'Ödeme gerçekleşene kadar Pro duraklatıldı. Karakterlerin ve ilerlemen güvende.';
+      'Ödeme gerçekleşene kadar Premium duraklatıldı. Karakterlerin ve ilerlemen güvende.';
 
   @override
   String noteEnding(String date) {
@@ -1306,7 +1492,7 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String get trialExpiredTitle => 'Max denemen sona erdi';
+  String get trialExpiredTitle => 'Premium denemen sona erdi';
 
   @override
   String get trialExpiredSub => 'Artık Free plandasın';
@@ -1318,71 +1504,26 @@ class AppLocalizationsTr extends AppLocalizations {
   String get currentPlanTitle => 'Mevcut Plan';
 
   @override
-  String get badgeRecommended => 'Önerilen';
-
-  @override
   String get perMonthUnit => 'aylık';
 
   @override
-  String get planTaglinePro => 'Sınırsız arama. Her biri 15 dakika.';
-
-  @override
-  String get planTaglineMax => 'Artık onları görebilirsin.';
-
-  @override
-  String get planTaglineFree => 'Günde bir arama. Bizden.';
-
-  @override
-  String get bulletProCalls => 'İstediğin kadar sesli arama';
-
-  @override
-  String get bulletProLength => 'Arama başına 15 dakika';
-
-  @override
-  String get bulletProScoring => 'Harf harf puanlanan telaffuz';
+  String get planTaglineFree => 'Günde 5 dakika arama. Bizden.';
 
   @override
   String get bulletProCorrections => 'Ana diline göre düzeltmeler';
 
   @override
-  String get bulletProBeaverCalls => 'Beaver seni önce arar';
+  String get bulletFreeCall => 'Günde 5 dakika sesli arama';
 
   @override
-  String get bulletMaxVideo => 'Yüz yüze görüntülü aramalar';
-
-  @override
-  String get bulletMaxEverything => 'Pro\'daki her şey';
-
-  @override
-  String get bulletMaxCharacters => 'Tüm karakterler, sınırsız';
-
-  @override
-  String get bulletMaxStudyBook => 'Seviyene uygun bir çalışma kitabı';
-
-  @override
-  String get bulletMaxWeeklyReport =>
-      'Telaffuzunun nasıl değiştiğine dair haftalık rapor';
-
-  @override
-  String get bulletFreeCall => 'Günde bir 5 dakikalık sesli arama';
-
-  @override
-  String get bulletFreeCheck => 'Günde bir telaffuz kontrolü';
-
-  @override
-  String get bulletFreeAccent => 'Sınırsız aksan kontrolü';
-
-  @override
-  String get bulletFreeCharacter => 'Başlangıç için bir karakter';
-
-  @override
-  String get ctaGoUnlimited => 'Sınırsıza geç';
+  String get bulletFreeCharacter => 'Başlangıç için iki karakter';
 
   @override
   String get ctaTurnOnVideo => 'Videoyu aç';
 
   @override
-  String get noteCallLength => 'Aramalar her biri 15 dakikadır.';
+  String get noteCallLength =>
+      'Premium: günde 15 dakika — bu süre içinde istediğin kadar arayabilirsin.';
 
   @override
   String get paywallProTitle1 => 'Gece 3\'te bile ayakta olan';
@@ -1391,33 +1532,26 @@ class AppLocalizationsTr extends AppLocalizations {
   String get paywallProTitle2 => 'Koreli arkadaşın';
 
   @override
-  String get paywallProSub => 'Sınırsız arama. Her biri 15 dakika. Yıl boyu.';
+  String get paywallLimitHeadline =>
+      'Premium ile günde 15 dakika arama yapabilirsin.';
 
   @override
-  String get paywallLimitHeadline => 'Pro sınırı kaldırır.';
+  String get limitBannerCallTitle => 'Bugünkü arama süren doldu';
 
   @override
-  String get limitBannerCallTitle => 'Bugünkü araman buydu';
-
-  @override
-  String get limitBannerCallSub => 'Free günde bir arama verir';
-
-  @override
-  String get limitBannerCheckTitle => 'Bugünkü kontrolün buydu';
-
-  @override
-  String get limitBannerCheckSub => 'Free günde bir kontrol verir';
+  String get limitBannerCallSub => 'Free günde 5 dakika arama verir';
 
   @override
   String get bulletProCharactersForever =>
       'Satın aldığın karakterler sonsuza dek senin';
 
   @override
-  String get paywallMaxTitle => 'Artık onları görebilirsin.';
+  String get paywallMaxTitle => 'Artık görüntülü, yüz yüze konuşabilirsin.';
 
   @override
-  String get paywallMaxSub =>
-      'Görüntülü aramalar, tüm karakterler ve seviyene göre hazırlanmış bir çalışma kitabı.';
+  String paywallTutorCompare(String price) {
+    return 'Bir öğretmenle bir saat \$25. Bir aylık Premium $price.';
+  }
 
   @override
   String get planMonthly => 'Aylık';
@@ -1456,8 +1590,31 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
+  String ctaCaptionMaxYearly(String price) {
+    return 'Yıllık $price · istediğin zaman mağazadan iptal et';
+  }
+
+  @override
   String ctaCaptionMaxTrial(String price) {
-    return '7 gün ücretsiz, sonra Aylık $price · istediğin zaman mağazadan iptal et';
+    return '7 gün ücretsiz, sonra aylık $price · istediğin zaman mağazadan iptal et';
+  }
+
+  @override
+  String ctaCaptionMaxYearlyTrial(String price) {
+    return '7 gün ücretsiz, sonra yıllık $price · istediğin zaman mağazadan iptal et';
+  }
+
+  @override
+  String get bundleTitle => 'Üçü bir arada';
+
+  @override
+  String bundleOffBadge(int percent) {
+    return '%$percent indirim';
+  }
+
+  @override
+  String bundleLinkLabel(String price) {
+    return 'Üçünü $price karşılığında al';
   }
 
   @override
@@ -1471,62 +1628,26 @@ class AppLocalizationsTr extends AppLocalizations {
   String get footerPrivacy => 'Gizlilik';
 
   @override
-  String get noteMaxCharacters =>
-      'Max ile açılan karakterler aboneliğin aktif olduğu sürece kullanılabilir. Satın aldığın karakterler senin kalır.';
-
-  @override
   String get processingTitle => 'Satın alma onaylanıyor';
 
   @override
   String get processingSub => 'Bu genellikle birkaç saniye sürer.';
 
   @override
-  String get successProTitle => 'Artık Pro\'dasın.';
+  String get successProTitle => 'Artık Premium\'dasın.';
 
   @override
-  String get successProSub => 'Sınırsız aramalar şu andan itibaren başladı.';
-
-  @override
-  String get successProBenefit1 =>
-      'İstediğin kadar ara — arama başına 15 dakika';
-
-  @override
-  String get successProBenefit2 => 'Sınırsız telaffuz kontrolü';
-
-  @override
-  String get successProBenefit3 =>
-      'Tüm karakterler, ayrıca tek seferlik satın alımlar';
-
-  @override
-  String get successMaxTitle => 'Artık onları görebilirsin.';
+  String get successMaxTitle => 'Artık kiminle konuştuğunu görebilirsin.';
 
   @override
   String get successMaxSub =>
       'Görüntülü aramalar açık. Herhangi bir aramada video düğmesine dokun.';
 
   @override
-  String get successMaxBenefit1 => 'Yüz yüze görüntülü aramalar';
-
-  @override
-  String get successMaxBenefit2 =>
-      'Tüm karakterler sınırsız, yeniler önce sende';
-
-  @override
-  String get successMaxBenefit3 => 'Seviyene uygun bir çalışma kitabı';
-
-  @override
-  String get ctaStartACall => 'Arama başlat';
-
-  @override
   String get ctaStartAVideoCall => 'Görüntülü arama başlat';
 
   @override
   String get ctaSeeYourSubscription => 'Aboneliğini gör';
-
-  @override
-  String successProCaption(String price) {
-    return 'İptal edene kadar aylık $price tahsil edilir. İstediğin zaman mağazadan yönet veya iptal et.';
-  }
 
   @override
   String successMaxCaption(String price) {
@@ -1546,94 +1667,16 @@ class AppLocalizationsTr extends AppLocalizations {
   String get plansErrorCaption => 'Hiçbir ücret alınmadı.';
 
   @override
-  String get changePlanTitle => 'Planı Değiştir';
-
-  @override
-  String get moveToMaxTitle => 'Max\'e Geç';
-
-  @override
-  String maxPriceShort(String price) {
-    return '$price / ay';
-  }
-
-  @override
-  String get moveToMaxCardSub =>
-      'Yüz yüze görüntülü aramalar · tüm karakterler · senin için hazırlanmış çalışma kitabı';
-
-  @override
-  String get whatHappensNow => 'Şimdi ne olacak';
-
-  @override
-  String get maxStartsLabel => 'Max başlar';
-
-  @override
-  String get immediately => 'Hemen';
-
-  @override
-  String get unusedProTime => 'Kullanılmayan Pro süresi';
-
-  @override
-  String get creditedTowardMax => 'Max\'e sayılır';
-
-  @override
-  String nextPaymentMaxValue(String price, String date) {
-    return '$price · $date';
-  }
-
-  @override
-  String nextPaymentProValue(String price, String date) {
-    return '$price · $date';
-  }
-
-  @override
-  String get ctaSwitchToMax => 'Max\'e geç';
-
-  @override
-  String get upgradeCaption =>
-      'Yeni planın hemen başlar. Kullanılmayan Pro süresi hesaba sayılır, asla iki kez ücret alınmaz.';
-
-  @override
-  String get moveToProTitle => 'Pro\'ya Geç';
-
-  @override
-  String get moveToProSub =>
-      'Bugün hiçbir şey değişmez. Max, zaten ödediğin ayın sonuna kadar devam eder.';
-
-  @override
-  String get maxRunsUntil => 'Max şu tarihe kadar sürer';
-
-  @override
-  String get proStarts => 'Pro başlar';
-
-  @override
-  String get whatYouKeep => 'Sende kalanlar';
-
-  @override
-  String get keepBenefitCalls => 'Sınırsız sesli arama, her biri 15 dakika';
-
-  @override
-  String get keepBenefitCharacters =>
-      'Satın aldığın karakterler sonsuza dek senin';
-
-  @override
-  String downgradeWarning(String date) {
-    return 'Görüntülü aramalar ve yalnızca Max\'e özel karakterler $date tarihinde kapanır.';
-  }
-
-  @override
-  String get ctaSwitchToPro => 'Pro\'ya geç';
-
-  @override
-  String get ctaKeepMax => 'Max\'te kal';
+  String get ctaKeepMax => 'Premium\'da kal';
 
   @override
   String get winbackSkip => 'Atla';
 
   @override
-  String get winbackTitle => 'Pro planın sona erdi';
+  String get winbackTitle => 'Premium planın sona erdi';
 
   @override
-  String get winbackSub => 'Artık Free\'desin — günde bir arama.';
+  String get winbackSub => 'Artık Free\'desin — günde 5 dakika arama.';
 
   @override
   String get winbackQuestion => 'Neden ayrıldığını söyler misin?';
@@ -1670,7 +1713,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get ctaClose => 'Kapat';
 
   @override
-  String get ovRestoreSuccessTitle => 'Pro geri döndü';
+  String get ovRestoreSuccessTitle => 'Premium geri döndü';
 
   @override
   String get ovRestoreSuccessBody =>
@@ -1691,13 +1734,28 @@ class AppLocalizationsTr extends AppLocalizations {
       'Bu abonelik zaten farklı bir BeaverTalk hesabında etkin.';
 
   @override
+  String ovRestoreCharactersTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Karakterlerin geri geldi',
+      one: 'Karakterin geri geldi',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get ovRestoreCharacterOtherTitle =>
+      'Bu karakter başka bir hesapta satın alındı';
+
+  @override
   String get ctaSignInThatAccount => 'O hesapla giriş yap';
 
   @override
   String get ctaGetHelp => 'Yardım al';
 
   @override
-  String get ovCharacterOfferTitle => 'Pro için hazır değil misin?';
+  String get ovCharacterOfferTitle => 'Premium için hazır değil misin?';
 
   @override
   String get ovCharacterOfferBody =>
@@ -1708,7 +1766,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String rowFromPrice(String price) {
-    return '$price\'dan başlayan';
+    return 'tanesi $price';
   }
 
   @override
@@ -1752,7 +1810,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get rowCharactersYouBought => 'Satın aldığın karakterler';
 
   @override
-  String get rowProRunsUntil => 'Pro şu tarihe kadar sürer';
+  String get rowProRunsUntil => 'Premium şu tarihe kadar sürer';
 
   @override
   String get ctaSwitchToYearly => 'Yıllığa geç';
@@ -1767,7 +1825,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get ovAnnualSwitchBody =>
-      'İki aydır Pro\'dasın. Yıllık plan daha ucuza geliyor.';
+      'Yıllık plan, aylık ödemekten daha ucuza gelir.';
 
   @override
   String get rowYouSave => 'Tasarrufun';
@@ -1828,7 +1886,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get ovTrialEndingBody =>
-      'İptal etmezsen Max devam eder. Olacaklar şöyle.';
+      'İptal etmezsen Premium devam eder. Olacaklar şöyle.';
 
   @override
   String get rowTrialEnds => 'Deneme bitişi';
@@ -1843,7 +1901,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get ctaCancelInStore => 'Mağazadan iptal et';
 
   @override
-  String get ovTrialStartTitle => '7 gün Max, ücretsiz';
+  String get ovTrialStartTitle => '7 gün Premium, ücretsiz';
 
   @override
   String ovTrialStartBody(String price, String date) {
@@ -1857,8 +1915,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get ovOtoTitle => 'Başlamadan önce son bir şey';
 
   @override
-  String get ovOtoBody =>
-      'İyi seçim — sınırsız aramalar şu anda açık. Aynı Pro, yıllık ödersen daha ucuz.';
+  String get ovOtoBody => 'İyi seçim. Aynı Premium yıllık ödersen daha ucuz.';
 
   @override
   String get ovFailedDeclinedTitle => 'Kartın reddedildi';
@@ -1883,7 +1940,28 @@ class AppLocalizationsTr extends AppLocalizations {
   String get ovFailedStoreBody => 'Mağazaya ulaşamadık. Hiçbir ücret alınmadı.';
 
   @override
-  String get ovAlreadyTitle => 'Zaten Pro\'dasın';
+  String get ovVerifyingTitle => 'Ödeme alındı';
+
+  @override
+  String get ovVerifyingBody =>
+      'Mağazayla doğrulamaya devam ediyoruz. Kısa süre içinde etkinleşecek — etkinleşmezse “Satın alımları geri yükle”ye dokun.';
+
+  @override
+  String get ovPendingTitle => 'Ödeme bekleniyor';
+
+  @override
+  String get ovPendingBody =>
+      'Mağaza ödemeyi henüz tamamlamadı. Tamamlanınca etkinleşecek — bu ekrandan çıkabilirsin.';
+
+  @override
+  String get ovRejectedTitle => 'Bu satın alımı doğrulayamadık';
+
+  @override
+  String get ovRejectedBody =>
+      'Mağaza bu ödemeyi doğrulamadı, bu yüzden hiçbir şey etkinleşmedi. Ücret alındıysa bizimle iletişime geç.';
+
+  @override
+  String get ovAlreadyTitle => 'Zaten Premium\'dasın';
 
   @override
   String get ovAlreadyBody =>
@@ -1897,30 +1975,24 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String subCancelBody(String date) {
-    return 'Pro $date tarihine kadar sürer. Sonrasında Free\'ye geçersin.';
+    return 'Premium $date tarihine kadar sürer. Sonrasında Free\'ye geçersin.';
   }
 
   @override
   String get subWhatYouLose => 'Kaybedeceklerin';
 
   @override
-  String get benefitCalls15 => 'Sınırsız arama, her biri 15 dakika';
-
-  @override
   String get benefitScoring => 'Harf harf puanlanan telaffuz';
 
   @override
-  String get benefitEveryCharacter => 'Tüm karakterler, sınırsız';
-
-  @override
-  String get ctaKeepPro => 'Pro\'da kal';
+  String get benefitEveryMetric => 'Her ölçüt, her cümle';
 
   @override
   String get subPaymentTitle => 'Ödemeyi güncelle';
 
   @override
   String get subPaymentBody =>
-      'Ödemeyi alamadık. Ek süre boyunca Pro çalışmaya devam eder.';
+      'Ödemeyi alamadık. Ek süre boyunca Premium çalışmaya devam eder.';
 
   @override
   String get subHowToFix => 'Nasıl düzeltilir';
@@ -1939,7 +2011,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String subResubBody(String date) {
-    return 'Pro $date tarihinde bitiyor. Otomatik yenilemeyi tekrar aç, hiçbir şey değişmesin.';
+    return 'Premium $date tarihinde bitiyor. Otomatik yenilemeyi tekrar aç, hiçbir şey değişmesin.';
   }
 
   @override
@@ -1949,22 +2021,10 @@ class AppLocalizationsTr extends AppLocalizations {
   String get ctaTurnItBackOn => 'Yeniden aç';
 
   @override
-  String get flTodayTitle => 'Bugünkü araman buydu';
+  String get flTodayTitle => 'Bugünkü arama süren doldu';
 
   @override
   String get flTodayBody => 'Kaldığın yerden devam et — hemen şimdi.';
-
-  @override
-  String get flCheckTitle => 'Bugünkü kontrolün buydu';
-
-  @override
-  String get flCheckBody => 'Free\'de günde bir kontrol. Pro sınırsız yapar.';
-
-  @override
-  String get flBenefitCalls => 'Pro ile sınırsız arama · her biri 15 dakika';
-
-  @override
-  String get flBenefitChecks => 'Pro ile sınırsız telaffuz kontrolü';
 
   @override
   String flCaption(String price) {
@@ -1986,7 +2046,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get nicknameLabel => 'Takma ad';
 
   @override
-  String get emailLabel => 'Email';
+  String get emailLabel => 'E-posta';
 
   @override
   String get loginMethodLabel => 'Giriş yöntemi';
@@ -2004,40 +2064,45 @@ class AppLocalizationsTr extends AppLocalizations {
   String get ctaSave => 'Kaydet';
 
   @override
-  String get subscriptionRow => 'Subscription';
+  String get subscriptionRow => 'Abonelik';
 
   @override
-  String get iapSuccessTitle => 'Purchase complete';
+  String get iapSuccessTitle => 'Satın alma tamamlandı';
 
   @override
   String iapSuccessBody(String name) {
-    return 'The $name avatar is yours forever.\nApplied as soon as the receipt clears.';
+    return '$name avatarı sonsuza dek senin.\nMakbuz onaylanır onaylanmaz uygulanır.';
   }
 
   @override
-  String get ctaGoHome => 'Home';
+  String get ctaGoHome => 'Ana sayfaya';
 
   @override
-  String get ctaUseNow => 'Use it now';
+  String get ctaUseNow => 'Hemen kullan';
 
   @override
-  String get iapFailTitle => 'The payment didn\'t go through';
+  String get iapFailTitle => 'Ödeme tamamlanmadı';
 
   @override
-  String get iapFailBody => 'You can try again';
+  String get iapFailBody => 'Tekrar deneyebilirsin';
 
   @override
-  String get paywallLeaveTitle => 'Şimdi çıkarsan abone olamazsın';
+  String get paywallGuardTitle => 'Free\'yi kullanmaya devam edebilirsin';
 
   @override
-  String get paywallLeaveBody =>
-      'Avantajların ödemeden hemen sonra açılır. Sayfam üzerinden istediğin zaman geri dönebilirsin.';
+  String get paywallGuardBody => 'Günde 5 dakika görüşme hakkın devam ediyor.';
 
   @override
-  String get ctaKeepLooking => 'Bakmaya devam et';
+  String get ctaMaybeLater => 'Belki sonra';
 
   @override
-  String get ctaLeaveAnyway => 'Yine de çık';
+  String get winbackOfferBadge => 'İlk ayda %50 indirim';
+
+  @override
+  String get winbackOfferTitle => 'Tekrar hoş geldin';
+
+  @override
+  String get ctaGetHalfOff => '%50 indirimi al';
 
   @override
   String get iapCharacterSuccessTitle => 'Yeni bir arkadaş katıldı!';
@@ -2084,9 +2149,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String get takeLevelTest => 'Seviye testine gir';
 
   @override
-  String get reviewToSeeScore => 'Tekrar edince telaffuz puanınız çıkar';
-
-  @override
   String get playAgain => 'Tekrar oyna';
 
   @override
@@ -2100,4 +2162,797 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get difficultyLabel => 'Zorluk';
+
+  @override
+  String get connected => 'Bağlandı';
+
+  @override
+  String get unlockedWithMax => 'Planına dahil';
+
+  @override
+  String get fcEndedTitle => 'Ücretsiz görüşmen sona erdi';
+
+  @override
+  String get fcEndedBody =>
+      'Ücretsiz görüşmeler en fazla 5 dakika sürer\nDaha uzun konuşmak için abone ol';
+
+  @override
+  String get ctaSubscribeKeepTalking => 'Abone ol ve konuşmaya devam et';
+
+  @override
+  String get kgTitle => 'Devam edelim mi?';
+
+  @override
+  String get kgBody =>
+      'Aramalar kısa bölümler hâlinde devam eder.\nHer seferinde yeniden soracağız.';
+
+  @override
+  String get pcEndedTitleToday => 'Bugünkü aramayı burada bitirelim.';
+
+  @override
+  String get pcEndedBodyToday => 'Konuştuklarımızı tekrar et, yarın yine ara!';
+
+  @override
+  String get pcEndedTitle => 'Bu aramayı burada bitirelim.';
+
+  @override
+  String get pcEndedBody => 'Konuştuklarımızı tekrar et, yine ara!';
+
+  @override
+  String get ctaKeepTalking => 'Konuşmaya devam et';
+
+  @override
+  String get callModeSheetTitle => 'Nasıl konuşmak istersin?';
+
+  @override
+  String get callModeSheetSubtitle => 'Bu aramaya hemen uygulanır';
+
+  @override
+  String get callModeFreeTalk => 'Serbest sohbet';
+
+  @override
+  String get callModeFreeTalkDesc => 'Düzeltme olmadan konuş';
+
+  @override
+  String get callModeChange => 'Modu değiştir';
+
+  @override
+  String get callModeKeep => 'Şimdi değil';
+
+  @override
+  String get callExitTitle => 'Arama sonlandırılsın mı?';
+
+  @override
+  String get callExitSubtitle =>
+      'Şimdi bitirsen de konuştuğun süre bugüne sayılır';
+
+  @override
+  String get callExitKeep => 'Konuşmaya devam et';
+
+  @override
+  String get callExitConfirm => 'Aramayı bitir';
+
+  @override
+  String get callMicMute => 'Sesi kapat';
+
+  @override
+  String get callMicUnmute => 'Sesi aç';
+
+  @override
+  String get callPushToTalk => 'Konuşmak için basılı tut';
+
+  @override
+  String get callFreeEndedTitle => 'Ücretsiz aramanız sona erdi';
+
+  @override
+  String get callFreeEndedCta => 'Abone ol ve konuşmaya devam et';
+
+  @override
+  String get callKeepGoingTitle => 'Devam edelim mi?';
+
+  @override
+  String get callKeepGoingSubtitle =>
+      'Aramalar 5 dakikalık bölümler hâlinde sürer. Her seferinde tekrar soracağız.';
+
+  @override
+  String get articulationSelectedWord => 'Seçilen kelime';
+
+  @override
+  String get articulationYouSaid => 'Telaffuzunuz';
+
+  @override
+  String get articulationTargetSound => 'Hedef';
+
+  @override
+  String get reportEntry => 'Bildir';
+
+  @override
+  String get reportTitle => 'Bildir';
+
+  @override
+  String get reportPrompt => 'Sorun neydi?';
+
+  @override
+  String get reportGuide =>
+      'Yapay zeka karakterinin hangi içeriğinin sizi rahatsız ettiğini bize bildirin. Her bildirimi inceliyoruz.';
+
+  @override
+  String get reportReasonSexual => 'Cinsel içerik';
+
+  @override
+  String get reportReasonHate => 'Nefret veya ayrımcılık';
+
+  @override
+  String get reportReasonViolence => 'Şiddet içeren veya tehdit edici içerik';
+
+  @override
+  String get reportReasonSelfHarm => 'Kendine zarar vermeyi teşvik ediyor';
+
+  @override
+  String get reportReasonMisinfo => 'Yanlış bilgi';
+
+  @override
+  String get reportReasonOther => 'Başka bir sorun';
+
+  @override
+  String get reportDetailHint => 'Ne olduğunu yazın (isteğe bağlı)';
+
+  @override
+  String get reportSubmit => 'Bildirimi gönder';
+
+  @override
+  String get reportDoneTitle => 'Bildiriminiz alındı';
+
+  @override
+  String get reportDoneBody =>
+      'İnceleyip gerekirse işlem yapacağız. BeaverTalk\'ı güvende tuttuğunuz için teşekkürler.';
+
+  @override
+  String get reportFailed => 'Bildirim gönderilemedi. Lütfen tekrar deneyin.';
+
+  @override
+  String get hwTitle => 'Ödev';
+
+  @override
+  String get hwJoinCodeTitle => 'Sınıf kodunu gir';
+
+  @override
+  String get hwJoinCodeSubtitle => 'Öğretmeninin verdiği 6 karakterli koddur';
+
+  @override
+  String get hwJoinCodeLabel => 'Sınıf kodu';
+
+  @override
+  String get hwJoinCodeHelp => 'Kod büyük küçük harfe duyarlı değildir';
+
+  @override
+  String get hwJoinConfirmTitle => 'Doğru sınıf bu mu?';
+
+  @override
+  String get hwJoinConfirmSubtitle => 'Değilse kodu tekrar kontrol et';
+
+  @override
+  String get hwJoinFieldInstitution => 'Kurum';
+
+  @override
+  String get hwJoinFieldTeacher => 'Öğretmen';
+
+  @override
+  String get hwJoinFieldLearners => 'Öğrenciler';
+
+  @override
+  String get hwJoinFieldTerm => 'Dönem';
+
+  @override
+  String get hwJoinConfirmNote =>
+      'Sınıf adı öğretmeninin yazdığı gibi görünür. Çevirmiyoruz.';
+
+  @override
+  String get hwJoinConfirmYes => 'Evet, bu';
+
+  @override
+  String get hwJoinConfirmRetry => 'Kodu yeniden gir';
+
+  @override
+  String get hwJoinProfileTitle => 'Sınıfta hangi adı kullanacaksın?';
+
+  @override
+  String get hwJoinProfileSubtitle =>
+      'Öğretmenin bunu sınıf listesiyle eşleştirir';
+
+  @override
+  String get hwJoinNameLabel => 'Ad';
+
+  @override
+  String get hwJoinNameHelp => 'Uygulamadaki adından farklı olabilir';
+
+  @override
+  String get hwJoinStudentNoLabel => 'Öğrenci numarası (isteğe bağlı)';
+
+  @override
+  String get hwJoinStudentNoHelp =>
+      'Öğretmenin sınıf listesini eşleştirmek için kullanır';
+
+  @override
+  String get hwJoinConsentTitle => 'Öğretmeninin gördükleri';
+
+  @override
+  String get hwJoinConsentSubtitle => 'Sınıfa katılmak için onay vermelisin';
+
+  @override
+  String get hwJoinConsentSharedHeading => 'Öğretmeninle paylaşılır';
+
+  @override
+  String get hwJoinConsentShared1 => 'Sınıf adı ve öğrenci numarası';
+
+  @override
+  String get hwJoinConsentShared2 => 'Ödevi yapıp yapmadığın';
+
+  @override
+  String get hwJoinConsentShared3 => 'Geçilen ve kaçırılan cümleler';
+
+  @override
+  String get hwJoinConsentShared4 => 'Ödev görüşmesinin süresi ve özeti';
+
+  @override
+  String get hwJoinConsentNotSharedHeading => 'Paylaşılmaz';
+
+  @override
+  String get hwJoinConsentNotShared1 => 'E-posta ve telefon numarası';
+
+  @override
+  String get hwJoinConsentNotShared2 => 'Uygulama adı, profil ve karakter';
+
+  @override
+  String get hwJoinConsentNotShared3 => 'Uyruk ve ana dil';
+
+  @override
+  String get hwJoinConsentNotShared4 => 'Sınıf dışındaki görüşmeler ve çalışma';
+
+  @override
+  String get hwJoinConsentNotShared5 => 'Abonelik ve ödeme bilgileri';
+
+  @override
+  String get hwJoinConsentAgree => 'Yukarıdakileri kabul ediyorum';
+
+  @override
+  String get hwJoinConsentCta => 'Kabul et ve katıl';
+
+  @override
+  String hwJoinDoneTitle(String className) {
+    return '$className sınıfına katıldın';
+  }
+
+  @override
+  String hwJoinDoneSubtitle(int count) {
+    return '$count ödev seni bekliyor';
+  }
+
+  @override
+  String get hwJoinDoneNoAssignment => 'Henüz ödev yok';
+
+  @override
+  String get hwJoinDoneNextDue => 'Sonraki teslim';
+
+  @override
+  String get hwJoinDoneRosterName => 'Sınıftaki adın';
+
+  @override
+  String get hwJoinDoneCta => 'Ödevleri gör';
+
+  @override
+  String get hwJoinErrorNotFound => 'Bu kodu bulamadık';
+
+  @override
+  String get hwJoinErrorNotFoundBody => 'Lütfen altı haneyi tekrar kontrol et.';
+
+  @override
+  String get hwJoinErrorExpired => 'Bu kodun süresi doldu';
+
+  @override
+  String get hwJoinErrorExpiredBody => 'Öğretmeninden yeni bir kod iste.';
+
+  @override
+  String get hwJoinErrorFull => 'Sınıf dolu';
+
+  @override
+  String get hwJoinErrorFullBody => 'Lütfen öğretmenine haber ver.';
+
+  @override
+  String get hwJoinFailed => 'Katılınamadı. Birazdan tekrar dene.';
+
+  @override
+  String get hwSectionInProgress => 'Devam eden';
+
+  @override
+  String get hwSectionUpcoming => 'Yaklaşan';
+
+  @override
+  String get hwSectionDone => 'Bitti';
+
+  @override
+  String get hwLeaveClassLink => 'Sınıftan ayrıl';
+
+  @override
+  String get hwListEmptyTitle => 'Henüz ödev yok';
+
+  @override
+  String get hwListEmptyBody => 'Öğretmenin ödev verdiğinde burada görünecek.';
+
+  @override
+  String get hwListFailed => 'Ödevlerin yüklenemedi.';
+
+  @override
+  String get hwRetry => 'Tekrar dene';
+
+  @override
+  String get hwBadgeDone => 'Bitti';
+
+  @override
+  String get hwBadgeOverdue => 'Teslim edilmedi';
+
+  @override
+  String hwBadgeOverdueDays(int days) {
+    return 'Teslim edilmedi, $days gün gecikme';
+  }
+
+  @override
+  String hwBadgeDday(int days) {
+    return 'S-$days';
+  }
+
+  @override
+  String get hwBadgeDueToday => 'Bugün teslim';
+
+  @override
+  String get hwActivitySpeaking => 'Telaffuz';
+
+  @override
+  String get hwActivityConversation => 'Diyalog';
+
+  @override
+  String get hwActivityWorkbook => 'Çalışma kitabı';
+
+  @override
+  String hwChapterLabel(String chapter) {
+    return 'Bölüm $chapter';
+  }
+
+  @override
+  String get hwTaskSpeakingDesc => 'Telaffuz puanını kontrol et';
+
+  @override
+  String get hwTaskConversationDesc =>
+      'Öğrendiklerini gerçek bir konuşmada kullan';
+
+  @override
+  String get hwConversationOnce =>
+      'Konuşma her ödev için yalnızca bir kez yapılabilir.';
+
+  @override
+  String get hwTaskWorkbookDesc => 'Çalışma kitabına yazarak pratik yap';
+
+  @override
+  String get hwCtaStudy => 'Başla';
+
+  @override
+  String get hwCtaResult => 'Sonucu gör';
+
+  @override
+  String get hwCtaDownload => 'İndir';
+
+  @override
+  String get hwSpeakingNoScore => 'Konuşma görevini henüz yapmadın';
+
+  @override
+  String get hwWorkbookUnavailable =>
+      'Çalışma kitabı dosyası henüz hazır değil.';
+
+  @override
+  String get hwDetailClosed => 'Bu ödev kapandı. Artık teslim edemezsin.';
+
+  @override
+  String get hwLeaveTitle => 'Sınıftan ayrılınsın mı?';
+
+  @override
+  String get hwLeaveBody => 'Öğretmenin artık ödev sonuçlarını göremeyecek.';
+
+  @override
+  String get hwLeaveConfirm => 'Ayrıl';
+
+  @override
+  String get hwLeaveCancel => 'Kal';
+
+  @override
+  String get hwLeaveFailed => 'Sınıftan ayrılınamadı.';
+
+  @override
+  String get hwMyClass => 'Sınıfım';
+
+  @override
+  String get hwClassEmptyTitle => 'Henüz bir sınıfa katılmadın';
+
+  @override
+  String get hwClassEmptySubtitle => 'Öğretmeninin verdiği kodu gir';
+
+  @override
+  String get hwClassEmptyCta => 'Sınıf kodunu gir';
+
+  @override
+  String get hwClassContinueCta => 'Devam';
+
+  @override
+  String hwHomeBannerDueTomorrow(int count) {
+    return '$count ödevin yarın teslim';
+  }
+
+  @override
+  String hwHomeBannerOverdue(int count) {
+    return '$count teslim edilmemiş ödevin var';
+  }
+
+  @override
+  String get hwSpeakingUnavailable => 'Bu ödevin cümleleri henüz hazır değil.';
+
+  @override
+  String get hwBadgeClosed => 'Kapandı';
+
+  @override
+  String hwSpeakingProgress(int passed, int total) {
+    return '$total cümleden $passed tanesi geçti';
+  }
+
+  @override
+  String get challengeFirstWord => 'İlk kelime';
+
+  @override
+  String get challengeSeeAnalysis => 'Sonuçları gör';
+
+  @override
+  String get challengePaused => 'Duraklatıldı';
+
+  @override
+  String get challengePausedNote => 'Sayaç ve kayıt birlikte durdu.';
+
+  @override
+  String get challengeTimeLeft => 'Kalan süre';
+
+  @override
+  String get challengeScoreLabel => 'Puan';
+
+  @override
+  String get challengeResume => 'Devam et';
+
+  @override
+  String get challengeBlockedTitle => 'Kamera kullanılamıyor';
+
+  @override
+  String get challengeBlockedNote =>
+      'Ayarlar’dan kamera ve mikrofon erişimini aç.';
+
+  @override
+  String get challengeGoBack => 'Geri dön';
+
+  @override
+  String get challengeOpenSettings => 'Ayarları aç';
+
+  @override
+  String get saveDone => 'Galeriye kaydedildi';
+
+  @override
+  String get saveFailed => 'Kaydedilemedi';
+
+  @override
+  String get saveDeniedNote => 'Fotoğraf erişimi gerekli';
+
+  @override
+  String get callIncomingCallerFallback => 'Beaver Öğretmen';
+
+  @override
+  String get callIncomingHandle => 'Korece görüşme';
+
+  @override
+  String get callMissedTitle => 'Cevapsız arama';
+
+  @override
+  String get callMissedChannelDescription =>
+      'Beaver aramalarını kaçırdığında haber verir.';
+
+  @override
+  String callMissedBody(String name) {
+    return '$name seni aramaya çalıştı';
+  }
+
+  @override
+  String get callBeaverFallbackName => 'Beaver';
+
+  @override
+  String get callNotifPermissionRationale =>
+      'Aramaları almak için bildirim izni gerekiyor.';
+
+  @override
+  String get callNotifPermissionRequired =>
+      'Ayarlardan bildirimlere izin verin.';
+
+  @override
+  String get callHintLockedTitle => 'Çalışma modunda ipucu kullanılamaz';
+
+  @override
+  String get wsTitle => 'Zayıf sesler';
+
+  @override
+  String get wsToList => 'Listeye dön';
+
+  @override
+  String get wsNext => 'İleri';
+
+  @override
+  String get wsRetry => 'Tekrar dene';
+
+  @override
+  String get wsDone => 'Bitti';
+
+  @override
+  String get wsContinue => 'Devam et';
+
+  @override
+  String get wsQuit => 'Çık';
+
+  @override
+  String get wsRetryLater => 'Lütfen biraz sonra tekrar deneyin.';
+
+  @override
+  String get wsMissingTitle => 'O sesi bulamadık';
+
+  @override
+  String get wsMissingBody => 'Lütfen listeden tekrar seçin.';
+
+  @override
+  String get wsListLoadFailed => 'Liste yüklenemedi';
+
+  @override
+  String get wsLessonLoadFailed => 'Ders yüklenemedi';
+
+  @override
+  String get wsNationalTitle => 'Aksanınıza göre zayıf sesler';
+
+  @override
+  String get wsNationalPending =>
+      'Aksanınız analiz edilince burayı dolduracağız';
+
+  @override
+  String get wsNationalPicked => 'Aksan analizinize göre seçildi';
+
+  @override
+  String get wsNationalEmptyBody =>
+      'Birkaç arama daha yapın, aksanınızı analiz edelim.';
+
+  @override
+  String get wsMineTitle => 'Zayıf seslerim';
+
+  @override
+  String get wsMineSubtitle => 'Son aramalarında ölçülen sesler';
+
+  @override
+  String get wsMineEmptyBody =>
+      'Arama yapıp tekrar edin, zayıf sesleriniz birikecek.';
+
+  @override
+  String get wsNoDataYet => 'Henüz veri yok';
+
+  @override
+  String get wsGoToCall => 'Arama başlat';
+
+  @override
+  String get wsRule => 'Kural';
+
+  @override
+  String get wsRecommended => 'Önerilen';
+
+  @override
+  String get wsNotMeasured => 'Ölçülmedi';
+
+  @override
+  String get wsStepUnderstand => 'Anlama';
+
+  @override
+  String get wsStepWords => 'Kelimeler';
+
+  @override
+  String get wsStepSentence => 'Cümle';
+
+  @override
+  String get wsStepTest => 'Test';
+
+  @override
+  String get wsQuitTitle => 'Alıştırmayı bırakalım mı?';
+
+  @override
+  String get wsQuitBody => 'Şimdi çıkarsanız bu alıştırma kaydedilmez.';
+
+  @override
+  String get wsHowToSound => 'Ses nasıl çıkarılır';
+
+  @override
+  String get wsPracticeWords => 'Kelimeleri çalış';
+
+  @override
+  String get wsPracticeSentence => 'Cümleyi çalış';
+
+  @override
+  String get wsPracticeAgain => 'Bir kez daha';
+
+  @override
+  String get wsStartTest => 'Son teste gir';
+
+  @override
+  String get wsThisSentence => 'Bu cümle';
+
+  @override
+  String get wsNoScoreNote => 'Bu adım puanlanmaz. Rahatça tekrar edin.';
+
+  @override
+  String get wsListen => 'Dikkatle dinleyin';
+
+  @override
+  String get wsSayNow => 'Şimdi siz söyleyin';
+
+  @override
+  String get wsPracticeDone => 'Alıştırma tamamlandı';
+
+  @override
+  String get wsPaused => 'Duraklatıldı';
+
+  @override
+  String get wsAudioFailed => 'Ses yüklenemedi. Yazıya bakıp sesli okuyun.';
+
+  @override
+  String get wsReadAloud => 'Aşağıdaki cümleyi sesli okuyun';
+
+  @override
+  String get wsTapToStart => 'Başlamak için dokunun';
+
+  @override
+  String get wsTapWhenDone => 'Bitirince dokunun';
+
+  @override
+  String get wsScoring => 'Puanlanıyor';
+
+  @override
+  String get wsMicFailed => 'Mikrofon açılamadı.';
+
+  @override
+  String get wsMicPermissionBody =>
+      'Bu testte sesli okursun, bu yüzden mikrofon gerekir. Ayarlar\'dan mikrofon erişimini aç.';
+
+  @override
+  String get wsNoSound => 'Hiçbir şey duymadık. Tekrar deneyelim mi?';
+
+  @override
+  String get wsScoreFailed => 'Puanlama başarısız oldu. Lütfen tekrar deneyin.';
+
+  @override
+  String get wsSomethingWrong => 'Bir sorun oluştu.';
+
+  @override
+  String get wsLearnDone => 'Ders tamamlandı';
+
+  @override
+  String get wsRetest => 'Yeniden test';
+
+  @override
+  String get wsFirstMeasure => 'İlk ölçüm';
+
+  @override
+  String get wsFinalTest => 'Son test';
+
+  @override
+  String wsPoints(int score) {
+    return '$score puan';
+  }
+
+  @override
+  String wsBeforePoints(int score) {
+    return 'Önce $score puan';
+  }
+
+  @override
+  String wsGoalPoints(int score) {
+    return 'Hedef $score puan';
+  }
+
+  @override
+  String wsGoalPrefix(String desc) {
+    return 'Hedef · $desc';
+  }
+
+  @override
+  String wsAccentOf(String country) {
+    return '$country aksanı';
+  }
+
+  @override
+  String wsWordsRepeated(int count) {
+    return '$count kelime tekrar edildi';
+  }
+
+  @override
+  String wsChunksRepeated(int count) {
+    return '$count parça tekrar edildi';
+  }
+
+  @override
+  String get wsStartRecommended => 'Önerilen sesle başla';
+
+  @override
+  String wsStartRecommendedWith(String label) {
+    return '$label ile başla';
+  }
+
+  @override
+  String get wsPointsUnit => 'puan';
+
+  @override
+  String get wsEnterFromMypage => 'Zayıf sesleri çalış';
+
+  @override
+  String wsGoalOnly(int score) {
+    return 'Hedef $score';
+  }
+
+  @override
+  String wsSoundOf(String label) {
+    return '$label sesi';
+  }
+
+  @override
+  String wsResultTip(String desc) {
+    return '$desc. Bir aramada karşınıza çıkınca bu şekli gözünüzde canlandırın.';
+  }
+
+  @override
+  String wsNationalSubtitle(String country) {
+    return '$country – konuşanların sık yanlış söylediği sesler';
+  }
+
+  @override
+  String get wsRetryPackLabel => 'Sık hata yaptığın sesleri çalış';
+
+  @override
+  String wsRetryPackTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Bu oturumda sık hata yaptığın $count ses',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get wsRetryPackBody =>
+      '2 veya daha fazla kez hata yaptığın sesleri topladık. Her birini 4 adımda çalış.';
+
+  @override
+  String get wsRetryPackCta => 'Hepsini çalış';
+
+  @override
+  String get wsRetryListTitle => 'Sık hata yaptığın sesler';
+
+  @override
+  String get wsRetryListSection => 'Bu oturumdan sesler';
+
+  @override
+  String get wsRetryListSub =>
+      'Bu oturumda 2 veya daha fazla kez hata yaptığın sesler';
+
+  @override
+  String wsRetryListSubWithCall(String title) {
+    return '“$title” görüşmesinde 2 veya daha fazla kez hata yaptığın sesler';
+  }
+
+  @override
+  String get wsRetryListAllDone => 'Tüm sesleri çalıştın';
+
+  @override
+  String get wsRetryBackToReport => 'Rapora dön';
 }

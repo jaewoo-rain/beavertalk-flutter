@@ -4,6 +4,14 @@
   "callWebNotSupported": "Voice calls aren't supported on the web. Please use the app.",
   "micPermissionRequiredForCall": "Microphone access is required. Allow the microphone to start a call.",
   "callErrorGeneric": "Something went wrong during the call.",
+  "callDailyLimit": "You've used up today's learning time.",
+  "@callDailyLimit": {
+    "description": "Server refused the call: daily time budget used up (WS error code DAILY_LIMIT)."
+  },
+  "callAlreadyInCall": "You're already on a call.",
+  "@callAlreadyInCall": {
+    "description": "Server refused the call: another call of this member is live (WS error code ALREADY_IN_CALL). Do not retry."
+  },
   "callNetworkError": "A network error occurred.",
   "authInvalidCredentials": "Your email or password is incorrect.",
   "authEmailAlreadyRegistered": "This email is already registered.",
@@ -26,6 +34,12 @@
   "@callRatingPrompt": {
     "description": "Heading asking the user to rate the call just ended."
   },
+  "callRatingBody": "Your rating helps us talk better next time.",
+  "@callRatingBody": {"description": "Body of the call-rating bottom sheet shown on the call-finished screen, under callRatingPrompt."},
+  "callRatingSubmit": "Submit",
+  "@callRatingSubmit": {"description": "Primary button of the call-rating sheet: sends the chosen rating."},
+  "callRatingSkip": "Skip",
+  "@callRatingSkip": {"description": "Secondary button of the call-rating sheet: closes it without rating."},
   "ratingBad": "Not great",
   "@ratingBad": {
     "description": "Lowest call rating choice (thumbs-down)."
@@ -74,6 +88,18 @@
   },
   "scheduleManagement": "Manage schedule",
   "alarms": "Alarms",
+  "alarmAdd": "Add alarm",
+  "@alarmAdd": {"description": "Title of the add-alarm sheet (Figma etc_alarm__add)."},
+  "alarmEdit": "Edit alarm",
+  "@alarmEdit": {"description": "Title of the same sheet when editing an existing alarm."},
+  "alarmEveryDay": "Every day",
+  "@alarmEveryDay": {"description": "Repeat summary when all 7 days are on."},
+  "alarmWeekdays": "Weekdays",
+  "@alarmWeekdays": {"description": "Repeat summary when Monday-Friday are on."},
+  "alarmWeekend": "Weekends",
+  "@alarmWeekend": {"description": "Repeat summary when Saturday and Sunday are on."},
+  "alarmNoRepeat": "Never",
+  "@alarmNoRepeat": {"description": "Repeat summary when no day is on."},
   "addSchedule": "Add new schedule",
   "editSchedule": "Edit Schedule",
   "somethingWentWrong": "Something went wrong",
@@ -83,6 +109,10 @@
   "close": "Close",
   "repeat": "Repeat",
   "callPartner": "Call partner",
+  "alarmModeLearnSub": "Practice curriculum expressions",
+  "@alarmModeLearnSub": {"description": "Alarm call-mode card subtitle under Learn (Figma Card-CallMode 6179:4647)."},
+  "alarmModeChatSub": "Talk about anything",
+  "@alarmModeChatSub": {"description": "Alarm call-mode card subtitle under Free talk."},
   "quickStart": "Quick start",
   "presetMorning": "Morning routine",
   "presetMorningSub": "Weekdays 8:00",
@@ -109,12 +139,55 @@
   "pm": "PM",
   "save": "Save",
   "conversation": "Conversation",
-  "review": "Review",
-  "pronunciationChallenge": "Pronunciation Challenge",
   "newExpressions": "New Expressions",
+  "analysisPrepNote": "Looking back on today's call.",
+  "@analysisPrepNote": {"description": "Analysis waiting state, in place of the partner's note: the call is being reviewed. Figma analysis__preparing BabaNote."},
+  "analysisPrepNoteHint": "A note will appear here shortly",
+  "@analysisPrepNoteHint": {"description": "Caption under analysisPrepNote: the partner's note will appear in this spot."},
+  "analysisPrepTitle": "The beaver is turning today's expressions into cards",
+  "@analysisPrepTitle": {"description": "Analysis waiting card title (in place of the expression cards). Centered, may wrap. Figma analysis__preparing Card/Preparing."},
+  "analysisPrepSub": "They'll show up right here when ready.",
+  "@analysisPrepSub": {"description": "Line under analysisPrepTitle: the cards replace this card as soon as they are ready."},
+  "analysisPrepStepSave": "Saving the conversation",
+  "@analysisPrepStepSave": {"description": "Waiting card step 1 label: saving the conversation."},
+  "analysisPrepStepCards": "Making expression cards",
+  "@analysisPrepStepCards": {"description": "Waiting card step 2 label: making the expression cards."},
+  "analysisPrepStateDone": "Done",
+  "@analysisPrepStateDone": {"description": "Waiting card step state: finished."},
+  "analysisPrepStateWorking": "In progress",
+  "@analysisPrepStateWorking": {"description": "Waiting card step state: in progress."},
+  "analysisPrepStateWaiting": "Waiting",
+  "@analysisPrepStateWaiting": {"description": "Waiting card step state: not started yet (the previous step is still running)."},
+  "usedExpressions": "Expressions you used",
+  "@usedExpressions": {
+    "description": "통화 결과 화면의 「이번 통화에서 쓴 표현」 섹션 제목. 학습자가 대화 중 스스로 꺼내 쓴 커리큘럼 항목을 모은 칸이며, 물어보거나 고쳐 받은 「새로 배운 표현」과 다르다."
+  },
+  "quizExpressionsCount": "Expressions you learned {count}",
+  "@quizExpressionsCount": {
+    "description": "표현학습 통화 결과 화면의 「이번에 배운 표현 N개」 섹션 제목. 그 통화에서 드릴한 표현과 퀴즈 결과를 모은 칸이다. quiz_items 가 비어 있지 않을 때만 그린다.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "quizPassed": "Got it",
+  "@quizPassed": {
+    "description": "표현학습 결과 배지 — 이 통화의 퀴즈를 통과한 표현(passed=true)."
+  },
+  "quizFailed": "Review again",
+  "@quizFailed": {
+    "description": "표현학습 결과 배지 — 이 통화의 퀴즈에서 틀린 표현(failed=true)."
+  },
+  "quizPending": "Continue next time",
+  "@quizPending": {
+    "description": "표현학습 결과 배지 — 드릴은 했지만 아직 퀴즈를 안 본 표현(passed=false·failed=false). 틀린 것이 아니다. 다음 통화 맨 앞으로 이어진다."
+  },
   "analysisResult": "Analysis Result",
   "noNewExpressions": "No new expressions from this conversation.",
   "practice": "Practice",
+  "analysisNativeLabel": "Native",
+  "@analysisNativeLabel": {"description": "Label on the native-speaker pair card under a learned expression (Figma Card-Native 6177:28979). Short: what locals actually say."},
   "recentScore": "Recent score {score}%",
   "@recentScore": {
     "placeholders": {
@@ -173,14 +246,6 @@
     "description": "Confirm button in the country/language select bottom sheet."
   },
   "cancel": "Cancel",
-  "selectTime": "Select time",
-  "getStarted": "Get Started",
-  "permissionTitle": "Allow permissions\nfor a smooth experience",
-  "permissionSubtitle": "Required permissions are essential to use the service.",
-  "permissionMicTitle": "Microphone (required)",
-  "permissionMicDesc": "Needed to talk with the AI in English.",
-  "permissionNotifTitle": "Notifications (optional)",
-  "permissionNotifDesc": "We'll send learning reminders and call schedules.",
   "micPermissionNeededTitle": "Microphone access needed",
   "micPermissionNeededBody": "To talk with the AI, you need to allow microphone access. Please enable it in Settings.",
   "openSettings": "Open Settings",
@@ -238,13 +303,100 @@
   "myRecordingPlayError": "Couldn't play your recording.",
   "next": "Next",
   "endLearning": "End Session",
-  "navCalendar": "Calendar",
   "navCall": "Call",
-  "navStats": "Stats",
+  "homeCourseExpression": "Expressions",
+  "@homeCourseExpression": {
+    "description": "Home learning-status block: the course label for an expression-drill session. Sits next to the unit badge."
+  },
+  "homeCourseFreetalk": "Conversation",
+  "@homeCourseFreetalk": {
+    "description": "Home learning-status block: the course label for a free-conversation session. Sibling of `homeCourseExpression`."
+  },
+  "homeExpressionsLeft": "{count} expressions left until conversation",
+  "@homeExpressionsLeft": {
+    "description": "Home learning-status block, third line: how many expressions remain before free talk unlocks.",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "14"
+      }
+    }
+  },
+  "homeFreetalkNote": "Use what you learned and talk freely",
+  "@homeFreetalkNote": {
+    "description": "Home learning-status block, third line in free-talk mode. Replaces the countdown once free talk is unlocked."
+  },
+  "homeTalkTitle": "What happened today?",
+  "@homeTalkTitle": {"description": "Home, Talk mode: second line of the status block (free conversation, no curriculum)."},
+  "homeTalkNote": "Chat freely and learn as you go.",
+  "@homeTalkNote": {"description": "Home, Talk mode: third line of the status block."},
+  "homeModeLearn": "Learn",
+  "@homeModeLearn": {"description": "Accessible label of the Learn segment in the home mode toggle (icon-only)."},
+  "homeModeTalk": "Talk",
+  "@homeModeTalk": {"description": "Accessible label of the Talk segment in the home mode toggle (icon-only)."},
+  "homeStreakDays": "{count, plural, =1{1-day streak} other{{count}-day streak}}",
+  "@homeStreakDays": {"description": "Accessible label of the home streak chip; the chip itself shows only the number.", "placeholders": {"count": {"type": "int"}}},
+  "streakCalendarTitle": "Learning calendar",
+  "@streakCalendarTitle": {"description": "Title of the learning-calendar screen (Figma streak_calendar)."},
+  "streakDaysUnit": "{count, plural, =1{day in a row} other{days in a row}}",
+  "@streakDaysUnit": {"description": "Unit shown next to the big streak number (the number is rendered separately, larger). Unit only, no number.", "placeholders": {"count": {"type": "int"}}},
+  "streakBest": "{count, plural, =1{Best streak: {count} day} other{Best streak: {count} days}}",
+  "@streakBest": {"description": "Line under the big streak number on the learning calendar: the user's longest streak ever, in days. Figma streak_calendar Hero/Best.", "placeholders": {"count": {"type": "int"}}},
+  "streakMetricCallTime": "Call time",
+  "@streakMetricCallTime": {"description": "Metric tile label: total call time this month."},
+  "streakMetricLearned": "Expressions",
+  "@streakMetricLearned": {"description": "Metric tile label: expressions learned this month (server sentences)."},
+  "streakMetricWords": "Words spoken",
+  "@streakMetricWords": {"description": "Metric tile label: words the learner spoke this month (approximate, server words)."},
+  "streakCountValue": "{count}",
+  "@streakCountValue": {"description": "Metric tile value: a count with thousands separator. Add a counter word only if the language needs one (ko 개).", "placeholders": {"count": {"type": "int", "format": "decimalPattern"}}},
+  "streakMinutes": "{count, plural, =1{1 min} other{{count} min}}",
+  "@streakMinutes": {"description": "Metric tile value: minutes.", "placeholders": {"count": {"type": "int"}}},
+  "streakNoCallsThatDay": "No calls on this day.",
+  "@streakNoCallsThatDay": {"description": "Shown under the calendar when the selected day has no calls."},
+  "homeLevelPending": "Level pending",
+  "@homeLevelPending": {
+    "description": "Home learning-status badge when the member has no level yet. Neutral tone, unlike the unit code badge."
+  },
+  "homeNoLevelTitle": "You don't have a level yet",
+  "@homeNoLevelTitle": {
+    "description": "Home learning-status block, second line when no level is assigned."
+  },
+  "homeNoLevelNote": "Finish your first call to get one",
+  "homeCurriculumPendingBadge": "Coming soon",
+  "@homeCurriculumPendingBadge": {
+    "description": "Home learning-status badge when the member's learning language has no curriculum yet (/cur/me available=false). Neutral tone."
+  },
+  "homeCurriculumPendingTitle": "{language} curriculum is on its way",
+  "@homeCurriculumPendingTitle": {
+    "description": "Home learning-status block, second line when the learning language has no curriculum yet. {language} is the language's own name (e.g. English, 日本語).",
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "homeCurriculumPendingNote": "You'll practice general expressions on your calls",
+  "@homeCurriculumPendingNote": {
+    "description": "Home learning-status block, third line when the learning language has no curriculum yet — what the call will do instead."
+  },
+  "@homeNoLevelNote": {
+    "description": "Home learning-status block, third line when no level is assigned — how to get one."
+  },
   "myPage": "My Page",
   "languageSaveFailed": "Couldn't save your language.",
   "accountDeleteFailed": "Couldn't delete your account.",
   "changeAvatar": "Change Avatar",
+  "avatarUseNow": "Use now",
+  "@avatarUseNow": {"description": "Secondary action of the character purchase-success sheet: make the new character the active one."},
+  "avatarPurchaseFailed": "The purchase didn't go through",
+  "@avatarPurchaseFailed": {"description": "Banner shown above the purchase button when the store purchase failed (Figma iap_result__fail)."},
+  "avatarPromoTitle": "Today only · {percent}% off",
+  "@avatarPromoTitle": {"description": "Floating discount banner title on the partner-change screen.", "placeholders": {"percent": {"type": "int"}}},
+  "avatarPromoLeft": "{time} left",
+  "@avatarPromoLeft": {"description": "Countdown under the discount banner title; time is HH:MM:SS.", "placeholders": {"time": {"type": "String"}}},
+  "avatarPromoLeftDays": "{days}d {time} left",
+  "@avatarPromoLeftDays": {"description": "Countdown when a day or more is left.", "placeholders": {"days": {"type": "int"}, "time": {"type": "String"}}},
   "avatarIntro": "Voice and difficulty vary by call partner.\nSome partners may require payment.",
   "myPartnersOwned": "My Partners · {count} owned",
   "@myPartnersOwned": {
@@ -264,35 +416,33 @@
   "noAlarms": "No alarms registered",
   "noAlarmsBody": "Add a learning reminder\nand you can build a consistent habit.",
   "subscriptionManage": "Manage Subscription",
-  "changePlan": "Change Plan",
   "cancelSubscription": "Cancel Subscription",
   "benefitsInUse": "Your benefits",
   "paymentInfo": "Payment info",
   "nextBillingDate": "Next billing date",
   "lostBenefitsTitle": "Benefits you'll lose if you cancel",
   "viewBillingHistory": "View Billing History",
-  "keepUsingPro": "Keep Using Pro",
-  "proMembership": "Pro Membership",
   "pricePerMonth": "{price} / mo",
   "@pricePerMonth": {
+    "description": "Subscription price line. {price} is the store-formatted, storefront-local price string (StoreKit displayPrice / Play formattedPrice) and already carries its own currency symbol - never prefix or append one in a translation.",
     "placeholders": {
       "price": {
-        "type": "String"
+        "type": "String",
+        "example": "$15.99"
       }
     }
   },
-  "benefitUnlimitedCalls": "Unlimited calls",
   "benefitDetailedAnalysis": "Detailed pronunciation & grammar analysis",
   "benefitAllCharacters": "Access to all characters",
   "benefitNoAds": "No ads",
   "playSampleVoice": "Play sample voice",
   "useThisAvatar": "Use This",
   "challengeTitle": "Pronunciation Challenge",
-  "challengeIntro": "Pronounce each card in the zone correctly in Korean to clear it.\nNo mic? You can also play by tapping the screen.",
-  "challengeStart": "Start Camera & Mic",
+  "challengeIntro": "Read each word aloud as it comes at you, for 30 seconds.\nNo mic? Tap to play instead.",
+  "challengeStart": "Start",
   "challengePermissionNote": "Front camera and mic access is required (optional).",
   "challengeLoadingTitle": "Loading…",
-  "challengeLoadingNote": "Downloading the Korean speech model (~82MB) on first run.\nPlease wait a moment.",
+  "challengeLoadingNote": "Getting the camera and microphone ready.",
   "challengeSttFallback": "Speech recognition wasn't available, so you played with tap input.",
   "reasonTravelTitle": "Speaking while traveling",
   "reasonTravelDesc": "Chat confidently with locals",
@@ -327,6 +477,15 @@
   "delete": "Delete",
   "share": "Share",
   "accentSoundsLike": "Your Korean accent sounds",
+  "accentShareText": "I'm learning Korean with BeaverTalk — my Korean accent sounds like {country}! 🦫 Come find your accent and learn with me: https://beavertalk.im",
+  "@accentShareText": {
+    "description": "Caption shared with the accent card image. {country} is the top accent nationality, already in the UI language.",
+    "placeholders": {
+      "country": {
+        "type": "String"
+      }
+    }
+  },
   "hintLabel": "Hint",
   "nextHint": "Next hint",
   "translateLabel": "Translate",
@@ -342,11 +501,11 @@
   "onboardingDoneTitle": "Beaver is waiting for your call",
   "onboardingDoneSubtitle": "Start a call right now",
   "home": "Home",
-  "callNow": "Call now",
+  "onboardingLevelTestCta": "Take level test",
+  "@onboardingLevelTestCta": {"description": "Primary button on the screen right after sign-up (Figma onborading_done 3360:48). A new member has no level, so this call is routed to the level test. Verb phrase, same wording as takeLevelTest (Figma, owner decision 2026-09-24)."},
   "pronunciation": "Pronunciation",
   "fluency": "Fluency",
   "rhythm": "Rhythm",
-  "analysisTimeout": "This is taking longer than expected. Please try again in a moment.",
   "analysisFailed": "We couldn't analyze the conversation. Please try again.",
   "analyzingConversation": "Analyzing your conversation…",
   "analyzingSubtitle": "This will only take a moment",
@@ -361,9 +520,11 @@
   "loginGoogleTokenError": "Couldn't get a Google sign-in token.",
   "loginGoogleSignInFailed": "Google sign-in failed.",
   "loginAppleSignInFailed": "Apple sign-in failed.",
+  "loginFacebookSignInFailed": "Facebook sign-in failed.",
   "loginKakaoSignInFailed": "Kakao sign-in failed.",
   "loginContinueWithKakao": "Continue with Kakao",
   "loginContinueWithGoogle": "Continue with Google",
+  "loginContinueWithFacebook": "Continue with Facebook",
   "loginContinueWithApple": "Continue with Apple",
   "loginContinueWithEmail": "Continue with email",
   "loginOrDivider": "or",
@@ -448,17 +609,7 @@
   "@lastPayment": {
     "description": "Label of the most-recent-charge row in the subscription sheet's 결제 정보 section."
   },
-  "subscriptionSwitchNote": "You can keep using Pro benefits until {date}, after which your plan switches to Free automatically.",
-  "@subscriptionSwitchNote": {
-    "description": "Note paragraph on the change-plan and cancel subscription sheets.",
-    "placeholders": {
-      "date": {
-        "type": "String",
-        "example": "June 20, 2026"
-      }
-    }
-  },
-  "freePlanCallLimit": "1 call a day · 5 min limit",
+  "freePlanCallLimit": "5 minutes of calls a day",
   "@freePlanCallLimit": {
     "description": "Free plan benefit line on the change-plan sheet."
   },
@@ -477,10 +628,6 @@
   "noPayments": "No payments yet",
   "@noPayments": {
     "description": "Empty state on the payment-history screen."
-  },
-  "morePaymentsExist": "Older payments aren't shown yet",
-  "@morePaymentsExist": {
-    "description": "Shown when the server reports has_more but load-more isn't wired."
   },
   "undatedPayments": "Undated",
   "@undatedPayments": {
@@ -614,22 +761,30 @@
     }
   },
   "retakeLevelTest": "Retake level test",
+  "levelTestOncePerDay": "You can take the level test once a day. Try again tomorrow.",
   "@retakeLevelTest": {
     "description": "CTA on the level card - start the level-test call again."
   },
+  "levelRetakeTitle": "Retake the level test?",
+  "@levelRetakeTitle": {"description": "Confirm dialog before retaking the level test (server 09-24: progress resets to the first lesson of the measured level)."},
+  "levelRetakeBody": "If you retake it, your progress goes back to the first lesson of that level — even if you get the same level. Your learned expressions and call history stay.",
+  "@levelRetakeBody": {"description": "Body of the retake confirm. Must say progress resets even if the level stays the same; learned items and call history are kept."},
+  "levelRetakeKeep": "Keep my progress",
+  "@levelRetakeKeep": {"description": "Primary (top) button \u2014 cancel the retake and keep progress."},
+  "levelRetakeConfirm": "Retake test",
+  "@levelRetakeConfirm": {"description": "Secondary (bottom) button \u2014 go ahead with the retake."},
   "practicePronunciation": "Practice pronunciation",
+  "learnResultView": "See learning results",
+  "learnAgain": "Learn again",
+  "@learnResultView": {"description": "Call analysis screen study card, shown once the call's pronunciation study has been finished (every base sentence scored). Opens that call's pronunciation report. PM-DEC-427"},
+  "@learnAgain": {"description": "Pronunciation report screen button that reopens the study flow from the first sentence of the same call. PM-DEC-427"},
   "@practicePronunciation": {
     "description": "CTA on the pronunciation card - open the latest call analysis."
   },
-  "priceChangedTitle": "Price changed",
-  "priceChangedBody": "This item is now {price}. Would you like to continue?",
-  "@priceChangedBody": {
-    "placeholders": {
-      "price": {
-        "type": "String"
-      }
-    }
-  },
+  "analysisNoScoreReview": "Practice the sentences to get your pronunciation score",
+  "@analysisNoScoreReview": {"description": "One line under the inactive score gauge when the call has learned sentences but none practiced yet (Figma screen/analysis__no_score 4867:7359). Scores come only from practicing sentences."},
+  "analysisNoScoreEmpty": "No sentences to score",
+  "@analysisNoScoreEmpty": {"description": "One line under the inactive score gauge when the call produced no learned sentences at all (Figma screen/analysis__no_expressions 4849:8823)."},
   "billingGroupPlanPurchases": "Plan & purchases",
   "@billingGroupPlanPurchases": {
     "description": "Billing list group title - in-app rail rows (spec section 5). English copy is final; do not localize away from the confirmed wording."
@@ -638,11 +793,7 @@
   "@billingGroupInTheStore": {
     "description": "Billing list group title - rows that leave the app for the store."
   },
-  "billingChangePlan": "Change plan",
-  "@billingChangePlan": {
-    "description": "Billing slot 1 label on a paid plan."
-  },
-  "billingCompareAllPlans": "Compare all plans",
+  "billingCompareAllPlans": "Compare plans",
   "@billingCompareAllPlans": {
     "description": "Billing slot 1 label on every non-paid state."
   },
@@ -653,6 +804,10 @@
   "billingRestorePurchases": "Restore purchases",
   "@billingRestorePurchases": {
     "description": "Billing slot 3."
+  },
+  "billingRedeemCode": "Redeem a code",
+  "@billingRedeemCode": {
+    "description": "In-the-store group - opens the platform offer-code redemption sheet. The app-side half of every console-issued discount."
   },
   "billingPaymentHistory": "Payment history",
   "@billingPaymentHistory": {
@@ -704,16 +859,26 @@
   },
   "plansTitle": "Plans",
   "@plansTitle": {
-    "description": "GNB title of the trial-expired notice screen (4514:5179)."
+    "description": "GNB title of the trial-expired notice screen (6527:4210)."
   },
   "planFree": "Free",
   "planPro": "Pro",
-  "planMax": "Max",
-  "planMaxTrial": "Max trial",
+  "planMax": "Premium",
+  "premiumBulletVideo": "15 minutes of video calls a day",
+  "@premiumBulletVideo": {"description": "Premium benefit bullet (Figma plans_compare / paywall_premium). No 'unlimited' — Premium is 15 minutes of calls a day in total, any number of calls (decision 2026-09-23)."},
+  "premiumBulletAnalysis": "Unlimited pronunciation scoring during review",
+  "@premiumBulletAnalysis": {"description": "Premium benefit bullet (paywall, plans compare, purchase success, winback offer). PM-DEC-178: unlimited pronunciation scoring in review. ko/en written directly; the other 28 locales passed the 43 AI review (2026-09-30, 9 minor fixes applied) — AI review, not native."},
+  "premiumBulletWeakSounds": "Weak-sound drills for your language",
+  "@premiumBulletWeakSounds": {"description": "Premium benefit bullet: weak-sound drills matched to the learner's native language."},
+  "noteCharactersSeparate": "Characters are sold separately. The ones you buy stay yours.",
+  "@noteCharactersSeparate": {"description": "Footnote on paywall/plans: characters are not included in Premium."},
+  "ctaGetPremium": "Get Premium",
+  "@ctaGetPremium": {"description": "CTA on the limit paywall (reached by using up the free daily call time)."},
+  "planMaxTrial": "Premium trial",
   "@planMaxTrial": {
     "description": "Plan-card title while inside the Max trial."
   },
-  "freePlanPriceLine": "$0.00 — one call a day",
+  "freePlanPriceLine": "Free — 5 minutes of calls a day",
   "@freePlanPriceLine": {
     "description": "Plan-card subtitle on the Free state. Confirmed copy; do not reword."
   },
@@ -736,8 +901,8 @@
       }
     }
   },
-  "todaysCalls": "Today's calls",
-  "callsUsedOfLimit": "{used} of {limit} used",
+  "todaysCalls": "Today's call time",
+  "callsUsedOfLimit": "{used} of {limit} min used",
   "@callsUsedOfLimit": {
     "placeholders": {
       "used": {
@@ -765,17 +930,8 @@
       }
     }
   },
-  "bannerGoUnlimitedTitle": "Go unlimited with Pro",
-  "bannerGoUnlimitedSub": "Unlimited calls · 15 minutes each · {price} per month",
-  "@bannerGoUnlimitedSub": {
-    "placeholders": {
-      "price": {
-        "type": "String"
-      }
-    }
-  },
-  "bannerMaxUpsellTitle": "Turn on video with Max",
-  "bannerMaxUpsellSub": "Face-to-face calls · {price} per month",
+  "bannerMaxUpsellTitle": "Get face to face with Premium",
+  "bannerMaxUpsellSub": "Video calls · 15 minutes a day · {price} per month",
   "@bannerMaxUpsellSub": {
     "placeholders": {
       "price": {
@@ -784,24 +940,12 @@
     }
   },
   "bannerAnnualSwitchTitle": "Switch to annual",
-  "bannerAnnualSwitchSub": "{yearly} per year · {perMonth} per month",
-  "@bannerAnnualSwitchSub": {
-    "placeholders": {
-      "yearly": {
-        "type": "String"
-      },
-      "perMonth": {
-        "type": "String"
-      }
-    }
-  },
   "bannerPaymentFailedTitle": "We couldn't take the payment",
-  "bannerPaymentFailedSub": "Update payment in the store to keep Pro",
+  "bannerPaymentFailedSub": "Update payment in the store to keep Premium",
   "bannerPausedTitle": "Your plan is paused",
   "bannerPausedSub": "The payment never went through",
   "noteRestoreHint": "Already subscribed on another device? Restore brings it back on this one.",
   "noteStoreHandled": "Payment method, plan changes, and cancellation are handled by the store.",
-  "noteFairUse": "Unlimited use is subject to our fair use policy.",
   "noteTrialEnds": "Your trial ends {date}. Cancel in the store before then and nothing is charged.",
   "@noteTrialEnds": {
     "placeholders": {
@@ -812,7 +956,7 @@
     }
   },
   "noteGrace": "Benefits keep running through the grace period. Cancellation is never intercepted in the app.",
-  "noteHold": "Pro is paused until the payment goes through. Your characters and progress are safe.",
+  "noteHold": "Premium is paused until the payment goes through. Your characters and progress are safe.",
   "noteEnding": "Your plan is set to end. Benefits run until {date}, then you move to Free. You can resubscribe any time.",
   "@noteEnding": {
     "placeholders": {
@@ -822,49 +966,39 @@
       }
     }
   },
-  "trialExpiredTitle": "Your Max trial ended",
+  "trialExpiredTitle": "Your Premium trial ended",
   "trialExpiredSub": "You are on Free now",
   "seePlans": "See plans",
   "currentPlanTitle": "Current Plan",
   "@currentPlanTitle": {
     "description": "GNB title of plans_compare (4514:5226)."
   },
-  "badgeRecommended": "Recommended",
   "perMonthUnit": "per month",
-  "planTaglinePro": "Unlimited calls. 15 minutes each.",
-  "planTaglineMax": "Now you can see them.",
-  "planTaglineFree": "One call a day. On the house.",
-  "bulletProCalls": "Voice calls, as often as you want",
-  "bulletProLength": "15 minutes a call",
-  "bulletProScoring": "Pronunciation scored letter by letter",
+  "planTaglineFree": "5 minutes of calls a day. On the house.",
   "bulletProCorrections": "Corrections aimed at your native language",
-  "bulletProBeaverCalls": "Beaver calls you first",
-  "bulletMaxVideo": "Face-to-face video calls",
-  "bulletMaxEverything": "Everything in Pro",
-  "bulletMaxCharacters": "Every character, unlimited",
-  "bulletMaxStudyBook": "A study book matched to where you are",
-  "bulletMaxWeeklyReport": "A weekly report on how your sound is changing",
-  "bulletFreeCall": "One 5-minute voice call a day",
-  "bulletFreeCheck": "One pronunciation check a day",
-  "bulletFreeAccent": "Unlimited accent checks",
-  "bulletFreeCharacter": "One character to start",
-  "ctaGoUnlimited": "Go unlimited",
+  "bulletFreeCall": "5 minutes of voice calls a day",
+  "bulletFreeCharacter": "Two characters to start",
   "ctaTurnOnVideo": "Turn on video",
-  "noteCallLength": "Calls are 15 minutes each.",
+  "noteCallLength": "Premium: 15 minutes of calls a day — call as often as you like within that.",
   "paywallProTitle1": "Your Korean friend",
   "paywallProTitle2": "who's up at 3 a.m.",
-  "paywallProSub": "Unlimited calls. 15 minutes each. All year.",
-  "paywallLimitHeadline": "Pro removes the limit.",
+  "paywallLimitHeadline": "Premium gives you 15 minutes of calls a day.",
   "@paywallLimitHeadline": {
     "description": "Hot-entry paywall headline - one line, no story (spec 8-1)."
   },
-  "limitBannerCallTitle": "That was today's call",
-  "limitBannerCallSub": "Free gives you one call a day",
-  "limitBannerCheckTitle": "That was today's check",
-  "limitBannerCheckSub": "Free gives you one check a day",
+  "limitBannerCallTitle": "You've used today's call time",
+  "limitBannerCallSub": "Free gives you 5 minutes of calls a day",
   "bulletProCharactersForever": "Characters you buy stay yours forever",
-  "paywallMaxTitle": "Now you can see them.",
-  "paywallMaxSub": "Video calls, every character, and a study book made for where you are.",
+  "paywallMaxTitle": "Now you can talk face to face over video.",
+  "paywallTutorCompare": "One hour with a tutor costs $25. A month of Premium costs {price}.",
+  "@paywallTutorCompare": {
+    "description": "Paywall header second line (P12). Shown only when the store price is in USD. $25 is a fixed USD fact.",
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
   "planMonthly": "Monthly",
   "planAnnual": "Annual",
   "proMonthlyPriceLine": "{price} per month",
@@ -921,8 +1055,48 @@
       }
     }
   },
+  "ctaCaptionMaxYearly": "{price} per year · cancel anytime in the store",
+  "@ctaCaptionMaxYearly": {
+    "description": "Disclosure under the paywall CTA when the annual plan is selected (App Review 3.1.2: price and billing period must match the selection).",
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
   "ctaCaptionMaxTrial": "7 days free, then {price} per month · cancel anytime in the store",
   "@ctaCaptionMaxTrial": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "ctaCaptionMaxYearlyTrial": "7 days free, then {price} per year · cancel anytime in the store",
+  "@ctaCaptionMaxYearlyTrial": {
+    "description": "Paywall/success caption when the yearly plan starts with the store free-trial offer. {price} is the store-formatted yearly price.",
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "bundleTitle": "All three at once",
+  "@bundleTitle": {
+    "description": "Character bundle sheet title (Figma BottomSheet/CharacterBundle 6438:4772): the three paid characters bought together."
+  },
+  "bundleOffBadge": "{percent}% off",
+  "@bundleOffBadge": {
+    "description": "Discount badge on the bundle sheet. {percent} is an integer computed from the store prices.",
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "bundleLinkLabel": "Get all three for {price}",
+  "@bundleLinkLabel": {
+    "description": "Link under the single-character Buy button that opens the bundle sheet. {price} is the store-formatted bundle price with its own currency symbol.",
     "placeholders": {
       "price": {
         "type": "String"
@@ -932,30 +1106,13 @@
   "ctaCaptionAutoRenew": "Renews automatically until canceled.",
   "footerTerms": "Terms",
   "footerPrivacy": "Privacy",
-  "noteMaxCharacters": "Characters unlocked by Max are available while your subscription is active. Characters you bought stay yours.",
   "processingTitle": "Confirming your purchase",
   "processingSub": "This usually takes a few seconds.",
-  "successProTitle": "You're on Pro.",
-  "successProSub": "Unlimited calls, starting right now.",
-  "successProBenefit1": "Call as often as you want — 15 minutes a call",
-  "successProBenefit2": "Unlimited pronunciation checks",
-  "successProBenefit3": "Every character, plus one-off purchases",
-  "successMaxTitle": "You can see them now.",
+  "successProTitle": "You're on Premium.",
+  "successMaxTitle": "Now you can see each other.",
   "successMaxSub": "Video calls are on. Tap the video button in any call.",
-  "successMaxBenefit1": "Face-to-face video calls",
-  "successMaxBenefit2": "Every character, unlimited and new ones first",
-  "successMaxBenefit3": "A study book matched to where you are",
-  "ctaStartACall": "Start a call",
   "ctaStartAVideoCall": "Start a video call",
   "ctaSeeYourSubscription": "See your subscription",
-  "successProCaption": "{price} is charged monthly until you cancel. Manage or cancel anytime in the store.",
-  "@successProCaption": {
-    "placeholders": {
-      "price": {
-        "type": "String"
-      }
-    }
-  },
   "successMaxCaption": "{price} is charged monthly until you cancel. Manage or cancel anytime in the store.",
   "@successMaxCaption": {
     "placeholders": {
@@ -968,69 +1125,10 @@
   "plansErrorSub": "The store didn't answer.",
   "ctaTryAgain": "Try again",
   "plansErrorCaption": "Nothing was charged.",
-  "changePlanTitle": "Change Plan",
-  "moveToMaxTitle": "Move to Max",
-  "maxPriceShort": "{price} / mo",
-  "@maxPriceShort": {
-    "placeholders": {
-      "price": {
-        "type": "String"
-      }
-    }
-  },
-  "moveToMaxCardSub": "Face-to-face video calls · every character · a study book made for you",
-  "whatHappensNow": "What happens now",
-  "maxStartsLabel": "Max starts",
-  "immediately": "Immediately",
-  "unusedProTime": "Unused Pro time",
-  "creditedTowardMax": "Credited toward Max",
-  "nextPaymentMaxValue": "{price} · {date}",
-  "@nextPaymentMaxValue": {
-    "placeholders": {
-      "price": {
-        "type": "String"
-      },
-      "date": {
-        "type": "String",
-        "example": "Jun 20, 2026"
-      }
-    }
-  },
-  "nextPaymentProValue": "{price} · {date}",
-  "@nextPaymentProValue": {
-    "placeholders": {
-      "price": {
-        "type": "String"
-      },
-      "date": {
-        "type": "String",
-        "example": "Jun 20, 2026"
-      }
-    }
-  },
-  "ctaSwitchToMax": "Switch to Max",
-  "upgradeCaption": "Your new plan starts right away. Unused Pro time is credited, never charged twice.",
-  "moveToProTitle": "Move to Pro",
-  "moveToProSub": "Nothing changes today. Max runs to the end of the month you already paid for.",
-  "maxRunsUntil": "Max runs until",
-  "proStarts": "Pro starts",
-  "whatYouKeep": "What you keep",
-  "keepBenefitCalls": "Unlimited voice calls, 15 minutes each",
-  "keepBenefitCharacters": "Characters you bought stay yours forever",
-  "downgradeWarning": "Video calls and Max-only characters turn off on {date}.",
-  "@downgradeWarning": {
-    "placeholders": {
-      "date": {
-        "type": "String",
-        "example": "Jun 20"
-      }
-    }
-  },
-  "ctaSwitchToPro": "Switch to Pro",
-  "ctaKeepMax": "Keep Max",
+  "ctaKeepMax": "Keep Premium",
   "winbackSkip": "Skip",
-  "winbackTitle": "Your Pro plan ended",
-  "winbackSub": "You're on Free now — one call a day.",
+  "winbackTitle": "Your Premium plan ended",
+  "winbackSub": "You're on Free now — 5 minutes of calls a day.",
   "winbackQuestion": "Mind telling us why you left?",
   "winbackReasonExpensive": "Too expensive",
   "winbackReasonUnused": "I wasn't using it enough",
@@ -1042,18 +1140,31 @@
   "winbackCaption": "This doesn't restore your plan. Resubscribe in the store.",
   "ctaContinue": "Continue",
   "ctaClose": "Close",
-  "ovRestoreSuccessTitle": "Pro is back",
+  "ovRestoreSuccessTitle": "Premium is back",
   "ovRestoreSuccessBody": "We found your subscription and turned it back on for this device.",
   "ovRestoreEmptyTitle": "Nothing to restore",
   "ovRestoreEmptyBody": "No active subscription is linked to this store account.",
   "ovRestoreOtherTitle": "That plan belongs to another account",
   "ovRestoreOtherBody": "This subscription is already active on a different BeaverTalk account.",
+  "ovRestoreCharactersTitle": "{count, plural, =1{Your character is back} other{Your characters are back}}",
+  "@ovRestoreCharactersTitle": {
+    "description": "Restore result when characters (not a subscription) came back (QA F097). {count} is how many characters came back (1 = singular, QA F110).",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "ovRestoreCharacterOtherTitle": "This character was bought on another account",
+  "@ovRestoreCharacterOtherTitle": {
+    "description": "Restore result when only character receipts came back and they belong to another BeaverTalk account."
+  },
   "ctaSignInThatAccount": "Sign in to that account",
   "ctaGetHelp": "Get help",
-  "ovCharacterOfferTitle": "Not ready for Pro?",
+  "ovCharacterOfferTitle": "Not ready for Premium?",
   "ovCharacterOfferBody": "Pick one character and keep them. A one-off purchase — no subscription, no renewal.",
   "rowOneCharacter": "One character",
-  "rowFromPrice": "from {price}",
+  "rowFromPrice": "{price} each",
   "@rowFromPrice": {
     "placeholders": {
       "price": {
@@ -1080,7 +1191,7 @@
     }
   },
   "rowCharactersYouBought": "Characters you bought",
-  "rowProRunsUntil": "Pro runs until",
+  "rowProRunsUntil": "Premium runs until",
   "ctaSwitchToYearly": "Switch to yearly",
   "ctaContinueToStore": "Continue to the store",
   "ovAnnualSwitchTitle": "Pay yearly, save {saved}",
@@ -1091,7 +1202,7 @@
       }
     }
   },
-  "ovAnnualSwitchBody": "You've been on Pro for two months. The yearly plan works out cheaper.",
+  "ovAnnualSwitchBody": "The yearly plan works out cheaper than paying monthly.",
   "rowYouSave": "You save",
   "amountSaved": "{price}",
   "@amountSaved": {
@@ -1137,12 +1248,12 @@
   "ovRefundHelpBody": "We cannot issue refunds ourselves. Every request is reviewed by the store.",
   "ctaGoToStore": "Go to the store",
   "ovTrialEndingTitle": "Your trial ends tomorrow",
-  "ovTrialEndingBody": "Max keeps running unless you cancel. Here is what happens.",
+  "ovTrialEndingBody": "Premium keeps running unless you cancel. Here is what happens.",
   "rowTrialEnds": "Trial ends",
   "rowFirstCharge": "First charge",
   "rowThenMonthly": "Then monthly",
   "ctaCancelInStore": "Cancel in the store",
-  "ovTrialStartTitle": "7 days of Max, free",
+  "ovTrialStartTitle": "7 days of Premium, free",
   "ovTrialStartBody": "Free until {date}. Then {price} per month, unless you cancel in the store.",
   "@ovTrialStartBody": {
     "placeholders": {
@@ -1157,7 +1268,7 @@
   },
   "ctaStart7Days": "Start 7 days free",
   "ovOtoTitle": "One more thing before you start",
-  "ovOtoBody": "Good call — unlimited calls are on right now. The same Pro costs less if you pay yearly.",
+  "ovOtoBody": "Good call. The same Premium costs less if you pay yearly.",
   "ovFailedDeclinedTitle": "Your card was declined",
   "ovFailedDeclinedBody": "The store couldn't take the payment. Nothing was charged.",
   "ctaUpdatePaymentMethod": "Update payment method",
@@ -1165,11 +1276,35 @@
   "ovFailedCanceledBody": "You're still on Free. Nothing was charged.",
   "ovFailedStoreTitle": "Something went wrong",
   "ovFailedStoreBody": "We couldn't reach the store. Nothing was charged.",
-  "ovAlreadyTitle": "You're already on Pro",
+  "ovVerifyingTitle": "Payment received",
+  "@ovVerifyingTitle": {
+    "description": "Purchase sheet - the store took the payment but our server has not confirmed it yet (QA F005). Must NOT say the card was declined or that nothing was charged."
+  },
+  "ovVerifyingBody": "We're still confirming it with the store. It'll turn on shortly — if it doesn't, tap “Restore purchases”.",
+  "@ovVerifyingBody": {
+    "description": "Body of ovVerifyingTitle. The quoted button name must match billingRestorePurchases."
+  },
+  "ovPendingTitle": "Payment pending",
+  "@ovPendingTitle": {
+    "description": "Purchase sheet - the store reported the payment as pending (slow card, cash payment). QA F004."
+  },
+  "ovPendingBody": "The store hasn't finished the payment yet. It'll turn on once it's done — you can leave this screen.",
+  "@ovPendingBody": {
+    "description": "Body of ovPendingTitle. Tells the member they can leave the screen."
+  },
+  "ovRejectedTitle": "We couldn't confirm this purchase",
+  "@ovRejectedTitle": {
+    "description": "Purchase sheet - the store judged the receipt invalid (server INVALID_RECEIPT). QA F028."
+  },
+  "ovRejectedBody": "The store didn't confirm this payment, so nothing was applied. If you were charged, please contact us.",
+  "@ovRejectedBody": {
+    "description": "Body of ovRejectedTitle."
+  },
+  "ovAlreadyTitle": "You're already on Premium",
   "ovAlreadyBody": "This store account has an active plan. There's nothing to buy.",
   "ctaSeeMySubscription": "See my subscription",
   "subCancelTitle": "Cancel subscription",
-  "subCancelBody": "Pro runs until {date}. After that you move to Free.",
+  "subCancelBody": "Premium runs until {date}. After that you move to Free.",
   "@subCancelBody": {
     "placeholders": {
       "date": {
@@ -1179,18 +1314,18 @@
     }
   },
   "subWhatYouLose": "What you lose",
-  "benefitCalls15": "Unlimited calls, 15 minutes each",
   "benefitScoring": "Pronunciation scored letter by letter",
-  "benefitEveryCharacter": "Every character, unlimited",
-  "ctaKeepPro": "Keep Pro",
+  "@benefitScoring": {"description": "Cancel/resubscribe sheet row - a Premium benefit (letter-level pronunciation scoring)."},
+  "benefitEveryMetric": "Every metric, every sentence",
+  "@benefitEveryMetric": {"description": "Cancel/resubscribe sheet row - a Premium benefit (full analysis: every metric, every sentence)."},
   "subPaymentTitle": "Update payment",
-  "subPaymentBody": "We could not take the payment. Pro keeps running during the grace period.",
+  "subPaymentBody": "We could not take the payment. Premium keeps running during the grace period.",
   "subHowToFix": "How to fix it",
   "fixStep1": "Open the store and update your payment method",
   "fixStep2": "Come back — your plan resumes automatically",
   "fixStep3": "Nothing is charged twice",
   "subResubTitle": "Resubscribe",
-  "subResubBody": "Pro ends on {date}. Turn auto-renew back on and nothing changes.",
+  "subResubBody": "Premium ends on {date}. Turn auto-renew back on and nothing changes.",
   "@subResubBody": {
     "placeholders": {
       "date": {
@@ -1201,15 +1336,11 @@
   },
   "subWhatYouKeep": "What you keep",
   "ctaTurnItBackOn": "Turn it back on",
-  "flTodayTitle": "That's today's call",
+  "flTodayTitle": "You've used today's call time",
   "@flTodayTitle": {
     "description": "free_limit call sheet. Source: pre-neutralization backup doc - reconfirm against Figma host section (04_tonghwa)."
   },
   "flTodayBody": "Pick up where you left off — right now.",
-  "flCheckTitle": "That's today's check",
-  "flCheckBody": "One check a day on Free. Pro makes it unlimited.",
-  "flBenefitCalls": "Unlimited calls with Pro · 15 minutes each",
-  "flBenefitChecks": "Unlimited pronunciation checks with Pro",
   "flCaption": "{price} per month · cancel anytime",
   "@flCaption": {
     "placeholders": {
@@ -1258,10 +1389,18 @@
   "ctaUseNow": "Use it now",
   "iapFailTitle": "The payment didn't go through",
   "iapFailBody": "You can try again",
-  "paywallLeaveTitle": "If you leave now, you won't be subscribed",
-  "paywallLeaveBody": "Your benefits unlock right after checkout. You can come back anytime from My Page.",
-  "ctaKeepLooking": "Keep looking",
-  "ctaLeaveAnyway": "Leave anyway",
+  "paywallGuardTitle": "You can keep using Free",
+  "@paywallGuardTitle": {"description": "Paywall exit guard (Figma paywall_exit_guard 6192:29141, Dialog/Confirm-Icon) title."},
+  "paywallGuardBody": "You still get 5 minutes of calls a day.",
+  "@paywallGuardBody": {"description": "Paywall exit guard body. Free plan = 5 minutes of calls a day in total (decision 2026-09-23)."},
+  "ctaMaybeLater": "Maybe later",
+  "@ctaMaybeLater": {"description": "Paywall exit guard lower button \u2014 closes the dialog (Figma BACK)."},
+  "winbackOfferBadge": "50% off your first month",
+  "@winbackOfferBadge": {"description": "Gold badge on the win-back offer sheet (Figma BottomSheet/Winback 6438:4129). No price is shown: the store decides the offer and eligibility."},
+  "winbackOfferTitle": "Welcome back",
+  "@winbackOfferTitle": {"description": "Win-back offer sheet title, shown after a lapsed member picks 'Too expensive' in the exit survey."},
+  "ctaGetHalfOff": "Get 50% off",
+  "@ctaGetHalfOff": {"description": "Win-back offer primary button - opens the store's subscription page, where the store applies its own win-back offer."},
   "iapCharacterSuccessTitle": "A new friend joins you!",
   "iapCharacterSuccessBody": "This character is yours forever - it stays even if your plan changes, and Restore purchases brings it back on any device.",
   "iapCharacterFailedBody": "The purchase didn't go through. Nothing was charged - please try again.",
@@ -1305,15 +1444,11 @@
   "@takeLevelTest": {
     "description": "CTA on the level card when the user has never taken the test."
   },
-  "reviewToSeeScore": "Review to see your pronunciation score",
-  "@reviewToSeeScore": {
-    "description": "Hint under the pronunciation gauge when there is no score yet."
-  },
   "playAgain": "Play Again",
   "@playAgain": {
     "description": "Pronunciation challenge - restart the run from the result screen."
   },
-  "difficultySlow": "Slow",
+  "difficultySlow": "Easy",
   "@difficultySlow": {
     "description": "Pronunciation challenge difficulty - slow."
   },
@@ -1321,12 +1456,830 @@
   "@difficultyNormal": {
     "description": "Pronunciation challenge difficulty - normal."
   },
-  "difficultyFast": "Fast",
+  "difficultyFast": "Hard",
   "@difficultyFast": {
     "description": "Pronunciation challenge difficulty - fast."
   },
-  "difficultyLabel": "Difficulty",
+  "difficultyLabel": "Choose a difficulty",
   "@difficultyLabel": {
     "description": "Pronunciation challenge - label above the difficulty toggle."
-  }
+  },
+  "connected": "Connected",
+  "@connected": {
+    "description": "Call header status - the call is live. Sibling of `connecting`."
+  },
+  "unlockedWithMax": "Included with your plan",
+  "@unlockedWithMax": {
+    "description": "Characters unlocked by the member's Max subscription but NOT bought. Used twice: the section heading on the change-avatar screen, and the status chip on the avatar detail screen. Must never read as ownership - the access ends when the subscription does."
+  },
+  "fcEndedTitle": "Your free call has ended",
+  "@fcEndedTitle": {
+    "description": "Title of the sheet shown when a FREE member hits the 5-minute call limit. The call is over; there is no extend option."
+  },
+  "fcEndedBody": "Free calls last up to 5 minutes\nSubscribe to keep talking for longer",
+  "@fcEndedBody": {
+    "description": "Body of the free 5-minute limit sheet. Two lines separated by a newline."
+  },
+  "ctaSubscribeKeepTalking": "Subscribe and keep talking",
+  "@ctaSubscribeKeepTalking": {
+    "description": "Primary CTA on the free 5-minute limit sheet. Opens the paywall."
+  },
+  "kgTitle": "Keep going?",
+  "@kgTitle": {
+    "description": "Title of the sheet shown to a PAID member every 5 minutes, asking whether to continue. Up to 15 minutes total."
+  },
+  "kgBody": "Calls continue in short stretches.\nWe'll check in again each time.",
+  "@kgBody": {
+    "description": "Body of the paid continue sheet. Two lines separated by a newline."
+  },
+  "pcEndedTitleToday": "Let's wrap up for today.",
+  "@pcEndedTitleToday": {"description": "Premium 15-minute end sheet title - the last call allowed today."},
+  "pcEndedBodyToday": "Review what we talked about, and call me again tomorrow!",
+  "@pcEndedBodyToday": {"description": "Premium 15-minute end sheet body - the last call today; come back tomorrow."},
+  "pcEndedTitle": "Let's wrap up this call.",
+  "@pcEndedTitle": {"description": "Premium 15-minute end sheet title - more calls remain today."},
+  "pcEndedBody": "Review what we talked about, and call me again!",
+  "@pcEndedBody": {"description": "Premium 15-minute end sheet body - more calls remain today (no 'tomorrow')."},
+  "ctaKeepTalking": "Keep talking",
+  "@ctaKeepTalking": {
+    "description": "Primary CTA on the paid continue sheet. Opens the next 5-minute segment."
+  },
+  "callModeSheetTitle": "How do you want to talk?",
+  "@callModeSheetTitle": {
+    "description": "Mode sheet - heading. Asks how the learner wants to talk in this call."
+  },
+  "callModeSheetSubtitle": "Applies to this call right away",
+  "@callModeSheetSubtitle": {
+    "description": "Mode sheet - subheading. The choice applies to the current call immediately."
+  },
+  "callModeFreeTalk": "Free talk",
+  "@callModeFreeTalk": {
+    "description": "Mode sheet - the Free Talk mode name (streaming conversation, no corrections)."
+  },
+  "callModeFreeTalkDesc": "Just talk — no corrections",
+  "@callModeFreeTalkDesc": {
+    "description": "Mode sheet - one-line description of Free Talk."
+  },
+  "callModeChange": "Change mode",
+  "@callModeChange": {
+    "description": "Mode sheet - confirm button, and the label of the call header button that opens the sheet."
+  },
+  "callModeKeep": "Not now",
+  "@callModeKeep": {
+    "description": "Mode sheet - dismiss button. Closes without changing the mode."
+  },
+  "callExitTitle": "End this call?",
+  "@callExitTitle": {
+    "description": "End-call dialog - heading."
+  },
+  "callExitSubtitle": "Time you've talked so far still counts toward today",
+  "@callExitSubtitle": {
+    "description": "End-call dialog - body. Warns the call is still counted against the daily quota."
+  },
+  "callExitKeep": "Keep talking",
+  "@callExitKeep": {
+    "description": "End-call dialog - stay in the call."
+  },
+  "callExitConfirm": "End call",
+  "@callExitConfirm": {
+    "description": "End-call dialog - confirm hanging up."
+  },
+  "callMicMute": "Mute",
+  "@callMicMute": {
+    "description": "Live call - accessibility label for the mic button when the mic is open."
+  },
+  "callMicUnmute": "Unmute",
+  "@callMicUnmute": {
+    "description": "Live call - accessibility label for the mic button when muted."
+  },
+  "callPushToTalk": "Hold to talk",
+  "@callPushToTalk": {
+    "description": "Study call - accessibility label for the hold-to-talk button."
+  },
+  "callFreeEndedTitle": "Your free call has ended",
+  "@callFreeEndedTitle": {
+    "description": "Five-minute sheet (free) - heading when the free call time is used up."
+  },
+  "callFreeEndedCta": "Subscribe and keep talking",
+  "@callFreeEndedCta": {
+    "description": "Five-minute sheet (free) - primary action, opens the paywall."
+  },
+  "callKeepGoingTitle": "Keep going?",
+  "@callKeepGoingTitle": {
+    "description": "Five-minute sheet (paid) - heading of the continue check-in."
+  },
+  "callKeepGoingSubtitle": "Calls continue in 5-minute stretches. We'll check in again each time.",
+  "@callKeepGoingSubtitle": {
+    "description": "Five-minute sheet (paid) - body explaining calls run in 5-minute stretches."
+  },
+  "articulationSelectedWord": "Selected word",
+  "articulationYouSaid": "You said",
+  "articulationTargetSound": "Target",
+  "reportEntry": "Report",
+  "@reportEntry": {
+    "description": "Entry affordance that opens the AI-content report screen. Shown on the call-finish screen and in the records list."
+  },
+  "reportTitle": "Report",
+  "@reportTitle": {
+    "description": "Title bar of the report screen."
+  },
+  "reportPrompt": "What was the problem?",
+  "@reportPrompt": {
+    "description": "Heading above the reason list. Asks what went wrong."
+  },
+  "reportGuide": "Tell us what the AI character said that made you uncomfortable. We review every report.",
+  "@reportGuide": {
+    "description": "Sub-copy under the heading. Explains that the report is about the AI character's content and that every report is reviewed."
+  },
+  "reportReasonSexual": "Sexual content",
+  "@reportReasonSexual": {
+    "description": "Report reason: sexual content."
+  },
+  "reportReasonHate": "Hate or discrimination",
+  "@reportReasonHate": {
+    "description": "Report reason: hateful or discriminatory speech."
+  },
+  "reportReasonViolence": "Violent or threatening content",
+  "@reportReasonViolence": {
+    "description": "Report reason: violent or threatening content."
+  },
+  "reportReasonSelfHarm": "Encourages self-harm",
+  "@reportReasonSelfHarm": {
+    "description": "Report reason: content that encourages self-harm."
+  },
+  "reportReasonMisinfo": "False information",
+  "@reportReasonMisinfo": {
+    "description": "Report reason: false or misleading information."
+  },
+  "reportReasonOther": "Something else",
+  "@reportReasonOther": {
+    "description": "Report reason: anything not covered by the other options."
+  },
+  "reportDetailHint": "Describe what happened (optional)",
+  "@reportDetailHint": {
+    "description": "Placeholder of the optional free-text field on the report screen."
+  },
+  "reportSubmit": "Submit report",
+  "@reportSubmit": {
+    "description": "Primary button that submits the report."
+  },
+  "reportDoneTitle": "Your report has been received",
+  "@reportDoneTitle": {
+    "description": "Headline of the in-app confirmation shown after a report is accepted."
+  },
+  "reportDoneBody": "We'll review it and take action if needed. Thank you for helping keep BeaverTalk safe.",
+  "@reportDoneBody": {
+    "description": "Body of the confirmation. States that the report will be reviewed."
+  },
+  "reportFailed": "Couldn't submit your report. Please try again.",
+  "@reportFailed": {
+    "description": "Snackbar shown when submitting the report fails and the user should retry."
+  },
+  "hwTitle": "Homework",
+  "@hwTitle": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinCodeTitle": "Enter your class code",
+  "@hwJoinCodeTitle": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinCodeSubtitle": "It is the 6-character code from your teacher",
+  "@hwJoinCodeSubtitle": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinCodeLabel": "Class code",
+  "@hwJoinCodeLabel": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinCodeHelp": "The code is not case-sensitive",
+  "@hwJoinCodeHelp": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinConfirmTitle": "Is this the right class?",
+  "@hwJoinConfirmTitle": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinConfirmSubtitle": "If not, check the code again",
+  "@hwJoinConfirmSubtitle": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinFieldInstitution": "Institution",
+  "@hwJoinFieldInstitution": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinFieldTeacher": "Teacher",
+  "@hwJoinFieldTeacher": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinFieldLearners": "Learners",
+  "@hwJoinFieldLearners": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinFieldTerm": "Term",
+  "@hwJoinFieldTerm": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinConfirmNote": "The class name is exactly as your teacher wrote it. We do not translate it.",
+  "@hwJoinConfirmNote": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinConfirmYes": "Yes, that is it",
+  "@hwJoinConfirmYes": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinConfirmRetry": "Re-enter code",
+  "@hwJoinConfirmRetry": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinProfileTitle": "What name will you use in class?",
+  "@hwJoinProfileTitle": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinProfileSubtitle": "Your teacher matches this with the roster",
+  "@hwJoinProfileSubtitle": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinNameLabel": "Name",
+  "@hwJoinNameLabel": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinNameHelp": "It can differ from your app name",
+  "@hwJoinNameHelp": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinStudentNoLabel": "Student ID (optional)",
+  "@hwJoinStudentNoLabel": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinStudentNoHelp": "Your teacher uses it to match the roster",
+  "@hwJoinStudentNoHelp": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinConsentTitle": "What your teacher sees",
+  "@hwJoinConsentTitle": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinConsentSubtitle": "You must agree to join the class",
+  "@hwJoinConsentSubtitle": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinConsentSharedHeading": "Shared with your teacher",
+  "@hwJoinConsentSharedHeading": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinConsentShared1": "Class name and student ID",
+  "@hwJoinConsentShared1": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinConsentShared2": "Whether you did the homework",
+  "@hwJoinConsentShared2": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinConsentShared3": "Sentences passed and missed",
+  "@hwJoinConsentShared3": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinConsentShared4": "Assignment call length and summary",
+  "@hwJoinConsentShared4": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinConsentNotSharedHeading": "Not shared",
+  "@hwJoinConsentNotSharedHeading": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinConsentNotShared1": "Email and phone number",
+  "@hwJoinConsentNotShared1": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinConsentNotShared2": "App name, profile and character",
+  "@hwJoinConsentNotShared2": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinConsentNotShared3": "Nationality and first language",
+  "@hwJoinConsentNotShared3": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinConsentNotShared4": "Calls and study outside the class",
+  "@hwJoinConsentNotShared4": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinConsentNotShared5": "Subscription and payment details",
+  "@hwJoinConsentNotShared5": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinConsentAgree": "I agree to the above",
+  "@hwJoinConsentAgree": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinConsentCta": "Agree and join",
+  "@hwJoinConsentCta": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinDoneTitle": "You joined {className}",
+  "@hwJoinDoneTitle": {
+    "description": "Homework (class join / assignments) copy",
+    "placeholders": {
+      "className": {
+        "type": "String"
+      }
+    }
+  },
+  "hwJoinDoneSubtitle": "{count} assignments are waiting",
+  "@hwJoinDoneSubtitle": {
+    "description": "Homework (class join / assignments) copy",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hwJoinDoneNoAssignment": "No assignments yet",
+  "@hwJoinDoneNoAssignment": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinDoneNextDue": "Next due",
+  "@hwJoinDoneNextDue": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinDoneRosterName": "Your class name",
+  "@hwJoinDoneRosterName": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinDoneCta": "See homework",
+  "@hwJoinDoneCta": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinErrorNotFound": "We could not find that code",
+  "@hwJoinErrorNotFound": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinErrorNotFoundBody": "Please check the six digits again.",
+  "@hwJoinErrorNotFoundBody": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinErrorExpired": "That code has expired",
+  "@hwJoinErrorExpired": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinErrorExpiredBody": "Ask your teacher for a new code.",
+  "@hwJoinErrorExpiredBody": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinErrorFull": "The class is full",
+  "@hwJoinErrorFull": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinErrorFullBody": "Please let your teacher know.",
+  "@hwJoinErrorFullBody": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinFailed": "Could not join. Please try again in a moment.",
+  "@hwJoinFailed": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwSectionInProgress": "In progress",
+  "@hwSectionInProgress": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwSectionUpcoming": "Upcoming",
+  "@hwSectionUpcoming": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwSectionDone": "Done",
+  "@hwSectionDone": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwLeaveClassLink": "Leave the class",
+  "@hwLeaveClassLink": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwListEmptyTitle": "No homework yet",
+  "@hwListEmptyTitle": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwListEmptyBody": "It will show up here when your teacher assigns it.",
+  "@hwListEmptyBody": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwListFailed": "Could not load your homework.",
+  "@hwListFailed": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwRetry": "Try again",
+  "@hwRetry": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwBadgeDone": "Done",
+  "@hwBadgeDone": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwBadgeOverdue": "Not submitted",
+  "@hwBadgeOverdue": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwBadgeOverdueDays": "Not submitted, {days}d late",
+  "@hwBadgeOverdueDays": {
+    "description": "Homework (class join / assignments) copy",
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "hwBadgeDday": "D-{days}",
+  "@hwBadgeDday": {
+    "description": "Homework (class join / assignments) copy",
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "hwBadgeDueToday": "Due today",
+  "@hwBadgeDueToday": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwActivitySpeaking": "Pronunciation",
+  "@hwActivitySpeaking": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwActivityConversation": "Conversation",
+  "@hwActivityConversation": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwActivityWorkbook": "Workbook",
+  "@hwActivityWorkbook": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwChapterLabel": "Chapter {chapter}",
+  "@hwChapterLabel": {
+    "description": "Homework (class join / assignments) copy",
+    "placeholders": {
+      "chapter": {
+        "type": "String"
+      }
+    }
+  },
+  "hwTaskSpeakingDesc": "Check your pronunciation score",
+  "@hwTaskSpeakingDesc": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwTaskConversationDesc": "Use what you learned in a real talk",
+  "hwConversationOnce": "You can do the conversation once per homework.",
+  "@hwConversationOnce": {
+    "description": "Homework detail, conversation card. Shown once the conversation is done — it can only be done once per assignment, so the button is disabled and this line says why."
+  },
+  "@hwTaskConversationDesc": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwTaskWorkbookDesc": "Practice by writing in the workbook",
+  "@hwTaskWorkbookDesc": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwCtaStudy": "Start",
+  "@hwCtaStudy": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwCtaResult": "See result",
+  "@hwCtaResult": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwCtaDownload": "Download",
+  "@hwCtaDownload": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwSpeakingNoScore": "You have not done the speaking task yet",
+  "@hwSpeakingNoScore": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwWorkbookUnavailable": "The workbook file is not available yet.",
+  "@hwWorkbookUnavailable": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwDetailClosed": "This assignment is closed. You can no longer submit.",
+  "@hwDetailClosed": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwLeaveTitle": "Leave the class?",
+  "@hwLeaveTitle": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwLeaveBody": "Your teacher will no longer see your homework results.",
+  "@hwLeaveBody": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwLeaveConfirm": "Leave",
+  "@hwLeaveConfirm": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwLeaveCancel": "Stay",
+  "@hwLeaveCancel": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwLeaveFailed": "Could not leave the class.",
+  "@hwLeaveFailed": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwMyClass": "My class",
+  "@hwMyClass": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwClassEmptyTitle": "You have not joined a class",
+  "@hwClassEmptyTitle": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwClassEmptySubtitle": "Enter the code your teacher gave you",
+  "@hwClassEmptySubtitle": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwClassEmptyCta": "Enter class code",
+  "@hwClassEmptyCta": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwClassContinueCta": "Continue",
+  "@hwClassContinueCta": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwHomeBannerDueTomorrow": "{count} assignments are due tomorrow",
+  "@hwHomeBannerDueTomorrow": {
+    "description": "Homework (class join / assignments) copy",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hwHomeBannerOverdue": "You have {count} unsubmitted assignments",
+  "@hwHomeBannerOverdue": {
+    "description": "Homework (class join / assignments) copy",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hwSpeakingUnavailable": "The sentences for this assignment are not available yet.",
+  "@hwSpeakingUnavailable": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwBadgeClosed": "Closed",
+  "@hwBadgeClosed": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwSpeakingProgress": "{passed} of {total} sentences passed",
+  "@hwSpeakingProgress": {
+    "description": "Homework copy",
+    "placeholders": {
+      "passed": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "challengeFirstWord": "First word",
+  "@challengeFirstWord": {
+    "description": "Countdown label above the previewed first word."
+  },
+  "challengeSeeAnalysis": "See results",
+  "challengePaused": "Paused",
+  "challengePausedNote": "The timer and the recording both stopped.",
+  "challengeTimeLeft": "Time left",
+  "challengeScoreLabel": "Score",
+  "challengeResume": "Resume",
+  "challengeBlockedTitle": "Can't use the camera",
+  "challengeBlockedNote": "Turn on camera and mic access in Settings.",
+  "challengeGoBack": "Go back",
+  "challengeOpenSettings": "Open Settings",
+  "saveDone": "Saved to your gallery",
+  "saveFailed": "Couldn't save",
+  "saveDeniedNote": "Photo access is required",
+  "callIncomingCallerFallback": "Beaver Tutor",
+  "@callIncomingCallerFallback": {
+    "description": "CallKit incoming-call caller name when the server sends no character name."
+  },
+  "callIncomingHandle": "Korean call",
+  "@callIncomingHandle": {
+    "description": "CallKit incoming-call handle line (what the call is about)."
+  },
+  "callMissedTitle": "Missed call",
+  "@callMissedTitle": {
+    "description": "Missed-call notification title, ticker, subtitle and Android channel name."
+  },
+  "callMissedChannelDescription": "Tells you when you miss a call from Beaver.",
+  "@callMissedChannelDescription": {
+    "description": "Android notification channel description for missed calls."
+  },
+  "callMissedBody": "{name} tried to call you",
+  "@callMissedBody": {
+    "description": "Missed-call notification body.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "callBeaverFallbackName": "Beaver",
+  "@callBeaverFallbackName": {
+    "description": "Caller name used when no character name is known."
+  },
+  "callNotifPermissionRationale": "Notification access is needed to receive calls.",
+  "@callNotifPermissionRationale": {
+    "description": "Rationale shown before asking for notification permission."
+  },
+  "callNotifPermissionRequired": "Please allow notifications in Settings.",
+  "@callNotifPermissionRequired": {
+    "description": "Shown when notification permission was denied."
+  },
+  "callHintLockedTitle": "Hints aren't available in Study",
+  "@callHintLockedTitle": {
+    "description": "Call screen - speech bubble above the hint button, shown when the learner taps it during an Expressions-course call. The server sends no hints in that course, so the button stays visible but explains why it does nothing. Name the course with the same word as homeCourseExpression (the home course label) - not a word for 'study'."
+  },
+  "wsTitle": "Weak sounds",
+  "wsToList": "Back to list",
+  "wsNext": "Next",
+  "wsRetry": "Try again",
+  "wsDone": "Done",
+  "wsContinue": "Keep going",
+  "wsQuit": "Leave",
+  "wsRetryLater": "Please try again in a moment.",
+  "wsMissingTitle": "We couldn't find that sound",
+  "wsMissingBody": "Please choose it from the list again.",
+  "wsListLoadFailed": "Couldn't load the list",
+  "wsLessonLoadFailed": "Couldn't load the lesson",
+  "wsNationalTitle": "Weak sounds for your accent",
+  "wsNationalPending": "We'll fill this in once your accent is analyzed",
+  "wsNationalPicked": "Chosen from your accent analysis",
+  "wsNationalEmptyBody": "Make a few more calls and we'll analyze your accent.",
+  "wsMineTitle": "My weak sounds",
+  "wsMineSubtitle": "Sounds measured in your recent calls",
+  "wsMineEmptyBody": "Call and review, and your weak sounds will build up.",
+  "wsNoDataYet": "No data yet",
+  "wsGoToCall": "Start a call",
+  "wsRule": "Rule",
+  "wsRecommended": "Recommended",
+  "wsNotMeasured": "Not measured",
+  "wsStepUnderstand": "Learn",
+  "wsStepWords": "Words",
+  "wsStepSentence": "Sentence",
+  "wsStepTest": "Test",
+  "wsQuitTitle": "Stop practicing?",
+  "wsQuitBody": "If you leave now, this practice won't be saved.",
+  "wsHowToSound": "How to make the sound",
+  "wsPracticeWords": "Practice words",
+  "wsPracticeSentence": "Practice the sentence",
+  "wsPracticeAgain": "One more time",
+  "@wsPracticeAgain": {"description": "Weak-sound learning, end of the word (08) and sentence (13) practice: restarts the same practice from the first item. Figma \u300c\ud55c \ubc88 \ub354 \ud558\uae30\u300d (owner decision 2026-09-24)."},
+  "wsStartTest": "Take the final test",
+  "wsThisSentence": "This sentence",
+  "wsNoScoreNote": "This step isn't scored. Just say it along.",
+  "wsListen": "Listen carefully",
+  "wsSayNow": "Now say it",
+  "wsPracticeDone": "Practice complete",
+  "wsPaused": "Paused",
+  "wsAudioFailed": "Couldn't load the audio. Read it aloud from the text.",
+  "wsReadAloud": "Read the sentence below aloud",
+  "wsTapToStart": "Tap to start",
+  "wsTapWhenDone": "Tap when you're done",
+  "wsScoring": "Scoring",
+  "wsMicFailed": "Couldn't open the microphone.",
+  "wsMicPermissionBody": "This test is read aloud, so it needs the microphone. Turn on microphone access in Settings.",
+  "@wsMicPermissionBody": {"description": "E6 mic-permission sheet body on the weak-sound final test. Title reuses micPermissionNeededTitle."},
+  "wsNoSound": "We didn't hear anything. Try again?",
+  "wsScoreFailed": "Scoring failed. Please try again.",
+  "wsSomethingWrong": "Something went wrong.",
+  "wsLearnDone": "Lesson complete",
+  "wsRetest": "Test again",
+  "wsFirstMeasure": "First measurement",
+  "wsFinalTest": "Final test",
+  "wsPoints": "{score} pts",
+  "@wsPoints": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "wsBeforePoints": "Before {score} pts",
+  "@wsBeforePoints": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "wsGoalPoints": "Goal {score} pts",
+  "@wsGoalPoints": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "wsGoalPrefix": "Goal · {desc}",
+  "@wsGoalPrefix": {
+    "placeholders": {
+      "desc": {
+        "type": "String"
+      }
+    }
+  },
+  "wsAccentOf": "{country} accent",
+  "@wsAccentOf": {
+    "placeholders": {
+      "country": {
+        "type": "String"
+      }
+    }
+  },
+  "wsWordsRepeated": "Repeated {count} words",
+  "@wsWordsRepeated": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "wsChunksRepeated": "Repeated {count} chunks",
+  "@wsChunksRepeated": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "wsStartRecommended": "Start with the recommended sound",
+  "wsStartRecommendedWith": "Start with {label}",
+  "@wsStartRecommendedWith": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "wsPointsUnit": "pts",
+  "@wsPointsUnit": {
+    "description": "Unit shown next to a pronunciation score, e.g. the \"pts\" in \"84 pts\". Rendered in a smaller style beside the number."
+  },
+  "wsEnterFromMypage": "Practice weak sounds",
+  "@wsEnterFromMypage": {
+    "description": "Button on the accent card in My Page that opens weak-sound practice."
+  },
+  "wsGoalOnly": "Goal {score}",
+  "@wsGoalOnly": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "wsSoundOf": "{label} sound",
+  "@wsSoundOf": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "wsResultTip": "{desc}. Picture this shape when it comes up in a call.",
+  "@wsResultTip": {
+    "placeholders": {
+      "desc": {
+        "type": "String"
+      }
+    }
+  },
+  "wsNationalSubtitle": "Sounds {country} speakers often get wrong",
+  "@wsNationalSubtitle": {
+    "placeholders": {
+      "country": {
+        "type": "String"
+      }
+    }
+  },
+  "wsRetryPackLabel": "Practice sounds you often missed",
+  "wsRetryPackTitle": "{count, plural, =1{1 sound you often missed this session} other{{count} sounds you often missed this session}}",
+  "@wsRetryPackTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "wsRetryPackBody": "We gathered the sounds you missed twice or more. Practice each in 4 steps.",
+  "wsRetryPackCta": "Practice them all",
+  "wsRetryListTitle": "Sounds you often missed",
+  "wsRetryListSection": "Sounds from this session",
+  "wsRetryListSub": "Sounds you missed twice or more this session",
+  "wsRetryListSubWithCall": "Sounds you missed twice or more in the call “{title}”",
+  "@wsRetryListSubWithCall": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "wsRetryListAllDone": "You practiced all the sounds",
+  "wsRetryBackToReport": "Back to report"
 }

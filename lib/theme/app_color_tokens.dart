@@ -30,6 +30,7 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
     required this.primaryNormal10,
     required this.primaryNormal4,
     required this.primaryOnPrimary,
+    required this.primaryForeground,
     required this.labelStrong,
     required this.labelNormal,
     required this.labelNeutral,
@@ -41,6 +42,17 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
     required this.backgroundNormalDeep,
     required this.backgroundElevatedNormal,
     required this.backgroundElevatedAlternative,
+    required this.backgroundElevatedDialog,
+    required this.score1,
+    required this.score2,
+    required this.score3,
+    required this.score4,
+    required this.score5,
+    required this.score1Text,
+    required this.score2Text,
+    required this.score3Text,
+    required this.score4Text,
+    required this.score5Text,
     required this.backgroundSurfaceAlternative,
     required this.backgroundTransparentNormal,
     required this.backgroundTransparentAlternative,
@@ -69,6 +81,13 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
     required this.statusNegative6,
     required this.statusCautionary,
     required this.statusCautionarySurface,
+    required this.accentStreak,
+    required this.accentStreakSurface,
+    required this.characterSurfaceBaba,
+    required this.characterSurfaceBibi,
+    required this.characterSurfaceDudu,
+    required this.characterSurfacePopo,
+    required this.characterSurfaceRara,
     required this.accentForegroundRed,
     required this.accentForegroundOrange,
     required this.accentForegroundRedOrange,
@@ -122,6 +141,14 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
   /// Dark #111111 / Light #FFFFFF.
   final Color primaryOnPrimary;
 
+  /// `Primary/Foreground` — 민트를 **글자·글리프 색으로** 쓸 때.
+  /// Dark #00FFB2 / Light #00593E.
+  ///
+  /// Dark 에서는 [primaryNormal] 과 같은 값이지만 Light 에서 갈린다
+  /// (#00593E vs #007A55) — 면을 칠하는 [primaryNormal] 을 글자에 돌려 쓰면
+  /// 라이트에서 대비가 낮아진다. 숙제 배지·칩·진행 링이 이 토큰을 쓴다.
+  final Color primaryForeground;
+
   // ── Label (text only) ──────────────────────────────────────
   /// `Label/Strong` — **the theme text colour. #FFFFFF in Dark, #000000 in
   /// Light.** Never use it to mean "white": that is [staticWhite].
@@ -147,6 +174,18 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
 
   /// `Background/Elevated/Alternative` — **the card/sheet/dialog surface**.
   final Color backgroundElevatedAlternative;
+
+  /// `Background/Elevated/Dialog` — `Dialog/Confirm-Icon`(`6198:29743`) 카드 면.
+  /// Figma 는 Atomic 별칭 없이 두 모드에 값을 직접 넣었다(Dark #2F3340 · Light #FFFFFF, 09-24 실측).
+  final Color backgroundElevatedDialog;
+
+  /// `Score/1`~`Score/5` — 발음 점수 구간 색(0–20 · 20–40 · 40–60 · 60–80 · 80–100). 게이지 조각
+  /// 채움 · 조각 배경(18%) · 지표 패널 테두리. 구간 = `min(5, floor(score/20)+1)`(경계 20 은 2구간).
+  /// Figma Semantics(09-24 사장님 확정 H4 · Atomic Red·Red Orange·Orange·Lime·Brand 별칭).
+  final Color score1, score2, score3, score4, score5;
+
+  /// `Score/n Text` — 같은 구간의 글자색(가운데 점수 · 지표 값). 5구간은 `Score/5` 와 같다.
+  final Color score1Text, score2Text, score3Text, score4Text, score5Text;
 
   /// `Background/Surface/Alternative` — the my-page analysis cards.
   ///
@@ -200,6 +239,21 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
   final Color statusCautionary;
   final Color statusCautionarySurface;
 
+  /// `Accent/Streak` — 연속 학습일 불꽃(홈 `Chip-Streak`). Dark #FF9A57 / Light #E8702A.
+  /// 주의색([statusCautionary])과 따로 둔다 — 불꽃은 경고가 아니라 보상이다.
+  final Color accentStreak;
+
+  /// `Accent/Streak-Surface` — 불꽃 칩 바탕(알파 내장). Dark #FF9A57·16% / Light #F1843F·14%.
+  final Color accentStreakSurface;
+
+  /// `Character/Surface/*` — 캐릭터 고유색(파트너 변경 화면의 무대·로스터 타일 바탕).
+  /// Dark 는 저채도(09-22 디자인 확정). 모르는 캐릭터는 [characterSurfaceFor] 가 중립색으로 떨어뜨린다.
+  final Color characterSurfaceBaba;
+  final Color characterSurfaceBibi;
+  final Color characterSurfaceDudu;
+  final Color characterSurfacePopo;
+  final Color characterSurfaceRara;
+
   // ── Accent ─────────────────────────────────────────────────
   final Color accentForegroundRed, accentForegroundOrange;
   final Color accentForegroundRedOrange, accentForegroundLime;
@@ -238,6 +292,7 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
     primaryNormal10: Color(0x1A00FFB2),
     primaryNormal4: Color(0x0A00FFB2),
     primaryOnPrimary: Color(0xFF111111),
+    primaryForeground: Color(0xFF00FFB2),
     labelStrong: Color(0xFFFFFFFF),
     labelNormal: Color(0xFF9EA3B2),
     labelNeutral: Color(0xFF777C89),
@@ -249,6 +304,17 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
     backgroundNormalDeep: Color(0xFF121217),
     backgroundElevatedNormal: Color(0xFF2F3340),
     backgroundElevatedAlternative: Color(0xFF1F222A),
+    backgroundElevatedDialog: Color(0xFF2F3340),
+    score1: Color(0xFFFF6363),
+    score2: Color(0xFFFF7B2E),
+    score3: Color(0xFFFFA938),
+    score4: Color(0xFF6BE016),
+    score5: Color(0xFF00FFB2),
+    score1Text: Color(0xFFFF8C8C),
+    score2Text: Color(0xFFFF9B61),
+    score3Text: Color(0xFFFFC06E),
+    score4Text: Color(0xFF88F03E),
+    score5Text: Color(0xFF00FFB2),
     backgroundSurfaceAlternative: Color(0xFF252932),
     gradientLevelStart: Color(0xFFB0FFE7),
     gradientLevelMid: Color(0xFF00FFB2),
@@ -277,6 +343,13 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
     statusNegative6: Color(0x0FFF7070),
     statusCautionary: Color(0xFFFFA938),
     statusCautionarySurface: Color(0x1AFFB548),
+    accentStreak: Color(0xFFFF9A57),
+    accentStreakSurface: Color(0x29FF9A57),
+    characterSurfaceBaba: Color(0xFF2D2A26),
+    characterSurfaceBibi: Color(0xFF302A24),
+    characterSurfaceDudu: Color(0xFF2A2826),
+    characterSurfacePopo: Color(0xFF312827),
+    characterSurfaceRara: Color(0xFF2B2733),
     accentForegroundRed: Color(0xFFFF6363),
     accentForegroundOrange: Color(0xFFFF9200),
     accentForegroundRedOrange: Color(0xFFFF7B2E),
@@ -323,6 +396,7 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
     primaryNormal10: Color(0x1A008C62),
     primaryNormal4: Color(0x0A008C62),
     primaryOnPrimary: Color(0xFFFFFFFF),
+    primaryForeground: Color(0xFF00593E),
     labelStrong: Color(0xFF000000),
     labelNormal: Color(0xFF333333),
     labelNeutral: Color(0xFF505050),
@@ -330,10 +404,23 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
     labelAssistive: Color(0xFF808080),
     labelDisabled: Color(0xFF999999),
     backgroundNormalNormal: Color(0xFFF1F1F5),
-    backgroundNormalAlternative: Color(0xFFF6F6F7),
+    // 두 값은 09-26 Figma 로 맞췄다(사용자 결정 · 바텀시트·버튼 전수조사). 07-17 a820584
+    // 스냅숏의 #F6F6F7 · #F7F7FB 에 머물러 흰 시트 위 보조 버튼 경계가 안 보였다.
+    backgroundNormalAlternative: Color(0xFFDBDCE2),
     backgroundNormalDeep: Color(0xFFE1E2E4),
-    backgroundElevatedNormal: Color(0xFFF7F7FB),
+    backgroundElevatedNormal: Color(0xFFCBCCD3),
     backgroundElevatedAlternative: Color(0xFFFFFFFF),
+    backgroundElevatedDialog: Color(0xFFFFFFFF),
+    score1: Color(0xFFFF4242),
+    score2: Color(0xFFFF5E00),
+    score3: Color(0xFFFF9200),
+    score4: Color(0xFF58CF04),
+    score5: Color(0xFF007A55),
+    score1Text: Color(0xFFE52222),
+    score2Text: Color(0xFFC94A00),
+    score3Text: Color(0xFF9C5800),
+    score4Text: Color(0xFF429E00),
+    score5Text: Color(0xFF007A55),
     backgroundSurfaceAlternative: Color(0xFFFFFFFF),
     gradientLevelStart: Color(0xFF00C88A),
     gradientLevelMid: Color(0xFF008C62),
@@ -362,6 +449,13 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
     statusNegative6: Color(0x0FDC0000),
     statusCautionary: Color(0xFFFFAA00),
     statusCautionarySurface: Color(0x1AFFAA00),
+    accentStreak: Color(0xFFE8702A),
+    accentStreakSurface: Color(0x24F1843F),
+    characterSurfaceBaba: Color(0xFFF1ECE2),
+    characterSurfaceBibi: Color(0xFFF4E6D6),
+    characterSurfaceDudu: Color(0xFFE7E1DA),
+    characterSurfacePopo: Color(0xFFF6E1DC),
+    characterSurfaceRara: Color(0xFFECE6F1),
     accentForegroundRed: Color(0xFFE52222),
     accentForegroundOrange: Color(0xFF9C5800),
     accentForegroundRedOrange: Color(0xFFF55A00),
@@ -403,6 +497,7 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
     Color? primaryNormal10,
     Color? primaryNormal4,
     Color? primaryOnPrimary,
+    Color? primaryForeground,
     Color? labelStrong,
     Color? labelNormal,
     Color? labelNeutral,
@@ -414,6 +509,17 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
     Color? backgroundNormalDeep,
     Color? backgroundElevatedNormal,
     Color? backgroundElevatedAlternative,
+    Color? backgroundElevatedDialog,
+    Color? score1,
+    Color? score2,
+    Color? score3,
+    Color? score4,
+    Color? score5,
+    Color? score1Text,
+    Color? score2Text,
+    Color? score3Text,
+    Color? score4Text,
+    Color? score5Text,
     Color? backgroundSurfaceAlternative,
     Color? gradientLevelStart,
     Color? gradientLevelMid,
@@ -442,6 +548,13 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
     Color? statusNegative6,
     Color? statusCautionary,
     Color? statusCautionarySurface,
+    Color? accentStreak,
+    Color? accentStreakSurface,
+    Color? characterSurfaceBaba,
+    Color? characterSurfaceBibi,
+    Color? characterSurfaceDudu,
+    Color? characterSurfacePopo,
+    Color? characterSurfaceRara,
     Color? accentForegroundRed,
     Color? accentForegroundOrange,
     Color? accentForegroundRedOrange,
@@ -481,6 +594,7 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
         primaryNormal10: primaryNormal10 ?? this.primaryNormal10,
         primaryNormal4: primaryNormal4 ?? this.primaryNormal4,
         primaryOnPrimary: primaryOnPrimary ?? this.primaryOnPrimary,
+        primaryForeground: primaryForeground ?? this.primaryForeground,
         labelStrong: labelStrong ?? this.labelStrong,
         labelNormal: labelNormal ?? this.labelNormal,
         labelNeutral: labelNeutral ?? this.labelNeutral,
@@ -496,6 +610,18 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
             backgroundElevatedNormal ?? this.backgroundElevatedNormal,
         backgroundElevatedAlternative:
             backgroundElevatedAlternative ?? this.backgroundElevatedAlternative,
+        backgroundElevatedDialog:
+            backgroundElevatedDialog ?? this.backgroundElevatedDialog,
+        score1: score1 ?? this.score1,
+        score2: score2 ?? this.score2,
+        score3: score3 ?? this.score3,
+        score4: score4 ?? this.score4,
+        score5: score5 ?? this.score5,
+        score1Text: score1Text ?? this.score1Text,
+        score2Text: score2Text ?? this.score2Text,
+        score3Text: score3Text ?? this.score3Text,
+        score4Text: score4Text ?? this.score4Text,
+        score5Text: score5Text ?? this.score5Text,
         backgroundSurfaceAlternative:
             backgroundSurfaceAlternative ?? this.backgroundSurfaceAlternative,
         gradientLevelStart: gradientLevelStart ?? this.gradientLevelStart,
@@ -528,6 +654,13 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
         statusCautionary: statusCautionary ?? this.statusCautionary,
         statusCautionarySurface:
             statusCautionarySurface ?? this.statusCautionarySurface,
+        accentStreak: accentStreak ?? this.accentStreak,
+        accentStreakSurface: accentStreakSurface ?? this.accentStreakSurface,
+        characterSurfaceBaba: characterSurfaceBaba ?? this.characterSurfaceBaba,
+        characterSurfaceBibi: characterSurfaceBibi ?? this.characterSurfaceBibi,
+        characterSurfaceDudu: characterSurfaceDudu ?? this.characterSurfaceDudu,
+        characterSurfacePopo: characterSurfacePopo ?? this.characterSurfacePopo,
+        characterSurfaceRara: characterSurfaceRara ?? this.characterSurfaceRara,
         accentForegroundRed: accentForegroundRed ?? this.accentForegroundRed,
         accentForegroundOrange:
             accentForegroundOrange ?? this.accentForegroundOrange,
@@ -583,6 +716,7 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
       primaryNormal10: c(primaryNormal10, other.primaryNormal10),
       primaryNormal4: c(primaryNormal4, other.primaryNormal4),
       primaryOnPrimary: c(primaryOnPrimary, other.primaryOnPrimary),
+      primaryForeground: c(primaryForeground, other.primaryForeground),
       labelStrong: c(labelStrong, other.labelStrong),
       labelNormal: c(labelNormal, other.labelNormal),
       labelNeutral: c(labelNeutral, other.labelNeutral),
@@ -598,6 +732,18 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
           c(backgroundElevatedNormal, other.backgroundElevatedNormal),
       backgroundElevatedAlternative:
           c(backgroundElevatedAlternative, other.backgroundElevatedAlternative),
+      backgroundElevatedDialog:
+          c(backgroundElevatedDialog, other.backgroundElevatedDialog),
+      score1: c(score1, other.score1),
+      score2: c(score2, other.score2),
+      score3: c(score3, other.score3),
+      score4: c(score4, other.score4),
+      score5: c(score5, other.score5),
+      score1Text: c(score1Text, other.score1Text),
+      score2Text: c(score2Text, other.score2Text),
+      score3Text: c(score3Text, other.score3Text),
+      score4Text: c(score4Text, other.score4Text),
+      score5Text: c(score5Text, other.score5Text),
       backgroundSurfaceAlternative:
           c(backgroundSurfaceAlternative, other.backgroundSurfaceAlternative),
       gradientLevelStart: c(gradientLevelStart, other.gradientLevelStart),
@@ -630,6 +776,13 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
       statusCautionary: c(statusCautionary, other.statusCautionary),
       statusCautionarySurface:
           c(statusCautionarySurface, other.statusCautionarySurface),
+      accentStreak: c(accentStreak, other.accentStreak),
+      accentStreakSurface: c(accentStreakSurface, other.accentStreakSurface),
+      characterSurfaceBaba: c(characterSurfaceBaba, other.characterSurfaceBaba),
+      characterSurfaceBibi: c(characterSurfaceBibi, other.characterSurfaceBibi),
+      characterSurfaceDudu: c(characterSurfaceDudu, other.characterSurfaceDudu),
+      characterSurfacePopo: c(characterSurfacePopo, other.characterSurfacePopo),
+      characterSurfaceRara: c(characterSurfaceRara, other.characterSurfaceRara),
       accentForegroundRed: c(accentForegroundRed, other.accentForegroundRed),
       accentForegroundOrange:
           c(accentForegroundOrange, other.accentForegroundOrange),
@@ -689,4 +842,18 @@ extension AppColorTokensX on BuildContext {
   /// exactly what the app rendered before any of this existed.
   AppColorTokens get c =>
       Theme.of(this).extension<AppColorTokens>() ?? AppColorTokens.dark;
+}
+
+/// 캐릭터 이름 → 고유 바탕색. 카탈로그에 새 캐릭터가 오면 **중립색**으로 떨어진다 —
+/// 남의 색을 빌려 쓰면 다른 캐릭터처럼 보인다.
+extension CharacterSurface on AppColorTokens {
+  /// [name] 의 `Character/Surface/*`.
+  Color characterSurfaceFor(String name) => switch (name.trim().toLowerCase()) {
+        'baba' => characterSurfaceBaba,
+        'bibi' => characterSurfaceBibi,
+        'dudu' => characterSurfaceDudu,
+        'popo' => characterSurfacePopo,
+        'rara' => characterSurfaceRara,
+        _ => backgroundNormalAlternative,
+      };
 }

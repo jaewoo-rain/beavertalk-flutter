@@ -21,6 +21,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get callErrorGeneric => '通话过程中出现错误。';
 
   @override
+  String get callDailyLimit => '今天的学习时间已用完。';
+
+  @override
+  String get callAlreadyInCall => '你已经在通话中了。';
+
+  @override
   String get callNetworkError => '网络出现错误。';
 
   @override
@@ -51,6 +57,15 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get callRatingPrompt => '这次通话怎么样？';
+
+  @override
+  String get callRatingBody => '你的评分能让下次通话更好。';
+
+  @override
+  String get callRatingSubmit => '提交';
+
+  @override
+  String get callRatingSkip => '跳过';
 
   @override
   String get ratingBad => '不太好';
@@ -120,6 +135,24 @@ class AppLocalizationsZh extends AppLocalizations {
   String get alarms => '闹钟';
 
   @override
+  String get alarmAdd => '添加闹钟';
+
+  @override
+  String get alarmEdit => '编辑闹钟';
+
+  @override
+  String get alarmEveryDay => '每天';
+
+  @override
+  String get alarmWeekdays => '工作日';
+
+  @override
+  String get alarmWeekend => '周末';
+
+  @override
+  String get alarmNoRepeat => '不重复';
+
+  @override
   String get addSchedule => '添加日程';
 
   @override
@@ -145,6 +178,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get callPartner => '角色';
+
+  @override
+  String get alarmModeLearnSub => '练习课程表达';
+
+  @override
+  String get alarmModeChatSub => '不限话题聊天';
 
   @override
   String get quickStart => '快速开始';
@@ -194,13 +233,51 @@ class AppLocalizationsZh extends AppLocalizations {
   String get conversation => '对话';
 
   @override
-  String get review => '复习';
-
-  @override
-  String get pronunciationChallenge => '发音挑战';
-
-  @override
   String get newExpressions => '新表达';
+
+  @override
+  String get analysisPrepNote => '正在回顾今天的通话。';
+
+  @override
+  String get analysisPrepNoteHint => '稍后这里会出现一句留言';
+
+  @override
+  String get analysisPrepTitle => '海狸正在把今天的表达做成卡片';
+
+  @override
+  String get analysisPrepSub => '做好后会立刻显示在这里。';
+
+  @override
+  String get analysisPrepStepSave => '保存对话';
+
+  @override
+  String get analysisPrepStepCards => '制作表达卡片';
+
+  @override
+  String get analysisPrepStateDone => '完成';
+
+  @override
+  String get analysisPrepStateWorking => '进行中';
+
+  @override
+  String get analysisPrepStateWaiting => '等待中';
+
+  @override
+  String get usedExpressions => '本次通话中用到的表达';
+
+  @override
+  String quizExpressionsCount(int count) {
+    return '本次学到的表达 $count';
+  }
+
+  @override
+  String get quizPassed => '答对了';
+
+  @override
+  String get quizFailed => '再复习一下';
+
+  @override
+  String get quizPending => '下次继续';
 
   @override
   String get analysisResult => '分析结果';
@@ -210,6 +287,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get practice => '练习';
+
+  @override
+  String get analysisNativeLabel => '地道表达';
 
   @override
   String recentScore(int score) {
@@ -256,30 +336,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get cancel => '取消';
-
-  @override
-  String get selectTime => '选择时间';
-
-  @override
-  String get getStarted => '开始使用';
-
-  @override
-  String get permissionTitle => '为了流畅的体验\n请允许相关权限';
-
-  @override
-  String get permissionSubtitle => '所需权限是使用本服务的必要条件。';
-
-  @override
-  String get permissionMicTitle => '麦克风（必需）';
-
-  @override
-  String get permissionMicDesc => '与 AI 用韩语对话时需要。';
-
-  @override
-  String get permissionNotifTitle => '通知（可选）';
-
-  @override
-  String get permissionNotifDesc => '我们会发送学习提醒和通话日程。';
 
   @override
   String get micPermissionNeededTitle => '需要麦克风权限';
@@ -426,13 +482,117 @@ class AppLocalizationsZh extends AppLocalizations {
   String get endLearning => '结束本次学习';
 
   @override
-  String get navCalendar => '日历';
-
-  @override
   String get navCall => '通话';
 
   @override
-  String get navStats => '统计';
+  String get homeCourseExpression => '表达学习';
+
+  @override
+  String get homeCourseFreetalk => '对话';
+
+  @override
+  String homeExpressionsLeft(int count) {
+    return '距离对话还剩 $count 个表达';
+  }
+
+  @override
+  String get homeFreetalkNote => '用学过的表达自由交流吧';
+
+  @override
+  String get homeTalkTitle => '今天发生了什么？';
+
+  @override
+  String get homeTalkNote => '自由聊天，边聊边学。';
+
+  @override
+  String get homeModeLearn => '学习';
+
+  @override
+  String get homeModeTalk => '聊天';
+
+  @override
+  String homeStreakDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '连续 $count 天',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakCalendarTitle => '学习日历';
+
+  @override
+  String streakDaysUnit(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '天连续',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String streakBest(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '最高纪录 $count 天',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakMetricCallTime => '通话时长';
+
+  @override
+  String get streakMetricLearned => '学到的表达';
+
+  @override
+  String get streakMetricWords => '说出的单词';
+
+  @override
+  String streakCountValue(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString个';
+  }
+
+  @override
+  String streakMinutes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 分钟',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakNoCallsThatDay => '这一天没有通话。';
+
+  @override
+  String get homeLevelPending => '等级未定';
+
+  @override
+  String get homeNoLevelTitle => '还没有等级';
+
+  @override
+  String get homeNoLevelNote => '完成第一次通话就会有等级';
+
+  @override
+  String get homeCurriculumPendingBadge => '即将推出';
+
+  @override
+  String homeCurriculumPendingTitle(String language) {
+    return '$language课程正在准备中';
+  }
+
+  @override
+  String get homeCurriculumPendingNote => '通话中将练习通用表达';
 
   @override
   String get myPage => '我的';
@@ -445,6 +605,27 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get changeAvatar => '更换头像';
+
+  @override
+  String get avatarUseNow => '立即使用';
+
+  @override
+  String get avatarPurchaseFailed => '购买未完成';
+
+  @override
+  String avatarPromoTitle(int percent) {
+    return '仅限今日 · 省 $percent%';
+  }
+
+  @override
+  String avatarPromoLeft(String time) {
+    return '剩余 $time';
+  }
+
+  @override
+  String avatarPromoLeftDays(int days, String time) {
+    return '剩余 $days 天 $time';
+  }
 
   @override
   String get avatarIntro => '不同通话对象的声音和难度各不相同。\n部分对象可能需要付费。';
@@ -485,9 +666,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get subscriptionManage => '管理订阅';
 
   @override
-  String get changePlan => '更改套餐';
-
-  @override
   String get cancelSubscription => '取消订阅';
 
   @override
@@ -506,18 +684,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get viewBillingHistory => '查看账单记录';
 
   @override
-  String get keepUsingPro => '继续使用 Pro';
-
-  @override
-  String get proMembership => 'Pro 会员';
-
-  @override
   String pricePerMonth(String price) {
-    return '$price / mo';
+    return '$price / 月';
   }
-
-  @override
-  String get benefitUnlimitedCalls => '无限通话';
 
   @override
   String get benefitDetailedAnalysis => '详细的发音与语法分析';
@@ -550,7 +719,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get challengeLoadingTitle => '加载中…';
 
   @override
-  String get challengeLoadingNote => '首次运行会下载韩语语音模型（约 82MB）。\n请稍候片刻。';
+  String get challengeLoadingNote => '正在准备摄像头和麦克风。';
 
   @override
   String get challengeSttFallback => '语音识别不可用，因此你使用了点击输入来游玩。';
@@ -655,6 +824,11 @@ class AppLocalizationsZh extends AppLocalizations {
   String get accentSoundsLike => '你的韩语口音听起来';
 
   @override
+  String accentShareText(String country) {
+    return '我在用 BeaverTalk 学韩语 — 我的韩语口音听起来像$country！🦫 快来测测你的口音，和我一起学：https://beavertalk.im';
+  }
+
+  @override
   String get hintLabel => '提示';
 
   @override
@@ -700,7 +874,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get home => '首页';
 
   @override
-  String get callNow => '立即通话';
+  String get onboardingLevelTestCta => '参加等级测试';
 
   @override
   String get pronunciation => '发音';
@@ -710,9 +884,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get rhythm => '语调节奏';
-
-  @override
-  String get analysisTimeout => '这次花的时间比预期长。请稍后再试。';
 
   @override
   String get analysisFailed => '我们无法分析这次对话。请重试。';
@@ -757,6 +928,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get loginAppleSignInFailed => 'Apple 登录失败。';
 
   @override
+  String get loginFacebookSignInFailed => 'Facebook 登录失败。';
+
+  @override
   String get loginKakaoSignInFailed => 'Kakao 登录失败。';
 
   @override
@@ -764,6 +938,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get loginContinueWithGoogle => '使用 Google 继续';
+
+  @override
+  String get loginContinueWithFacebook => '使用 Facebook 继续';
 
   @override
   String get loginContinueWithApple => '使用 Apple 继续';
@@ -945,12 +1122,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get lastPayment => '最近支付';
 
   @override
-  String subscriptionSwitchNote(String date) {
-    return '你可以在$date前继续使用 Pro 权益，之后套餐将自动切换为免费版。';
-  }
-
-  @override
-  String get freePlanCallLimit => '每天1次通话 · 限时5分钟';
+  String get freePlanCallLimit => '每天通话5分钟';
 
   @override
   String get freePlanBasicCharacters => '可使用基础角色';
@@ -963,9 +1135,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get noPayments => '还没有支付记录';
-
-  @override
-  String get morePaymentsExist => '更早的支付记录暂未显示';
 
   @override
   String get undatedPayments => '无日期';
@@ -1088,15 +1257,34 @@ class AppLocalizationsZh extends AppLocalizations {
   String get retakeLevelTest => '重新测试等级';
 
   @override
+  String get levelTestOncePerDay => '等级测试每天只能参加一次，请明天再试。';
+
+  @override
+  String get levelRetakeTitle => '要重新测试等级吗？';
+
+  @override
+  String get levelRetakeBody => '重新测试后，进度会回到该等级的第一课。即使测出相同等级也一样。学过的表达和通话记录会保留。';
+
+  @override
+  String get levelRetakeKeep => '保留进度';
+
+  @override
+  String get levelRetakeConfirm => '重新测试';
+
+  @override
   String get practicePronunciation => '练习发音';
 
   @override
-  String get priceChangedTitle => '价格已变更';
+  String get learnResultView => '查看学习结果';
 
   @override
-  String priceChangedBody(String price) {
-    return '此商品现价为$price。要继续吗?';
-  }
+  String get learnAgain => '重新学习';
+
+  @override
+  String get analysisNoScoreReview => '复习后就会出现发音分数';
+
+  @override
+  String get analysisNoScoreEmpty => '没有可评分的句子';
 
   @override
   String get billingGroupPlanPurchases => '套餐与购买';
@@ -1105,16 +1293,16 @@ class AppLocalizationsZh extends AppLocalizations {
   String get billingGroupInTheStore => '在商店中';
 
   @override
-  String get billingChangePlan => '更换套餐';
-
-  @override
-  String get billingCompareAllPlans => '对比全部套餐';
+  String get billingCompareAllPlans => '对比套餐';
 
   @override
   String get billingBuyACharacter => '购买角色';
 
   @override
   String get billingRestorePurchases => '恢复购买';
+
+  @override
+  String get billingRedeemCode => '使用兑换码';
 
   @override
   String get billingPaymentHistory => '付款记录';
@@ -1162,13 +1350,28 @@ class AppLocalizationsZh extends AppLocalizations {
   String get planPro => 'Pro';
 
   @override
-  String get planMax => 'Max';
+  String get planMax => 'Premium';
 
   @override
-  String get planMaxTrial => 'Max 试用';
+  String get premiumBulletVideo => '每天 15 分钟视频通话';
 
   @override
-  String get freePlanPriceLine => '\$0.00 — 每天一次通话';
+  String get premiumBulletAnalysis => '复习发音评分不限次数';
+
+  @override
+  String get premiumBulletWeakSounds => '针对你母语的薄弱发音练习';
+
+  @override
+  String get noteCharactersSeparate => '角色单独出售，买下的角色一直属于你。';
+
+  @override
+  String get ctaGetPremium => '开通 Premium';
+
+  @override
+  String get planMaxTrial => 'Premium 试用';
+
+  @override
+  String get freePlanPriceLine => '免费 — 每天通话 5 分钟';
 
   @override
   String pricePerMonthLine(String amount) {
@@ -1181,11 +1384,11 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get todaysCalls => '今日通话';
+  String get todaysCalls => '今日通话时间';
 
   @override
   String callsUsedOfLimit(int used, int limit) {
-    return '已用 $used/$limit 次';
+    return '已用 $used/$limit 分钟';
   }
 
   @override
@@ -1206,34 +1409,21 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get bannerGoUnlimitedTitle => '用 Pro 解锁无限通话';
-
-  @override
-  String bannerGoUnlimitedSub(String price) {
-    return '通话不限次 · 每次 15 分钟 · 每月 $price';
-  }
-
-  @override
-  String get bannerMaxUpsellTitle => '用 Max 开启视频通话';
+  String get bannerMaxUpsellTitle => '用 Premium 面对面聊天';
 
   @override
   String bannerMaxUpsellSub(String price) {
-    return '面对面通话 · 每月 $price';
+    return '视频通话 · 每天 15 分钟 · 每月 $price';
   }
 
   @override
   String get bannerAnnualSwitchTitle => '换成年付';
 
   @override
-  String bannerAnnualSwitchSub(String yearly, String perMonth) {
-    return '每年 $yearly · 折合每月 $perMonth';
-  }
-
-  @override
   String get bannerPaymentFailedTitle => '扣款没有成功';
 
   @override
-  String get bannerPaymentFailedSub => '在商店中更新付款方式即可保住 Pro';
+  String get bannerPaymentFailedSub => '在商店中更新付款方式即可保住 Premium';
 
   @override
   String get bannerPausedTitle => '你的套餐已暂停';
@@ -1248,9 +1438,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get noteStoreHandled => '付款方式、套餐变更和取消都由商店处理。';
 
   @override
-  String get noteFairUse => '无限使用需遵守我们的合理使用政策。';
-
-  @override
   String noteTrialEnds(String date) {
     return '试用将于$date结束。在此之前在商店中取消，就不会产生任何费用。';
   }
@@ -1259,7 +1446,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get noteGrace => '宽限期内权益照常可用。应用绝不会拦截你的取消操作。';
 
   @override
-  String get noteHold => '付款完成前 Pro 会暂停。你的角色和学习进度都安然无恙。';
+  String get noteHold => '付款完成前 Premium 会暂停。你的角色和学习进度都安然无恙。';
 
   @override
   String noteEnding(String date) {
@@ -1267,7 +1454,7 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get trialExpiredTitle => '你的 Max 试用已结束';
+  String get trialExpiredTitle => '你的 Premium 试用已结束';
 
   @override
   String get trialExpiredSub => '你现在是免费套餐';
@@ -1279,70 +1466,25 @@ class AppLocalizationsZh extends AppLocalizations {
   String get currentPlanTitle => '当前套餐';
 
   @override
-  String get badgeRecommended => '推荐';
-
-  @override
   String get perMonthUnit => '/月';
 
   @override
-  String get planTaglinePro => '通话不限次。每次 15 分钟。';
-
-  @override
-  String get planTaglineMax => '现在可以看见对方了。';
-
-  @override
-  String get planTaglineFree => '每天一次通话，完全免费。';
-
-  @override
-  String get bulletProCalls => '语音通话，想打就打';
-
-  @override
-  String get bulletProLength => '每次通话 15 分钟';
-
-  @override
-  String get bulletProScoring => '逐字打分的发音评测';
+  String get planTaglineFree => '每天 5 分钟通话，完全免费。';
 
   @override
   String get bulletProCorrections => '针对你母语的纠正';
 
   @override
-  String get bulletProBeaverCalls => '海狸会主动给你打电话';
+  String get bulletFreeCall => '每天 5 分钟语音通话';
 
   @override
-  String get bulletMaxVideo => '面对面视频通话';
-
-  @override
-  String get bulletMaxEverything => '包含 Pro 的全部功能';
-
-  @override
-  String get bulletMaxCharacters => '所有角色，不限使用';
-
-  @override
-  String get bulletMaxStudyBook => '匹配你水平的学习手册';
-
-  @override
-  String get bulletMaxWeeklyReport => '记录发音变化的每周报告';
-
-  @override
-  String get bulletFreeCall => '每天一次 5 分钟语音通话';
-
-  @override
-  String get bulletFreeCheck => '每天一次发音检测';
-
-  @override
-  String get bulletFreeAccent => '口音检测不限次';
-
-  @override
-  String get bulletFreeCharacter => '一个起步角色';
-
-  @override
-  String get ctaGoUnlimited => '解锁无限通话';
+  String get bulletFreeCharacter => '开局2个角色';
 
   @override
   String get ctaTurnOnVideo => '开启视频通话';
 
   @override
-  String get noteCallLength => '每次通话 15 分钟。';
+  String get noteCallLength => 'Premium：每天 15 分钟 — 在此时间内可多次通话。';
 
   @override
   String get paywallProTitle1 => '凌晨 3 点也在线的';
@@ -1351,31 +1493,24 @@ class AppLocalizationsZh extends AppLocalizations {
   String get paywallProTitle2 => '你的韩国朋友';
 
   @override
-  String get paywallProSub => '通话不限次。每次 15 分钟。全年无休。';
+  String get paywallLimitHeadline => 'Premium 每天可通话 15 分钟。';
 
   @override
-  String get paywallLimitHeadline => 'Pro 帮你解除限制。';
+  String get limitBannerCallTitle => '今天的通话时间用完了';
 
   @override
-  String get limitBannerCallTitle => '今天的通话用完了';
-
-  @override
-  String get limitBannerCallSub => '免费套餐每天可通话一次';
-
-  @override
-  String get limitBannerCheckTitle => '今天的检测用完了';
-
-  @override
-  String get limitBannerCheckSub => '免费套餐每天可检测一次';
+  String get limitBannerCallSub => '免费套餐每天可通话 5 分钟';
 
   @override
   String get bulletProCharactersForever => '买下的角色永远属于你';
 
   @override
-  String get paywallMaxTitle => '现在可以看见对方了。';
+  String get paywallMaxTitle => '现在可以面对面视频聊天了。';
 
   @override
-  String get paywallMaxSub => '视频通话、所有角色，还有专为你水平定制的学习手册。';
+  String paywallTutorCompare(String price) {
+    return '请家教一小时要\$25。Premium一个月$price。';
+  }
 
   @override
   String get planMonthly => '月付';
@@ -1414,8 +1549,31 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String ctaCaptionMaxYearly(String price) {
+    return '每年 $price · 随时可在商店中取消';
+  }
+
+  @override
   String ctaCaptionMaxTrial(String price) {
-    return '7 天免费，之后 每月 $price · 随时可在商店中取消';
+    return '7 天免费，之后每月 $price · 随时可在商店中取消';
+  }
+
+  @override
+  String ctaCaptionMaxYearlyTrial(String price) {
+    return '7 天免费，之后每年 $price · 随时可在商店中取消';
+  }
+
+  @override
+  String get bundleTitle => '三个角色一次拥有';
+
+  @override
+  String bundleOffBadge(int percent) {
+    return '省 $percent%';
+  }
+
+  @override
+  String bundleLinkLabel(String price) {
+    return '三个角色一起 $price';
   }
 
   @override
@@ -1428,28 +1586,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get footerPrivacy => '隐私';
 
   @override
-  String get noteMaxCharacters => 'Max 解锁的角色在订阅有效期内可用。你买下的角色永远属于你。';
-
-  @override
   String get processingTitle => '正在确认购买';
 
   @override
   String get processingSub => '通常只需几秒钟。';
 
   @override
-  String get successProTitle => 'Pro 已开通。';
-
-  @override
-  String get successProSub => '从现在起，通话不限次。';
-
-  @override
-  String get successProBenefit1 => '想打就打 — 每次 15 分钟';
-
-  @override
-  String get successProBenefit2 => '发音检测不限次';
-
-  @override
-  String get successProBenefit3 => '所有角色，还可单独购买';
+  String get successProTitle => 'Premium 已开通。';
 
   @override
   String get successMaxTitle => '现在可以看见对方了。';
@@ -1458,27 +1601,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get successMaxSub => '视频通话已开启。在任意通话中点击视频按钮即可。';
 
   @override
-  String get successMaxBenefit1 => '面对面视频通话';
-
-  @override
-  String get successMaxBenefit2 => '所有角色不限用，新角色抢先体验';
-
-  @override
-  String get successMaxBenefit3 => '匹配你水平的学习手册';
-
-  @override
-  String get ctaStartACall => '开始通话';
-
-  @override
   String get ctaStartAVideoCall => '开始视频通话';
 
   @override
   String get ctaSeeYourSubscription => '查看我的订阅';
-
-  @override
-  String successProCaption(String price) {
-    return '每月收取 $price，直到你取消为止。可随时在商店中管理或取消。';
-  }
 
   @override
   String successMaxCaption(String price) {
@@ -1498,90 +1624,16 @@ class AppLocalizationsZh extends AppLocalizations {
   String get plansErrorCaption => '没有产生任何扣款。';
 
   @override
-  String get changePlanTitle => '更换套餐';
-
-  @override
-  String get moveToMaxTitle => '升级到 Max';
-
-  @override
-  String maxPriceShort(String price) {
-    return '$price/月';
-  }
-
-  @override
-  String get moveToMaxCardSub => '面对面视频通话 · 所有角色 · 为你定制的学习手册';
-
-  @override
-  String get whatHappensNow => '接下来会怎样';
-
-  @override
-  String get maxStartsLabel => 'Max 生效';
-
-  @override
-  String get immediately => '立即';
-
-  @override
-  String get unusedProTime => 'Pro 剩余时长';
-
-  @override
-  String get creditedTowardMax => '折抵 Max 费用';
-
-  @override
-  String nextPaymentMaxValue(String price, String date) {
-    return '$price · $date';
-  }
-
-  @override
-  String nextPaymentProValue(String price, String date) {
-    return '$price · $date';
-  }
-
-  @override
-  String get ctaSwitchToMax => '切换到 Max';
-
-  @override
-  String get upgradeCaption => '新套餐立即生效。Pro 剩余时长会折抵费用，绝不重复扣款。';
-
-  @override
-  String get moveToProTitle => '换到 Pro';
-
-  @override
-  String get moveToProSub => '今天不会有任何变化。Max 会持续到你已付费的当月结束。';
-
-  @override
-  String get maxRunsUntil => 'Max 有效期至';
-
-  @override
-  String get proStarts => 'Pro 开始';
-
-  @override
-  String get whatYouKeep => '你保留的权益';
-
-  @override
-  String get keepBenefitCalls => '语音通话不限次，每次 15 分钟';
-
-  @override
-  String get keepBenefitCharacters => '买下的角色永远属于你';
-
-  @override
-  String downgradeWarning(String date) {
-    return '视频通话和 Max 专属角色将于$date关闭。';
-  }
-
-  @override
-  String get ctaSwitchToPro => '切换到 Pro';
-
-  @override
-  String get ctaKeepMax => '保留 Max';
+  String get ctaKeepMax => '保留 Premium';
 
   @override
   String get winbackSkip => '跳过';
 
   @override
-  String get winbackTitle => '你的 Pro 套餐已结束';
+  String get winbackTitle => '你的 Premium 套餐已结束';
 
   @override
-  String get winbackSub => '你现在是免费套餐 — 每天一次通话。';
+  String get winbackSub => '你现在是免费套餐 — 每天可通话 5 分钟。';
 
   @override
   String get winbackQuestion => '愿意告诉我们离开的原因吗？';
@@ -1617,7 +1669,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get ctaClose => '关闭';
 
   @override
-  String get ovRestoreSuccessTitle => 'Pro 回来了';
+  String get ovRestoreSuccessTitle => 'Premium 回来了';
 
   @override
   String get ovRestoreSuccessBody => '我们找到了你的订阅，已在这台设备上重新开启。';
@@ -1635,13 +1687,26 @@ class AppLocalizationsZh extends AppLocalizations {
   String get ovRestoreOtherBody => '此订阅已在另一个 BeaverTalk 账号上生效。';
 
   @override
+  String ovRestoreCharactersTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '角色已恢复',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get ovRestoreCharacterOtherTitle => '该角色是在其他账号上购买的';
+
+  @override
   String get ctaSignInThatAccount => '登录那个账号';
 
   @override
   String get ctaGetHelp => '获取帮助';
 
   @override
-  String get ovCharacterOfferTitle => '还没准备好订 Pro？';
+  String get ovCharacterOfferTitle => '还没准备好订 Premium？';
 
   @override
   String get ovCharacterOfferBody => '挑一个角色永久拥有。一次性购买 — 没有订阅，也不会续费。';
@@ -1651,7 +1716,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String rowFromPrice(String price) {
-    return '$price 起';
+    return '每个 $price';
   }
 
   @override
@@ -1693,7 +1758,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get rowCharactersYouBought => '你买下的角色';
 
   @override
-  String get rowProRunsUntil => 'Pro 有效期至';
+  String get rowProRunsUntil => 'Premium 有效期至';
 
   @override
   String get ctaSwitchToYearly => '换成年付';
@@ -1707,7 +1772,7 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get ovAnnualSwitchBody => '你已经用了两个月 Pro。年付套餐算下来更划算。';
+  String get ovAnnualSwitchBody => '年付套餐比按月付更划算。';
 
   @override
   String get rowYouSave => '你省下';
@@ -1766,7 +1831,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get ovTrialEndingTitle => '你的试用明天结束';
 
   @override
-  String get ovTrialEndingBody => '不取消的话 Max 会继续。接下来是这样的。';
+  String get ovTrialEndingBody => '不取消的话 Premium 会继续。接下来是这样的。';
 
   @override
   String get rowTrialEnds => '试用结束';
@@ -1781,7 +1846,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get ctaCancelInStore => '在商店中取消';
 
   @override
-  String get ovTrialStartTitle => '免费体验 Max 7 天';
+  String get ovTrialStartTitle => '免费体验 Premium 7 天';
 
   @override
   String ovTrialStartBody(String price, String date) {
@@ -1795,7 +1860,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get ovOtoTitle => '开始前还有一件事';
 
   @override
-  String get ovOtoBody => '好选择 — 无限通话已经开启。同样的 Pro，年付更便宜。';
+  String get ovOtoBody => '选得好。同样的 Premium，按年付更便宜。';
 
   @override
   String get ovFailedDeclinedTitle => '你的卡被拒绝了';
@@ -1819,7 +1884,25 @@ class AppLocalizationsZh extends AppLocalizations {
   String get ovFailedStoreBody => '无法连接到商店。没有产生任何费用。';
 
   @override
-  String get ovAlreadyTitle => '你已经在用 Pro 了';
+  String get ovVerifyingTitle => '已收到付款';
+
+  @override
+  String get ovVerifyingBody => '我们仍在与商店确认。很快就会生效——如未生效，请点按“恢复购买”。';
+
+  @override
+  String get ovPendingTitle => '付款处理中';
+
+  @override
+  String get ovPendingBody => '商店尚未完成付款。完成后会立即生效——你可以离开此页面。';
+
+  @override
+  String get ovRejectedTitle => '无法确认这笔购买';
+
+  @override
+  String get ovRejectedBody => '商店未确认这笔付款，因此没有开通任何内容。如果已被扣款，请联系我们。';
+
+  @override
+  String get ovAlreadyTitle => '你已经在用 Premium 了';
 
   @override
   String get ovAlreadyBody => '此商店账号已有生效中的套餐，无需再购买。';
@@ -1832,29 +1915,23 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String subCancelBody(String date) {
-    return 'Pro 有效期至$date。之后你将转为免费套餐。';
+    return 'Premium 有效期至$date。之后你将转为免费套餐。';
   }
 
   @override
   String get subWhatYouLose => '你将失去';
 
   @override
-  String get benefitCalls15 => '通话不限次，每次 15 分钟';
-
-  @override
   String get benefitScoring => '逐字打分的发音评测';
 
   @override
-  String get benefitEveryCharacter => '所有角色，不限使用';
-
-  @override
-  String get ctaKeepPro => '保留 Pro';
+  String get benefitEveryMetric => '每项指标，每个句子';
 
   @override
   String get subPaymentTitle => '更新付款';
 
   @override
-  String get subPaymentBody => '扣款没有成功。宽限期内 Pro 会继续有效。';
+  String get subPaymentBody => '扣款没有成功。宽限期内 Premium 会继续有效。';
 
   @override
   String get subHowToFix => '解决方法';
@@ -1873,7 +1950,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String subResubBody(String date) {
-    return 'Pro 将于$date结束。重新打开自动续订，一切照旧。';
+    return 'Premium 将于$date结束。重新打开自动续订，一切照旧。';
   }
 
   @override
@@ -1883,22 +1960,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get ctaTurnItBackOn => '重新开启';
 
   @override
-  String get flTodayTitle => '今天的通话用完了';
+  String get flTodayTitle => '今天的通话时间用完了';
 
   @override
   String get flTodayBody => '从上次中断的地方，现在就继续。';
-
-  @override
-  String get flCheckTitle => '今天的检测用完了';
-
-  @override
-  String get flCheckBody => '免费套餐每天检测一次。Pro 则不限次。';
-
-  @override
-  String get flBenefitCalls => 'Pro 通话不限次 · 每次 15 分钟';
-
-  @override
-  String get flBenefitChecks => 'Pro 发音检测不限次';
 
   @override
   String flCaption(String price) {
@@ -1920,7 +1985,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get nicknameLabel => '昵称';
 
   @override
-  String get emailLabel => 'Email';
+  String get emailLabel => '邮箱';
 
   @override
   String get loginMethodLabel => '登录方式';
@@ -1938,39 +2003,45 @@ class AppLocalizationsZh extends AppLocalizations {
   String get ctaSave => '保存';
 
   @override
-  String get subscriptionRow => 'Subscription';
+  String get subscriptionRow => '订阅';
 
   @override
-  String get iapSuccessTitle => 'Purchase complete';
+  String get iapSuccessTitle => '购买完成';
 
   @override
   String iapSuccessBody(String name) {
-    return 'The $name avatar is yours forever.\nApplied as soon as the receipt clears.';
+    return '$name 形象将永久属于你。\n收据确认后立即生效。';
   }
 
   @override
-  String get ctaGoHome => 'Home';
+  String get ctaGoHome => '回到首页';
 
   @override
-  String get ctaUseNow => 'Use it now';
+  String get ctaUseNow => '立即使用';
 
   @override
-  String get iapFailTitle => 'The payment didn\'t go through';
+  String get iapFailTitle => '支付未完成';
 
   @override
-  String get iapFailBody => 'You can try again';
+  String get iapFailBody => '你可以再试一次';
 
   @override
-  String get paywallLeaveTitle => '现在离开将无法完成订阅';
+  String get paywallGuardTitle => '你可以继续免费使用';
 
   @override
-  String get paywallLeaveBody => '权益在付款后立即解锁。你随时可以从我的页面回来。';
+  String get paywallGuardBody => '每天 5 分钟通话照常保留。';
 
   @override
-  String get ctaKeepLooking => '继续查看';
+  String get ctaMaybeLater => '以后再说';
 
   @override
-  String get ctaLeaveAnyway => '仍然离开';
+  String get winbackOfferBadge => '首月 5 折';
+
+  @override
+  String get winbackOfferTitle => '欢迎回来';
+
+  @override
+  String get ctaGetHalfOff => '领取 5 折';
 
   @override
   String get iapCharacterSuccessTitle => '新伙伴加入了!';
@@ -2013,9 +2084,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get takeLevelTest => '参加等级测试';
 
   @override
-  String get reviewToSeeScore => '复习后就会出现发音分数';
-
-  @override
   String get playAgain => '再玩一次';
 
   @override
@@ -2029,4 +2097,775 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get difficultyLabel => '难度';
+
+  @override
+  String get connected => '已连接';
+
+  @override
+  String get unlockedWithMax => '已包含在你的套餐中';
+
+  @override
+  String get fcEndedTitle => '免费通话已结束';
+
+  @override
+  String get fcEndedBody => '免费通话最长5分钟\n订阅后可继续畅聊';
+
+  @override
+  String get ctaSubscribeKeepTalking => '订阅并继续通话';
+
+  @override
+  String get kgTitle => '继续吗？';
+
+  @override
+  String get kgBody => '通话会分段继续。\n每段继续时都会再问你。';
+
+  @override
+  String get pcEndedTitleToday => '今天的通话就到这里吧。';
+
+  @override
+  String get pcEndedBodyToday => '复习一下我们聊过的内容，明天再给我打电话吧！';
+
+  @override
+  String get pcEndedTitle => '这次通话就到这里吧。';
+
+  @override
+  String get pcEndedBody => '复习一下我们聊过的内容，再给我打电话吧！';
+
+  @override
+  String get ctaKeepTalking => '继续通话';
+
+  @override
+  String get callModeSheetTitle => '你想怎么聊？';
+
+  @override
+  String get callModeSheetSubtitle => '立即应用于本次通话';
+
+  @override
+  String get callModeFreeTalk => '自由聊天';
+
+  @override
+  String get callModeFreeTalkDesc => '轻松交谈，不做纠正';
+
+  @override
+  String get callModeChange => '更改模式';
+
+  @override
+  String get callModeKeep => '关闭';
+
+  @override
+  String get callExitTitle => '要结束通话吗？';
+
+  @override
+  String get callExitSubtitle => '现在结束，已通话的时间仍计入今天的用量';
+
+  @override
+  String get callExitKeep => '继续通话';
+
+  @override
+  String get callExitConfirm => '结束通话';
+
+  @override
+  String get callMicMute => '静音';
+
+  @override
+  String get callMicUnmute => '取消静音';
+
+  @override
+  String get callPushToTalk => '按住说话';
+
+  @override
+  String get callFreeEndedTitle => '免费通话已结束';
+
+  @override
+  String get callFreeEndedCta => '订阅并继续聊天';
+
+  @override
+  String get callKeepGoingTitle => '要继续吗？';
+
+  @override
+  String get callKeepGoingSubtitle => '通话以5分钟为一段继续。每次都会再询问你。';
+
+  @override
+  String get articulationSelectedWord => '所选单词';
+
+  @override
+  String get articulationYouSaid => '你的发音';
+
+  @override
+  String get articulationTargetSound => '目标';
+
+  @override
+  String get reportEntry => '举报';
+
+  @override
+  String get reportTitle => '举报';
+
+  @override
+  String get reportPrompt => '遇到了什么问题？';
+
+  @override
+  String get reportGuide => '请告诉我们 AI 角色的哪些内容让你感到不适。我们会审核每一条举报。';
+
+  @override
+  String get reportReasonSexual => '色情内容';
+
+  @override
+  String get reportReasonHate => '仇恨或歧视';
+
+  @override
+  String get reportReasonViolence => '暴力或威胁内容';
+
+  @override
+  String get reportReasonSelfHarm => '鼓励自残';
+
+  @override
+  String get reportReasonMisinfo => '虚假信息';
+
+  @override
+  String get reportReasonOther => '其他问题';
+
+  @override
+  String get reportDetailHint => '描述发生了什么（选填）';
+
+  @override
+  String get reportSubmit => '提交举报';
+
+  @override
+  String get reportDoneTitle => '已收到你的举报';
+
+  @override
+  String get reportDoneBody => '我们会审核并在必要时采取措施。感谢你帮助维护 BeaverTalk 的安全。';
+
+  @override
+  String get reportFailed => '举报提交失败，请重试。';
+
+  @override
+  String get hwTitle => '作业';
+
+  @override
+  String get hwJoinCodeTitle => '请输入班级代码';
+
+  @override
+  String get hwJoinCodeSubtitle => '这是老师给你的 6 位代码';
+
+  @override
+  String get hwJoinCodeLabel => '班级代码';
+
+  @override
+  String get hwJoinCodeHelp => '不区分大小写';
+
+  @override
+  String get hwJoinConfirmTitle => '是这个班级吗？';
+
+  @override
+  String get hwJoinConfirmSubtitle => '如果不是，请再确认一次代码';
+
+  @override
+  String get hwJoinFieldInstitution => '机构';
+
+  @override
+  String get hwJoinFieldTeacher => '老师';
+
+  @override
+  String get hwJoinFieldLearners => '学习者';
+
+  @override
+  String get hwJoinFieldTerm => '学期';
+
+  @override
+  String get hwJoinConfirmNote => '班级名称按老师填写的原样显示，我们不做翻译。';
+
+  @override
+  String get hwJoinConfirmYes => '对，就是这个';
+
+  @override
+  String get hwJoinConfirmRetry => '重新输入代码';
+
+  @override
+  String get hwJoinProfileTitle => '你在班级里使用什么名字？';
+
+  @override
+  String get hwJoinProfileSubtitle => '老师会用它对照名单';
+
+  @override
+  String get hwJoinNameLabel => '姓名';
+
+  @override
+  String get hwJoinNameHelp => '可以和应用里的名字不同';
+
+  @override
+  String get hwJoinStudentNoLabel => '学号（选填）';
+
+  @override
+  String get hwJoinStudentNoHelp => '老师用它对照名单';
+
+  @override
+  String get hwJoinConsentTitle => '老师能看到的内容';
+
+  @override
+  String get hwJoinConsentSubtitle => '加入班级需要你同意';
+
+  @override
+  String get hwJoinConsentSharedHeading => '会分享给老师';
+
+  @override
+  String get hwJoinConsentShared1 => '班级名称和学号';
+
+  @override
+  String get hwJoinConsentShared2 => '是否完成了作业';
+
+  @override
+  String get hwJoinConsentShared3 => '通过和未通过的句子';
+
+  @override
+  String get hwJoinConsentShared4 => '作业通话时长和摘要';
+
+  @override
+  String get hwJoinConsentNotSharedHeading => '不会分享';
+
+  @override
+  String get hwJoinConsentNotShared1 => '邮箱和电话号码';
+
+  @override
+  String get hwJoinConsentNotShared2 => '应用名称、个人资料和角色';
+
+  @override
+  String get hwJoinConsentNotShared3 => '国籍和母语';
+
+  @override
+  String get hwJoinConsentNotShared4 => '班级以外的通话和学习';
+
+  @override
+  String get hwJoinConsentNotShared5 => '订阅和支付信息';
+
+  @override
+  String get hwJoinConsentAgree => '我同意以上内容';
+
+  @override
+  String get hwJoinConsentCta => '同意并加入';
+
+  @override
+  String hwJoinDoneTitle(String className) {
+    return '你已加入 $className';
+  }
+
+  @override
+  String hwJoinDoneSubtitle(int count) {
+    return '有 $count 个作业在等你';
+  }
+
+  @override
+  String get hwJoinDoneNoAssignment => '还没有作业';
+
+  @override
+  String get hwJoinDoneNextDue => '下次截止';
+
+  @override
+  String get hwJoinDoneRosterName => '你在班级里的名字';
+
+  @override
+  String get hwJoinDoneCta => '查看作业';
+
+  @override
+  String get hwJoinErrorNotFound => '找不到该代码';
+
+  @override
+  String get hwJoinErrorNotFoundBody => '请再确认这 6 位数字。';
+
+  @override
+  String get hwJoinErrorExpired => '该代码已过期';
+
+  @override
+  String get hwJoinErrorExpiredBody => '请向老师索取新代码。';
+
+  @override
+  String get hwJoinErrorFull => '班级已满';
+
+  @override
+  String get hwJoinErrorFullBody => '请告知你的老师。';
+
+  @override
+  String get hwJoinFailed => '加入失败，请稍后再试。';
+
+  @override
+  String get hwSectionInProgress => '进行中';
+
+  @override
+  String get hwSectionUpcoming => '即将开始';
+
+  @override
+  String get hwSectionDone => '已完成';
+
+  @override
+  String get hwLeaveClassLink => '退出班级';
+
+  @override
+  String get hwListEmptyTitle => '还没有作业';
+
+  @override
+  String get hwListEmptyBody => '老师布置后会显示在这里。';
+
+  @override
+  String get hwListFailed => '无法加载作业。';
+
+  @override
+  String get hwRetry => '重试';
+
+  @override
+  String get hwBadgeDone => '已完成';
+
+  @override
+  String get hwBadgeOverdue => '未提交';
+
+  @override
+  String hwBadgeOverdueDays(int days) {
+    return '未提交，逾期 $days 天';
+  }
+
+  @override
+  String hwBadgeDday(int days) {
+    return 'D-$days';
+  }
+
+  @override
+  String get hwBadgeDueToday => '今天截止';
+
+  @override
+  String get hwActivitySpeaking => '发音';
+
+  @override
+  String get hwActivityConversation => '对话';
+
+  @override
+  String get hwActivityWorkbook => '练习册';
+
+  @override
+  String hwChapterLabel(String chapter) {
+    return '第 $chapter 课';
+  }
+
+  @override
+  String get hwTaskSpeakingDesc => '确认你的发音得分';
+
+  @override
+  String get hwTaskConversationDesc => '把学到的用在真实对话里';
+
+  @override
+  String get hwConversationOnce => '每份作业的对话只能进行一次。';
+
+  @override
+  String get hwTaskWorkbookDesc => '在练习册上书写练习';
+
+  @override
+  String get hwCtaStudy => '开始';
+
+  @override
+  String get hwCtaResult => '查看结果';
+
+  @override
+  String get hwCtaDownload => '下载';
+
+  @override
+  String get hwSpeakingNoScore => '你还没做口语作业';
+
+  @override
+  String get hwWorkbookUnavailable => '练习册文件尚未提供。';
+
+  @override
+  String get hwDetailClosed => '该作业已截止，无法再提交。';
+
+  @override
+  String get hwLeaveTitle => '要退出班级吗？';
+
+  @override
+  String get hwLeaveBody => '老师将不再看到你的作业结果。';
+
+  @override
+  String get hwLeaveConfirm => '退出';
+
+  @override
+  String get hwLeaveCancel => '留下';
+
+  @override
+  String get hwLeaveFailed => '无法退出班级。';
+
+  @override
+  String get hwMyClass => '我的班级';
+
+  @override
+  String get hwClassEmptyTitle => '你还没有加入班级';
+
+  @override
+  String get hwClassEmptySubtitle => '请输入老师给你的代码';
+
+  @override
+  String get hwClassEmptyCta => '输入班级代码';
+
+  @override
+  String get hwClassContinueCta => '继续';
+
+  @override
+  String hwHomeBannerDueTomorrow(int count) {
+    return '有 $count 个作业明天截止';
+  }
+
+  @override
+  String hwHomeBannerOverdue(int count) {
+    return '你有 $count 个作业未提交';
+  }
+
+  @override
+  String get hwSpeakingUnavailable => '该作业的句子尚未提供。';
+
+  @override
+  String get hwBadgeClosed => '已截止';
+
+  @override
+  String hwSpeakingProgress(int passed, int total) {
+    return '$total 句中通过 $passed 句';
+  }
+
+  @override
+  String get challengeFirstWord => '第一个词';
+
+  @override
+  String get challengeSeeAnalysis => '查看结果';
+
+  @override
+  String get challengePaused => '已暂停';
+
+  @override
+  String get challengePausedNote => '计时和录制都已停止';
+
+  @override
+  String get challengeTimeLeft => '剩余时间';
+
+  @override
+  String get challengeScoreLabel => '分数';
+
+  @override
+  String get challengeResume => '继续';
+
+  @override
+  String get challengeBlockedTitle => '无法使用相机';
+
+  @override
+  String get challengeBlockedNote => '请在设置中开启相机和麦克风权限';
+
+  @override
+  String get challengeGoBack => '返回';
+
+  @override
+  String get challengeOpenSettings => '打开设置';
+
+  @override
+  String get saveDone => '已保存到相册';
+
+  @override
+  String get saveFailed => '保存失败';
+
+  @override
+  String get saveDeniedNote => '需要照片访问权限';
+
+  @override
+  String get callIncomingCallerFallback => '海狸老师';
+
+  @override
+  String get callIncomingHandle => '韩语通话';
+
+  @override
+  String get callMissedTitle => '未接来电';
+
+  @override
+  String get callMissedChannelDescription => '提醒你错过的海狸来电。';
+
+  @override
+  String callMissedBody(String name) {
+    return '$name给你打过电话';
+  }
+
+  @override
+  String get callBeaverFallbackName => '海狸';
+
+  @override
+  String get callNotifPermissionRationale => '需要通知权限才能接收来电。';
+
+  @override
+  String get callNotifPermissionRequired => '请在设置中允许通知。';
+
+  @override
+  String get callHintLockedTitle => '表达学习中无法使用提示';
+
+  @override
+  String get wsTitle => '薄弱发音';
+
+  @override
+  String get wsToList => '返回列表';
+
+  @override
+  String get wsNext => '下一个';
+
+  @override
+  String get wsRetry => '再试一次';
+
+  @override
+  String get wsDone => '完成';
+
+  @override
+  String get wsContinue => '继续';
+
+  @override
+  String get wsQuit => '退出';
+
+  @override
+  String get wsRetryLater => '请稍后再试。';
+
+  @override
+  String get wsMissingTitle => '没找到这个音';
+
+  @override
+  String get wsMissingBody => '请从列表中重新选择。';
+
+  @override
+  String get wsListLoadFailed => '列表加载失败';
+
+  @override
+  String get wsLessonLoadFailed => '课程加载失败';
+
+  @override
+  String get wsNationalTitle => '你口音的薄弱发音';
+
+  @override
+  String get wsNationalPending => '口音分析完成后就会填上';
+
+  @override
+  String get wsNationalPicked => '根据你的口音分析选出';
+
+  @override
+  String get wsNationalEmptyBody => '多打几次通话，我们就能分析你的口音。';
+
+  @override
+  String get wsMineTitle => '我的薄弱发音';
+
+  @override
+  String get wsMineSubtitle => '在最近通话中测得的音';
+
+  @override
+  String get wsMineEmptyBody => '通话并复习，薄弱发音就会累积起来。';
+
+  @override
+  String get wsNoDataYet => '还没有数据';
+
+  @override
+  String get wsGoToCall => '开始通话';
+
+  @override
+  String get wsRule => '规则';
+
+  @override
+  String get wsRecommended => '推荐';
+
+  @override
+  String get wsNotMeasured => '未测量';
+
+  @override
+  String get wsStepUnderstand => '理解';
+
+  @override
+  String get wsStepWords => '单词';
+
+  @override
+  String get wsStepSentence => '句子';
+
+  @override
+  String get wsStepTest => '测评';
+
+  @override
+  String get wsQuitTitle => '要停止练习吗？';
+
+  @override
+  String get wsQuitBody => '现在退出，这次练习不会被保存。';
+
+  @override
+  String get wsHowToSound => '发音方法';
+
+  @override
+  String get wsPracticeWords => '练习单词';
+
+  @override
+  String get wsPracticeSentence => '练习句子';
+
+  @override
+  String get wsPracticeAgain => '再来一次';
+
+  @override
+  String get wsStartTest => '参加最终测评';
+
+  @override
+  String get wsThisSentence => '这个句子';
+
+  @override
+  String get wsNoScoreNote => '这一步不计分，放心跟读吧。';
+
+  @override
+  String get wsListen => '仔细听';
+
+  @override
+  String get wsSayNow => '现在跟着说';
+
+  @override
+  String get wsPracticeDone => '练习完成';
+
+  @override
+  String get wsPaused => '已暂停';
+
+  @override
+  String get wsAudioFailed => '音频加载失败。看着文字读出来吧。';
+
+  @override
+  String get wsReadAloud => '请朗读下面的句子';
+
+  @override
+  String get wsTapToStart => '点按开始';
+
+  @override
+  String get wsTapWhenDone => '读完后点按';
+
+  @override
+  String get wsScoring => '正在评分';
+
+  @override
+  String get wsMicFailed => '无法打开麦克风。';
+
+  @override
+  String get wsMicPermissionBody => '这项测试需要大声朗读，因此需要麦克风。请在设置中开启麦克风权限。';
+
+  @override
+  String get wsNoSound => '没有听到声音。再说一次？';
+
+  @override
+  String get wsScoreFailed => '评分失败。请重试。';
+
+  @override
+  String get wsSomethingWrong => '出现问题了。';
+
+  @override
+  String get wsLearnDone => '学习完成';
+
+  @override
+  String get wsRetest => '再测一次';
+
+  @override
+  String get wsFirstMeasure => '这是第一次测量';
+
+  @override
+  String get wsFinalTest => '最终测评';
+
+  @override
+  String wsPoints(int score) {
+    return '$score分';
+  }
+
+  @override
+  String wsBeforePoints(int score) {
+    return '学习前$score分';
+  }
+
+  @override
+  String wsGoalPoints(int score) {
+    return '目标$score分';
+  }
+
+  @override
+  String wsGoalPrefix(String desc) {
+    return '目标 · $desc';
+  }
+
+  @override
+  String wsAccentOf(String country) {
+    return '$country口音';
+  }
+
+  @override
+  String wsWordsRepeated(int count) {
+    return '跟读了$count个单词';
+  }
+
+  @override
+  String wsChunksRepeated(int count) {
+    return '跟读了$count个句段';
+  }
+
+  @override
+  String get wsStartRecommended => '从推荐的音开始学';
+
+  @override
+  String wsStartRecommendedWith(String label) {
+    return '从$label开始学';
+  }
+
+  @override
+  String get wsPointsUnit => '分';
+
+  @override
+  String get wsEnterFromMypage => '练习薄弱发音';
+
+  @override
+  String wsGoalOnly(int score) {
+    return '目标$score';
+  }
+
+  @override
+  String wsSoundOf(String label) {
+    return '$label 的发音';
+  }
+
+  @override
+  String wsResultTip(String desc) {
+    return '$desc。通话中再遇到时，想想这个口型。';
+  }
+
+  @override
+  String wsNationalSubtitle(String country) {
+    return '来自 $country 的人常发错的音';
+  }
+
+  @override
+  String get wsRetryPackLabel => '常错发音练习';
+
+  @override
+  String wsRetryPackTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '本次学习中常错的发音 $count 个',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get wsRetryPackBody => '只收集了出错两次及以上的发音。每个发音分 4 个步骤练习。';
+
+  @override
+  String get wsRetryPackCta => '集中练习';
+
+  @override
+  String get wsRetryListTitle => '常错发音';
+
+  @override
+  String get wsRetryListSection => '本次学习收集的发音';
+
+  @override
+  String get wsRetryListSub => '本次学习中出错两次及以上的发音';
+
+  @override
+  String wsRetryListSubWithCall(String title) {
+    return '在“$title”通话中出错两次及以上的发音';
+  }
+
+  @override
+  String get wsRetryListAllDone => '已练习完所有收集的发音';
+
+  @override
+  String get wsRetryBackToReport => '返回报告';
 }

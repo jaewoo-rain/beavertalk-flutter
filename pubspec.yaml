@@ -50,8 +50,9 @@ dependencies:
   # Google Sign-In. On web (6.2.x) renderButton() yields a reliable idToken
   # via onCurrentUserChanged; we send that to POST /auth/social.
   google_sign_in: ^6.2.2
-  # web_only.dart (renderButton) is imported directly in login.dart, so the
-  # web implementation package is declared explicitly.
+  # web_only.dart (renderButton) 를 쓰던 웹 버튼 파일은 2026-09-26 저장소에서 빼
+  # claude_code/_archive/beavertalk-flutter_웹구글로그인버튼_2026-09-26/ 에 백업했다.
+  # 되살릴 때 파일만 복사하면 되도록 의존성은 남긴다(지금 참조 0건).
   google_sign_in_web: ^0.12.4
   # Loads API_BASE_URL from a project-root .env (overrides the platform
   # fallback). Bundled as an asset so web builds can read it.
@@ -60,6 +61,10 @@ dependencies:
   # Supabase Auth — the app's identity provider. Persists + auto-refreshes the
   # session; the backend verifies the Supabase access token (ES256 JWT).
   supabase_flutter: ^2.15.0
+
+  # 설정 하단 버전 표기 — 버전명 + 빌드 번호(QA F031). 이미 전이 의존으로 들어와 있던
+  # 것을 직접 의존으로 올렸다(잠금 9.0.1 그대로 · 새 네이티브 플러그인 아님).
+  package_info_plus: ^9.0.1
 
   # normalcall 실시간 음성통화 — WebSocket(바이너리 PCM + 텍스트 제어).
   web_socket_channel: ^3.0.1
@@ -71,8 +76,6 @@ dependencies:
   flutter_pcm_sound: ^3.1.4
   # normalcall — 마이크 권한 요청.
   permission_handler: ^11.3.1
-  flutter_markdown: ^0.7.7+1
-
   # 예약 인바운드 콜(비버가 거는 전화) — 로컬 트리거 단계.
   # CallKit 수신 화면(전화 오는 UI) + accept/decline/timeout 이벤트. 이번 단계는
   # 로컬 showCallkitIncoming만 사용(FCM/VoIP 없음). Android 우선.
@@ -86,9 +89,14 @@ dependencies:
   # 화면을 그대로 띄운다. Firebase 초기화는 옵션 없이 google-services.json 자동
   # 사용 방식(firebase_options.dart 미사용 → 계정 바꿔도 json만 교체). 웹은 옵션이
   # 필요해 제외(kInboundCallEnabled && !kIsWeb 가드 안에서만 초기화).
-  firebase_core: ^4.11.0
+  firebase_core: ^4.14.0
   firebase_messaging: ^16.4.1
+  # 앱 GA4(웹과 다른 속성). firebase_analytics 12.6 이 firebase_core ^4.14 를 요구해
+  # 위 코어를 올렸다. 수집 스위치·초기화 순서는 lib/core/analytics/app_analytics.dart.
+  firebase_analytics: ^12.6.0
   share_plus: ^12.0.2
+  # 갤러리 저장(발음 챌린지 결과 클립). share_plus 는 공유만 하고 저장은 못 한다.
+  gal: ^2.3.0
   flutter_localizations:
     sdk: flutter
   intl: ^0.20.2
@@ -107,6 +115,13 @@ dependencies:
   crypto: ^3.0.7
   audio_session: ^0.2.4
   url_launcher: ^6.3.2
+  # 법무 고지(약관·처리방침)를 앱 안에서 띄운다. 문안은 노션이 정본이고 앱은
+  # 사본을 갖지 않는다 — 사본을 두면 웹만 갱신되고 앱이 구 문안을 계속 노출한다.
+  webview_flutter: ^4.14.1
+  in_app_purchase: ^3.3.0
+  in_app_purchase_android: ^0.5.2
+  in_app_purchase_storekit: ^0.4.11+1
+  flutter_timezone: ^5.1.0
 
 # 통화 음성 깨짐/버벅임(안드로이드) 대응 — flutter_pcm_sound 3.3.3 로컬 패치본을 쓴다.
 # pub 원본은 조각 하나 쓸 때마다 큐 전체를 O(n) 순회(그것도 메인스레드 feed 와 같은
@@ -206,9 +221,11 @@ flutter:
 
   assets:
     - assets/images/
-    - assets/videos/
     - assets/icons/
     - assets/icons/3d/
+    # 조음 도해(발음 교정 시트) — Figma `Airflow / *` 22종을 scale 1.5 PNG 로.
+    # SVG 가 아닌 이유: 기류 발광이 LAYER_BLUR 라 flutter_svg 필터로 안 살아난다.
+    - assets/articulatory/
     # 영상통화 아바타 스프라이트(립싱크 크로스페이드 + 표정): 캐릭터별 입4단·눈감기·표정4.
     - assets/avatar/baba/
     - assets/avatar/bibi/

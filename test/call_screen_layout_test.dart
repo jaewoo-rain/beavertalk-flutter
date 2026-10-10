@@ -20,10 +20,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:beavertalk/components/atoms/speaking_equalizer.dart';
+import 'package:beavertalk/components/atoms/skeleton.dart';
 import 'package:beavertalk/components/molecules/hint_card.dart';
 import 'package:beavertalk/features/normalcall/domain/entities/call_hint.dart';
 import 'package:beavertalk/features/normalcall/presentation/normalcall_controller.dart';
 import 'package:beavertalk/l10n/app_localizations.dart';
+import 'package:beavertalk/features/subscription/domain/entities/subscription_state.dart';
+import 'package:beavertalk/features/subscription/domain/subscription_status_resolver.dart';
+import 'package:beavertalk/features/subscription/presentation/providers/subscription_state_providers.dart';
 import 'package:beavertalk/screens/home/call.dart';
 
 /// Holds a fixed [CallState] — the real `build()` opens a socket and starts the
@@ -53,10 +57,26 @@ void _useFigmaFrame(WidgetTester tester) {
   addTearDown(tester.view.reset);
 }
 
+/// 영상 아바타는 **Max 전용**이다(Figma 04_통화). 피드 위치를 재는 테스트는
+/// 그 밴드가 있어야 성립하므로 Max 로 고정한다. 플랜 분기 자체는 아래 별도
+/// 케이스가 검증한다.
+const _max = SubscriptionStatus(
+  state: SubscriptionState.activeMax,
+  tier: SubscriptionTier.max,
+);
+const _free = SubscriptionStatus(
+  state: SubscriptionState.free,
+  tier: SubscriptionTier.free,
+);
+
 Future<void> _pumpCall(
   WidgetTester tester, {
   required bool subtitleOn,
   required bool hintOn,
+  SubscriptionStatus status = _max,
+  // 기본은 **티어를 안다**. 모르는 구간은 아바타 자리를 셔머로 채우므로,
+  // 여기를 안 고정하면 다른 케이스들이 우연히 그 분기를 타고 아바타를 못 찾는다.
+  bool tierUnknown = false,
 }) async {
   final state = CallState(
     phase: CallPhase.inCall,
@@ -73,6 +93,8 @@ Future<void> _pumpCall(
       overrides: [
         normalCallControllerProvider
             .overrideWith(() => _StubCallController(state)),
+        subscriptionStatusProvider.overrideWithValue(status),
+        subscriptionTierUnknownProvider.overrideWithValue(tierUnknown),
       ],
       child: MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -124,5 +146,36 @@ void main() {
     // A feed pinned to the top would leave these equal — the regression this
     // guards against.
     expect(open, lessThan(closed));
+  });
+
+  testWidgets('avatar: Max gets the 16:9 video band', (tester) async {
+    _useFigmaFrame(tester);
+    await _pumpCall(tester, subtitleOn: true, hintOn: false, status: _max);
+    expect(find.byType(AspectRatio), findsWidgets);
+    expect(find.byType(ClipOval), findsNothing);
+  });
+
+  // 🔴 티어가 오기 전에 Free 모습을 그리면, Max 사용자가 원형 아바타를 보다가
+  //    16:9 영상 밴드로 화면이 뒤바뀐다(2026-09-12 실기기 확인). 그 구간에는
+  //    **둘 중 아무것도 단언하지 않는다.**
+  testWidgets('avatar: 티어를 모르는 동안에는 Free 도 Max 도 그리지 않는다',
+      (tester) async {
+    _useFigmaFrame(tester);
+    await _pumpCall(tester,
+        subtitleOn: true, hintOn: false, status: _free, tierUnknown: true);
+
+    // Free 의 원형이 나오면 안 된다 — 티어를 아직 모르기 때문이다.
+    expect(find.byType(ClipOval), findsNothing);
+    // 자리는 16:9 로 잡아 둔다. 확정되면 Max 는 그대로 채우고 Free 만 줄어든다.
+    expect(find.byType(AspectRatio), findsWidgets);
+    // 로딩은 셔머로 말한다 — 콘텐츠가 아니라는 신호다.
+    expect(find.byType(SkeletonShimmer), findsWidgets);
+  });
+
+  testWidgets('avatar: Free falls back to the circular still', (tester) async {
+    _useFigmaFrame(tester);
+    await _pumpCall(tester, subtitleOn: true, hintOn: false, status: _free);
+    // 무료에게 영상 밴드가 나가면 유료 기능이 새는 것이다 — 이 줄이 그것을 막는다.
+    expect(find.byType(ClipOval), findsOneWidget);
   });
 }

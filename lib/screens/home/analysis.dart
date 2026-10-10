@@ -1,17 +1,20 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart' as intl;
 
+import '../../core/analytics/app_analytics.dart';
+import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
-import '../../components/atoms/button.dart';
 import '../../components/molecules/card_bookmark.dart';
+import '../../components/molecules/card_native.dart';
 import '../../components/molecules/empty_state.dart';
+import '../../components/molecules/card_study.dart';
 import '../../components/molecules/pronunciation_result.dart';
 import '../../components/organisms/gnb.dart';
 import '../../features/bookmark/presentation/providers/bookmark_toggle_controller.dart';
 import '../../features/normalcall/domain/entities/call_result.dart';
+import '../../features/normalcall/presentation/normalcall_providers.dart';
 import '../../features/review/data/audio_player.dart';
 import '../../features/review/domain/entities/review_feedback.dart';
 import '../../features/review/presentation/review_providers.dart';
@@ -21,6 +24,7 @@ import '../../theme/app_color_tokens.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
+import 'call_meta_line.dart';
 import 'learning_args.dart';
 
 /// Call analysis screen — Figma `screen/analysis` (`3583:34434`).
@@ -75,6 +79,15 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
   /// (text only). Built once from [_result].
   List<MockSentence> _learningSentences = const [];
 
+  /// 이 통화의 배운 문장 중 한국어가 있는 것 — 발음 학습 · 챌린지 카드의 재료.
+  List<String> get _learningWords => _learningSentences
+      .map((s) => s.korean)
+      .where((k) => k.trim().isNotEmpty)
+      .toList(growable: false);
+
+  /// 학습할 문장이 있나 — 「발음 학습하기」 카드 · 점수 없음 안내 문구를 가른다.
+  bool get _hasLearningSentences => _learningWords.isNotEmpty;
+
   /// True once the deferred per-call reset of [reviewScoresProvider] has run.
   /// Until then the gauge ignores any (possibly stale) scores so a fresh call
   /// starts empty even on the first frame, before the post-frame reset lands.
@@ -102,11 +115,16 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
     if (args is CallResult) {
       final result = _kDesignPreview ? _withDesignPreview(args) : args;
       _result = result;
-      _learningSentences =
-          result.sentences.map(_toMockSentence).toList(growable: false);
+      final seenIds = <int>{};
+      _learningSentences = result.sentences
+          .where((s) => (s.korean?.trim().isNotEmpty ?? false) &&
+              seenIds.add(s.sentenceId))
+          .map(_toMockSentence).toList(growable: false);
       // Defer provider/notifier mutations out of the lifecycle phase: Riverpod
       // forbids modifying a provider during build/initState/didChangeDependencies.
       // Runs exactly once (guarded by the `_result == null` capture above).
+      // GA4 — 결과를 처음 잡은 한 번만(위 `_result == null` 가드).
+      AppAnalytics.instance.log(AppEvent.analysisViewed);
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;
         // New analysis session → reset the running per-sentence scores so they
@@ -140,13 +158,16 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
       );
 
   /// Pushes the learning flow for [sentences], starting at [index].
-  void _startLearning(
+  ///
+  /// 돌아오면 발음 리포트를 다시 받는다 — 끝까지 마쳤으면 카드가 「학습 결과 보기」로 바뀐다
+  /// (PM-DEC-427).
+  Future<void> _startLearning(
     List<MockSentence> sentences, {
     int index = 0,
     LearningOrigin origin = LearningOrigin.callReview,
-  }) {
+  }) async {
     if (sentences.isEmpty) return;
-    Navigator.pushNamed(
+    await Navigator.pushNamed(
       context,
       Routes.learningIntro,
       // 복습하기(전체) 는 call review 라 발음 리포트(learning_call_main)로 끝나고,
@@ -156,8 +177,55 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
         index: index,
         origin: origin,
         callId: _result?.callId,
+        callTitle: _result?.summary,
       ),
     );
+    _refreshReport();
+  }
+
+  /// 「학습 결과 보기」 — 그 통화의 발음 리포트(`learning_call_main`)로 바로 간다(PM-DEC-427).
+  /// 결과 화면 안 「다시 학습하기」가 같은 문장으로 학습을 다시 연다.
+  Future<void> _openLearningResult() async {
+    final callId = _result?.callId;
+    if (callId == null) return;
+    await Navigator.pushNamed(
+      context,
+      Routes.learningCallMain,
+      arguments: LearningArgs(
+        sentences: _learningSentences,
+        origin: LearningOrigin.callReview,
+        callId: callId,
+        callTitle: _result?.summary,
+      ),
+    );
+    _refreshReport();
+  }
+
+  void _refreshReport() {
+    final callId = _result?.callId;
+    if (mounted && callId != null) ref.invalidate(pronunciationReportProvider(callId));
+  }
+
+  /// 이 통화 학습을 끝까지 마쳤나 — 서버 발음 리포트로 판정한다. 받는 중·실패면 false
+  /// (「발음 학습하기」 그대로 · 재설치해도 서버 값이라 같다).
+  bool _learningFinished(WidgetRef ref) {
+    final callId = _result?.callId;
+    if (callId == null) return false;
+    final report = ref.watch(pronunciationReportProvider(callId)).valueOrNull;
+    if (report == null || !report.learningFinished ||
+        report.sentences.length != _learningSentences.length) {
+      return false;
+    }
+    // 새 계약은 실제 ID로 대조한다. 구형 응답에는 ID가 없어 개수까지만 확인한다.
+    if (report.sentences.any((s) => s.sentenceId != null)) {
+      if (report.sentences.any((s) => s.sentenceId == null)) return false;
+      final expected = _learningSentences.map((s) => s.id).toSet();
+      final actual = report.sentences.map((s) => s.sentenceId!).toSet();
+      return actual.length == report.sentences.length &&
+          expected.length == _learningSentences.length &&
+          actual.length == expected.length && actual.containsAll(expected);
+    }
+    return true;
   }
 
   /// Formats a nullable 0–100 score as a rounded percent, or `-%` when null.
@@ -299,103 +367,113 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
         ? result.summary!
         : l10n.analysisResult;
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(
-        AppSpacing.s20,
-        AppSpacing.s16,
-        AppSpacing.s20,
-        AppSpacing.s40,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // ── CallHeader (3474:457) ──────────────────────────────────
-          Text(title, style: AppType.heading2.m),
-          ..._metaLine(l10n, result),
-
-          const SizedBox(height: AppSpacing.s24),
-          Center(
-            child: PronunciationResult(
-              // Empty (no practice yet) → inactive gauge ("-%").
-              state: total == null
-                  ? PronunciationState.inactive
-                  : PronunciationState.active,
-              score: total ?? 0,
-              // Why the gauge reads -%. Injected here rather than baked into
-              // the component: mypage shares it and its reason is different.
-              hint: total == null ? l10n.reviewToSeeScore : null,
-              metrics: [
-                PronunciationMetric(
-                  label: l10n.pronunciation,
-                  value: _pct(pronunciation),
-                ),
-                PronunciationMetric(label: l10n.fluency, value: _pct(fluency)),
-                PronunciationMetric(label: l10n.rhythm, value: _pct(rhythm)),
-              ],
+    return ContentColumn(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.only(top: AppSpacing.s16, bottom: AppSpacing.s40),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // ── CallHeader (3474:457) ──────────────────────────────────
+            Text(title, style: AppType.heading2.m),
+            CallMetaLine(
+              characterName: result.character?.name,
+              callDate: result.callDate,
+              totalTime: result.totalTime,
+              callSequence: result.callSequence,
             ),
-          ),
 
-          // ── Actions (`3583:34442`) ─────────────────────────────────
-          const SizedBox(height: AppSpacing.s24),
-          Button(
-            type: BtnType.primaryFill,
-            size: BtnSize.s60,
-            text: l10n.review,
-            // Nothing to practice → nothing for the button to do.
-            disabled: _learningSentences.isEmpty,
-            onPressed: () => _startLearning(_learningSentences),
-          ),
-          const SizedBox(height: AppSpacing.s12),
-          Button(
-            type: BtnType.primaryOutline,
-            size: BtnSize.s60,
-            text: l10n.pronunciationChallenge,
-            // Feed this call's learned sentences to the challenge so its cards
-            // are what the user just practised (not the default word list).
-            onPressed: () => Navigator.pushNamed(
-              context,
-              Routes.pronunciationChallenge,
-              arguments: _learningSentences
-                  .map((s) => s.korean)
-                  .where((k) => k.trim().isNotEmpty)
-                  .toList(growable: false),
+            const SizedBox(height: AppSpacing.s24),
+            // ScoreBlock — 게이지 + (점수가 없으면) 안내 한 줄, 세로 간격 12 · 가운데
+            // (정본 analysis__no_score `6505:14034` · analysis__no_expressions `6505:14036`).
+            Center(
+              child: PronunciationResult(
+                // Empty (no practice yet) → inactive gauge ("-%").
+                state: total == null
+                    ? PronunciationState.inactive
+                    : PronunciationState.active,
+                score: total ?? 0,
+                metrics: [
+                  PronunciationMetric(
+                    label: l10n.pronunciation,
+                    value: _pct(pronunciation),
+                    score: pronunciation,
+                  ),
+                  PronunciationMetric(
+                      label: l10n.fluency, value: _pct(fluency), score: fluency),
+                  PronunciationMetric(
+                      label: l10n.rhythm, value: _pct(rhythm), score: rhythm),
+                ],
+              ),
             ),
-          ),
+            // 점수가 없는 이유 한 줄(QA F046 · PM-DEC-043). 점수는 통화 길이가 아니라
+            // **문장을 복습(연습)해 채점될 때만** 생긴다(서버 review_service
+            // `_apply_evaluation`). 그래서 「-%」 는 두 경우다 —
+            //   · 배운 문장이 있는데 아직 복습 전 → 「복습하면 발음 점수가 나와요」
+            //   · 배운 문장이 0개 → 「점수를 낼 문장이 없어요」(「복습하면」 은 거짓이 된다)
+            // 09-25 에 이 안내를 뺐었다 — 두 경우를 가르지 않아 문장 없는 통화에도 떴기 때문.
+            if (total == null) ...[
+              const SizedBox(height: 12),
+              Text(
+                _hasLearningSentences
+                    ? l10n.analysisNoScoreReview
+                    : l10n.analysisNoScoreEmpty,
+                textAlign: TextAlign.center,
+                style: AppType.label2.r.copyWith(color: context.c.labelNeutral),
+              ),
+            ],
 
-          ..._babaNote(l10n, result),
-          ..._expressions(l10n, result),
-        ],
+            // ── Actions (`3583:34442`) ─────────────────────────────────
+            const SizedBox(height: AppSpacing.s24),
+            // `Card/Study` ×2 (`6329:46475`) — replaced the 복습하기 fill button
+            // and the challenge outline button on 2026-09-23 (proposal A, 복습하기
+            // → 발음 학습하기).
+            //
+            // 배운 문장이 없으면 **두 카드 모두 보이되 비활성**(PM-DEC-068 · 사용자 결정 D6=C ·
+            // 09-23 P26 복귀 · 정본 analysis__no_expressions `4849:8823` · `5287:2414`).
+            //   · PM-DEC-043(학습 카드 숨김 · 챌린지는 기본 단어로 켬)을 대체한다
+            //   · 챌린지의 「기본 단어」 진입은 이 화면에서 없앤다 — 이번 통화에 배운 문장이
+            //     있을 때만 그 문장으로 연다
+            Builder(builder: (context) {
+              final words = _learningWords;
+              final open = _hasLearningSentences;
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  if (open && _learningFinished(ref))
+                    CardStudy.learn(
+                      title: l10n.learnResultView,
+                      onTap: _openLearningResult,
+                    )
+                  else
+                    CardStudy.learn(
+                      title: l10n.practicePronunciation,
+                      onTap: open ? () => _startLearning(_learningSentences) : null,
+                    ),
+                  const SizedBox(height: AppSpacing.s12),
+                  CardStudy.challenge(
+                    title: l10n.challengeTitle,
+                    // Feed this call's learned sentences to the challenge so its
+                    // cards are what the user just practised.
+                    onTap: open
+                        ? () => Navigator.pushNamed(
+                              context,
+                              Routes.pronunciationChallenge,
+                              arguments: words,
+                            )
+                        : null,
+                  ),
+                ],
+              );
+            }),
+
+            ..._babaNote(l10n, result),
+            ..._usedItems(l10n, result),
+            ..._expressions(l10n, result),
+          ],
+        ),
       ),
     );
   }
-
-  /// `Baba · 1월 2일 · 10분 37초 · 3번째 통화` — a single `·`-joined line
-  /// (3474:459). Every part is nullable, so the line renders whatever is known
-  /// and disappears entirely when nothing is.
-  List<Widget> _metaLine(AppLocalizations l10n, CallResult result) {
-    final locale = Localizations.localeOf(context).toString();
-    final parts = <String>[
-      if (result.character != null) result.character!.name,
-      // Locale-aware: this screen renders in 30 locales. (The old code pinned
-      // this to 'en', which printed "Jul 10" inside an otherwise Korean line.)
-      if (result.callDate != null)
-        intl.DateFormat.MMMd(locale).format(result.callDate!),
-      if (result.totalTime != null) _formatDuration(l10n, result.totalTime!),
-      if (result.callSequence != null) l10n.callSequence(result.callSequence!),
-    ];
-    if (parts.isEmpty) return const [];
-    return [
-      const SizedBox(height: 6), // no s6 token
-      Text(
-        parts.join(' · '),
-        style: AppType.label2.r.copyWith(color: context.c.labelNeutral),
-      ),
-    ];
-  }
-
-  /// `N분 N초` from a duration in seconds.
-  String _formatDuration(AppLocalizations l10n, int totalSeconds) =>
-      l10n.durationMinSec(totalSeconds ~/ 60, totalSeconds % 60);
 
   /// Section/BabaNote (`3583:34445`) — needs both the remark and the partner it
   /// is attributed to, so it is hidden unless the server sends both.
@@ -453,6 +531,48 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
           ? NetworkImage(imageUrl)
           : beaverImage;
 
+  /// 이번 통화에서 **스스로 쓴 표현**.
+  ///
+  /// ⭐ 2026-09-04 신설. 아래 「학습한 표현」은 물어봤거나 고쳐 받았거나 따라 말한
+  ///   것만 센다(분석 지시문이 그렇게 정의한다). 자유대화를 매끄럽게 하면 셋 다
+  ///   해당이 없어 결과 화면이 통째로 비었다 — 대화를 **잘할수록** 빈다.
+  ///   서버 체크판은 그때도 항목을 잡아 두고 있었다. 있는 값을 보여 줄 뿐이다.
+  ///
+  /// ⛔ 비면 섹션째 안 그린다. 빈 카드를 놓으면 「없다」를 두 번 말하게 된다
+  ///   (바로 아래 「학습한 표현」이 이미 빈 상태를 그린다).
+  /// ⛔ 등급(E1·E2·E3)은 내부 축이라 화면에 내지 않는다. 서버가 이미 걸러 보낸다.
+  List<Widget> _usedItems(AppLocalizations l10n, CallResult result) {
+    final items = result.usedItems;
+    if (items.isEmpty) return const [];
+    return _section(
+      label: l10n.usedExpressions,
+      child: _card(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            for (var i = 0; i < items.length; i++) ...[
+              if (i > 0) const SizedBox(height: AppSpacing.s12),
+              Text(
+                items[i].surface,
+                style: AppType.body1.b.copyWith(color: context.c.labelStrong),
+              ),
+              // 인용은 학습자 자신의 말이다. 없으면 줄을 안 그린다.
+              if ((items[i].quote ?? '').trim().isNotEmpty) ...[
+                const SizedBox(height: AppSpacing.s4),
+                Text(
+                  items[i].quote!,
+                  style: AppType.caption1.r.copyWith(
+                    color: context.c.labelNormal,
+                  ),
+                ),
+              ],
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
   /// Section/Expressions (`3583:34462`) — one `Card-Bookmark` per sentence
   /// (`3583:34466`–`3583:34468`), each with a speaker, a bookmark toggle and a
   /// 연습하기 button that practices just that sentence.
@@ -470,26 +590,52 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
       );
     }
     return _section(
-      label: l10n.newExpressionsCount(sentences.length),
+      // 서버 `premium` 브랜치(09-23) P0-3 — 배운 표현마다 현지인 짝이 붙어 오므로 개수는
+      // 짝을 뺀 수다(3개 배우면 6개가 온다).
+      label: l10n.newExpressionsCount(result.learnedCount),
       child: ValueListenableBuilder<Set<int>>(
         valueListenable: bookmarkedSentenceIds,
         builder: (context, saved, _) => Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             for (var i = 0; i < sentences.length; i++) ...[
-              if (i > 0) const SizedBox(height: AppSpacing.s12),
-              CardBookmark(
-                korean: sentences[i].korean ?? '',
-                native: sentences[i].native ?? '',
-                bookmarked: saved.contains(sentences[i].sentenceId),
-                onBookmarkTap: () => _toggleBookmark(sentences[i].sentenceId),
-                onSpeakerTap: () => _playSentence(sentences[i]),
-                actionText: l10n.practice,
-                onAction: () => _startLearning(
-                  [_learningSentences[i]],
-                  origin: LearningOrigin.sentence,
+              // 기본 카드 사이는 12, 기본 → 짝은 8(Figma `Pair/Expression` `6177:28976` gap 8).
+              if (i > 0)
+                SizedBox(
+                  height: sentences[i].isNative ? AppSpacing.s8 : AppSpacing.s12,
                 ),
-              ),
+              if (sentences[i].isNative)
+                // 서버가 「기본1·짝1·기본2·짝2…」 로 정렬해 준다 — 재정렬하지 않고, 짝은 바로 위
+                // 기본 카드 아래 들여 붙인다(`Native Row` `6177:28977`).
+                NativePairRow(
+                  card: CardNative(
+                    label: l10n.analysisNativeLabel,
+                    expression: sentences[i].korean ?? '',
+                    gloss: sentences[i].nuance ?? sentences[i].native,
+                    bookmarked: saved.contains(sentences[i].sentenceId),
+                    onBookmarkTap: () =>
+                        _toggleBookmark(sentences[i].sentenceId),
+                    onSpeakerTap: () => _playSentence(sentences[i]),
+                    actionText: l10n.practice,
+                    onAction: () => _startLearning(
+                      [_learningSentences[i]],
+                      origin: LearningOrigin.sentence,
+                    ),
+                  ),
+                )
+              else
+                CardBookmark(
+                  korean: sentences[i].korean ?? '',
+                  native: sentences[i].native ?? '',
+                  bookmarked: saved.contains(sentences[i].sentenceId),
+                  onBookmarkTap: () => _toggleBookmark(sentences[i].sentenceId),
+                  onSpeakerTap: () => _playSentence(sentences[i]),
+                  actionText: l10n.practice,
+                  onAction: () => _startLearning(
+                    [_learningSentences[i]],
+                    origin: LearningOrigin.sentence,
+                  ),
+                ),
             ],
           ],
         ),

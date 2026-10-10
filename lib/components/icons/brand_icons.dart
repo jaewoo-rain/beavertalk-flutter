@@ -1,12 +1,13 @@
 /// Brand and glyph icons rendered from the SVG assets in `assets/icons/`.
 ///
 /// These wrap [SvgPicture.asset] and are the canonical way to show the social
-/// sign-in marks (Kakao / Google / Apple), the mail glyph, and the BeaverTalk
-/// wordmark across the app — replacing the earlier Material-icon approximations.
+/// sign-in marks (Kakao / Google / Facebook / Apple), the mail glyph, and the
+/// BeaverTalk wordmark across the app — replacing the earlier Material-icon
+/// approximations.
 ///
 /// Two flavours exist:
-/// - **Multi-colour brand marks** ([KakaoIcon], [GoogleIcon]) keep their fixed
-///   brand palette and ignore any tint.
+/// - **Multi-colour brand marks** ([KakaoIcon], [GoogleIcon], [FacebookIcon])
+///   keep their fixed brand palette and ignore any tint.
 /// - **Monochrome glyphs** ([AppleIcon], [MailIcon], [BeaverTalkLogo]) are
 ///   authored with a black fill and tinted via [SvgPicture]'s `colorFilter`, so
 ///   a [color] can be supplied to match the host (defaults to [AppColors.text]).
@@ -57,6 +58,29 @@ class GoogleIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     return SvgPicture.asset(
       'assets/icons/google.svg',
+      width: size,
+      height: size,
+      fit: BoxFit.contain,
+    );
+  }
+}
+
+/// Facebook "f" brand mark — white glyph knocked out of the blue disc.
+///
+/// Brand colours are fixed (`#1877F2`, Meta's brand blue) and not themeable,
+/// matching [KakaoIcon]/[GoogleIcon]. Sized to a [size]×[size] box (default 24,
+/// matching the source `viewBox`).
+class FacebookIcon extends StatelessWidget {
+  /// Creates the Facebook brand icon.
+  const FacebookIcon({super.key, this.size = 24});
+
+  /// Width and height of the square icon box, in logical pixels.
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    return SvgPicture.asset(
+      'assets/icons/facebook.svg',
       width: size,
       height: size,
       fit: BoxFit.contain,

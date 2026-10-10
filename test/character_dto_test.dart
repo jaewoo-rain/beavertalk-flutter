@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:beavertalk/core/format/money.dart';
 import 'package:beavertalk/features/character/data/models/character_dto.dart';
+import 'package:beavertalk/features/character/domain/entities/character.dart';
 
 void main() {
   group('parseMoneyMinor (Decimal string → USD cents)', () {
@@ -164,6 +165,102 @@ void main() {
 
       expect(c.description, 'Warm and tender.');
       expect(c.backgroundStory, isNull);
+    });
+  });
+
+  // 소유(is_owned)와 접근(is_unlocked)은 **다른 축**이다. 서버는 Max 회원에게
+  // member_character 행을 만들지 않는다 — 만들면 해지 후에도 영구 소유가 되어
+  // 되돌릴 수 없기 때문이다. 그래서 "샀나"와 "지금 쓸 수 있나"가 별도 필드로 온다.
+  //
+  // 원래 버그가 여기였다: 앱이 is_owned 만 읽어서, Max 구독 중인데도 구매하지 않은
+  // 캐릭터가 잠긴 채로 남았다.
+  group('CharacterDto — 잠금 해제(entitlement) 축', () {
+    Character parse(Map<String, dynamic> extra) => CharacterDto.fromJson({
+          'character_id': 7,
+          'name': 'BIBI',
+          'price': '4900.00',
+          'effective_price': '4900.00',
+          ...extra,
+        }).toEntity();
+
+    test('Max 로 열린 미구매 캐릭터: 쓸 수 있지만 산 건 아니다', () {
+      final c = parse({
+        'is_owned': false,
+        'is_unlocked': true,
+        'unlock_source': 'subscription',
+      });
+
+      expect(c.isUnlocked, isTrue);
+      expect(c.isOwned, isFalse); // ⛔ 여기가 true 로 뒤집히면 안 된다
+      expect(c.unlockSource, CharacterUnlockSource.subscription);
+      expect(c.isSubscriptionUnlocked, isTrue);
+    });
+
+    test('구매한 캐릭터는 소유가 구독보다 우선한다', () {
+      // 순서를 뒤집으면 이미 산 캐릭터까지 "해지하면 사라짐"으로 표시된다.
+      final c = parse({
+        'is_owned': true,
+        'is_unlocked': true,
+        'unlock_source': 'owned',
+      });
+
+      expect(c.unlockSource, CharacterUnlockSource.owned);
+      expect(c.isSubscriptionUnlocked, isFalse);
+    });
+
+    test('잠긴 캐릭터는 unlock_source 가 null 이다', () {
+      final c = parse({
+        'is_owned': false,
+        'is_unlocked': false,
+        'unlock_source': null,
+      });
+
+      expect(c.isUnlocked, isFalse);
+      expect(c.unlockSource, isNull);
+      expect(c.isSubscriptionUnlocked, isFalse);
+    });
+
+    // ★ 하위호환 — prod(app-api) 에는 서버 변경이 아직 안 나갔다. 지금 실기기가
+    // 실제로 타는 경로이므로, 없으면 크래시가 아니라 종전 동작이어야 한다.
+    test('is_unlocked 가 없는 구버전 응답은 is_owned 로 폴백한다', () {
+      final ownedOnly = parse({'is_owned': true});
+      expect(ownedOnly.isUnlocked, isTrue, reason: '산 캐릭터가 잠겼다');
+      expect(ownedOnly.unlockSource, CharacterUnlockSource.owned);
+
+      final locked = parse({'is_owned': false});
+      expect(locked.isUnlocked, isFalse, reason: '안 산 캐릭터가 열렸다');
+      expect(locked.unlockSource, isNull);
+    });
+
+    test('두 필드가 통째로 없어도 크래시하지 않는다', () {
+      final c = parse(const {});
+      expect(c.isOwned, isFalse);
+      expect(c.isUnlocked, isFalse);
+      expect(c.unlockSource, isNull);
+    });
+
+    test('unlock_source 만 없으면 두 축에서 파생한다', () {
+      // 서버가 이유를 안 실어 보내도 화면 분기는 되어야 한다. 파생 규칙은 서버와
+      // 같다 — 소유 우선.
+      expect(
+        parse({'is_owned': false, 'is_unlocked': true}).unlockSource,
+        CharacterUnlockSource.subscription,
+      );
+      expect(
+        parse({'is_owned': true, 'is_unlocked': true}).unlockSource,
+        CharacterUnlockSource.owned,
+      );
+    });
+
+    test('모르는 unlock_source 문자열은 파생값으로 떨어진다', () {
+      // 서버가 나중에 값을 추가해도(예: "promo") 앱이 죽지 않아야 한다.
+      final c = parse({
+        'is_owned': false,
+        'is_unlocked': true,
+        'unlock_source': 'promo',
+      });
+      expect(c.isUnlocked, isTrue);
+      expect(c.unlockSource, CharacterUnlockSource.subscription);
     });
   });
 

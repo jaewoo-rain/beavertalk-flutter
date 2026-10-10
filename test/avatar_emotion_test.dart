@@ -1,5 +1,5 @@
 import 'package:beavertalk/features/normalcall/presentation/avatar_emotion.dart';
-import 'package:beavertalk/features/normalcall/presentation/avatar_view.dart'
+import 'package:beavertalk/features/normalcall/presentation/avatar_assets.dart'
     show kEmotionHappy, kEmotionSurprised, kEmotionSad, kEmotionAngry;
 import 'package:flutter_test/flutter_test.dart';
 

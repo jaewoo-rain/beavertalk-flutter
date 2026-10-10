@@ -23,6 +23,12 @@ class AppLocalizationsKk extends AppLocalizations {
   String get callErrorGeneric => 'Қоңырау кезінде қате шықты.';
 
   @override
+  String get callDailyLimit => 'Бүгінгі оқу уақыты таусылды.';
+
+  @override
+  String get callAlreadyInCall => 'Сіз қазір қоңырауда отырсыз.';
+
+  @override
   String get callNetworkError => 'Желі қатесі шықты.';
 
   @override
@@ -55,6 +61,16 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get callRatingPrompt => 'Қоңырау қалай өтті?';
+
+  @override
+  String get callRatingBody =>
+      'Бағалауыңыз келесі жолы жақсырақ сөйлесуге көмектеседі.';
+
+  @override
+  String get callRatingSubmit => 'Жіберу';
+
+  @override
+  String get callRatingSkip => 'Өткізіп жіберу';
 
   @override
   String get ratingBad => 'Жақсы емес';
@@ -126,6 +142,24 @@ class AppLocalizationsKk extends AppLocalizations {
   String get alarms => 'Дабылдар';
 
   @override
+  String get alarmAdd => 'Оятқыш қосу';
+
+  @override
+  String get alarmEdit => 'Оятқышты өзгерту';
+
+  @override
+  String get alarmEveryDay => 'Күн сайын';
+
+  @override
+  String get alarmWeekdays => 'Жұмыс күндері';
+
+  @override
+  String get alarmWeekend => 'Демалыс күндері';
+
+  @override
+  String get alarmNoRepeat => 'Қайталанбайды';
+
+  @override
   String get addSchedule => 'Кесте қосу';
 
   @override
@@ -151,6 +185,12 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get callPartner => 'Кейіпкер';
+
+  @override
+  String get alarmModeLearnSub => 'Бағдарлама тіркестерін жаттығу';
+
+  @override
+  String get alarmModeChatSub => 'Кез келген тақырыпта сөйлесу';
 
   @override
   String get quickStart => 'Жылдам бастау';
@@ -200,13 +240,52 @@ class AppLocalizationsKk extends AppLocalizations {
   String get conversation => 'Әңгіме';
 
   @override
-  String get review => 'Шолу';
-
-  @override
-  String get pronunciationChallenge => 'Айтылым сынағы';
-
-  @override
   String get newExpressions => 'Жаңа сөз тіркестері';
+
+  @override
+  String get analysisPrepNote => 'Бүгінгі қоңырау қаралып жатыр.';
+
+  @override
+  String get analysisPrepNoteHint => 'Жақында осында хабар пайда болады';
+
+  @override
+  String get analysisPrepTitle =>
+      'Құндыз бүгінгі сөз тіркестерінен карта жасап жатыр';
+
+  @override
+  String get analysisPrepSub => 'Дайын болғанда дәл осында шығады.';
+
+  @override
+  String get analysisPrepStepSave => 'Сөйлесуді сақтау';
+
+  @override
+  String get analysisPrepStepCards => 'Сөз тіркесі карталарын жасау';
+
+  @override
+  String get analysisPrepStateDone => 'Дайын';
+
+  @override
+  String get analysisPrepStateWorking => 'Жүріп жатыр';
+
+  @override
+  String get analysisPrepStateWaiting => 'Күтуде';
+
+  @override
+  String get usedExpressions => 'Сіз қолданған тіркестер';
+
+  @override
+  String quizExpressionsCount(int count) {
+    return 'Үйренген сөз тіркестері $count';
+  }
+
+  @override
+  String get quizPassed => 'Дұрыс';
+
+  @override
+  String get quizFailed => 'Қайта қараңыз';
+
+  @override
+  String get quizPending => 'Келесі жолы жалғастырамыз';
 
   @override
   String get analysisResult => 'Талдау нәтижесі';
@@ -216,6 +295,9 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get practice => 'Жаттығу';
+
+  @override
+  String get analysisNativeLabel => 'Жергілікті';
 
   @override
   String recentScore(int score) {
@@ -263,32 +345,6 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get cancel => 'Бас тарту';
-
-  @override
-  String get selectTime => 'Уақытты таңдаңыз';
-
-  @override
-  String get getStarted => 'Бастау';
-
-  @override
-  String get permissionTitle => 'Ыңғайлы тәжірибе үшін\nрұқсаттарды беріңіз';
-
-  @override
-  String get permissionSubtitle =>
-      'Қажетті рұқсаттар қызметті пайдалану үшін міндетті.';
-
-  @override
-  String get permissionMicTitle => 'Микрофон (міндетті)';
-
-  @override
-  String get permissionMicDesc => 'AI-мен ағылшынша сөйлесу үшін қажет.';
-
-  @override
-  String get permissionNotifTitle => 'Хабарландырулар (міндетті емес)';
-
-  @override
-  String get permissionNotifDesc =>
-      'Біз оқу еске салғыштары мен қоңырау кестелерін жібереміз.';
 
   @override
   String get micPermissionNeededTitle => 'Микрофонға рұқсат қажет';
@@ -437,13 +493,118 @@ class AppLocalizationsKk extends AppLocalizations {
   String get endLearning => 'Сабақты аяқтау';
 
   @override
-  String get navCalendar => 'Күнтізбе';
-
-  @override
   String get navCall => 'Қоңырау';
 
   @override
-  String get navStats => 'Статистика';
+  String get homeCourseExpression => 'Өрнектер';
+
+  @override
+  String get homeCourseFreetalk => 'Әңгіме';
+
+  @override
+  String homeExpressionsLeft(int count) {
+    return 'Әңгімеге $count өрнек қалды';
+  }
+
+  @override
+  String get homeFreetalkNote => 'Үйренгеніңізді қолданып еркін сөйлесіңіз';
+
+  @override
+  String get homeTalkTitle => 'Бүгін не болды?';
+
+  @override
+  String get homeTalkNote => 'Еркін сөйлесіп, жол-жөнекей үйреніңіз.';
+
+  @override
+  String get homeModeLearn => 'Оқу';
+
+  @override
+  String get homeModeTalk => 'Сөйлесу';
+
+  @override
+  String homeStreakDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'қатарынан $count күн',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakCalendarTitle => 'Оқу күнтізбесі';
+
+  @override
+  String streakDaysUnit(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'күн қатарынан',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String streakBest(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Үздік рекорд: $count күн',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakMetricCallTime => 'Қоңырау уақыты';
+
+  @override
+  String get streakMetricLearned => 'Үйренген тіркестер';
+
+  @override
+  String get streakMetricWords => 'Айтылған сөздер';
+
+  @override
+  String streakCountValue(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString';
+  }
+
+  @override
+  String streakMinutes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count мин',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakNoCallsThatDay => 'Бұл күні қоңырау болмады.';
+
+  @override
+  String get homeLevelPending => 'Деңгей белгісіз';
+
+  @override
+  String get homeNoLevelTitle => 'Сізде әзірге деңгей жоқ';
+
+  @override
+  String get homeNoLevelNote => 'Алғашқы қоңырауды аяқтасаңыз, деңгей шығады';
+
+  @override
+  String get homeCurriculumPendingBadge => 'Жақында';
+
+  @override
+  String homeCurriculumPendingTitle(String language) {
+    return '$language оқу бағдарламасы дайындалуда';
+  }
+
+  @override
+  String get homeCurriculumPendingNote =>
+      'Қоңырауларда жалпы сөз тіркестерін жаттықтырасыз';
 
   @override
   String get myPage => 'Менің бетім';
@@ -456,6 +617,27 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get changeAvatar => 'Аватарды өзгерту';
+
+  @override
+  String get avatarUseNow => 'Қазір қолдану';
+
+  @override
+  String get avatarPurchaseFailed => 'Сатып алу аяқталмады';
+
+  @override
+  String avatarPromoTitle(int percent) {
+    return 'Тек бүгін · $percent% жеңілдік';
+  }
+
+  @override
+  String avatarPromoLeft(String time) {
+    return '$time қалды';
+  }
+
+  @override
+  String avatarPromoLeftDays(int days, String time) {
+    return '$days к. $time қалды';
+  }
 
   @override
   String get avatarIntro =>
@@ -499,9 +681,6 @@ class AppLocalizationsKk extends AppLocalizations {
   String get subscriptionManage => 'Жазылымды басқару';
 
   @override
-  String get changePlan => 'Жоспарды өзгерту';
-
-  @override
   String get cancelSubscription => 'Жазылымнан бас тарту';
 
   @override
@@ -520,18 +699,9 @@ class AppLocalizationsKk extends AppLocalizations {
   String get viewBillingHistory => 'Төлем тарихын көру';
 
   @override
-  String get keepUsingPro => 'Pro нұсқасын пайдалануды жалғастыру';
-
-  @override
-  String get proMembership => 'Pro мүшелігі';
-
-  @override
   String pricePerMonth(String price) {
     return '$price / ай';
   }
-
-  @override
-  String get benefitUnlimitedCalls => 'Шексіз қоңыраулар';
 
   @override
   String get benefitDetailedAnalysis => 'Толық айтылым және грамматика талдауы';
@@ -566,8 +736,7 @@ class AppLocalizationsKk extends AppLocalizations {
   String get challengeLoadingTitle => 'Жүктелуде…';
 
   @override
-  String get challengeLoadingNote =>
-      'Алғашқы іске қосуда корей тілі моделі (~82МБ) жүктеліп жатыр.\nСәл күте тұрыңыз.';
+  String get challengeLoadingNote => 'Камера мен микрофон дайындалып жатыр.';
 
   @override
   String get challengeSttFallback =>
@@ -675,6 +844,11 @@ class AppLocalizationsKk extends AppLocalizations {
   String get accentSoundsLike => 'Сіздің корей акцентіңіз мынандай естіледі';
 
   @override
+  String accentShareText(String country) {
+    return 'BeaverTalk-пен корей тілін үйреніп жүрмін — корей тіліндегі екпінім осындай естіледі: $country! 🦫 Өз екпініңді анықта да, менімен бірге үйрен: https://beavertalk.im';
+  }
+
+  @override
   String get hintLabel => 'Кеңес';
 
   @override
@@ -721,7 +895,7 @@ class AppLocalizationsKk extends AppLocalizations {
   String get home => 'Басты бет';
 
   @override
-  String get callNow => 'Қазір қоңырау шалу';
+  String get onboardingLevelTestCta => 'Деңгей тестін тапсыру';
 
   @override
   String get pronunciation => 'Айтылым';
@@ -731,10 +905,6 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get rhythm => 'Ырғақ';
-
-  @override
-  String get analysisTimeout =>
-      'Бұл күткеннен ұзағырақ уақыт алып жатыр. Сәлден соң қайта көріңіз.';
 
   @override
   String get analysisFailed => 'Әңгімені талдай алмадық. Қайта көріңіз.';
@@ -780,6 +950,10 @@ class AppLocalizationsKk extends AppLocalizations {
   String get loginAppleSignInFailed => 'Apple арқылы кіру сәтсіз аяқталды.';
 
   @override
+  String get loginFacebookSignInFailed =>
+      'Facebook арқылы кіру сәтсіз аяқталды.';
+
+  @override
   String get loginKakaoSignInFailed => 'Kakao арқылы кіру сәтсіз аяқталды.';
 
   @override
@@ -787,6 +961,9 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get loginContinueWithGoogle => 'Google арқылы жалғастыру';
+
+  @override
+  String get loginContinueWithFacebook => 'Facebook арқылы жалғастыру';
 
   @override
   String get loginContinueWithApple => 'Apple арқылы жалғастыру';
@@ -973,12 +1150,7 @@ class AppLocalizationsKk extends AppLocalizations {
   String get lastPayment => 'Соңғы төлем';
 
   @override
-  String subscriptionSwitchNote(String date) {
-    return 'Pro артықшылықтарын $date дейін пайдалана аласыз, содан кейін жоспарыңыз автоматты түрде тегінге ауысады.';
-  }
-
-  @override
-  String get freePlanCallLimit => 'Күніне 1 қоңырау · 5 мин шектеу';
+  String get freePlanCallLimit => 'Күніне 5 минут қоңырау';
 
   @override
   String get freePlanBasicCharacters => 'Негізгі кейіпкерлер кіреді';
@@ -991,9 +1163,6 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get noPayments => 'Әзірге төлем жоқ';
-
-  @override
-  String get morePaymentsExist => 'Ескі төлемдер әлі көрсетілмейді';
 
   @override
   String get undatedPayments => 'Күні жоқ';
@@ -1116,15 +1285,36 @@ class AppLocalizationsKk extends AppLocalizations {
   String get retakeLevelTest => 'Деңгей тестін қайта тапсыру';
 
   @override
+  String get levelTestOncePerDay =>
+      'Деңгей тестін күніне бір рет тапсыруға болады. Ертең қайта көріңіз.';
+
+  @override
+  String get levelRetakeTitle => 'Деңгей тестін қайта тапсырасыз ба?';
+
+  @override
+  String get levelRetakeBody =>
+      'Қайта тапсырсаңыз, үлгеріміңіз сол деңгейдің бірінші сабағына қайтады — деңгей бірдей шықса да. Үйренген тіркестер мен қоңырау тарихы сақталады.';
+
+  @override
+  String get levelRetakeKeep => 'Үлгерімді сақтау';
+
+  @override
+  String get levelRetakeConfirm => 'Қайта тапсыру';
+
+  @override
   String get practicePronunciation => 'Айтылымды жаттықтыру';
 
   @override
-  String get priceChangedTitle => 'Баға өзгерді';
+  String get learnResultView => 'Оқу нәтижелерін көру';
 
   @override
-  String priceChangedBody(String price) {
-    return 'Бұл тауар енді $price тұрады. Жалғастырасыз ба?';
-  }
+  String get learnAgain => 'Қайта оқу';
+
+  @override
+  String get analysisNoScoreReview => 'Жаттықсаңыз, айтылым ұпайы шығады';
+
+  @override
+  String get analysisNoScoreEmpty => 'Бағалайтын сөйлем жоқ';
 
   @override
   String get billingGroupPlanPurchases => 'Жоспар және сатып алулар';
@@ -1133,16 +1323,16 @@ class AppLocalizationsKk extends AppLocalizations {
   String get billingGroupInTheStore => 'Дүкенде';
 
   @override
-  String get billingChangePlan => 'Жоспарды өзгерту';
-
-  @override
-  String get billingCompareAllPlans => 'Барлық жоспарды салыстыру';
+  String get billingCompareAllPlans => 'Жоспарларды салыстыру';
 
   @override
   String get billingBuyACharacter => 'Кейіпкер сатып алу';
 
   @override
   String get billingRestorePurchases => 'Сатып алуларды қалпына келтіру';
+
+  @override
+  String get billingRedeemCode => 'Кодты пайдалану';
 
   @override
   String get billingPaymentHistory => 'Төлем тарихы';
@@ -1190,13 +1380,30 @@ class AppLocalizationsKk extends AppLocalizations {
   String get planPro => 'Pro';
 
   @override
-  String get planMax => 'Max';
+  String get planMax => 'Premium';
 
   @override
-  String get planMaxTrial => 'Max сынағы';
+  String get premiumBulletVideo => 'Күніне 15 минут бейне қоңырау';
 
   @override
-  String get freePlanPriceLine => '\$0.00 — күніне бір қоңырау';
+  String get premiumBulletAnalysis => 'Қайталауда айтылымды бағалау шексіз';
+
+  @override
+  String get premiumBulletWeakSounds =>
+      'Тіліңізге сай қиын дыбыстарды жаттықтыру';
+
+  @override
+  String get noteCharactersSeparate =>
+      'Кейіпкерлер бөлек сатылады. Сатып алғандарыңыз сіздікі болып қалады.';
+
+  @override
+  String get ctaGetPremium => 'Premium алу';
+
+  @override
+  String get planMaxTrial => 'Premium сынағы';
+
+  @override
+  String get freePlanPriceLine => 'Тегін — күніне 5 минут қоңырау';
 
   @override
   String pricePerMonthLine(String amount) {
@@ -1209,11 +1416,11 @@ class AppLocalizationsKk extends AppLocalizations {
   }
 
   @override
-  String get todaysCalls => 'Бүгінгі қоңыраулар';
+  String get todaysCalls => 'Бүгінгі қоңырау уақыты';
 
   @override
   String callsUsedOfLimit(int used, int limit) {
-    return '$limit ішінен $used пайдаланылды';
+    return '$limit минуттың $used минуты қолданылды';
   }
 
   @override
@@ -1234,35 +1441,22 @@ class AppLocalizationsKk extends AppLocalizations {
   }
 
   @override
-  String get bannerGoUnlimitedTitle => 'Pro-мен шексіз болыңыз';
-
-  @override
-  String bannerGoUnlimitedSub(String price) {
-    return 'Шексіз қоңырау · әрқайсысы 15 минут · айына $price';
-  }
-
-  @override
-  String get bannerMaxUpsellTitle => 'Max-пен бейнені қосыңыз';
+  String get bannerMaxUpsellTitle => 'Premium арқылы бетпе-бет сөйлесіңіз';
 
   @override
   String bannerMaxUpsellSub(String price) {
-    return 'Бетпе-бет қоңыраулар · айына $price';
+    return 'Бейне қоңырау · күніне 15 минут · айына $price';
   }
 
   @override
   String get bannerAnnualSwitchTitle => 'Жылдық жоспарға өту';
 
   @override
-  String bannerAnnualSwitchSub(String yearly, String perMonth) {
-    return 'Жылына $yearly · айына $perMonth';
-  }
-
-  @override
   String get bannerPaymentFailedTitle => 'Төлемді алу мүмкін болмады';
 
   @override
   String get bannerPaymentFailedSub =>
-      'Pro-ны сақтау үшін дүкенде төлемді жаңартыңыз';
+      'Premium-ды сақтау үшін дүкенде төлемді жаңартыңыз';
 
   @override
   String get bannerPausedTitle => 'Жоспарыңыз кідіртілді';
@@ -1279,10 +1473,6 @@ class AppLocalizationsKk extends AppLocalizations {
       'Төлем әдісі, жоспар өзгерту және бас тарту дүкен арқылы жүзеге асады.';
 
   @override
-  String get noteFairUse =>
-      'Шексіз пайдалану біздің әділ пайдалану саясатына бағынады.';
-
-  @override
   String noteTrialEnds(String date) {
     return 'Сынағыңыз $date аяқталады. Оған дейін дүкенде бас тартсаңыз, ештеңе алынбайды.';
   }
@@ -1293,7 +1483,7 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get noteHold =>
-      'Төлем өткенше Pro кідіртіледі. Кейіпкерлеріңіз бен үлгеріміңіз аман.';
+      'Төлем өткенше Premium кідіртіледі. Кейіпкерлеріңіз бен үлгеріміңіз аман.';
 
   @override
   String noteEnding(String date) {
@@ -1301,7 +1491,7 @@ class AppLocalizationsKk extends AppLocalizations {
   }
 
   @override
-  String get trialExpiredTitle => 'Max сынағыңыз аяқталды';
+  String get trialExpiredTitle => 'Premium сынағыңыз аяқталды';
 
   @override
   String get trialExpiredSub => 'Сіз қазір Тегін жоспардасыз';
@@ -1313,71 +1503,26 @@ class AppLocalizationsKk extends AppLocalizations {
   String get currentPlanTitle => 'Ағымдағы жоспар';
 
   @override
-  String get badgeRecommended => 'Ұсынылады';
-
-  @override
   String get perMonthUnit => 'айына';
 
   @override
-  String get planTaglinePro => 'Шексіз қоңырау. Әрқайсысы 15 минут.';
-
-  @override
-  String get planTaglineMax => 'Енді оларды көре аласыз.';
-
-  @override
-  String get planTaglineFree => 'Күніне бір қоңырау. Тегін.';
-
-  @override
-  String get bulletProCalls => 'Қалағаныңызша дауыстық қоңыраулар';
-
-  @override
-  String get bulletProLength => 'Әр қоңырау 15 минут';
-
-  @override
-  String get bulletProScoring => 'Айтылым әріп бойынша бағаланады';
+  String get planTaglineFree => 'Күніне 5 минут қоңырау. Тегін.';
 
   @override
   String get bulletProCorrections => 'Ана тіліңізге бейімделген түзетулер';
 
   @override
-  String get bulletProBeaverCalls => 'Beaver сізге бірінші қоңырау шалады';
+  String get bulletFreeCall => 'Күніне 5 минут дауыстық қоңырау';
 
   @override
-  String get bulletMaxVideo => 'Бетпе-бет бейне қоңыраулар';
-
-  @override
-  String get bulletMaxEverything => 'Pro-дағы барлық мүмкіндік';
-
-  @override
-  String get bulletMaxCharacters => 'Барлық кейіпкер, шексіз';
-
-  @override
-  String get bulletMaxStudyBook => 'Деңгейіңізге сай оқу кітабы';
-
-  @override
-  String get bulletMaxWeeklyReport =>
-      'Айтылымыңыздың өзгерісі туралы апталық есеп';
-
-  @override
-  String get bulletFreeCall => 'Күніне бір 5 минуттық дауыстық қоңырау';
-
-  @override
-  String get bulletFreeCheck => 'Күніне бір айтылым тексерісі';
-
-  @override
-  String get bulletFreeAccent => 'Шексіз акцент тексерісі';
-
-  @override
-  String get bulletFreeCharacter => 'Бастауға бір кейіпкер';
-
-  @override
-  String get ctaGoUnlimited => 'Шексіз болу';
+  String get bulletFreeCharacter => 'Бастауға 2 кейіпкер';
 
   @override
   String get ctaTurnOnVideo => 'Бейнені қосу';
 
   @override
-  String get noteCallLength => 'Әр қоңырау 15 минутқа созылады.';
+  String get noteCallLength =>
+      'Premium: күніне 15 минут — осы уақыт ішінде қалағаныңызша қоңырау шала аласыз.';
 
   @override
   String get paywallProTitle1 => 'Түнгі 3-те де ояу жүретін';
@@ -1386,33 +1531,25 @@ class AppLocalizationsKk extends AppLocalizations {
   String get paywallProTitle2 => 'кәріс досыңыз';
 
   @override
-  String get paywallProSub => 'Шексіз қоңырау. Әрқайсысы 15 минут. Жыл бойы.';
+  String get paywallLimitHeadline => 'Premium күніне 15 минут қоңырау береді.';
 
   @override
-  String get paywallLimitHeadline => 'Pro шектеуді алып тастайды.';
+  String get limitBannerCallTitle => 'Бүгінгі қоңырау уақыты бітті';
 
   @override
-  String get limitBannerCallTitle => 'Бұл бүгінгі қоңырау еді';
-
-  @override
-  String get limitBannerCallSub => 'Тегін жоспар күніне бір қоңырау береді';
-
-  @override
-  String get limitBannerCheckTitle => 'Бұл бүгінгі тексеріс еді';
-
-  @override
-  String get limitBannerCheckSub => 'Тегін жоспар күніне бір тексеріс береді';
+  String get limitBannerCallSub => 'Тегін жоспар күніне 5 минут қоңырау береді';
 
   @override
   String get bulletProCharactersForever =>
       'Сатып алған кейіпкерлеріңіз мәңгі сіздікі';
 
   @override
-  String get paywallMaxTitle => 'Енді оларды көре аласыз.';
+  String get paywallMaxTitle => 'Енді бейне арқылы бетпе-бет сөйлесе аласыз.';
 
   @override
-  String get paywallMaxSub =>
-      'Бейне қоңыраулар, барлық кейіпкер және деңгейіңізге арнап жасалған оқу кітабы.';
+  String paywallTutorCompare(String price) {
+    return 'Тьютормен бір сағат \$25 тұрады. Premium бір айы $price тұрады.';
+  }
 
   @override
   String get planMonthly => 'Айлық';
@@ -1451,8 +1588,31 @@ class AppLocalizationsKk extends AppLocalizations {
   }
 
   @override
+  String ctaCaptionMaxYearly(String price) {
+    return 'Жылына $price · дүкенде кез келген уақытта бас тартуға болады';
+  }
+
+  @override
   String ctaCaptionMaxTrial(String price) {
-    return '7 күн тегін, содан кейін Айына $price · дүкенде кез келген уақытта бас тартуға болады';
+    return '7 күн тегін, содан кейін айына $price · дүкенде кез келген уақытта бас тартуға болады';
+  }
+
+  @override
+  String ctaCaptionMaxYearlyTrial(String price) {
+    return '7 күн тегін, содан кейін жылына $price · дүкенде кез келген уақытта бас тартуға болады';
+  }
+
+  @override
+  String get bundleTitle => 'Үшеуі бірден';
+
+  @override
+  String bundleOffBadge(int percent) {
+    return '$percent% жеңілдік';
+  }
+
+  @override
+  String bundleLinkLabel(String price) {
+    return 'Үшеуін $price бағамен алыңыз';
   }
 
   @override
@@ -1466,61 +1626,26 @@ class AppLocalizationsKk extends AppLocalizations {
   String get footerPrivacy => 'Құпиялылық';
 
   @override
-  String get noteMaxCharacters =>
-      'Max ашқан кейіпкерлер жазылымыңыз белсенді кезде қолжетімді. Сатып алған кейіпкерлеріңіз сіздікі болып қалады.';
-
-  @override
   String get processingTitle => 'Сатып алуыңыз расталуда';
 
   @override
   String get processingSub => 'Бұл әдетте бірнеше секунд алады.';
 
   @override
-  String get successProTitle => 'Сіз енді Pro-дасыз.';
+  String get successProTitle => 'Сіз енді Premium-дасыз.';
 
   @override
-  String get successProSub => 'Шексіз қоңыраулар, дәл қазірден бастап.';
-
-  @override
-  String get successProBenefit1 =>
-      'Қалағаныңызша қоңырау шалыңыз — әр қоңырау 15 минут';
-
-  @override
-  String get successProBenefit2 => 'Шексіз айтылым тексерісі';
-
-  @override
-  String get successProBenefit3 => 'Барлық кейіпкер және жеке сатып алулар';
-
-  @override
-  String get successMaxTitle => 'Енді оларды көре аласыз.';
+  String get successMaxTitle => 'Енді бір-біріңізді көре аласыз.';
 
   @override
   String get successMaxSub =>
       'Бейне қоңыраулар қосылды. Кез келген қоңырауда бейне түймесін басыңыз.';
 
   @override
-  String get successMaxBenefit1 => 'Бетпе-бет бейне қоңыраулар';
-
-  @override
-  String get successMaxBenefit2 =>
-      'Барлық кейіпкер, шексіз және жаңалары бірінші';
-
-  @override
-  String get successMaxBenefit3 => 'Деңгейіңізге сай оқу кітабы';
-
-  @override
-  String get ctaStartACall => 'Қоңырау бастау';
-
-  @override
   String get ctaStartAVideoCall => 'Бейне қоңырау бастау';
 
   @override
   String get ctaSeeYourSubscription => 'Жазылымыңызды көру';
-
-  @override
-  String successProCaption(String price) {
-    return 'Бас тартқанша ай сайын $price алынады. Дүкенде кез келген уақытта басқарыңыз немесе бас тартыңыз.';
-  }
 
   @override
   String successMaxCaption(String price) {
@@ -1540,95 +1665,16 @@ class AppLocalizationsKk extends AppLocalizations {
   String get plansErrorCaption => 'Ештеңе алынған жоқ.';
 
   @override
-  String get changePlanTitle => 'Жоспарды өзгерту';
-
-  @override
-  String get moveToMaxTitle => 'Max-қа өту';
-
-  @override
-  String maxPriceShort(String price) {
-    return '$price / ай';
-  }
-
-  @override
-  String get moveToMaxCardSub =>
-      'Бетпе-бет бейне қоңыраулар · барлық кейіпкер · сізге арналған оқу кітабы';
-
-  @override
-  String get whatHappensNow => 'Енді не болады';
-
-  @override
-  String get maxStartsLabel => 'Max басталады';
-
-  @override
-  String get immediately => 'Дереу';
-
-  @override
-  String get unusedProTime => 'Пайдаланылмаған Pro уақыты';
-
-  @override
-  String get creditedTowardMax => 'Max есебіне саналады';
-
-  @override
-  String nextPaymentMaxValue(String price, String date) {
-    return '$price · $date';
-  }
-
-  @override
-  String nextPaymentProValue(String price, String date) {
-    return '$price · $date';
-  }
-
-  @override
-  String get ctaSwitchToMax => 'Max-қа ауысу';
-
-  @override
-  String get upgradeCaption =>
-      'Жаңа жоспарыңыз бірден басталады. Пайдаланылмаған Pro уақыты есепке алынады, ешқашан екі рет алынбайды.';
-
-  @override
-  String get moveToProTitle => 'Pro-ға өту';
-
-  @override
-  String get moveToProSub =>
-      'Бүгін ештеңе өзгермейді. Max сіз төлеген айдың соңына дейін жұмыс істейді.';
-
-  @override
-  String get maxRunsUntil => 'Max жұмыс істейтін мерзім';
-
-  @override
-  String get proStarts => 'Pro басталады';
-
-  @override
-  String get whatYouKeep => 'Сізде қалатыны';
-
-  @override
-  String get keepBenefitCalls =>
-      'Шексіз дауыстық қоңыраулар, әрқайсысы 15 минут';
-
-  @override
-  String get keepBenefitCharacters =>
-      'Сатып алған кейіпкерлеріңіз мәңгі сіздікі';
-
-  @override
-  String downgradeWarning(String date) {
-    return 'Бейне қоңыраулар мен тек Max кейіпкерлері $date өшіріледі.';
-  }
-
-  @override
-  String get ctaSwitchToPro => 'Pro-ға ауысу';
-
-  @override
-  String get ctaKeepMax => 'Max-ты сақтау';
+  String get ctaKeepMax => 'Premium-ды сақтау';
 
   @override
   String get winbackSkip => 'Өткізіп жіберу';
 
   @override
-  String get winbackTitle => 'Pro жоспарыңыз аяқталды';
+  String get winbackTitle => 'Premium жоспарыңыз аяқталды';
 
   @override
-  String get winbackSub => 'Сіз қазір Тегіндесіз — күніне бір қоңырау.';
+  String get winbackSub => 'Сіз қазір Тегіндесіз — күніне 5 минут қоңырау.';
 
   @override
   String get winbackQuestion => 'Неге кеткеніңізді айта аласыз ба?';
@@ -1665,7 +1711,7 @@ class AppLocalizationsKk extends AppLocalizations {
   String get ctaClose => 'Жабу';
 
   @override
-  String get ovRestoreSuccessTitle => 'Pro оралды';
+  String get ovRestoreSuccessTitle => 'Premium оралды';
 
   @override
   String get ovRestoreSuccessBody =>
@@ -1686,13 +1732,28 @@ class AppLocalizationsKk extends AppLocalizations {
       'Бұл жазылым басқа BeaverTalk есептік жазбасында әлдеқашан белсенді.';
 
   @override
+  String ovRestoreCharactersTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Кейіпкерлеріңіз оралды',
+      one: 'Кейіпкеріңіз оралды',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get ovRestoreCharacterOtherTitle =>
+      'Бұл кейіпкер басқа есептік жазбада сатып алынған';
+
+  @override
   String get ctaSignInThatAccount => 'Сол есептік жазбамен кіру';
 
   @override
   String get ctaGetHelp => 'Көмек алу';
 
   @override
-  String get ovCharacterOfferTitle => 'Pro-ға дайын емессіз бе?';
+  String get ovCharacterOfferTitle => 'Premium-ға дайын емессіз бе?';
 
   @override
   String get ovCharacterOfferBody =>
@@ -1703,7 +1764,7 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String rowFromPrice(String price) {
-    return '$price бастап';
+    return 'әрқайсысы $price';
   }
 
   @override
@@ -1747,7 +1808,7 @@ class AppLocalizationsKk extends AppLocalizations {
   String get rowCharactersYouBought => 'Сатып алған кейіпкерлеріңіз';
 
   @override
-  String get rowProRunsUntil => 'Pro жұмыс істейтін мерзім';
+  String get rowProRunsUntil => 'Premium жұмыс істейтін мерзім';
 
   @override
   String get ctaSwitchToYearly => 'Жылдыққа ауысу';
@@ -1762,7 +1823,7 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get ovAnnualSwitchBody =>
-      'Pro-да екі ай болдыңыз. Жылдық жоспар есептегенде арзанырақ шығады.';
+      'Жылдық жоспар ай сайын төлегеннен арзанырақ.';
 
   @override
   String get rowYouSave => 'Үнемдейсіз';
@@ -1823,7 +1884,7 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get ovTrialEndingBody =>
-      'Бас тартпасаңыз, Max жалғаса береді. Не болатыны мынадай.';
+      'Бас тартпасаңыз, Premium жалғаса береді. Не болатыны мынадай.';
 
   @override
   String get rowTrialEnds => 'Сынақ аяқталады';
@@ -1838,7 +1899,7 @@ class AppLocalizationsKk extends AppLocalizations {
   String get ctaCancelInStore => 'Дүкенде бас тарту';
 
   @override
-  String get ovTrialStartTitle => 'Max-тың 7 күні, тегін';
+  String get ovTrialStartTitle => 'Premium-ның 7 күні, тегін';
 
   @override
   String ovTrialStartBody(String price, String date) {
@@ -1853,7 +1914,7 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get ovOtoBody =>
-      'Дұрыс шешім — шексіз қоңыраулар қазір қосулы. Дәл сол Pro жылдық төлесеңіз арзанырақ.';
+      'Жақсы таңдау. Жылдық төлесеңіз, сол Premium арзанырақ.';
 
   @override
   String get ovFailedDeclinedTitle => 'Картаңыз қабылданбады';
@@ -1879,7 +1940,28 @@ class AppLocalizationsKk extends AppLocalizations {
   String get ovFailedStoreBody => 'Дүкенге қосыла алмадық. Ештеңе алынған жоқ.';
 
   @override
-  String get ovAlreadyTitle => 'Сіз әлдеқашан Pro-дасыз';
+  String get ovVerifyingTitle => 'Төлем қабылданды';
+
+  @override
+  String get ovVerifyingBody =>
+      'Біз оны әлі дүкенмен растап жатырмыз. Жақында іске қосылады — болмаса, «Сатып алуларды қалпына келтіру» түймесін басыңыз.';
+
+  @override
+  String get ovPendingTitle => 'Төлем күтілуде';
+
+  @override
+  String get ovPendingBody =>
+      'Дүкен төлемді әлі аяқтаған жоқ. Аяқталған соң іске қосылады — бұл экраннан шыға бере аласыз.';
+
+  @override
+  String get ovRejectedTitle => 'Бұл сатып алуды растай алмадық';
+
+  @override
+  String get ovRejectedBody =>
+      'Дүкен бұл төлемді растамады, сондықтан ештеңе қосылмады. Ақша алынған болса, бізге хабарласыңыз.';
+
+  @override
+  String get ovAlreadyTitle => 'Сіз әлдеқашан Premium-дасыз';
 
   @override
   String get ovAlreadyBody =>
@@ -1893,30 +1975,24 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String subCancelBody(String date) {
-    return 'Pro $date дейін жұмыс істейді. Одан кейін Тегінге өтесіз.';
+    return 'Premium $date дейін жұмыс істейді. Одан кейін Тегінге өтесіз.';
   }
 
   @override
   String get subWhatYouLose => 'Нені жоғалтасыз';
 
   @override
-  String get benefitCalls15 => 'Шексіз қоңыраулар, әрқайсысы 15 минут';
-
-  @override
   String get benefitScoring => 'Айтылым әріп бойынша бағаланады';
 
   @override
-  String get benefitEveryCharacter => 'Барлық кейіпкер, шексіз';
-
-  @override
-  String get ctaKeepPro => 'Pro-ны сақтау';
+  String get benefitEveryMetric => 'Әр көрсеткіш, әр сөйлем';
 
   @override
   String get subPaymentTitle => 'Төлемді жаңарту';
 
   @override
   String get subPaymentBody =>
-      'Төлемді алу мүмкін болмады. Жеңілдік кезеңінде Pro жұмыс істей береді.';
+      'Төлемді алу мүмкін болмады. Жеңілдік кезеңінде Premium жұмыс істей береді.';
 
   @override
   String get subHowToFix => 'Қалай түзетуге болады';
@@ -1936,7 +2012,7 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String subResubBody(String date) {
-    return 'Pro $date аяқталады. Автожаңартуды қайта қоссаңыз, ештеңе өзгермейді.';
+    return 'Premium $date аяқталады. Автожаңартуды қайта қоссаңыз, ештеңе өзгермейді.';
   }
 
   @override
@@ -1946,23 +2022,10 @@ class AppLocalizationsKk extends AppLocalizations {
   String get ctaTurnItBackOn => 'Қайта қосу';
 
   @override
-  String get flTodayTitle => 'Бұл бүгінгі қоңырау еді';
+  String get flTodayTitle => 'Бүгінгі қоңырау уақыты бітті';
 
   @override
   String get flTodayBody => 'Тоқтаған жерден жалғастырыңыз — дәл қазір.';
-
-  @override
-  String get flCheckTitle => 'Бұл бүгінгі тексеріс еді';
-
-  @override
-  String get flCheckBody =>
-      'Тегін жоспарда күніне бір тексеріс. Pro оны шексіз етеді.';
-
-  @override
-  String get flBenefitCalls => 'Pro-мен шексіз қоңыраулар · әрқайсысы 15 минут';
-
-  @override
-  String get flBenefitChecks => 'Pro-мен шексіз айтылым тексерісі';
 
   @override
   String flCaption(String price) {
@@ -1984,7 +2047,7 @@ class AppLocalizationsKk extends AppLocalizations {
   String get nicknameLabel => 'Лақап ат';
 
   @override
-  String get emailLabel => 'Email';
+  String get emailLabel => 'Эл. пошта';
 
   @override
   String get loginMethodLabel => 'Кіру әдісі';
@@ -2002,40 +2065,45 @@ class AppLocalizationsKk extends AppLocalizations {
   String get ctaSave => 'Сақтау';
 
   @override
-  String get subscriptionRow => 'Subscription';
+  String get subscriptionRow => 'Жазылым';
 
   @override
-  String get iapSuccessTitle => 'Purchase complete';
+  String get iapSuccessTitle => 'Сатып алу аяқталды';
 
   @override
   String iapSuccessBody(String name) {
-    return 'The $name avatar is yours forever.\nApplied as soon as the receipt clears.';
+    return '$name аватары мәңгі сіздікі.\nТүбіртек расталған бойда қолданылады.';
   }
 
   @override
-  String get ctaGoHome => 'Home';
+  String get ctaGoHome => 'Басты бетке';
 
   @override
-  String get ctaUseNow => 'Use it now';
+  String get ctaUseNow => 'Қазір қолдану';
 
   @override
-  String get iapFailTitle => 'The payment didn\'t go through';
+  String get iapFailTitle => 'Төлем өтпеді';
 
   @override
-  String get iapFailBody => 'You can try again';
+  String get iapFailBody => 'Қайта көріп көруге болады';
 
   @override
-  String get paywallLeaveTitle => 'Қазір шықсаңыз, жазылым рәсімделмейді';
+  String get paywallGuardTitle => 'Тегін қолдана беруге болады';
 
   @override
-  String get paywallLeaveBody =>
-      'Артықшылықтар төлемнен кейін бірден ашылады. Менің бетім арқылы кез келген уақытта орала аласыз.';
+  String get paywallGuardBody => 'Күніне 5 минут қоңырау сол күйінде қалады.';
 
   @override
-  String get ctaKeepLooking => 'Қарауды жалғастыру';
+  String get ctaMaybeLater => 'Кейінірек';
 
   @override
-  String get ctaLeaveAnyway => 'Бәрібір шығу';
+  String get winbackOfferBadge => 'Бірінші айға 50% жеңілдік';
+
+  @override
+  String get winbackOfferTitle => 'Қайта қош келдіңіз';
+
+  @override
+  String get ctaGetHalfOff => '50% жеңілдік алу';
 
   @override
   String get iapCharacterSuccessTitle => 'Жаңа дос қосылды!';
@@ -2082,9 +2150,6 @@ class AppLocalizationsKk extends AppLocalizations {
   String get takeLevelTest => 'Деңгей тестін тапсыру';
 
   @override
-  String get reviewToSeeScore => 'Қайталасаңыз айтылым ұпайы шығады';
-
-  @override
   String get playAgain => 'Қайта ойнау';
 
   @override
@@ -2098,4 +2163,800 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get difficultyLabel => 'Күрделілік';
+
+  @override
+  String get connected => 'Байланысты';
+
+  @override
+  String get unlockedWithMax => 'Жоспарыңызға кіреді';
+
+  @override
+  String get fcEndedTitle => 'Тегін қоңырауыңыз аяқталды';
+
+  @override
+  String get fcEndedBody =>
+      'Тегін қоңыраулар 5 минутқа дейін созылады\nҰзағырақ сөйлесу үшін жазылыңыз';
+
+  @override
+  String get ctaSubscribeKeepTalking => 'Жазылып, сөйлесуді жалғастыру';
+
+  @override
+  String get kgTitle => 'Жалғастырамыз ба?';
+
+  @override
+  String get kgBody =>
+      'Қоңырау қысқа бөліктермен жалғасады.\nӘр жолы қайта сұраймыз.';
+
+  @override
+  String get pcEndedTitleToday => 'Бүгінгі қоңырауды аяқтайық.';
+
+  @override
+  String get pcEndedBodyToday =>
+      'Сөйлескенімізді қайталап, ертең тағы қоңырау шалыңыз!';
+
+  @override
+  String get pcEndedTitle => 'Бұл қоңырауды аяқтайық.';
+
+  @override
+  String get pcEndedBody => 'Сөйлескенімізді қайталап, тағы қоңырау шалыңыз!';
+
+  @override
+  String get ctaKeepTalking => 'Сөйлесуді жалғастыру';
+
+  @override
+  String get callModeSheetTitle => 'Қалай сөйлескіңіз келеді?';
+
+  @override
+  String get callModeSheetSubtitle => 'Осы қоңырауға бірден қолданылады';
+
+  @override
+  String get callModeFreeTalk => 'Еркін әңгіме';
+
+  @override
+  String get callModeFreeTalkDesc => 'Түзетусіз еркін сөйлесіңіз';
+
+  @override
+  String get callModeChange => 'Режимді өзгерту';
+
+  @override
+  String get callModeKeep => 'Қазір емес';
+
+  @override
+  String get callExitTitle => 'Қоңырауды аяқтау керек пе?';
+
+  @override
+  String get callExitSubtitle =>
+      'Қазір аяқтасаңыз да, сөйлескен уақыт бүгінгі қолданысқа кіреді';
+
+  @override
+  String get callExitKeep => 'Сөйлесуді жалғастыру';
+
+  @override
+  String get callExitConfirm => 'Қоңырауды аяқтау';
+
+  @override
+  String get callMicMute => 'Дыбысты өшіру';
+
+  @override
+  String get callMicUnmute => 'Дыбысты қосу';
+
+  @override
+  String get callPushToTalk => 'Сөйлеу үшін басып тұрыңыз';
+
+  @override
+  String get callFreeEndedTitle => 'Тегін қоңырауыңыз аяқталды';
+
+  @override
+  String get callFreeEndedCta => 'Жазылып, сөйлесуді жалғастырыңыз';
+
+  @override
+  String get callKeepGoingTitle => 'Жалғастырамыз ба?';
+
+  @override
+  String get callKeepGoingSubtitle =>
+      'Қоңыраулар 5 минуттық бөліктермен жалғасады. Әр жолы қайта сұраймыз.';
+
+  @override
+  String get articulationSelectedWord => 'Таңдалған сөз';
+
+  @override
+  String get articulationYouSaid => 'Сіздің айтылымыңыз';
+
+  @override
+  String get articulationTargetSound => 'Мақсат';
+
+  @override
+  String get reportEntry => 'Шағымдану';
+
+  @override
+  String get reportTitle => 'Шағым';
+
+  @override
+  String get reportPrompt => 'Қандай мәселе болды?';
+
+  @override
+  String get reportGuide =>
+      'AI кейіпкерінің қандай сөзі сізді ыңғайсыздандырғанын айтыңыз. Әр шағымды қараймыз.';
+
+  @override
+  String get reportReasonSexual => 'Сексуалдық мазмұн';
+
+  @override
+  String get reportReasonHate => 'Өшпенділік немесе кемсіту';
+
+  @override
+  String get reportReasonViolence => 'Зорлық-зомбылық немесе қоқан-лоққы';
+
+  @override
+  String get reportReasonSelfHarm => 'Өзіне зиян келтіруге итермелейді';
+
+  @override
+  String get reportReasonMisinfo => 'Жалған ақпарат';
+
+  @override
+  String get reportReasonOther => 'Басқа мәселе';
+
+  @override
+  String get reportDetailHint => 'Не болғанын жазыңыз (міндетті емес)';
+
+  @override
+  String get reportSubmit => 'Шағым жіберу';
+
+  @override
+  String get reportDoneTitle => 'Шағымыңыз қабылданды';
+
+  @override
+  String get reportDoneBody =>
+      'Қарап шығып, қажет болса шара қолданамыз. BeaverTalk қауіпсіздігіне көмектескеніңізге рақмет.';
+
+  @override
+  String get reportFailed => 'Шағым жіберілмеді. Қайта көріңіз.';
+
+  @override
+  String get hwTitle => 'Үй тапсырмасы';
+
+  @override
+  String get hwJoinCodeTitle => 'Сынып кодын енгізіңіз';
+
+  @override
+  String get hwJoinCodeSubtitle => 'Бұл мұғалім берген 6 таңбалы код';
+
+  @override
+  String get hwJoinCodeLabel => 'Сынып коды';
+
+  @override
+  String get hwJoinCodeHelp => 'Кодта бас және кіші әріп ажыратылмайды';
+
+  @override
+  String get hwJoinConfirmTitle => 'Дұрыс сынып па?';
+
+  @override
+  String get hwJoinConfirmSubtitle =>
+      'Егер олай болмаса, кодты қайта тексеріңіз';
+
+  @override
+  String get hwJoinFieldInstitution => 'Мекеме';
+
+  @override
+  String get hwJoinFieldTeacher => 'Мұғалім';
+
+  @override
+  String get hwJoinFieldLearners => 'Оқушылар';
+
+  @override
+  String get hwJoinFieldTerm => 'Кезең';
+
+  @override
+  String get hwJoinConfirmNote =>
+      'Сынып атауы мұғалім жазғандай көрсетіледі. Біз оны аудармаймыз.';
+
+  @override
+  String get hwJoinConfirmYes => 'Иә, дәл сол';
+
+  @override
+  String get hwJoinConfirmRetry => 'Кодты қайта енгізу';
+
+  @override
+  String get hwJoinProfileTitle => 'Сыныпта қандай атпен боласыз?';
+
+  @override
+  String get hwJoinProfileSubtitle => 'Мұғалім оны сынып тізімімен салыстырады';
+
+  @override
+  String get hwJoinNameLabel => 'Аты';
+
+  @override
+  String get hwJoinNameHelp => 'Қолданбадағы атыңыздан өзгеше болуы мүмкін';
+
+  @override
+  String get hwJoinStudentNoLabel => 'Оқушы нөмірі (міндетті емес)';
+
+  @override
+  String get hwJoinStudentNoHelp =>
+      'Мұғалім тізімді салыстыру үшін пайдаланады';
+
+  @override
+  String get hwJoinConsentTitle => 'Мұғалім не көреді';
+
+  @override
+  String get hwJoinConsentSubtitle => 'Сыныпқа қосылу үшін келісім қажет';
+
+  @override
+  String get hwJoinConsentSharedHeading => 'Мұғаліммен бөлісіледі';
+
+  @override
+  String get hwJoinConsentShared1 => 'Сынып атауы және оқушы нөмірі';
+
+  @override
+  String get hwJoinConsentShared2 => 'Үй тапсырмасын орындағаныңыз';
+
+  @override
+  String get hwJoinConsentShared3 => 'Өткен және өтпеген сөйлемдер';
+
+  @override
+  String get hwJoinConsentShared4 => 'Тапсырма қоңырауының ұзақтығы мен түйіні';
+
+  @override
+  String get hwJoinConsentNotSharedHeading => 'Бөлісілмейді';
+
+  @override
+  String get hwJoinConsentNotShared1 => 'Эл. пошта және телефон нөмірі';
+
+  @override
+  String get hwJoinConsentNotShared2 =>
+      'Қолданбадағы аты, профиль және кейіпкер';
+
+  @override
+  String get hwJoinConsentNotShared3 => 'Азаматтығы және ана тілі';
+
+  @override
+  String get hwJoinConsentNotShared4 => 'Сыныптан тыс қоңыраулар мен оқу';
+
+  @override
+  String get hwJoinConsentNotShared5 => 'Жазылым және төлем деректері';
+
+  @override
+  String get hwJoinConsentAgree => 'Жоғарыдағымен келісемін';
+
+  @override
+  String get hwJoinConsentCta => 'Келісіп қосылу';
+
+  @override
+  String hwJoinDoneTitle(String className) {
+    return 'Сіз $className сыныбына қосылдыңыз';
+  }
+
+  @override
+  String hwJoinDoneSubtitle(int count) {
+    return '$count тапсырма күтіп тұр';
+  }
+
+  @override
+  String get hwJoinDoneNoAssignment => 'Әзірге тапсырма жоқ';
+
+  @override
+  String get hwJoinDoneNextDue => 'Келесі мерзім';
+
+  @override
+  String get hwJoinDoneRosterName => 'Сыныптағы атыңыз';
+
+  @override
+  String get hwJoinDoneCta => 'Тапсырмаларды көру';
+
+  @override
+  String get hwJoinErrorNotFound => 'Ондай код табылмады';
+
+  @override
+  String get hwJoinErrorNotFoundBody => 'Алты таңбаны қайта тексеріңіз.';
+
+  @override
+  String get hwJoinErrorExpired => 'Кодтың мерзімі бітті';
+
+  @override
+  String get hwJoinErrorExpiredBody => 'Мұғалімнен жаңа код сұраңыз.';
+
+  @override
+  String get hwJoinErrorFull => 'Сынып толы';
+
+  @override
+  String get hwJoinErrorFullBody => 'Мұғаліміңізге хабарлаңыз.';
+
+  @override
+  String get hwJoinFailed =>
+      'Қосылу мүмкін болмады. Сәлден соң қайталап көріңіз.';
+
+  @override
+  String get hwSectionInProgress => 'Орындалуда';
+
+  @override
+  String get hwSectionUpcoming => 'Алдағы';
+
+  @override
+  String get hwSectionDone => 'Аяқталды';
+
+  @override
+  String get hwLeaveClassLink => 'Сыныптан шығу';
+
+  @override
+  String get hwListEmptyTitle => 'Әзірге үй тапсырмасы жоқ';
+
+  @override
+  String get hwListEmptyBody => 'Мұғалім тапсырма бергенде осында көрінеді.';
+
+  @override
+  String get hwListFailed => 'Тапсырмалар жүктелмеді.';
+
+  @override
+  String get hwRetry => 'Қайталау';
+
+  @override
+  String get hwBadgeDone => 'Аяқталды';
+
+  @override
+  String get hwBadgeOverdue => 'Тапсырылмады';
+
+  @override
+  String hwBadgeOverdueDays(int days) {
+    return 'Тапсырылмады, $days күн кешікті';
+  }
+
+  @override
+  String hwBadgeDday(int days) {
+    return 'D-$days';
+  }
+
+  @override
+  String get hwBadgeDueToday => 'Мерзімі бүгін';
+
+  @override
+  String get hwActivitySpeaking => 'Айтылым';
+
+  @override
+  String get hwActivityConversation => 'Әңгіме';
+
+  @override
+  String get hwActivityWorkbook => 'Жұмыс дәптері';
+
+  @override
+  String hwChapterLabel(String chapter) {
+    return '$chapter-тарау';
+  }
+
+  @override
+  String get hwTaskSpeakingDesc => 'Айтылым ұпайыңызды тексеріңіз';
+
+  @override
+  String get hwTaskConversationDesc =>
+      'Үйренгеніңізді нақты әңгімеде қолданыңыз';
+
+  @override
+  String get hwConversationOnce => 'Әңгіме әр тапсырма бойынша бір рет қана.';
+
+  @override
+  String get hwTaskWorkbookDesc => 'Жұмыс дәптеріне жазып жаттығыңыз';
+
+  @override
+  String get hwCtaStudy => 'Бастау';
+
+  @override
+  String get hwCtaResult => 'Нәтижені көру';
+
+  @override
+  String get hwCtaDownload => 'Жүктеу';
+
+  @override
+  String get hwSpeakingNoScore => 'Сөйлеу тапсырмасын әлі орындамадыңыз';
+
+  @override
+  String get hwWorkbookUnavailable =>
+      'Жұмыс дәптерінің файлы әзірге қолжетімсіз.';
+
+  @override
+  String get hwDetailClosed => 'Бұл тапсырма жабылды. Енді тапсыра алмайсыз.';
+
+  @override
+  String get hwLeaveTitle => 'Сыныптан шығасыз ба?';
+
+  @override
+  String get hwLeaveBody =>
+      'Мұғалім енді сіздің тапсырма нәтижелеріңізді көрмейді.';
+
+  @override
+  String get hwLeaveConfirm => 'Шығу';
+
+  @override
+  String get hwLeaveCancel => 'Қалу';
+
+  @override
+  String get hwLeaveFailed => 'Сыныптан шығу мүмкін болмады.';
+
+  @override
+  String get hwMyClass => 'Менің сыныбым';
+
+  @override
+  String get hwClassEmptyTitle => 'Сіз ешбір сыныпқа қосылмадыңыз';
+
+  @override
+  String get hwClassEmptySubtitle => 'Мұғалім берген кодты енгізіңіз';
+
+  @override
+  String get hwClassEmptyCta => 'Сынып кодын енгізу';
+
+  @override
+  String get hwClassContinueCta => 'Жалғастыру';
+
+  @override
+  String hwHomeBannerDueTomorrow(int count) {
+    return '$count тапсырманың мерзімі ертең';
+  }
+
+  @override
+  String hwHomeBannerOverdue(int count) {
+    return 'Сізде тапсырылмаған $count тапсырма бар';
+  }
+
+  @override
+  String get hwSpeakingUnavailable =>
+      'Бұл тапсырманың сөйлемдері әзірге қолжетімсіз.';
+
+  @override
+  String get hwBadgeClosed => 'Жабық';
+
+  @override
+  String hwSpeakingProgress(int passed, int total) {
+    return '$total сөйлемнің $passed өтті';
+  }
+
+  @override
+  String get challengeFirstWord => 'Бірінші сөз';
+
+  @override
+  String get challengeSeeAnalysis => 'Нәтижелерді көру';
+
+  @override
+  String get challengePaused => 'Кідіртілді';
+
+  @override
+  String get challengePausedNote => 'Таймер мен жазба бірге тоқтады.';
+
+  @override
+  String get challengeTimeLeft => 'Қалған уақыт';
+
+  @override
+  String get challengeScoreLabel => 'Ұпай';
+
+  @override
+  String get challengeResume => 'Жалғастыру';
+
+  @override
+  String get challengeBlockedTitle => 'Камераны қолдану мүмкін емес';
+
+  @override
+  String get challengeBlockedNote =>
+      'Параметрлерде камера мен микрофонға рұқсатты қосыңыз.';
+
+  @override
+  String get challengeGoBack => 'Артқа';
+
+  @override
+  String get challengeOpenSettings => 'Параметрлерді ашу';
+
+  @override
+  String get saveDone => 'Галереяға сақталды';
+
+  @override
+  String get saveFailed => 'Сақталмады';
+
+  @override
+  String get saveDeniedNote => 'Фотоға рұқсат қажет';
+
+  @override
+  String get callIncomingCallerFallback => 'Beaver ұстаз';
+
+  @override
+  String get callIncomingHandle => 'Корей тілінде қоңырау';
+
+  @override
+  String get callMissedTitle => 'Жауапсыз қоңырау';
+
+  @override
+  String get callMissedChannelDescription =>
+      'Beaver қоңырауын өткізіп алғаныңызды хабарлайды.';
+
+  @override
+  String callMissedBody(String name) {
+    return '$name сізге қоңырау шалды';
+  }
+
+  @override
+  String get callBeaverFallbackName => 'Beaver';
+
+  @override
+  String get callNotifPermissionRationale =>
+      'Қоңырау қабылдау үшін хабарландыру рұқсаты қажет.';
+
+  @override
+  String get callNotifPermissionRequired =>
+      'Параметрлерде хабарландыруға рұқсат беріңіз.';
+
+  @override
+  String get callHintLockedTitle => 'Оқу режимінде кеңестер қолжетімсіз';
+
+  @override
+  String get wsTitle => 'Қиын дыбыстар';
+
+  @override
+  String get wsToList => 'Тізімге';
+
+  @override
+  String get wsNext => 'Келесі';
+
+  @override
+  String get wsRetry => 'Қайта көру';
+
+  @override
+  String get wsDone => 'Дайын';
+
+  @override
+  String get wsContinue => 'Жалғастыру';
+
+  @override
+  String get wsQuit => 'Шығу';
+
+  @override
+  String get wsRetryLater => 'Сәл кейін қайталап көріңіз.';
+
+  @override
+  String get wsMissingTitle => 'Ол дыбысты таба алмадық';
+
+  @override
+  String get wsMissingBody => 'Тізімнен қайта таңдаңыз.';
+
+  @override
+  String get wsListLoadFailed => 'Тізімді жүктей алмадық';
+
+  @override
+  String get wsLessonLoadFailed => 'Сабақты жүктей алмадық';
+
+  @override
+  String get wsNationalTitle => 'Акцентіңізге сай қиын дыбыстар';
+
+  @override
+  String get wsNationalPending => 'Акцент талдауы бітсе, осы жер толады';
+
+  @override
+  String get wsNationalPicked => 'Акцент талдауы бойынша таңдалды';
+
+  @override
+  String get wsNationalEmptyBody =>
+      'Бірнеше қоңырау шалсаңыз, акцентіңізді талдаймыз.';
+
+  @override
+  String get wsMineTitle => 'Менің қиын дыбыстарым';
+
+  @override
+  String get wsMineSubtitle => 'Соңғы қоңырауларыңызда өлшенген дыбыстар';
+
+  @override
+  String get wsMineEmptyBody =>
+      'Қоңырау шалып қайталасаңыз, қиын дыбыстар жинала береді.';
+
+  @override
+  String get wsNoDataYet => 'Әзірге дерек жоқ';
+
+  @override
+  String get wsGoToCall => 'Қоңырау шалу';
+
+  @override
+  String get wsRule => 'Ереже';
+
+  @override
+  String get wsRecommended => 'Ұсынылады';
+
+  @override
+  String get wsNotMeasured => 'Өлшенбеген';
+
+  @override
+  String get wsStepUnderstand => 'Түсіну';
+
+  @override
+  String get wsStepWords => 'Сөздер';
+
+  @override
+  String get wsStepSentence => 'Сөйлем';
+
+  @override
+  String get wsStepTest => 'Бағалау';
+
+  @override
+  String get wsQuitTitle => 'Жаттығуды тоқтатасыз ба?';
+
+  @override
+  String get wsQuitBody => 'Қазір шықсаңыз, бұл жаттығу сақталмайды.';
+
+  @override
+  String get wsHowToSound => 'Дыбысты қалай айту керек';
+
+  @override
+  String get wsPracticeWords => 'Сөздерді жаттығу';
+
+  @override
+  String get wsPracticeSentence => 'Сөйлемді жаттығу';
+
+  @override
+  String get wsPracticeAgain => 'Тағы бір рет';
+
+  @override
+  String get wsStartTest => 'Қорытынды бағалауды тапсыру';
+
+  @override
+  String get wsThisSentence => 'Осы сөйлем';
+
+  @override
+  String get wsNoScoreNote => 'Бұл қадам бағаланбайды. Еркін қайталап айтыңыз.';
+
+  @override
+  String get wsListen => 'Мұқият тыңдаңыз';
+
+  @override
+  String get wsSayNow => 'Енді айтып көріңіз';
+
+  @override
+  String get wsPracticeDone => 'Жаттығу бітті';
+
+  @override
+  String get wsPaused => 'Кідіртілді';
+
+  @override
+  String get wsAudioFailed => 'Дыбысты жүктей алмадық. Мәтінді оқып айтыңыз.';
+
+  @override
+  String get wsReadAloud => 'Төмендегі сөйлемді дауыстап оқыңыз';
+
+  @override
+  String get wsTapToStart => 'Бастау үшін басыңыз';
+
+  @override
+  String get wsTapWhenDone => 'Оқып болғанда басыңыз';
+
+  @override
+  String get wsScoring => 'Бағалануда';
+
+  @override
+  String get wsMicFailed => 'Микрофонды аша алмадық.';
+
+  @override
+  String get wsMicPermissionBody =>
+      'Бұл тестте дауыстап оқу керек, сондықтан микрофон қажет. Параметрлерде микрофонға рұқсатты қосыңыз.';
+
+  @override
+  String get wsNoSound => 'Дыбыс келмеді. Қайта айтып көрейік пе?';
+
+  @override
+  String get wsScoreFailed => 'Бағалау сәтсіз болды. Қайта көріңіз.';
+
+  @override
+  String get wsSomethingWrong => 'Қателік кетті.';
+
+  @override
+  String get wsLearnDone => 'Сабақ бітті';
+
+  @override
+  String get wsRetest => 'Қайта бағалау';
+
+  @override
+  String get wsFirstMeasure => 'Бірінші өлшем';
+
+  @override
+  String get wsFinalTest => 'Қорытынды бағалау';
+
+  @override
+  String wsPoints(int score) {
+    return '$score балл';
+  }
+
+  @override
+  String wsBeforePoints(int score) {
+    return 'Бұрын $score балл';
+  }
+
+  @override
+  String wsGoalPoints(int score) {
+    return 'Мақсат $score балл';
+  }
+
+  @override
+  String wsGoalPrefix(String desc) {
+    return 'Мақсат · $desc';
+  }
+
+  @override
+  String wsAccentOf(String country) {
+    return '$country акценті';
+  }
+
+  @override
+  String wsWordsRepeated(int count) {
+    return '$count сөз қайталанды';
+  }
+
+  @override
+  String wsChunksRepeated(int count) {
+    return '$count бөлік қайталанды';
+  }
+
+  @override
+  String get wsStartRecommended => 'Ұсынылған дыбыстан бастау';
+
+  @override
+  String wsStartRecommendedWith(String label) {
+    return 'Бастау · $label';
+  }
+
+  @override
+  String get wsPointsUnit => 'балл';
+
+  @override
+  String get wsEnterFromMypage => 'Қиын дыбыстарды жаттығу';
+
+  @override
+  String wsGoalOnly(int score) {
+    return 'Мақсат $score';
+  }
+
+  @override
+  String wsSoundOf(String label) {
+    return '$label дыбысы';
+  }
+
+  @override
+  String wsResultTip(String desc) {
+    return '$desc. Қоңырауда кездескенде осы пішінді есіңізге түсіріңіз.';
+  }
+
+  @override
+  String wsNationalSubtitle(String country) {
+    return '$country сөйлеушілері жиі қателесетін дыбыстар';
+  }
+
+  @override
+  String get wsRetryPackLabel => 'Жиі қателесетін дыбыстарды жаттықтыру';
+
+  @override
+  String wsRetryPackTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Бұл сабақта жиі қателескен $count дыбыс',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get wsRetryPackBody =>
+      '2 не одан көп рет қателескен дыбыстарды жинадық. Әр дыбысты 4 қадаммен жаттықтырыңыз.';
+
+  @override
+  String get wsRetryPackCta => 'Барлығын жаттықтыру';
+
+  @override
+  String get wsRetryListTitle => 'Жиі қателесетін дыбыстар';
+
+  @override
+  String get wsRetryListSection => 'Осы сабақтың дыбыстары';
+
+  @override
+  String get wsRetryListSub =>
+      'Бұл сабақта 2 не одан көп рет қателескен дыбыстар';
+
+  @override
+  String wsRetryListSubWithCall(String title) {
+    return '«$title» қоңырауында 2 не одан көп рет қателескен дыбыстар';
+  }
+
+  @override
+  String get wsRetryListAllDone => 'Барлық дыбысты жаттықтырдыңыз';
+
+  @override
+  String get wsRetryBackToReport => 'Есепке оралу';
 }

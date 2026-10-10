@@ -13,6 +13,8 @@ class AlarmDto {
     this.characterName,
     this.imageUrl,
     required this.daysOfWeek,
+    this.callType,
+    this.tz,
   });
 
   final int alarmId;
@@ -22,6 +24,12 @@ class AlarmDto {
   final String? characterName;
   final String? imageUrl;
   final List<String> daysOfWeek;
+
+  /// 서버 `call_type` — "auto" | "chat"(09-24 배포). 구서버·누락이면 null → 학습.
+  final String? callType;
+
+  /// 서버에 저장된 알람 시간대(IANA). 비어 있으면 서버가 서울 기준으로 울린다(F008).
+  final String? tz;
 
   /// Index → server code. UI `days[7]` is 0=Sun … 6=Sat.
   static const dayCodes = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
@@ -37,6 +45,8 @@ class AlarmDto {
       characterName: character['name'] as String?,
       imageUrl: character['image_url'] as String?,
       daysOfWeek: days.map((e) => e.toString()).toList(),
+      callType: json['call_type'] as String?,
+      tz: json['tz'] as String?,
     );
   }
 
@@ -67,26 +77,36 @@ class AlarmDto {
       characterName: characterName,
       imageUrl: imageUrl,
       active: isActivate ?? true,
+      callMode: AlarmCallMode.fromWire(callType),
     );
   }
 
   /// Body for `POST /alarms` (`AlarmCreate`).
-  static Map<String, dynamic> createBody(Alarm alarm) {
+  ///
+  /// [tz] 는 기기 IANA 시간대 — 알람은 기기 현지 시각으로 울려야 한다(F008 · PM-DEC-167).
+  /// `tz_offset_min` 은 보내지 않는다(서버 범위 검사 §25 · PM 지시). 모르면 키를 뺀다.
+  static Map<String, dynamic> createBody(Alarm alarm, {String? tz}) {
     return {
+      'tz': ?tz,
       'character_id': alarm.characterId,
       'time': _encodeTime(alarm),
       'is_activate': alarm.active,
       'days_of_week': _encodeDays(alarm.days),
+      // 서버 `AlarmCreate.call_type: Literal["auto","chat"] = "auto"`.
+      'call_type': alarm.callMode.wireValue,
     };
   }
 
   /// Body for `PUT /alarms/{id}` (`AlarmUpdate`, full payload is accepted).
-  static Map<String, dynamic> updateBody(Alarm alarm) {
+  static Map<String, dynamic> updateBody(Alarm alarm, {String? tz}) {
     return {
+      'tz': ?tz,
       'time': _encodeTime(alarm),
       'character_id': alarm.characterId,
       'is_activate': alarm.active,
       'days_of_week': _encodeDays(alarm.days),
+      // 서버 `AlarmUpdate.call_type`(부분 갱신) — 전체 페이로드라 항상 싣는다.
+      'call_type': alarm.callMode.wireValue,
     };
   }
 

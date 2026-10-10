@@ -21,6 +21,10 @@ enum BannerTone {
 
   /// Grey — informational (e.g. cancellation notice).
   neutral,
+
+  /// Elevated surface + line border — Figma `tone=tone5` (`5269:22664`), the
+  /// home homework entry. Usually carries a duotone [Banner.leading] icon.
+  elevated,
 }
 
 /// Top-of-screen notice / upsell banner — Figma `Banner` (`4206:622`).
@@ -37,7 +41,8 @@ class Banner extends StatelessWidget {
     super.key,
     required this.tone,
     required this.title,
-    required this.sub,
+    this.sub,
+    this.leading,
     this.onTap,
     this.showChevron = true,
   });
@@ -50,8 +55,11 @@ class Banner extends StatelessWidget {
   /// `[date]` is never computed locally.
   final String title;
 
-  /// Supporting line, from l10n.
-  final String sub;
+  /// Supporting line, from l10n. Null or empty hides it (Figma `sub` hidden).
+  final String? sub;
+
+  /// 24px icon before the text (Figma `icon/homework` on `tone5`).
+  final Widget? leading;
 
   /// Navigation callback. Null renders the banner inert.
   final VoidCallback? onTap;
@@ -74,7 +82,11 @@ class Banner extends StatelessWidget {
       BannerTone.brand => (c.primaryNormal10, c.primaryNormal, c.primaryNormal),
       BannerTone.neutral =>
         (c.backgroundSurfaceAlternative, c.lineNormal, c.labelNormal),
+      BannerTone.elevated =>
+        (c.backgroundElevatedAlternative, c.lineNormal, c.labelNormal),
     };
+    final subText = sub;
+    final hasSub = subText != null && subText.isNotEmpty;
 
     final banner = Container(
       constraints: const BoxConstraints(minHeight: 76),
@@ -86,6 +98,10 @@ class Banner extends StatelessWidget {
       ),
       child: Row(
         children: [
+          if (leading != null) ...[
+            SizedBox(width: 24, height: 24, child: leading),
+            const SizedBox(width: 12),
+          ],
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -95,8 +111,10 @@ class Banner extends StatelessWidget {
                   title,
                   style: AppType.body2.sb.copyWith(color: c.labelStrong),
                 ),
-                const SizedBox(height: 4),
-                Text(sub, style: AppType.caption1.r.copyWith(color: fg)),
+                if (hasSub) ...[
+                  const SizedBox(height: 4),
+                  Text(subText, style: AppType.caption1.r.copyWith(color: fg)),
+                ],
               ],
             ),
           ),

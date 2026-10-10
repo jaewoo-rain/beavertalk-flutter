@@ -23,6 +23,12 @@ class AppLocalizationsHu extends AppLocalizations {
   String get callErrorGeneric => 'Hiba történt a hívás közben.';
 
   @override
+  String get callDailyLimit => 'Elhasználtad a mai tanulási idődet.';
+
+  @override
+  String get callAlreadyInCall => 'Már hívásban vagy.';
+
+  @override
   String get callNetworkError => 'Hálózati hiba történt.';
 
   @override
@@ -57,6 +63,16 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get callRatingPrompt => 'Milyen volt a hívásod?';
+
+  @override
+  String get callRatingBody =>
+      'Az értékelésed segít, hogy legközelebb jobban beszélgessünk.';
+
+  @override
+  String get callRatingSubmit => 'Küldés';
+
+  @override
+  String get callRatingSkip => 'Kihagyás';
 
   @override
   String get ratingBad => 'Nem volt jó';
@@ -128,6 +144,24 @@ class AppLocalizationsHu extends AppLocalizations {
   String get alarms => 'Riasztások';
 
   @override
+  String get alarmAdd => 'Ébresztő hozzáadása';
+
+  @override
+  String get alarmEdit => 'Ébresztő szerkesztése';
+
+  @override
+  String get alarmEveryDay => 'Minden nap';
+
+  @override
+  String get alarmWeekdays => 'Hétköznap';
+
+  @override
+  String get alarmWeekend => 'Hétvégén';
+
+  @override
+  String get alarmNoRepeat => 'Soha';
+
+  @override
   String get addSchedule => 'Ütemezés hozzáadása';
 
   @override
@@ -153,6 +187,12 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get callPartner => 'Karakter';
+
+  @override
+  String get alarmModeLearnSub => 'Tananyag kifejezéseinek gyakorlása';
+
+  @override
+  String get alarmModeChatSub => 'Beszélgetés bármiről';
 
   @override
   String get quickStart => 'Gyors indítás';
@@ -202,13 +242,51 @@ class AppLocalizationsHu extends AppLocalizations {
   String get conversation => 'Beszélgetés';
 
   @override
-  String get review => 'Áttekintés';
-
-  @override
-  String get pronunciationChallenge => 'Kiejtési kihívás';
-
-  @override
   String get newExpressions => 'Új kifejezések';
+
+  @override
+  String get analysisPrepNote => 'Átnézzük a mai hívást.';
+
+  @override
+  String get analysisPrepNoteHint => 'Hamarosan itt jelenik meg egy üzenet';
+
+  @override
+  String get analysisPrepTitle => 'A hód kártyákat készít a mai kifejezésekből';
+
+  @override
+  String get analysisPrepSub => 'Amint elkészülnek, itt jelennek meg.';
+
+  @override
+  String get analysisPrepStepSave => 'Beszélgetés mentése';
+
+  @override
+  String get analysisPrepStepCards => 'Kifejezéskártyák készítése';
+
+  @override
+  String get analysisPrepStateDone => 'Kész';
+
+  @override
+  String get analysisPrepStateWorking => 'Folyamatban';
+
+  @override
+  String get analysisPrepStateWaiting => 'Várakozik';
+
+  @override
+  String get usedExpressions => 'Az általad használt kifejezések';
+
+  @override
+  String quizExpressionsCount(int count) {
+    return 'Megtanult kifejezések $count';
+  }
+
+  @override
+  String get quizPassed => 'Eltaláltad';
+
+  @override
+  String get quizFailed => 'Nézd át újra';
+
+  @override
+  String get quizPending => 'Legközelebb folytatjuk';
 
   @override
   String get analysisResult => 'Elemzés eredménye';
@@ -219,6 +297,9 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get practice => 'Gyakorlás';
+
+  @override
+  String get analysisNativeLabel => 'Anyanyelvi';
 
   @override
   String recentScore(int score) {
@@ -268,34 +349,6 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get cancel => 'Mégse';
-
-  @override
-  String get selectTime => 'Időpont kiválasztása';
-
-  @override
-  String get getStarted => 'Kezdjük el';
-
-  @override
-  String get permissionTitle =>
-      'Engedélyezd a hozzáféréseket\na zökkenőmentes élményért';
-
-  @override
-  String get permissionSubtitle =>
-      'A szükséges engedélyek elengedhetetlenek a szolgáltatás használatához.';
-
-  @override
-  String get permissionMicTitle => 'Mikrofon (kötelező)';
-
-  @override
-  String get permissionMicDesc =>
-      'Szükséges ahhoz, hogy angolul beszélgethess az AI-val.';
-
-  @override
-  String get permissionNotifTitle => 'Értesítések (opcionális)';
-
-  @override
-  String get permissionNotifDesc =>
-      'Tanulási emlékeztetőket és hívásütemezéseket küldünk.';
 
   @override
   String get micPermissionNeededTitle => 'Mikrofon-hozzáférés szükséges';
@@ -448,13 +501,118 @@ class AppLocalizationsHu extends AppLocalizations {
   String get endLearning => 'Munkamenet befejezése';
 
   @override
-  String get navCalendar => 'Naptár';
-
-  @override
   String get navCall => 'Hívás';
 
   @override
-  String get navStats => 'Statisztika';
+  String get homeCourseExpression => 'Kifejezések';
+
+  @override
+  String get homeCourseFreetalk => 'Beszélgetés';
+
+  @override
+  String homeExpressionsLeft(int count) {
+    return 'Még $count kifejezés a beszélgetésig';
+  }
+
+  @override
+  String get homeFreetalkNote => 'Használd a tanultakat és beszélj szabadon';
+
+  @override
+  String get homeTalkTitle => 'Mi történt ma?';
+
+  @override
+  String get homeTalkNote => 'Beszélgess szabadon, és tanulj közben.';
+
+  @override
+  String get homeModeLearn => 'Tanulás';
+
+  @override
+  String get homeModeTalk => 'Beszélgetés';
+
+  @override
+  String homeStreakDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count nap egymás után',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakCalendarTitle => 'Tanulási naptár';
+
+  @override
+  String streakDaysUnit(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'nap egymás után',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String streakBest(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Legjobb sorozat: $count nap',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakMetricCallTime => 'Hívásidő';
+
+  @override
+  String get streakMetricLearned => 'Kifejezések';
+
+  @override
+  String get streakMetricWords => 'Kimondott szavak';
+
+  @override
+  String streakCountValue(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString';
+  }
+
+  @override
+  String streakMinutes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count perc',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakNoCallsThatDay => 'Ezen a napon nem volt hívás.';
+
+  @override
+  String get homeLevelPending => 'Szint nincs meg';
+
+  @override
+  String get homeNoLevelTitle => 'Még nincs szinted';
+
+  @override
+  String get homeNoLevelNote => 'Fejezd be az első hívást, és megkapod';
+
+  @override
+  String get homeCurriculumPendingBadge => 'Hamarosan';
+
+  @override
+  String homeCurriculumPendingTitle(String language) {
+    return 'A(z) $language tanmenet készül';
+  }
+
+  @override
+  String get homeCurriculumPendingNote =>
+      'A hívásokban általános kifejezéseket gyakorolsz';
 
   @override
   String get myPage => 'Saját oldal';
@@ -467,6 +625,27 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get changeAvatar => 'Avatar módosítása';
+
+  @override
+  String get avatarUseNow => 'Használat most';
+
+  @override
+  String get avatarPurchaseFailed => 'A vásárlás nem sikerült';
+
+  @override
+  String avatarPromoTitle(int percent) {
+    return 'Csak ma · $percent% kedvezmény';
+  }
+
+  @override
+  String avatarPromoLeft(String time) {
+    return 'Még $time';
+  }
+
+  @override
+  String avatarPromoLeftDays(int days, String time) {
+    return 'Még $days nap $time';
+  }
 
   @override
   String get avatarIntro =>
@@ -510,9 +689,6 @@ class AppLocalizationsHu extends AppLocalizations {
   String get subscriptionManage => 'Előfizetés kezelése';
 
   @override
-  String get changePlan => 'Csomag módosítása';
-
-  @override
   String get cancelSubscription => 'Előfizetés lemondása';
 
   @override
@@ -532,18 +708,9 @@ class AppLocalizationsHu extends AppLocalizations {
   String get viewBillingHistory => 'Számlázási előzmények megtekintése';
 
   @override
-  String get keepUsingPro => 'Maradok Pro-tag';
-
-  @override
-  String get proMembership => 'Pro tagság';
-
-  @override
   String pricePerMonth(String price) {
     return '$price / hó';
   }
-
-  @override
-  String get benefitUnlimitedCalls => 'Korlátlan hívások';
 
   @override
   String get benefitDetailedAnalysis =>
@@ -580,7 +747,7 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get challengeLoadingNote =>
-      'A koreai beszédfelismerő modell (~82 MB) letöltése az első indításkor.\nKérjük, várj egy kicsit.';
+      'A kamera és a mikrofon előkészítése folyamatban.';
 
   @override
   String get challengeSttFallback =>
@@ -688,6 +855,11 @@ class AppLocalizationsHu extends AppLocalizations {
   String get accentSoundsLike => 'A koreai kiejtésed hangzása';
 
   @override
+  String accentShareText(String country) {
+    return 'A BeaverTalkkal tanulok koreaiul – a koreai akcentusom így hangzik: $country! 🦫 Találd meg a saját akcentusodat, és tanulj velem: https://beavertalk.im';
+  }
+
+  @override
   String get hintLabel => 'Tipp';
 
   @override
@@ -734,7 +906,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get home => 'Kezdőlap';
 
   @override
-  String get callNow => 'Hívás most';
+  String get onboardingLevelTestCta => 'Szintfelmérő kitöltése';
 
   @override
   String get pronunciation => 'Kiejtés';
@@ -744,10 +916,6 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get rhythm => 'Ritmus';
-
-  @override
-  String get analysisTimeout =>
-      'Ez a vártnál tovább tart. Kérjük, próbáld újra egy kicsit később.';
 
   @override
   String get analysisFailed =>
@@ -797,6 +965,10 @@ class AppLocalizationsHu extends AppLocalizations {
   String get loginAppleSignInFailed => 'A Apple bejelentkezés sikertelen volt.';
 
   @override
+  String get loginFacebookSignInFailed =>
+      'A Facebook bejelentkezés sikertelen volt.';
+
+  @override
   String get loginKakaoSignInFailed => 'A Kakao bejelentkezés sikertelen volt.';
 
   @override
@@ -804,6 +976,9 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get loginContinueWithGoogle => 'Folytatás Google fiókkal';
+
+  @override
+  String get loginContinueWithFacebook => 'Folytatás Facebook fiókkal';
 
   @override
   String get loginContinueWithApple => 'Folytatás Apple fiókkal';
@@ -990,12 +1165,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get lastPayment => 'Utolsó fizetés';
 
   @override
-  String subscriptionSwitchNote(String date) {
-    return 'A Pro előnyeit $date napjáig használhatod, utána a csomagod automatikusan Ingyenesre vált.';
-  }
-
-  @override
-  String get freePlanCallLimit => 'Napi 1 hívás · 5 perces korlát';
+  String get freePlanCallLimit => 'Napi 5 perc hívás';
 
   @override
   String get freePlanBasicCharacters => 'Alapkarakterek benne vannak';
@@ -1009,9 +1179,6 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get noPayments => 'Még nincs fizetés';
-
-  @override
-  String get morePaymentsExist => 'A régebbi fizetések még nem jelennek meg';
 
   @override
   String get undatedPayments => 'Dátum nélkül';
@@ -1134,15 +1301,37 @@ class AppLocalizationsHu extends AppLocalizations {
   String get retakeLevelTest => 'Szintfelmérő újra';
 
   @override
+  String get levelTestOncePerDay =>
+      'A szintfelmérőt naponta egyszer töltheted ki. Próbáld újra holnap.';
+
+  @override
+  String get levelRetakeTitle => 'Újra kitöltöd a szintfelmérőt?';
+
+  @override
+  String get levelRetakeBody =>
+      'Ha újra kitöltöd, a haladásod a szint első leckéjére ugrik vissza – akkor is, ha ugyanazt a szintet kapod. A megtanult kifejezések és a híváselőzmények megmaradnak.';
+
+  @override
+  String get levelRetakeKeep => 'Haladás megtartása';
+
+  @override
+  String get levelRetakeConfirm => 'Teszt újra';
+
+  @override
   String get practicePronunciation => 'Kiejtés gyakorlása';
 
   @override
-  String get priceChangedTitle => 'Megváltozott az ár';
+  String get learnResultView => 'Tanulási eredmények megtekintése';
 
   @override
-  String priceChangedBody(String price) {
-    return 'Ez a tétel most $price. Folytatod?';
-  }
+  String get learnAgain => 'Újratanulás';
+
+  @override
+  String get analysisNoScoreReview =>
+      'Gyakorold a mondatokat, és megkapod a kiejtési pontszámod';
+
+  @override
+  String get analysisNoScoreEmpty => 'Nincs értékelhető mondat';
 
   @override
   String get billingGroupPlanPurchases => 'Csomag és vásárlások';
@@ -1151,16 +1340,16 @@ class AppLocalizationsHu extends AppLocalizations {
   String get billingGroupInTheStore => 'Az áruházban';
 
   @override
-  String get billingChangePlan => 'Csomagváltás';
-
-  @override
-  String get billingCompareAllPlans => 'Összes csomag összehasonlítása';
+  String get billingCompareAllPlans => 'Csomagok összehasonlítása';
 
   @override
   String get billingBuyACharacter => 'Karakter vásárlása';
 
   @override
   String get billingRestorePurchases => 'Vásárlások visszaállítása';
+
+  @override
+  String get billingRedeemCode => 'Kód beváltása';
 
   @override
   String get billingPaymentHistory => 'Fizetési előzmények';
@@ -1208,13 +1397,30 @@ class AppLocalizationsHu extends AppLocalizations {
   String get planPro => 'Pro';
 
   @override
-  String get planMax => 'Max';
+  String get planMax => 'Premium';
 
   @override
-  String get planMaxTrial => 'Max próba';
+  String get premiumBulletVideo => 'Napi 15 perc videóhívás';
 
   @override
-  String get freePlanPriceLine => '\$0.00 — napi egy hívás';
+  String get premiumBulletAnalysis =>
+      'Korlátlan kiejtésértékelés az ismétlésben';
+
+  @override
+  String get premiumBulletWeakSounds => 'Nehéz hangok gyakorlása a nyelvedhez';
+
+  @override
+  String get noteCharactersSeparate =>
+      'A karakterek külön kaphatók. A megvásárolt karakterek a tieid.';
+
+  @override
+  String get ctaGetPremium => 'Premium beszerzése';
+
+  @override
+  String get planMaxTrial => 'Premium próba';
+
+  @override
+  String get freePlanPriceLine => 'Ingyenes — napi 5 perc hívás';
 
   @override
   String pricePerMonthLine(String amount) {
@@ -1227,11 +1433,11 @@ class AppLocalizationsHu extends AppLocalizations {
   }
 
   @override
-  String get todaysCalls => 'Mai hívások';
+  String get todaysCalls => 'Mai hívásidő';
 
   @override
   String callsUsedOfLimit(int used, int limit) {
-    return '$used / $limit felhasználva';
+    return '$limit percből $used felhasználva';
   }
 
   @override
@@ -1252,35 +1458,22 @@ class AppLocalizationsHu extends AppLocalizations {
   }
 
   @override
-  String get bannerGoUnlimitedTitle => 'Korlátlan hívások a Pro csomaggal';
-
-  @override
-  String bannerGoUnlimitedSub(String price) {
-    return 'Korlátlan hívások · egyenként 15 perc · havi $price';
-  }
-
-  @override
-  String get bannerMaxUpsellTitle => 'Kapcsold be a videót a Max csomaggal';
+  String get bannerMaxUpsellTitle => 'Szemtől szemben a Premiummal';
 
   @override
   String bannerMaxUpsellSub(String price) {
-    return 'Szemtől szembeni hívások · havi $price';
+    return 'Videóhívás · napi 15 perc · havi $price';
   }
 
   @override
   String get bannerAnnualSwitchTitle => 'Válts évesre';
 
   @override
-  String bannerAnnualSwitchSub(String yearly, String perMonth) {
-    return 'Évi $yearly · havi $perMonth';
-  }
-
-  @override
   String get bannerPaymentFailedTitle => 'Nem sikerült levonni a díjat';
 
   @override
   String get bannerPaymentFailedSub =>
-      'Frissítsd a fizetést az áruházban, hogy a Pro megmaradjon';
+      'Frissítsd a fizetést az áruházban, hogy a Premium megmaradjon';
 
   @override
   String get bannerPausedTitle => 'A csomagod szünetel';
@@ -1297,10 +1490,6 @@ class AppLocalizationsHu extends AppLocalizations {
       'A fizetési módot, a csomagváltást és a lemondást az áruház kezeli.';
 
   @override
-  String get noteFairUse =>
-      'A korlátlan használatra méltányos használati szabályzatunk vonatkozik.';
-
-  @override
   String noteTrialEnds(String date) {
     return 'A próbaidőszakod $date napján ér véget. Ha előtte lemondod az áruházban, semmit nem vonunk le.';
   }
@@ -1311,7 +1500,7 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get noteHold =>
-      'A Pro szünetel, amíg a fizetés át nem megy. A karaktereid és a haladásod biztonságban vannak.';
+      'A Premium szünetel, amíg a fizetés át nem megy. A karaktereid és a haladásod biztonságban vannak.';
 
   @override
   String noteEnding(String date) {
@@ -1319,7 +1508,7 @@ class AppLocalizationsHu extends AppLocalizations {
   }
 
   @override
-  String get trialExpiredTitle => 'A Max próbád véget ért';
+  String get trialExpiredTitle => 'A Premium próbád véget ért';
 
   @override
   String get trialExpiredSub => 'Most az Ingyenes csomagon vagy';
@@ -1331,70 +1520,26 @@ class AppLocalizationsHu extends AppLocalizations {
   String get currentPlanTitle => 'Jelenlegi csomag';
 
   @override
-  String get badgeRecommended => 'Ajánlott';
-
-  @override
   String get perMonthUnit => 'havonta';
 
   @override
-  String get planTaglinePro => 'Korlátlan hívások. Egyenként 15 perc.';
-
-  @override
-  String get planTaglineMax => 'Most már láthatod őket.';
-
-  @override
-  String get planTaglineFree => 'Napi egy hívás. Ajándékba.';
-
-  @override
-  String get bulletProCalls => 'Hanghívások, amennyit csak szeretnél';
-
-  @override
-  String get bulletProLength => '15 perc hívásonként';
-
-  @override
-  String get bulletProScoring => 'Betűnként értékelt kiejtés';
+  String get planTaglineFree => 'Napi 5 perc hívás. Ajándékba.';
 
   @override
   String get bulletProCorrections => 'Az anyanyelvedre szabott javítások';
 
   @override
-  String get bulletProBeaverCalls => 'Beaver hív fel először';
+  String get bulletFreeCall => 'Napi 5 perc hanghívás';
 
   @override
-  String get bulletMaxVideo => 'Szemtől szembeni videóhívások';
-
-  @override
-  String get bulletMaxEverything => 'Minden, ami a Pro csomagban van';
-
-  @override
-  String get bulletMaxCharacters => 'Minden karakter, korlátlanul';
-
-  @override
-  String get bulletMaxStudyBook => 'A szintedhez igazított tankönyv';
-
-  @override
-  String get bulletMaxWeeklyReport => 'Heti jelentés a kiejtésed változásáról';
-
-  @override
-  String get bulletFreeCall => 'Napi egy 5 perces hanghívás';
-
-  @override
-  String get bulletFreeCheck => 'Napi egy kiejtésellenőrzés';
-
-  @override
-  String get bulletFreeAccent => 'Korlátlan akcentusellenőrzés';
-
-  @override
-  String get bulletFreeCharacter => 'Egy karakter kezdésnek';
-
-  @override
-  String get ctaGoUnlimited => 'Váltás korlátlanra';
+  String get bulletFreeCharacter => 'Két karakter kezdésnek';
 
   @override
   String get ctaTurnOnVideo => 'Videó bekapcsolása';
 
   @override
-  String get noteCallLength => 'A hívások egyenként 15 percesek.';
+  String get noteCallLength =>
+      'Premium: napi 15 perc — ezen belül annyiszor hívhatsz, ahányszor csak akarsz.';
 
   @override
   String get paywallProTitle1 => 'A koreai barátod,';
@@ -1403,35 +1548,26 @@ class AppLocalizationsHu extends AppLocalizations {
   String get paywallProTitle2 => 'aki hajnali 3-kor is fent van';
 
   @override
-  String get paywallProSub =>
-      'Korlátlan hívások. Egyenként 15 perc. Egész évben.';
+  String get paywallLimitHeadline => 'A Premiummal napi 15 perc hívásod van.';
 
   @override
-  String get paywallLimitHeadline => 'A Pro eltörli a korlátot.';
+  String get limitBannerCallTitle => 'Elfogyott a mai hívásidőd';
 
   @override
-  String get limitBannerCallTitle => 'Ez volt a mai hívás';
-
-  @override
-  String get limitBannerCallSub => 'Az Ingyenes csomag napi egy hívást ad';
-
-  @override
-  String get limitBannerCheckTitle => 'Ez volt a mai ellenőrzés';
-
-  @override
-  String get limitBannerCheckSub =>
-      'Az Ingyenes csomag napi egy ellenőrzést ad';
+  String get limitBannerCallSub => 'Az Ingyenes csomag napi 5 perc hívást ad';
 
   @override
   String get bulletProCharactersForever =>
       'A megvásárolt karakterek örökre a tieid';
 
   @override
-  String get paywallMaxTitle => 'Most már láthatod őket.';
+  String get paywallMaxTitle =>
+      'Most már videón, szemtől szemben beszélgethetsz.';
 
   @override
-  String get paywallMaxSub =>
-      'Videóhívások, minden karakter és a szintedhez készült tankönyv.';
+  String paywallTutorCompare(String price) {
+    return 'Egy óra tanárral \$25. Egy hónap Premium $price.';
+  }
 
   @override
   String get planMonthly => 'Havi';
@@ -1470,8 +1606,31 @@ class AppLocalizationsHu extends AppLocalizations {
   }
 
   @override
+  String ctaCaptionMaxYearly(String price) {
+    return 'Évi $price · bármikor lemondható az áruházban';
+  }
+
+  @override
   String ctaCaptionMaxTrial(String price) {
-    return '7 nap ingyen, utána Havi $price · bármikor lemondható az áruházban';
+    return '7 nap ingyen, utána havi $price · bármikor lemondható az áruházban';
+  }
+
+  @override
+  String ctaCaptionMaxYearlyTrial(String price) {
+    return '7 nap ingyen, utána évi $price · bármikor lemondható az áruházban';
+  }
+
+  @override
+  String get bundleTitle => 'Mindhárom egyszerre';
+
+  @override
+  String bundleOffBadge(int percent) {
+    return '$percent% kedvezmény';
+  }
+
+  @override
+  String bundleLinkLabel(String price) {
+    return 'Mindhárom $price áron';
   }
 
   @override
@@ -1484,61 +1643,26 @@ class AppLocalizationsHu extends AppLocalizations {
   String get footerPrivacy => 'Adatvédelem';
 
   @override
-  String get noteMaxCharacters =>
-      'A Max által feloldott karakterek az előfizetésed ideje alatt érhetők el. A megvásárolt karakterek a tieid maradnak.';
-
-  @override
   String get processingTitle => 'Vásárlás megerősítése';
 
   @override
   String get processingSub => 'Ez általában néhány másodpercet vesz igénybe.';
 
   @override
-  String get successProTitle => 'Pro csomagon vagy.';
+  String get successProTitle => 'Premium csomagon vagy.';
 
   @override
-  String get successProSub => 'Korlátlan hívások, mostantól azonnal.';
-
-  @override
-  String get successProBenefit1 =>
-      'Hívj, amennyiszer csak szeretnél — 15 perc hívásonként';
-
-  @override
-  String get successProBenefit2 => 'Korlátlan kiejtésellenőrzés';
-
-  @override
-  String get successProBenefit3 => 'Minden karakter, plusz egyszeri vásárlások';
-
-  @override
-  String get successMaxTitle => 'Most már láthatod őket.';
+  String get successMaxTitle => 'Most már látod, kivel beszélsz.';
 
   @override
   String get successMaxSub =>
       'A videóhívások bekapcsolva. Koppints a videó gombra bármelyik hívásban.';
 
   @override
-  String get successMaxBenefit1 => 'Szemtől szembeni videóhívások';
-
-  @override
-  String get successMaxBenefit2 =>
-      'Minden karakter korlátlanul, az újak elsőként';
-
-  @override
-  String get successMaxBenefit3 => 'A szintedhez igazított tankönyv';
-
-  @override
-  String get ctaStartACall => 'Hívás indítása';
-
-  @override
   String get ctaStartAVideoCall => 'Videóhívás indítása';
 
   @override
   String get ctaSeeYourSubscription => 'Előfizetésed megtekintése';
-
-  @override
-  String successProCaption(String price) {
-    return 'Havonta $price kerül levonásra, amíg le nem mondod. Bármikor kezelheted vagy lemondhatod az áruházban.';
-  }
 
   @override
   String successMaxCaption(String price) {
@@ -1558,93 +1682,17 @@ class AppLocalizationsHu extends AppLocalizations {
   String get plansErrorCaption => 'Semmit nem vontunk le.';
 
   @override
-  String get changePlanTitle => 'Csomagváltás';
-
-  @override
-  String get moveToMaxTitle => 'Váltás Max csomagra';
-
-  @override
-  String maxPriceShort(String price) {
-    return '$price / hó';
-  }
-
-  @override
-  String get moveToMaxCardSub =>
-      'Szemtől szembeni videóhívások · minden karakter · neked készült tankönyv';
-
-  @override
-  String get whatHappensNow => 'Mi történik most';
-
-  @override
-  String get maxStartsLabel => 'Max indul';
-
-  @override
-  String get immediately => 'Azonnal';
-
-  @override
-  String get unusedProTime => 'Fel nem használt Pro idő';
-
-  @override
-  String get creditedTowardMax => 'Beszámítjuk a Max árába';
-
-  @override
-  String nextPaymentMaxValue(String price, String date) {
-    return '$price · $date';
-  }
-
-  @override
-  String nextPaymentProValue(String price, String date) {
-    return '$price · $date';
-  }
-
-  @override
-  String get ctaSwitchToMax => 'Váltás Max csomagra';
-
-  @override
-  String get upgradeCaption =>
-      'Az új csomagod azonnal indul. A fel nem használt Pro időt beszámítjuk, kétszer sosem vonunk le.';
-
-  @override
-  String get moveToProTitle => 'Váltás Pro csomagra';
-
-  @override
-  String get moveToProSub =>
-      'Ma semmi nem változik. A Max a már kifizetett hónap végéig működik.';
-
-  @override
-  String get maxRunsUntil => 'Max érvényes eddig';
-
-  @override
-  String get proStarts => 'Pro indul';
-
-  @override
-  String get whatYouKeep => 'Amit megtartasz';
-
-  @override
-  String get keepBenefitCalls => 'Korlátlan hanghívások, egyenként 15 perc';
-
-  @override
-  String get keepBenefitCharacters => 'A megvásárolt karakterek örökre a tieid';
-
-  @override
-  String downgradeWarning(String date) {
-    return 'A videóhívások és a csak Max karakterek $date napján kikapcsolnak.';
-  }
-
-  @override
-  String get ctaSwitchToPro => 'Váltás Pro csomagra';
-
-  @override
-  String get ctaKeepMax => 'Maradjon a Max';
+  String get ctaKeepMax => 'Maradjon a Premium';
 
   @override
   String get winbackSkip => 'Kihagyás';
 
   @override
-  String get winbackTitle => 'A Pro csomagod véget ért';
+  String get winbackTitle => 'A Premium csomagod véget ért';
 
   @override
-  String get winbackSub => 'Most az Ingyenes csomagon vagy — napi egy hívás.';
+  String get winbackSub =>
+      'Most az Ingyenes csomagon vagy — napi 5 perc hívás.';
 
   @override
   String get winbackQuestion => 'Elárulod, miért mentél el?';
@@ -1681,7 +1729,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get ctaClose => 'Bezárás';
 
   @override
-  String get ovRestoreSuccessTitle => 'A Pro visszatért';
+  String get ovRestoreSuccessTitle => 'A Premium visszatért';
 
   @override
   String get ovRestoreSuccessBody =>
@@ -1702,13 +1750,29 @@ class AppLocalizationsHu extends AppLocalizations {
       'Ez az előfizetés már aktív egy másik BeaverTalk-fiókon.';
 
   @override
+  String ovRestoreCharactersTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Visszakaptad a karaktereidet',
+      one: 'Visszakaptad a karakteredet',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get ovRestoreCharacterOtherTitle =>
+      'Ezt a karaktert egy másik fiókkal vásárolták meg';
+
+  @override
   String get ctaSignInThatAccount => 'Bejelentkezés azzal a fiókkal';
 
   @override
   String get ctaGetHelp => 'Segítségkérés';
 
   @override
-  String get ovCharacterOfferTitle => 'Még nem állsz készen a Pro csomagra?';
+  String get ovCharacterOfferTitle =>
+      'Még nem állsz készen a Premium csomagra?';
 
   @override
   String get ovCharacterOfferBody =>
@@ -1719,7 +1783,7 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String rowFromPrice(String price) {
-    return 'már $price-tól';
+    return '$price darabonként';
   }
 
   @override
@@ -1763,7 +1827,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get rowCharactersYouBought => 'A megvásárolt karaktereid';
 
   @override
-  String get rowProRunsUntil => 'Pro érvényes eddig';
+  String get rowProRunsUntil => 'Premium érvényes eddig';
 
   @override
   String get ctaSwitchToYearly => 'Váltás évesre';
@@ -1778,7 +1842,7 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get ovAnnualSwitchBody =>
-      'Két hónapja vagy Pro csomagon. Az éves csomag olcsóbban jön ki.';
+      'Az éves csomag olcsóbb, mint a havi fizetés.';
 
   @override
   String get rowYouSave => 'Megtakarításod';
@@ -1839,7 +1903,7 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get ovTrialEndingBody =>
-      'A Max tovább fut, hacsak le nem mondod. Íme, mi történik.';
+      'A Premium tovább fut, hacsak le nem mondod. Íme, mi történik.';
 
   @override
   String get rowTrialEnds => 'Próba vége';
@@ -1854,7 +1918,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get ctaCancelInStore => 'Lemondás az áruházban';
 
   @override
-  String get ovTrialStartTitle => '7 nap Max, ingyen';
+  String get ovTrialStartTitle => '7 nap Premium, ingyen';
 
   @override
   String ovTrialStartBody(String price, String date) {
@@ -1869,7 +1933,7 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get ovOtoBody =>
-      'Jó döntés — a korlátlan hívások már működnek. Ugyanez a Pro éves fizetéssel olcsóbb.';
+      'Jó döntés. Ugyanaz a Premium kevesebbe kerül éves fizetéssel.';
 
   @override
   String get ovFailedDeclinedTitle => 'A kártyádat elutasították';
@@ -1896,7 +1960,28 @@ class AppLocalizationsHu extends AppLocalizations {
       'Nem értük el az áruházat. Semmit nem vontunk le.';
 
   @override
-  String get ovAlreadyTitle => 'Már Pro csomagon vagy';
+  String get ovVerifyingTitle => 'A fizetés megérkezett';
+
+  @override
+  String get ovVerifyingBody =>
+      'Még egyeztetjük az áruházzal. Hamarosan aktiválódik – ha mégsem, koppints a „Vásárlások visszaállítása” gombra.';
+
+  @override
+  String get ovPendingTitle => 'Függőben lévő fizetés';
+
+  @override
+  String get ovPendingBody =>
+      'Az áruház még nem fejezte be a fizetést. Amint kész, aktiválódik – elhagyhatod ezt a képernyőt.';
+
+  @override
+  String get ovRejectedTitle => 'Nem tudtuk megerősíteni ezt a vásárlást';
+
+  @override
+  String get ovRejectedBody =>
+      'Az áruház nem erősítette meg ezt a fizetést, ezért semmi sem aktiválódott. Ha terhelés történt, lépj kapcsolatba velünk.';
+
+  @override
+  String get ovAlreadyTitle => 'Már Premium csomagon vagy';
 
   @override
   String get ovAlreadyBody =>
@@ -1910,30 +1995,24 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String subCancelBody(String date) {
-    return 'A Pro $date napjáig érvényes. Utána Ingyenesre váltasz.';
+    return 'A Premium $date napjáig érvényes. Utána Ingyenesre váltasz.';
   }
 
   @override
   String get subWhatYouLose => 'Amit elveszítesz';
 
   @override
-  String get benefitCalls15 => 'Korlátlan hívások, egyenként 15 perc';
-
-  @override
   String get benefitScoring => 'Betűnként értékelt kiejtés';
 
   @override
-  String get benefitEveryCharacter => 'Minden karakter, korlátlanul';
-
-  @override
-  String get ctaKeepPro => 'Maradjon a Pro';
+  String get benefitEveryMetric => 'Minden mutató, minden mondat';
 
   @override
   String get subPaymentTitle => 'Fizetés frissítése';
 
   @override
   String get subPaymentBody =>
-      'Nem sikerült levonni a díjat. A Pro a türelmi időszak alatt tovább működik.';
+      'Nem sikerült levonni a díjat. A Premium a türelmi időszak alatt tovább működik.';
 
   @override
   String get subHowToFix => 'Így javíthatod';
@@ -1953,7 +2032,7 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String subResubBody(String date) {
-    return 'A Pro $date napján ér véget. Kapcsold vissza az automatikus megújítást, és semmi sem változik.';
+    return 'A Premium $date napján ér véget. Kapcsold vissza az automatikus megújítást, és semmi sem változik.';
   }
 
   @override
@@ -1963,24 +2042,10 @@ class AppLocalizationsHu extends AppLocalizations {
   String get ctaTurnItBackOn => 'Visszakapcsolás';
 
   @override
-  String get flTodayTitle => 'Ez a mai hívás';
+  String get flTodayTitle => 'Elfogyott a mai hívásidőd';
 
   @override
   String get flTodayBody => 'Folytasd ott, ahol abbahagytad — most azonnal.';
-
-  @override
-  String get flCheckTitle => 'Ez a mai ellenőrzés';
-
-  @override
-  String get flCheckBody =>
-      'Az Ingyenes csomagon napi egy ellenőrzés jár. A Pro korlátlanná teszi.';
-
-  @override
-  String get flBenefitCalls =>
-      'Korlátlan hívások a Pro csomaggal · egyenként 15 perc';
-
-  @override
-  String get flBenefitChecks => 'Korlátlan kiejtésellenőrzés a Pro csomaggal';
 
   @override
   String flCaption(String price) {
@@ -2002,7 +2067,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get nicknameLabel => 'Becenév';
 
   @override
-  String get emailLabel => 'Email';
+  String get emailLabel => 'E-mail';
 
   @override
   String get loginMethodLabel => 'Bejelentkezési mód';
@@ -2020,40 +2085,45 @@ class AppLocalizationsHu extends AppLocalizations {
   String get ctaSave => 'Mentés';
 
   @override
-  String get subscriptionRow => 'Subscription';
+  String get subscriptionRow => 'Előfizetés';
 
   @override
-  String get iapSuccessTitle => 'Purchase complete';
+  String get iapSuccessTitle => 'Vásárlás kész';
 
   @override
   String iapSuccessBody(String name) {
-    return 'The $name avatar is yours forever.\nApplied as soon as the receipt clears.';
+    return 'A(z) $name avatar örökre a tiéd.\nA nyugta megerősítése után azonnal érvénybe lép.';
   }
 
   @override
-  String get ctaGoHome => 'Home';
+  String get ctaGoHome => 'Kezdőlapra';
 
   @override
-  String get ctaUseNow => 'Use it now';
+  String get ctaUseNow => 'Használom most';
 
   @override
-  String get iapFailTitle => 'The payment didn\'t go through';
+  String get iapFailTitle => 'A fizetés nem sikerült';
 
   @override
-  String get iapFailBody => 'You can try again';
+  String get iapFailBody => 'Újra megpróbálhatod';
 
   @override
-  String get paywallLeaveTitle => 'Ha most kilépsz, nem lesz előfizetésed';
+  String get paywallGuardTitle => 'Ingyenesen is folytathatod';
 
   @override
-  String get paywallLeaveBody =>
-      'Az előnyök közvetlenül a fizetés után nyílnak meg. Bármikor visszatérhetsz a Saját oldalról.';
+  String get paywallGuardBody => 'Továbbra is napi 5 perc hívásod van.';
 
   @override
-  String get ctaKeepLooking => 'Nézem tovább';
+  String get ctaMaybeLater => 'Talán később';
 
   @override
-  String get ctaLeaveAnyway => 'Kilépek mégis';
+  String get winbackOfferBadge => '50% kedvezmény az első hónapra';
+
+  @override
+  String get winbackOfferTitle => 'Örülünk, hogy visszatértél';
+
+  @override
+  String get ctaGetHalfOff => 'Kérem az 50% kedvezményt';
 
   @override
   String get iapCharacterSuccessTitle => 'Új barát csatlakozott!';
@@ -2100,9 +2170,6 @@ class AppLocalizationsHu extends AppLocalizations {
   String get takeLevelTest => 'Szintfelmérő kitöltése';
 
   @override
-  String get reviewToSeeScore => 'Ismételd át, hogy lásd a kiejtési pontszámod';
-
-  @override
   String get playAgain => 'Újra';
 
   @override
@@ -2116,4 +2183,803 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get difficultyLabel => 'Nehézség';
+
+  @override
+  String get connected => 'Csatlakozva';
+
+  @override
+  String get unlockedWithMax => 'A csomagod része';
+
+  @override
+  String get fcEndedTitle => 'A díjmentes hívásod véget ért';
+
+  @override
+  String get fcEndedBody =>
+      'A díjmentes hívások legfeljebb 5 percig tartanak\nElőfizetéssel tovább beszélgethetsz';
+
+  @override
+  String get ctaSubscribeKeepTalking => 'Előfizetés és beszélgetés folytatása';
+
+  @override
+  String get kgTitle => 'Folytatjuk?';
+
+  @override
+  String get kgBody =>
+      'A hívás rövid szakaszokban folytatódik.\nMinden alkalommal újra megkérdezzük.';
+
+  @override
+  String get pcEndedTitleToday => 'Mára fejezzük be a hívást.';
+
+  @override
+  String get pcEndedBodyToday =>
+      'Ismételd át, amiről beszéltünk, és hívj holnap újra!';
+
+  @override
+  String get pcEndedTitle => 'Fejezzük be ezt a hívást.';
+
+  @override
+  String get pcEndedBody => 'Ismételd át, amiről beszéltünk, és hívj újra!';
+
+  @override
+  String get ctaKeepTalking => 'Beszélgetés folytatása';
+
+  @override
+  String get callModeSheetTitle => 'Hogyan szeretnél beszélgetni?';
+
+  @override
+  String get callModeSheetSubtitle => 'Azonnal érvénybe lép ebben a hívásban';
+
+  @override
+  String get callModeFreeTalk => 'Szabad beszélgetés';
+
+  @override
+  String get callModeFreeTalkDesc => 'Beszélj javítások nélkül';
+
+  @override
+  String get callModeChange => 'Mód váltása';
+
+  @override
+  String get callModeKeep => 'Most nem';
+
+  @override
+  String get callExitTitle => 'Befejezed a hívást?';
+
+  @override
+  String get callExitSubtitle =>
+      'Az eddig beszélt idő így is beleszámít a mai keretbe';
+
+  @override
+  String get callExitKeep => 'Beszélgetés folytatása';
+
+  @override
+  String get callExitConfirm => 'Hívás befejezése';
+
+  @override
+  String get callMicMute => 'Némítás';
+
+  @override
+  String get callMicUnmute => 'Némítás feloldása';
+
+  @override
+  String get callPushToTalk => 'Tartsd nyomva a beszédhez';
+
+  @override
+  String get callFreeEndedTitle => 'Az ingyenes hívásod véget ért';
+
+  @override
+  String get callFreeEndedCta => 'Fizess elő és beszélgess tovább';
+
+  @override
+  String get callKeepGoingTitle => 'Folytatjuk?';
+
+  @override
+  String get callKeepGoingSubtitle =>
+      'A hívások 5 perces szakaszokban folytatódnak. Minden alkalommal rákérdezünk.';
+
+  @override
+  String get articulationSelectedWord => 'Kiválasztott szó';
+
+  @override
+  String get articulationYouSaid => 'A kiejtésed';
+
+  @override
+  String get articulationTargetSound => 'Cél';
+
+  @override
+  String get reportEntry => 'Jelentés';
+
+  @override
+  String get reportTitle => 'Jelentés';
+
+  @override
+  String get reportPrompt => 'Mi volt a probléma?';
+
+  @override
+  String get reportGuide =>
+      'Írd meg, az MI-karakter melyik tartalma zavart. Minden bejelentést átnézünk.';
+
+  @override
+  String get reportReasonSexual => 'Szexuális tartalom';
+
+  @override
+  String get reportReasonHate => 'Gyűlölet vagy diszkrimináció';
+
+  @override
+  String get reportReasonViolence => 'Erőszakos vagy fenyegető tartalom';
+
+  @override
+  String get reportReasonSelfHarm => 'Önbántalmazásra biztat';
+
+  @override
+  String get reportReasonMisinfo => 'Téves információ';
+
+  @override
+  String get reportReasonOther => 'Egyéb probléma';
+
+  @override
+  String get reportDetailHint => 'Írd le, mi történt (nem kötelező)';
+
+  @override
+  String get reportSubmit => 'Bejelentés küldése';
+
+  @override
+  String get reportDoneTitle => 'Megkaptuk a bejelentésed';
+
+  @override
+  String get reportDoneBody =>
+      'Átnézzük, és ha kell, intézkedünk. Köszönjük, hogy segítesz biztonságban tartani a BeaverTalkot.';
+
+  @override
+  String get reportFailed =>
+      'Nem sikerült elküldeni a bejelentést. Próbáld újra.';
+
+  @override
+  String get hwTitle => 'Házi feladat';
+
+  @override
+  String get hwJoinCodeTitle => 'Add meg az osztálykódod';
+
+  @override
+  String get hwJoinCodeSubtitle => 'Ez a tanárodtól kapott 6 karakteres kód';
+
+  @override
+  String get hwJoinCodeLabel => 'Osztálykód';
+
+  @override
+  String get hwJoinCodeHelp => 'A kód nem érzékeny a kis- és nagybetűkre';
+
+  @override
+  String get hwJoinConfirmTitle => 'Ez a megfelelő osztály?';
+
+  @override
+  String get hwJoinConfirmSubtitle => 'Ha nem, ellenőrizd újra a kódot';
+
+  @override
+  String get hwJoinFieldInstitution => 'Intézmény';
+
+  @override
+  String get hwJoinFieldTeacher => 'Tanár';
+
+  @override
+  String get hwJoinFieldLearners => 'Tanulók';
+
+  @override
+  String get hwJoinFieldTerm => 'Időszak';
+
+  @override
+  String get hwJoinConfirmNote =>
+      'Az osztály neve pontosan úgy jelenik meg, ahogy a tanárod írta. Nem fordítjuk le.';
+
+  @override
+  String get hwJoinConfirmYes => 'Igen, ez az';
+
+  @override
+  String get hwJoinConfirmRetry => 'Kód újra megadása';
+
+  @override
+  String get hwJoinProfileTitle => 'Milyen nevet használsz az osztályban?';
+
+  @override
+  String get hwJoinProfileSubtitle => 'A tanárod ezt veti össze a névsorral';
+
+  @override
+  String get hwJoinNameLabel => 'Név';
+
+  @override
+  String get hwJoinNameHelp => 'Eltérhet az appban használt nevedtől';
+
+  @override
+  String get hwJoinStudentNoLabel => 'Tanulói azonosító (nem kötelező)';
+
+  @override
+  String get hwJoinStudentNoHelp => 'A tanárod ezzel veti össze a névsort';
+
+  @override
+  String get hwJoinConsentTitle => 'Amit a tanárod lát';
+
+  @override
+  String get hwJoinConsentSubtitle =>
+      'Az osztályhoz való csatlakozáshoz hozzájárulás szükséges';
+
+  @override
+  String get hwJoinConsentSharedHeading => 'Megosztva a tanároddal';
+
+  @override
+  String get hwJoinConsentShared1 => 'Osztály neve és tanulói azonosító';
+
+  @override
+  String get hwJoinConsentShared2 => 'Elkészítetted-e a házi feladatot';
+
+  @override
+  String get hwJoinConsentShared3 => 'A teljesített és elrontott mondatok';
+
+  @override
+  String get hwJoinConsentShared4 => 'A feladathívás hossza és összefoglalója';
+
+  @override
+  String get hwJoinConsentNotSharedHeading => 'Nincs megosztva';
+
+  @override
+  String get hwJoinConsentNotShared1 => 'E-mail és telefonszám';
+
+  @override
+  String get hwJoinConsentNotShared2 => 'Appbeli név, profil és karakter';
+
+  @override
+  String get hwJoinConsentNotShared3 => 'Állampolgárság és anyanyelv';
+
+  @override
+  String get hwJoinConsentNotShared4 =>
+      'Az osztályon kívüli hívások és tanulás';
+
+  @override
+  String get hwJoinConsentNotShared5 => 'Előfizetési és fizetési adatok';
+
+  @override
+  String get hwJoinConsentAgree => 'Elfogadom a fentieket';
+
+  @override
+  String get hwJoinConsentCta => 'Elfogadom és csatlakozom';
+
+  @override
+  String hwJoinDoneTitle(String className) {
+    return 'Csatlakoztál ehhez: $className';
+  }
+
+  @override
+  String hwJoinDoneSubtitle(int count) {
+    return '$count feladat vár rád';
+  }
+
+  @override
+  String get hwJoinDoneNoAssignment => 'Még nincs feladat';
+
+  @override
+  String get hwJoinDoneNextDue => 'Következő határidő';
+
+  @override
+  String get hwJoinDoneRosterName => 'A neved az osztályban';
+
+  @override
+  String get hwJoinDoneCta => 'Házi feladatok megtekintése';
+
+  @override
+  String get hwJoinErrorNotFound => 'Nem találtuk ezt a kódot';
+
+  @override
+  String get hwJoinErrorNotFoundBody =>
+      'Kérjük, ellenőrizd újra a hat számjegyet.';
+
+  @override
+  String get hwJoinErrorExpired => 'Ez a kód lejárt';
+
+  @override
+  String get hwJoinErrorExpiredBody => 'Kérj új kódot a tanárodtól.';
+
+  @override
+  String get hwJoinErrorFull => 'Az osztály megtelt';
+
+  @override
+  String get hwJoinErrorFullBody => 'Kérjük, szólj a tanárodnak.';
+
+  @override
+  String get hwJoinFailed =>
+      'Nem sikerült csatlakozni. Próbáld újra egy pillanat múlva.';
+
+  @override
+  String get hwSectionInProgress => 'Folyamatban';
+
+  @override
+  String get hwSectionUpcoming => 'Közelgő';
+
+  @override
+  String get hwSectionDone => 'Kész';
+
+  @override
+  String get hwLeaveClassLink => 'Kilépés az osztályból';
+
+  @override
+  String get hwListEmptyTitle => 'Még nincs házi feladat';
+
+  @override
+  String get hwListEmptyBody => 'Itt jelenik meg, amint a tanárod kiadja.';
+
+  @override
+  String get hwListFailed => 'Nem sikerült betölteni a házi feladataidat.';
+
+  @override
+  String get hwRetry => 'Újra';
+
+  @override
+  String get hwBadgeDone => 'Kész';
+
+  @override
+  String get hwBadgeOverdue => 'Nincs beadva';
+
+  @override
+  String hwBadgeOverdueDays(int days) {
+    return 'Nincs beadva, $days nap késés';
+  }
+
+  @override
+  String hwBadgeDday(int days) {
+    return 'D-$days';
+  }
+
+  @override
+  String get hwBadgeDueToday => 'Ma esedékes';
+
+  @override
+  String get hwActivitySpeaking => 'Kiejtés';
+
+  @override
+  String get hwActivityConversation => 'Beszélgetés';
+
+  @override
+  String get hwActivityWorkbook => 'Munkafüzet';
+
+  @override
+  String hwChapterLabel(String chapter) {
+    return '$chapter. fejezet';
+  }
+
+  @override
+  String get hwTaskSpeakingDesc => 'Nézd meg a kiejtési pontszámodat';
+
+  @override
+  String get hwTaskConversationDesc =>
+      'Használd a tanultakat valódi beszélgetésben';
+
+  @override
+  String get hwConversationOnce =>
+      'A beszélgetés házi feladatonként egyszer végezhető el.';
+
+  @override
+  String get hwTaskWorkbookDesc => 'Gyakorolj írással a munkafüzetben';
+
+  @override
+  String get hwCtaStudy => 'Kezdés';
+
+  @override
+  String get hwCtaResult => 'Eredmény megtekintése';
+
+  @override
+  String get hwCtaDownload => 'Letöltés';
+
+  @override
+  String get hwSpeakingNoScore => 'Még nem csináltad meg a beszédfeladatot';
+
+  @override
+  String get hwWorkbookUnavailable => 'A munkafüzet fájlja még nem érhető el.';
+
+  @override
+  String get hwDetailClosed => 'Ez a feladat lezárult. Már nem tudsz beadni.';
+
+  @override
+  String get hwLeaveTitle => 'Kilépsz az osztályból?';
+
+  @override
+  String get hwLeaveBody =>
+      'A tanárod többé nem látja a házi feladataid eredményeit.';
+
+  @override
+  String get hwLeaveConfirm => 'Kilépés';
+
+  @override
+  String get hwLeaveCancel => 'Maradok';
+
+  @override
+  String get hwLeaveFailed => 'Nem sikerült kilépni az osztályból.';
+
+  @override
+  String get hwMyClass => 'Az osztályom';
+
+  @override
+  String get hwClassEmptyTitle => 'Még nem csatlakoztál osztályhoz';
+
+  @override
+  String get hwClassEmptySubtitle => 'Add meg a tanárodtól kapott kódot';
+
+  @override
+  String get hwClassEmptyCta => 'Osztálykód megadása';
+
+  @override
+  String get hwClassContinueCta => 'Tovább';
+
+  @override
+  String hwHomeBannerDueTomorrow(int count) {
+    return '$count feladat holnap esedékes';
+  }
+
+  @override
+  String hwHomeBannerOverdue(int count) {
+    return '$count beadatlan feladatod van';
+  }
+
+  @override
+  String get hwSpeakingUnavailable =>
+      'Ehhez a feladathoz még nincsenek mondatok.';
+
+  @override
+  String get hwBadgeClosed => 'Lezárva';
+
+  @override
+  String hwSpeakingProgress(int passed, int total) {
+    return '$total mondatból $passed teljesítve';
+  }
+
+  @override
+  String get challengeFirstWord => 'Első szó';
+
+  @override
+  String get challengeSeeAnalysis => 'Eredmények megtekintése';
+
+  @override
+  String get challengePaused => 'Szüneteltetve';
+
+  @override
+  String get challengePausedNote => 'Az időzítő és a felvétel együtt állt le.';
+
+  @override
+  String get challengeTimeLeft => 'Hátralévő idő';
+
+  @override
+  String get challengeScoreLabel => 'Pontszám';
+
+  @override
+  String get challengeResume => 'Folytatás';
+
+  @override
+  String get challengeBlockedTitle => 'A kamera nem használható';
+
+  @override
+  String get challengeBlockedNote =>
+      'Kapcsold be a kamera- és mikrofonhozzáférést a Beállításokban.';
+
+  @override
+  String get challengeGoBack => 'Vissza';
+
+  @override
+  String get challengeOpenSettings => 'Beállítások megnyitása';
+
+  @override
+  String get saveDone => 'Elmentve a galériába';
+
+  @override
+  String get saveFailed => 'Nem sikerült menteni';
+
+  @override
+  String get saveDeniedNote => 'Fotókhoz való hozzáférés szükséges';
+
+  @override
+  String get callIncomingCallerFallback => 'Beaver oktató';
+
+  @override
+  String get callIncomingHandle => 'Koreai hívás';
+
+  @override
+  String get callMissedTitle => 'Nem fogadott hívás';
+
+  @override
+  String get callMissedChannelDescription =>
+      'Szól, ha lemaradsz Beaver hívásáról.';
+
+  @override
+  String callMissedBody(String name) {
+    return '$name hívni próbált';
+  }
+
+  @override
+  String get callBeaverFallbackName => 'Beaver';
+
+  @override
+  String get callNotifPermissionRationale =>
+      'A hívások fogadásához értesítési engedély kell.';
+
+  @override
+  String get callNotifPermissionRequired =>
+      'Engedélyezd az értesítéseket a Beállításokban.';
+
+  @override
+  String get callHintLockedTitle => 'Tanulás módban nem érhetők el tippek';
+
+  @override
+  String get wsTitle => 'Nehéz hangok';
+
+  @override
+  String get wsToList => 'Vissza a listához';
+
+  @override
+  String get wsNext => 'Tovább';
+
+  @override
+  String get wsRetry => 'Újra';
+
+  @override
+  String get wsDone => 'Kész';
+
+  @override
+  String get wsContinue => 'Folytatás';
+
+  @override
+  String get wsQuit => 'Kilépés';
+
+  @override
+  String get wsRetryLater => 'Kérjük, próbáld újra egy pillanat múlva.';
+
+  @override
+  String get wsMissingTitle => 'Nem találtuk ezt a hangot';
+
+  @override
+  String get wsMissingBody => 'Kérjük, válaszd ki újra a listából.';
+
+  @override
+  String get wsListLoadFailed => 'Nem sikerült betölteni a listát';
+
+  @override
+  String get wsLessonLoadFailed => 'Nem sikerült betölteni a leckét';
+
+  @override
+  String get wsNationalTitle => 'Az akcentusodhoz tartozó nehéz hangok';
+
+  @override
+  String get wsNationalPending => 'Kitöltjük, amint elemeztük az akcentusodat';
+
+  @override
+  String get wsNationalPicked => 'Az akcentuselemzésed alapján válogattuk';
+
+  @override
+  String get wsNationalEmptyBody =>
+      'Beszélj még néhányat, és elemezzük az akcentusodat.';
+
+  @override
+  String get wsMineTitle => 'Az én nehéz hangjaim';
+
+  @override
+  String get wsMineSubtitle => 'A legutóbbi hívásaidban mért hangok';
+
+  @override
+  String get wsMineEmptyBody =>
+      'Beszélj és ismételj, így gyűlnek a nehéz hangjaid.';
+
+  @override
+  String get wsNoDataYet => 'Még nincs adat';
+
+  @override
+  String get wsGoToCall => 'Hívás indítása';
+
+  @override
+  String get wsRule => 'Szabály';
+
+  @override
+  String get wsRecommended => 'Ajánlott';
+
+  @override
+  String get wsNotMeasured => 'Nincs mérés';
+
+  @override
+  String get wsStepUnderstand => 'Megértés';
+
+  @override
+  String get wsStepWords => 'Szavak';
+
+  @override
+  String get wsStepSentence => 'Mondat';
+
+  @override
+  String get wsStepTest => 'Teszt';
+
+  @override
+  String get wsQuitTitle => 'Befejezed a gyakorlást?';
+
+  @override
+  String get wsQuitBody => 'Ha most kilépsz, ez a gyakorlás nem lesz elmentve.';
+
+  @override
+  String get wsHowToSound => 'Így képezd a hangot';
+
+  @override
+  String get wsPracticeWords => 'Szavak gyakorlása';
+
+  @override
+  String get wsPracticeSentence => 'Mondat gyakorlása';
+
+  @override
+  String get wsPracticeAgain => 'Még egyszer';
+
+  @override
+  String get wsStartTest => 'Záróteszt kitöltése';
+
+  @override
+  String get wsThisSentence => 'Ez a mondat';
+
+  @override
+  String get wsNoScoreNote => 'Ez a lépés nem kap pontot. Csak mondd utána.';
+
+  @override
+  String get wsListen => 'Hallgasd figyelmesen';
+
+  @override
+  String get wsSayNow => 'Most mondd utána';
+
+  @override
+  String get wsPracticeDone => 'Gyakorlás befejezve';
+
+  @override
+  String get wsPaused => 'Szüneteltetve';
+
+  @override
+  String get wsAudioFailed =>
+      'Nem sikerült betölteni a hangot. Olvasd fel a szöveget.';
+
+  @override
+  String get wsReadAloud => 'Olvasd fel hangosan az alábbi mondatot';
+
+  @override
+  String get wsTapToStart => 'Koppints az indításhoz';
+
+  @override
+  String get wsTapWhenDone => 'Koppints, ha végeztél';
+
+  @override
+  String get wsScoring => 'Értékelés folyamatban';
+
+  @override
+  String get wsMicFailed => 'Nem sikerült megnyitni a mikrofont.';
+
+  @override
+  String get wsMicPermissionBody =>
+      'Ezt a tesztet hangosan kell felolvasni, ezért kell a mikrofon. Engedélyezd a mikrofon-hozzáférést a Beállításokban.';
+
+  @override
+  String get wsNoSound => 'Nem hallottunk semmit. Megpróbálod újra?';
+
+  @override
+  String get wsScoreFailed =>
+      'Az értékelés nem sikerült. Kérjük, próbáld újra.';
+
+  @override
+  String get wsSomethingWrong => 'Valami hiba történt.';
+
+  @override
+  String get wsLearnDone => 'Lecke befejezve';
+
+  @override
+  String get wsRetest => 'Új teszt';
+
+  @override
+  String get wsFirstMeasure => 'Első mérés';
+
+  @override
+  String get wsFinalTest => 'Záróteszt';
+
+  @override
+  String wsPoints(int score) {
+    return '$score pont';
+  }
+
+  @override
+  String wsBeforePoints(int score) {
+    return 'Előtte $score pont';
+  }
+
+  @override
+  String wsGoalPoints(int score) {
+    return 'Cél $score pont';
+  }
+
+  @override
+  String wsGoalPrefix(String desc) {
+    return 'Cél · $desc';
+  }
+
+  @override
+  String wsAccentOf(String country) {
+    return '$country akcentus';
+  }
+
+  @override
+  String wsWordsRepeated(int count) {
+    return '$count szó ismételve';
+  }
+
+  @override
+  String wsChunksRepeated(int count) {
+    return '$count mondatrész ismételve';
+  }
+
+  @override
+  String get wsStartRecommended => 'Kezdd az ajánlott hanggal';
+
+  @override
+  String wsStartRecommendedWith(String label) {
+    return 'Kezdd ezzel: $label';
+  }
+
+  @override
+  String get wsPointsUnit => 'pont';
+
+  @override
+  String get wsEnterFromMypage => 'Nehéz hangok gyakorlása';
+
+  @override
+  String wsGoalOnly(int score) {
+    return 'Cél $score';
+  }
+
+  @override
+  String wsSoundOf(String label) {
+    return '$label hang';
+  }
+
+  @override
+  String wsResultTip(String desc) {
+    return '$desc. Idézd fel ezt a formát, amikor előjön egy hívásban.';
+  }
+
+  @override
+  String wsNationalSubtitle(String country) {
+    return '$country – a beszélők által gyakran elrontott hangok';
+  }
+
+  @override
+  String get wsRetryPackLabel => 'Gyakran rontott hangok gyakorlása';
+
+  @override
+  String wsRetryPackTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count gyakran rontott hang ebben a leckében',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get wsRetryPackBody =>
+      'Összegyűjtöttük a legalább 2-szer rontott hangokat. Mindegyiket 4 lépésben gyakorolhatod.';
+
+  @override
+  String get wsRetryPackCta => 'Hangok gyakorlása';
+
+  @override
+  String get wsRetryListTitle => 'Gyakran rontott hangok';
+
+  @override
+  String get wsRetryListSection => 'Ebből a leckéből gyűjtött hangok';
+
+  @override
+  String get wsRetryListSub =>
+      'Az ebben a leckében legalább 2-szer rontott hangok';
+
+  @override
+  String wsRetryListSubWithCall(String title) {
+    return 'A(z) „$title” hívásban legalább 2-szer rontott hangok';
+  }
+
+  @override
+  String get wsRetryListAllDone => 'Minden hangot begyakoroltál';
+
+  @override
+  String get wsRetryBackToReport => 'Vissza az elemzéshez';
 }

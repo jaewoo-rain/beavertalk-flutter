@@ -70,30 +70,6 @@ class ConflictFailure extends AppException {
   const ConflictFailure.server(super.message) : super(fromServer: true);
 }
 
-/// 409 with `code: "PRICE_CHANGED"` — the price moved between the moment the
-/// screen rendered it and the moment the purchase reached the server.
-///
-/// A limited-time discount ending mid-tap is the case this exists for: the user
-/// saw `$5` and the server would have charged `$10`. The server refuses rather
-/// than billing an amount the user never agreed to, and returns both figures so
-/// the app can re-confirm at the real price.
-///
-/// Prices are **minor units (cents)**, like everywhere else in the app.
-class PriceChangedFailure extends AppException {
-  const PriceChangedFailure(
-    super.message, {
-    required this.expectedPrice,
-    required this.actualPrice,
-    super.fromServer,
-  });
-
-  /// What the client sent as "the price I showed the user".
-  final int expectedPrice;
-
-  /// What the server actually charges now.
-  final int actualPrice;
-}
-
 /// 422 — request validation failed. [fieldErrors] maps a field name to its
 /// first error message (empty when the server sent a non-field message).
 class ValidationFailure extends AppException {

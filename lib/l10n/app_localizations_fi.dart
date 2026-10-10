@@ -23,6 +23,12 @@ class AppLocalizationsFi extends AppLocalizations {
   String get callErrorGeneric => 'Puhelun aikana tapahtui virhe.';
 
   @override
+  String get callDailyLimit => 'Tämän päivän opiskeluaika on käytetty.';
+
+  @override
+  String get callAlreadyInCall => 'Olet jo puhelussa.';
+
+  @override
   String get callNetworkError => 'Tapahtui verkkovirhe.';
 
   @override
@@ -56,6 +62,16 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get callRatingPrompt => 'Millainen puhelu oli?';
+
+  @override
+  String get callRatingBody =>
+      'Arviosi auttaa meitä keskustelemaan paremmin ensi kerralla.';
+
+  @override
+  String get callRatingSubmit => 'Lähetä';
+
+  @override
+  String get callRatingSkip => 'Ohita';
 
   @override
   String get ratingBad => 'Ei kovin hyvä';
@@ -127,6 +143,24 @@ class AppLocalizationsFi extends AppLocalizations {
   String get alarms => 'Hälytykset';
 
   @override
+  String get alarmAdd => 'Lisää herätys';
+
+  @override
+  String get alarmEdit => 'Muokkaa herätystä';
+
+  @override
+  String get alarmEveryDay => 'Joka päivä';
+
+  @override
+  String get alarmWeekdays => 'Arkipäivisin';
+
+  @override
+  String get alarmWeekend => 'Viikonloppuisin';
+
+  @override
+  String get alarmNoRepeat => 'Ei koskaan';
+
+  @override
   String get addSchedule => 'Lisää aikataulu';
 
   @override
@@ -152,6 +186,12 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get callPartner => 'Hahmo';
+
+  @override
+  String get alarmModeLearnSub => 'Harjoittele opetussuunnitelman ilmauksia';
+
+  @override
+  String get alarmModeChatSub => 'Juttele mistä vain';
 
   @override
   String get quickStart => 'Pika-aloitus';
@@ -201,13 +241,52 @@ class AppLocalizationsFi extends AppLocalizations {
   String get conversation => 'Keskustelu';
 
   @override
-  String get review => 'Kertaus';
-
-  @override
-  String get pronunciationChallenge => 'Ääntämishaaste';
-
-  @override
   String get newExpressions => 'Uudet ilmaisut';
+
+  @override
+  String get analysisPrepNote => 'Tämän päivän puhelua käydään läpi.';
+
+  @override
+  String get analysisPrepNoteHint => 'Viesti ilmestyy tähän pian';
+
+  @override
+  String get analysisPrepTitle =>
+      'Majava tekee tämän päivän ilmauksista kortteja';
+
+  @override
+  String get analysisPrepSub => 'Ne ilmestyvät tähän heti valmistuttuaan.';
+
+  @override
+  String get analysisPrepStepSave => 'Keskustelun tallennus';
+
+  @override
+  String get analysisPrepStepCards => 'Ilmauskorttien teko';
+
+  @override
+  String get analysisPrepStateDone => 'Valmis';
+
+  @override
+  String get analysisPrepStateWorking => 'Käynnissä';
+
+  @override
+  String get analysisPrepStateWaiting => 'Odottaa';
+
+  @override
+  String get usedExpressions => 'Käyttämäsi ilmaukset';
+
+  @override
+  String quizExpressionsCount(int count) {
+    return 'Oppimasi ilmaisut $count';
+  }
+
+  @override
+  String get quizPassed => 'Osasit';
+
+  @override
+  String get quizFailed => 'Kertaa vielä';
+
+  @override
+  String get quizPending => 'Jatketaan ensi kerralla';
 
   @override
   String get analysisResult => 'Analyysin tulos';
@@ -218,6 +297,9 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get practice => 'Harjoittele';
+
+  @override
+  String get analysisNativeLabel => 'Natiivi';
 
   @override
   String recentScore(int score) {
@@ -266,34 +348,6 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get cancel => 'Peruuta';
-
-  @override
-  String get selectTime => 'Valitse aika';
-
-  @override
-  String get getStarted => 'Aloita';
-
-  @override
-  String get permissionTitle =>
-      'Salli käyttöoikeudet\nsujuvaa kokemusta varten';
-
-  @override
-  String get permissionSubtitle =>
-      'Vaaditut käyttöoikeudet ovat välttämättömiä palvelun käyttämiseksi.';
-
-  @override
-  String get permissionMicTitle => 'Mikrofoni (pakollinen)';
-
-  @override
-  String get permissionMicDesc =>
-      'Tarvitaan puhumiseen tekoälyn kanssa englanniksi.';
-
-  @override
-  String get permissionNotifTitle => 'Ilmoitukset (valinnainen)';
-
-  @override
-  String get permissionNotifDesc =>
-      'Lähetämme oppimismuistutuksia ja puheluaikatauluja.';
 
   @override
   String get micPermissionNeededTitle => 'Mikrofonin käyttöoikeus tarvitaan';
@@ -444,13 +498,121 @@ class AppLocalizationsFi extends AppLocalizations {
   String get endLearning => 'Lopeta harjoitus';
 
   @override
-  String get navCalendar => 'Kalenteri';
-
-  @override
   String get navCall => 'Puhelu';
 
   @override
-  String get navStats => 'Tilastot';
+  String get homeCourseExpression => 'Ilmaukset';
+
+  @override
+  String get homeCourseFreetalk => 'Keskustelu';
+
+  @override
+  String homeExpressionsLeft(int count) {
+    return 'Keskusteluun $count ilmausta jäljellä';
+  }
+
+  @override
+  String get homeFreetalkNote => 'Käytä oppimaasi ja puhu vapaasti';
+
+  @override
+  String get homeTalkTitle => 'Mitä tänään tapahtui?';
+
+  @override
+  String get homeTalkNote => 'Juttele vapaasti ja opi samalla.';
+
+  @override
+  String get homeModeLearn => 'Opi';
+
+  @override
+  String get homeModeTalk => 'Juttele';
+
+  @override
+  String homeStreakDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count päivää putkeen',
+      one: '1 päivä putkeen',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakCalendarTitle => 'Oppimiskalenteri';
+
+  @override
+  String streakDaysUnit(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'päivää putkeen',
+      one: 'päivä putkeen',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String streakBest(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Paras putki: $count päivää',
+      one: 'Paras putki: $count päivä',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakMetricCallTime => 'Puheluaika';
+
+  @override
+  String get streakMetricLearned => 'Ilmaukset';
+
+  @override
+  String get streakMetricWords => 'Puhutut sanat';
+
+  @override
+  String streakCountValue(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString';
+  }
+
+  @override
+  String streakMinutes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count min',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakNoCallsThatDay => 'Tänä päivänä ei ollut puheluita.';
+
+  @override
+  String get homeLevelPending => 'Taso avoinna';
+
+  @override
+  String get homeNoLevelTitle => 'Sinulla ei ole vielä tasoa';
+
+  @override
+  String get homeNoLevelNote => 'Suorita ensimmäinen puhelu, niin saat tason';
+
+  @override
+  String get homeCurriculumPendingBadge => 'Tulossa pian';
+
+  @override
+  String homeCurriculumPendingTitle(String language) {
+    return '$language: opetussuunnitelma on tulossa';
+  }
+
+  @override
+  String get homeCurriculumPendingNote =>
+      'Harjoittelet puheluissa yleisiä ilmaisuja';
 
   @override
   String get myPage => 'Oma sivu';
@@ -463,6 +625,27 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get changeAvatar => 'Vaihda avatar';
+
+  @override
+  String get avatarUseNow => 'Käytä nyt';
+
+  @override
+  String get avatarPurchaseFailed => 'Osto ei onnistunut';
+
+  @override
+  String avatarPromoTitle(int percent) {
+    return 'Vain tänään · −$percent %';
+  }
+
+  @override
+  String avatarPromoLeft(String time) {
+    return '$time jäljellä';
+  }
+
+  @override
+  String avatarPromoLeftDays(int days, String time) {
+    return '$days pv $time jäljellä';
+  }
 
   @override
   String get avatarIntro =>
@@ -506,9 +689,6 @@ class AppLocalizationsFi extends AppLocalizations {
   String get subscriptionManage => 'Hallinnoi tilausta';
 
   @override
-  String get changePlan => 'Vaihda tilaus';
-
-  @override
   String get cancelSubscription => 'Peruuta tilaus';
 
   @override
@@ -527,18 +707,9 @@ class AppLocalizationsFi extends AppLocalizations {
   String get viewBillingHistory => 'Näytä laskutushistoria';
 
   @override
-  String get keepUsingPro => 'Jatka Pro-käyttöä';
-
-  @override
-  String get proMembership => 'Pro-jäsenyys';
-
-  @override
   String pricePerMonth(String price) {
     return '$price / kk';
   }
-
-  @override
-  String get benefitUnlimitedCalls => 'Rajattomat puhelut';
 
   @override
   String get benefitDetailedAnalysis =>
@@ -574,8 +745,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get challengeLoadingTitle => 'Ladataan…';
 
   @override
-  String get challengeLoadingNote =>
-      'Ladataan korean puhemallia (~82 Mt) ensimmäisellä käyttökerralla.\nOdota hetki.';
+  String get challengeLoadingNote => 'Valmistellaan kameraa ja mikrofonia.';
 
   @override
   String get challengeSttFallback =>
@@ -683,6 +853,11 @@ class AppLocalizationsFi extends AppLocalizations {
   String get accentSoundsLike => 'Korean aksenttisi kuulostaa';
 
   @override
+  String accentShareText(String country) {
+    return 'Opiskelen koreaa BeaverTalkissa – korean aksenttini kuulostaa tältä: $country! 🦫 Selvitä oma aksenttisi ja opiskele kanssani: https://beavertalk.im';
+  }
+
+  @override
   String get hintLabel => 'Vihje';
 
   @override
@@ -729,7 +904,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get home => 'Koti';
 
   @override
-  String get callNow => 'Soita nyt';
+  String get onboardingLevelTestCta => 'Tee tasotesti';
 
   @override
   String get pronunciation => 'Ääntäminen';
@@ -739,10 +914,6 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get rhythm => 'Rytmi';
-
-  @override
-  String get analysisTimeout =>
-      'Tämä kestää odotettua kauemmin. Yritä hetken kuluttua uudelleen.';
 
   @override
   String get analysisFailed =>
@@ -789,6 +960,9 @@ class AppLocalizationsFi extends AppLocalizations {
   String get loginAppleSignInFailed => 'Apple-kirjautuminen epäonnistui.';
 
   @override
+  String get loginFacebookSignInFailed => 'Facebook-kirjautuminen epäonnistui.';
+
+  @override
   String get loginKakaoSignInFailed => 'Kakao-kirjautuminen epäonnistui.';
 
   @override
@@ -796,6 +970,9 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get loginContinueWithGoogle => 'Jatka Googlella';
+
+  @override
+  String get loginContinueWithFacebook => 'Jatka Facebookilla';
 
   @override
   String get loginContinueWithApple => 'Jatka Applella';
@@ -981,12 +1158,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get lastPayment => 'Viimeisin maksu';
 
   @override
-  String subscriptionSwitchNote(String date) {
-    return 'Voit käyttää Pro-etuja $date asti, minkä jälkeen tilauksesi vaihtuu automaattisesti maksuttomaan.';
-  }
-
-  @override
-  String get freePlanCallLimit => '1 puhelu päivässä · 5 min raja';
+  String get freePlanCallLimit => '5 min puheluita päivässä';
 
   @override
   String get freePlanBasicCharacters => 'Perushahmot mukana';
@@ -999,9 +1171,6 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get noPayments => 'Ei vielä maksuja';
-
-  @override
-  String get morePaymentsExist => 'Vanhempia maksuja ei näytetä vielä';
 
   @override
   String get undatedPayments => 'Ei päivämäärää';
@@ -1124,15 +1293,37 @@ class AppLocalizationsFi extends AppLocalizations {
   String get retakeLevelTest => 'Uusi tasotesti';
 
   @override
+  String get levelTestOncePerDay =>
+      'Tasotestin voi tehdä kerran päivässä. Yritä uudelleen huomenna.';
+
+  @override
+  String get levelRetakeTitle => 'Tehdäänkö tasotesti uudelleen?';
+
+  @override
+  String get levelRetakeBody =>
+      'Jos teet sen uudelleen, edistymisesi palaa tason ensimmäiseen oppituntiin – vaikka saisit saman tason. Opitut ilmaukset ja puheluhistoria säilyvät.';
+
+  @override
+  String get levelRetakeKeep => 'Säilytä edistyminen';
+
+  @override
+  String get levelRetakeConfirm => 'Tee testi uudelleen';
+
+  @override
   String get practicePronunciation => 'Harjoittele ääntämistä';
 
   @override
-  String get priceChangedTitle => 'Hinta muuttui';
+  String get learnResultView => 'Katso oppimisen tulokset';
 
   @override
-  String priceChangedBody(String price) {
-    return 'Tämä tuote maksaa nyt $price. Haluatko jatkaa?';
-  }
+  String get learnAgain => 'Opiskele uudelleen';
+
+  @override
+  String get analysisNoScoreReview =>
+      'Harjoittele lauseita, niin saat ääntämispisteet';
+
+  @override
+  String get analysisNoScoreEmpty => 'Ei pisteytettäviä lauseita';
 
   @override
   String get billingGroupPlanPurchases => 'Paketti ja ostot';
@@ -1141,16 +1332,16 @@ class AppLocalizationsFi extends AppLocalizations {
   String get billingGroupInTheStore => 'Kaupassa';
 
   @override
-  String get billingChangePlan => 'Vaihda pakettia';
-
-  @override
-  String get billingCompareAllPlans => 'Vertaa kaikkia paketteja';
+  String get billingCompareAllPlans => 'Vertaa paketteja';
 
   @override
   String get billingBuyACharacter => 'Osta hahmo';
 
   @override
   String get billingRestorePurchases => 'Palauta ostot';
+
+  @override
+  String get billingRedeemCode => 'Lunasta koodi';
 
   @override
   String get billingPaymentHistory => 'Maksuhistoria';
@@ -1198,13 +1389,31 @@ class AppLocalizationsFi extends AppLocalizations {
   String get planPro => 'Pro';
 
   @override
-  String get planMax => 'Max';
+  String get planMax => 'Premium';
 
   @override
-  String get planMaxTrial => 'Max-kokeilu';
+  String get premiumBulletVideo => '15 minuuttia videopuheluita päivässä';
 
   @override
-  String get freePlanPriceLine => '\$0.00 — yksi puhelu päivässä';
+  String get premiumBulletAnalysis =>
+      'Rajaton ääntämisen arviointi kertauksessa';
+
+  @override
+  String get premiumBulletWeakSounds =>
+      'Vaikeiden äänteiden harjoitukset kielellesi';
+
+  @override
+  String get noteCharactersSeparate =>
+      'Hahmot myydään erikseen. Ostamasi hahmot ovat omiasi.';
+
+  @override
+  String get ctaGetPremium => 'Hanki Premium';
+
+  @override
+  String get planMaxTrial => 'Premium-kokeilu';
+
+  @override
+  String get freePlanPriceLine => 'Ilmainen — 5 minuuttia puheluita päivässä';
 
   @override
   String pricePerMonthLine(String amount) {
@@ -1217,11 +1426,11 @@ class AppLocalizationsFi extends AppLocalizations {
   }
 
   @override
-  String get todaysCalls => 'Päivän puhelut';
+  String get todaysCalls => 'Tämän päivän puheluaika';
 
   @override
   String callsUsedOfLimit(int used, int limit) {
-    return '$used/$limit käytetty';
+    return '$used/$limit min käytetty';
   }
 
   @override
@@ -1242,35 +1451,22 @@ class AppLocalizationsFi extends AppLocalizations {
   }
 
   @override
-  String get bannerGoUnlimitedTitle => 'Rajattomat puhelut Pro-paketilla';
-
-  @override
-  String bannerGoUnlimitedSub(String price) {
-    return 'Rajattomat puhelut · 15 min kukin · $price kuukaudessa';
-  }
-
-  @override
-  String get bannerMaxUpsellTitle => 'Ota video käyttöön Max-paketilla';
+  String get bannerMaxUpsellTitle => 'Kasvokkain Premiumilla';
 
   @override
   String bannerMaxUpsellSub(String price) {
-    return 'Kasvokkaiset puhelut · $price kuukaudessa';
+    return 'Videopuhelut · 15 minuuttia päivässä · $price kuukaudessa';
   }
 
   @override
   String get bannerAnnualSwitchTitle => 'Vaihda vuositilaukseen';
 
   @override
-  String bannerAnnualSwitchSub(String yearly, String perMonth) {
-    return '$yearly vuodessa · $perMonth kuukaudessa';
-  }
-
-  @override
   String get bannerPaymentFailedTitle => 'Maksua ei voitu veloittaa';
 
   @override
   String get bannerPaymentFailedSub =>
-      'Päivitä maksutapa kaupassa, jotta Pro säilyy';
+      'Päivitä maksutapa kaupassa, jotta Premium säilyy';
 
   @override
   String get bannerPausedTitle => 'Pakettisi on tauolla';
@@ -1287,10 +1483,6 @@ class AppLocalizationsFi extends AppLocalizations {
       'Kauppa hoitaa maksutavan, paketin vaihdot ja peruutuksen.';
 
   @override
-  String get noteFairUse =>
-      'Rajattomaan käyttöön sovelletaan kohtuullisen käytön ehtoja.';
-
-  @override
   String noteTrialEnds(String date) {
     return 'Kokeilusi päättyy $date. Jos peruutat kaupassa sitä ennen, mitään ei veloiteta.';
   }
@@ -1301,7 +1493,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get noteHold =>
-      'Pro on tauolla, kunnes maksu menee läpi. Hahmosi ja edistymisesi ovat tallessa.';
+      'Premium on tauolla, kunnes maksu menee läpi. Hahmosi ja edistymisesi ovat tallessa.';
 
   @override
   String noteEnding(String date) {
@@ -1309,7 +1501,7 @@ class AppLocalizationsFi extends AppLocalizations {
   }
 
   @override
-  String get trialExpiredTitle => 'Max-kokeilusi päättyi';
+  String get trialExpiredTitle => 'Premium-kokeilusi päättyi';
 
   @override
   String get trialExpiredSub => 'Käytät nyt Ilmaista pakettia';
@@ -1321,70 +1513,27 @@ class AppLocalizationsFi extends AppLocalizations {
   String get currentPlanTitle => 'Nykyinen paketti';
 
   @override
-  String get badgeRecommended => 'Suositeltu';
-
-  @override
   String get perMonthUnit => 'kuukaudessa';
 
   @override
-  String get planTaglinePro => 'Rajattomat puhelut. 15 min kukin.';
-
-  @override
-  String get planTaglineMax => 'Nyt näet heidät.';
-
-  @override
-  String get planTaglineFree => 'Yksi puhelu päivässä. Talon puolesta.';
-
-  @override
-  String get bulletProCalls => 'Äänipuheluita niin usein kuin haluat';
-
-  @override
-  String get bulletProLength => '15 minuuttia per puhelu';
-
-  @override
-  String get bulletProScoring => 'Ääntäminen arvioidaan kirjain kirjaimelta';
+  String get planTaglineFree =>
+      '5 minuuttia puheluita päivässä. Talon puolesta.';
 
   @override
   String get bulletProCorrections => 'Korjaukset äidinkielesi mukaan';
 
   @override
-  String get bulletProBeaverCalls => 'Beaver soittaa sinulle ensin';
+  String get bulletFreeCall => '5 minuuttia äänipuheluita päivässä';
 
   @override
-  String get bulletMaxVideo => 'Kasvokkaiset videopuhelut';
-
-  @override
-  String get bulletMaxEverything => 'Kaikki Pro-paketista';
-
-  @override
-  String get bulletMaxCharacters => 'Kaikki hahmot, rajattomasti';
-
-  @override
-  String get bulletMaxStudyBook => 'Tasollesi sovitettu oppikirja';
-
-  @override
-  String get bulletMaxWeeklyReport => 'Viikkoraportti ääntämisesi kehityksestä';
-
-  @override
-  String get bulletFreeCall => 'Yksi 5 minuutin äänipuhelu päivässä';
-
-  @override
-  String get bulletFreeCheck => 'Yksi ääntämistarkistus päivässä';
-
-  @override
-  String get bulletFreeAccent => 'Rajattomat aksenttitarkistukset';
-
-  @override
-  String get bulletFreeCharacter => 'Yksi hahmo alkuun';
-
-  @override
-  String get ctaGoUnlimited => 'Siirry rajattomaan';
+  String get bulletFreeCharacter => 'Kaksi hahmoa alkuun';
 
   @override
   String get ctaTurnOnVideo => 'Ota video käyttöön';
 
   @override
-  String get noteCallLength => 'Puhelut ovat 15 minuutin mittaisia.';
+  String get noteCallLength =>
+      'Premium: 15 minuuttia päivässä — sen puitteissa voit soittaa niin usein kuin haluat.';
 
   @override
   String get paywallProTitle1 => 'Korealainen ystäväsi,';
@@ -1393,35 +1542,27 @@ class AppLocalizationsFi extends AppLocalizations {
   String get paywallProTitle2 => 'joka valvoo kello 3 yöllä';
 
   @override
-  String get paywallProSub =>
-      'Rajattomat puhelut. 15 min kukin. Ympäri vuoden.';
+  String get paywallLimitHeadline =>
+      'Premiumilla saat 15 minuuttia puheluita päivässä.';
 
   @override
-  String get paywallLimitHeadline => 'Pro poistaa rajan.';
+  String get limitBannerCallTitle => 'Tämän päivän puheluaika on käytetty';
 
   @override
-  String get limitBannerCallTitle => 'Se oli päivän puhelu';
-
-  @override
-  String get limitBannerCallSub => 'Ilmainen antaa yhden puhelun päivässä';
-
-  @override
-  String get limitBannerCheckTitle => 'Se oli päivän tarkistus';
-
-  @override
-  String get limitBannerCheckSub =>
-      'Ilmainen antaa yhden tarkistuksen päivässä';
+  String get limitBannerCallSub =>
+      'Ilmainen antaa 5 minuuttia puheluita päivässä';
 
   @override
   String get bulletProCharactersForever =>
       'Ostamasi hahmot ovat omiasi ikuisesti';
 
   @override
-  String get paywallMaxTitle => 'Nyt näet heidät.';
+  String get paywallMaxTitle => 'Nyt voit puhua kasvokkain videolla.';
 
   @override
-  String get paywallMaxSub =>
-      'Videopuhelut, kaikki hahmot ja tasollesi tehty oppikirja.';
+  String paywallTutorCompare(String price) {
+    return 'Tunti opettajan kanssa maksaa \$25. Kuukausi Premiumia maksaa $price.';
+  }
 
   @override
   String get planMonthly => 'Kuukausi';
@@ -1460,8 +1601,31 @@ class AppLocalizationsFi extends AppLocalizations {
   }
 
   @override
+  String ctaCaptionMaxYearly(String price) {
+    return '$price vuodessa · peruuta milloin tahansa kaupassa';
+  }
+
+  @override
   String ctaCaptionMaxTrial(String price) {
     return '7 päivää ilmaiseksi, sitten $price/kk · peruuta milloin tahansa kaupassa';
+  }
+
+  @override
+  String ctaCaptionMaxYearlyTrial(String price) {
+    return '7 päivää ilmaiseksi, sitten $price vuodessa · peruuta milloin tahansa kaupassa';
+  }
+
+  @override
+  String get bundleTitle => 'Kaikki kolme kerralla';
+
+  @override
+  String bundleOffBadge(int percent) {
+    return '-$percent %';
+  }
+
+  @override
+  String bundleLinkLabel(String price) {
+    return 'Kaikki kolme hintaan $price';
   }
 
   @override
@@ -1475,60 +1639,26 @@ class AppLocalizationsFi extends AppLocalizations {
   String get footerPrivacy => 'Tietosuoja';
 
   @override
-  String get noteMaxCharacters =>
-      'Maxin avaamat hahmot ovat käytössä, kun tilauksesi on voimassa. Ostamasi hahmot pysyvät sinulla.';
-
-  @override
   String get processingTitle => 'Vahvistetaan ostoasi';
 
   @override
   String get processingSub => 'Tämä kestää yleensä muutaman sekunnin.';
 
   @override
-  String get successProTitle => 'Pro on nyt käytössä.';
+  String get successProTitle => 'Premium on nyt käytössä.';
 
   @override
-  String get successProSub => 'Rajattomat puhelut alkavat heti.';
-
-  @override
-  String get successProBenefit1 =>
-      'Soita niin usein kuin haluat — 15 min per puhelu';
-
-  @override
-  String get successProBenefit2 => 'Rajattomat ääntämistarkistukset';
-
-  @override
-  String get successProBenefit3 => 'Kaikki hahmot sekä kertaostot';
-
-  @override
-  String get successMaxTitle => 'Nyt näet heidät.';
+  String get successMaxTitle => 'Nyt näet, kenen kanssa puhut.';
 
   @override
   String get successMaxSub =>
       'Videopuhelut ovat käytössä. Napauta videopainiketta missä tahansa puhelussa.';
 
   @override
-  String get successMaxBenefit1 => 'Kasvokkaiset videopuhelut';
-
-  @override
-  String get successMaxBenefit2 => 'Kaikki hahmot rajattomasti, uudet ensin';
-
-  @override
-  String get successMaxBenefit3 => 'Tasollesi sovitettu oppikirja';
-
-  @override
-  String get ctaStartACall => 'Aloita puhelu';
-
-  @override
   String get ctaStartAVideoCall => 'Aloita videopuhelu';
 
   @override
   String get ctaSeeYourSubscription => 'Katso tilauksesi';
-
-  @override
-  String successProCaption(String price) {
-    return '$price veloitetaan kuukausittain, kunnes peruutat. Hallinnoi tai peruuta milloin tahansa kaupassa.';
-  }
 
   @override
   String successMaxCaption(String price) {
@@ -1548,93 +1678,17 @@ class AppLocalizationsFi extends AppLocalizations {
   String get plansErrorCaption => 'Mitään ei veloitettu.';
 
   @override
-  String get changePlanTitle => 'Vaihda pakettia';
-
-  @override
-  String get moveToMaxTitle => 'Siirry Max-pakettiin';
-
-  @override
-  String maxPriceShort(String price) {
-    return '$price / kk';
-  }
-
-  @override
-  String get moveToMaxCardSub =>
-      'Kasvokkaiset videopuhelut · kaikki hahmot · sinulle tehty oppikirja';
-
-  @override
-  String get whatHappensNow => 'Mitä tapahtuu nyt';
-
-  @override
-  String get maxStartsLabel => 'Max alkaa';
-
-  @override
-  String get immediately => 'Heti';
-
-  @override
-  String get unusedProTime => 'Käyttämätön Pro-aika';
-
-  @override
-  String get creditedTowardMax => 'Hyvitetään Max-hinnassa';
-
-  @override
-  String nextPaymentMaxValue(String price, String date) {
-    return '$price · $date';
-  }
-
-  @override
-  String nextPaymentProValue(String price, String date) {
-    return '$price · $date';
-  }
-
-  @override
-  String get ctaSwitchToMax => 'Vaihda Max-pakettiin';
-
-  @override
-  String get upgradeCaption =>
-      'Uusi pakettisi alkaa heti. Käyttämätön Pro-aika hyvitetään — mitään ei veloiteta kahdesti.';
-
-  @override
-  String get moveToProTitle => 'Siirry Pro-pakettiin';
-
-  @override
-  String get moveToProSub =>
-      'Tänään mikään ei muutu. Max jatkuu jo maksamasi kuukauden loppuun.';
-
-  @override
-  String get maxRunsUntil => 'Max voimassa';
-
-  @override
-  String get proStarts => 'Pro alkaa';
-
-  @override
-  String get whatYouKeep => 'Mitä pidät';
-
-  @override
-  String get keepBenefitCalls => 'Rajattomat äänipuhelut, 15 min kukin';
-
-  @override
-  String get keepBenefitCharacters => 'Ostamasi hahmot ovat omiasi ikuisesti';
-
-  @override
-  String downgradeWarning(String date) {
-    return 'Videopuhelut ja vain Maxin hahmot poistuvat käytöstä $date.';
-  }
-
-  @override
-  String get ctaSwitchToPro => 'Vaihda Pro-pakettiin';
-
-  @override
-  String get ctaKeepMax => 'Pidä Max';
+  String get ctaKeepMax => 'Pidä Premium';
 
   @override
   String get winbackSkip => 'Ohita';
 
   @override
-  String get winbackTitle => 'Pro-pakettisi päättyi';
+  String get winbackTitle => 'Premium-pakettisi päättyi';
 
   @override
-  String get winbackSub => 'Käytät nyt Ilmaista — yksi puhelu päivässä.';
+  String get winbackSub =>
+      'Käytät nyt Ilmaista — 5 minuuttia puheluita päivässä.';
 
   @override
   String get winbackQuestion => 'Kertoisitko, miksi lähdit?';
@@ -1671,7 +1725,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get ctaClose => 'Sulje';
 
   @override
-  String get ovRestoreSuccessTitle => 'Pro on palannut';
+  String get ovRestoreSuccessTitle => 'Premium on palannut';
 
   @override
   String get ovRestoreSuccessBody =>
@@ -1692,13 +1746,29 @@ class AppLocalizationsFi extends AppLocalizations {
       'Tämä tilaus on jo käytössä toisella BeaverTalk-tilillä.';
 
   @override
+  String ovRestoreCharactersTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Hahmosi ovat palanneet',
+      one: 'Hahmosi on palannut',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get ovRestoreCharacterOtherTitle =>
+      'Tämä hahmo on ostettu toisella tilillä';
+
+  @override
   String get ctaSignInThatAccount => 'Kirjaudu sille tilille';
 
   @override
   String get ctaGetHelp => 'Pyydä apua';
 
   @override
-  String get ovCharacterOfferTitle => 'Etkö ole vielä valmis Pro-pakettiin?';
+  String get ovCharacterOfferTitle =>
+      'Etkö ole vielä valmis Premium-pakettiin?';
 
   @override
   String get ovCharacterOfferBody =>
@@ -1709,7 +1779,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String rowFromPrice(String price) {
-    return 'alk. $price';
+    return '$price / kpl';
   }
 
   @override
@@ -1753,7 +1823,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get rowCharactersYouBought => 'Ostamasi hahmot';
 
   @override
-  String get rowProRunsUntil => 'Pro voimassa';
+  String get rowProRunsUntil => 'Premium voimassa';
 
   @override
   String get ctaSwitchToYearly => 'Vaihda vuositilaukseen';
@@ -1768,7 +1838,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get ovAnnualSwitchBody =>
-      'Olet ollut Pro-käyttäjä kaksi kuukautta. Vuositilaus tulee halvemmaksi.';
+      'Vuosipaketti tulee halvemmaksi kuin kuukausimaksu.';
 
   @override
   String get rowYouSave => 'Säästät';
@@ -1828,7 +1898,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get ovTrialEndingTitle => 'Kokeilusi päättyy huomenna';
 
   @override
-  String get ovTrialEndingBody => 'Max jatkuu, ellet peruuta. Näin käy.';
+  String get ovTrialEndingBody => 'Premium jatkuu, ellet peruuta. Näin käy.';
 
   @override
   String get rowTrialEnds => 'Kokeilu päättyy';
@@ -1843,7 +1913,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get ctaCancelInStore => 'Peruuta kaupassa';
 
   @override
-  String get ovTrialStartTitle => '7 päivää Maxia, ilmaiseksi';
+  String get ovTrialStartTitle => '7 päivää Premiumia, ilmaiseksi';
 
   @override
   String ovTrialStartBody(String price, String date) {
@@ -1858,7 +1928,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get ovOtoBody =>
-      'Hyvä valinta — rajattomat puhelut ovat nyt käytössä. Sama Pro maksaa vähemmän vuosittain maksettuna.';
+      'Hyvä valinta. Sama Premium maksaa vähemmän vuosittain maksettuna.';
 
   @override
   String get ovFailedDeclinedTitle => 'Korttisi hylättiin';
@@ -1885,7 +1955,28 @@ class AppLocalizationsFi extends AppLocalizations {
       'Kauppaan ei saatu yhteyttä. Mitään ei veloitettu.';
 
   @override
-  String get ovAlreadyTitle => 'Sinulla on jo Pro';
+  String get ovVerifyingTitle => 'Maksu vastaanotettu';
+
+  @override
+  String get ovVerifyingBody =>
+      'Vahvistamme sitä vielä kaupan kanssa. Se otetaan käyttöön pian – jos ei, napauta ”Palauta ostot”.';
+
+  @override
+  String get ovPendingTitle => 'Maksu odottaa';
+
+  @override
+  String get ovPendingBody =>
+      'Kauppa ei ole vielä viimeistellyt maksua. Se otetaan käyttöön heti kun se on valmis – voit poistua tästä näkymästä.';
+
+  @override
+  String get ovRejectedTitle => 'Emme voineet vahvistaa tätä ostoa';
+
+  @override
+  String get ovRejectedBody =>
+      'Kauppa ei vahvistanut tätä maksua, joten mitään ei otettu käyttöön. Jos sinua veloitettiin, ota meihin yhteyttä.';
+
+  @override
+  String get ovAlreadyTitle => 'Sinulla on jo Premium';
 
   @override
   String get ovAlreadyBody =>
@@ -1899,30 +1990,24 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String subCancelBody(String date) {
-    return 'Pro on voimassa $date asti. Sen jälkeen siirryt Ilmaiseen.';
+    return 'Premium on voimassa $date asti. Sen jälkeen siirryt Ilmaiseen.';
   }
 
   @override
   String get subWhatYouLose => 'Mitä menetät';
 
   @override
-  String get benefitCalls15 => 'Rajattomat puhelut, 15 min kukin';
-
-  @override
   String get benefitScoring => 'Ääntäminen arvioidaan kirjain kirjaimelta';
 
   @override
-  String get benefitEveryCharacter => 'Kaikki hahmot, rajattomasti';
-
-  @override
-  String get ctaKeepPro => 'Pidä Pro';
+  String get benefitEveryMetric => 'Jokainen mittari, jokainen lause';
 
   @override
   String get subPaymentTitle => 'Päivitä maksutapa';
 
   @override
   String get subPaymentBody =>
-      'Maksua ei voitu veloittaa. Pro jatkuu lisäajan loppuun.';
+      'Maksua ei voitu veloittaa. Premium jatkuu lisäajan loppuun.';
 
   @override
   String get subHowToFix => 'Näin korjaat sen';
@@ -1941,7 +2026,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String subResubBody(String date) {
-    return 'Pro päättyy $date. Kytke automaattinen uusinta takaisin päälle, eikä mikään muutu.';
+    return 'Premium päättyy $date. Kytke automaattinen uusinta takaisin päälle, eikä mikään muutu.';
   }
 
   @override
@@ -1951,24 +2036,10 @@ class AppLocalizationsFi extends AppLocalizations {
   String get ctaTurnItBackOn => 'Kytke takaisin päälle';
 
   @override
-  String get flTodayTitle => 'Se oli päivän puhelu';
+  String get flTodayTitle => 'Tämän päivän puheluaika on käytetty';
 
   @override
   String get flTodayBody => 'Jatka siitä, mihin jäit — heti.';
-
-  @override
-  String get flCheckTitle => 'Se oli päivän tarkistus';
-
-  @override
-  String get flCheckBody =>
-      'Ilmaisella yksi tarkistus päivässä. Pro tekee siitä rajattoman.';
-
-  @override
-  String get flBenefitCalls =>
-      'Rajattomat puhelut Pro-paketilla · 15 min kukin';
-
-  @override
-  String get flBenefitChecks => 'Rajattomat ääntämistarkistukset Pro-paketilla';
 
   @override
   String flCaption(String price) {
@@ -1990,7 +2061,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get nicknameLabel => 'Nimimerkki';
 
   @override
-  String get emailLabel => 'Email';
+  String get emailLabel => 'Sähköposti';
 
   @override
   String get loginMethodLabel => 'Kirjautumistapa';
@@ -2009,40 +2080,46 @@ class AppLocalizationsFi extends AppLocalizations {
   String get ctaSave => 'Tallenna';
 
   @override
-  String get subscriptionRow => 'Subscription';
+  String get subscriptionRow => 'Tilaus';
 
   @override
-  String get iapSuccessTitle => 'Purchase complete';
+  String get iapSuccessTitle => 'Osto valmis';
 
   @override
   String iapSuccessBody(String name) {
-    return 'The $name avatar is yours forever.\nApplied as soon as the receipt clears.';
+    return 'Avatar $name on sinun ikuisesti.\nOtetaan käyttöön heti, kun kuitti vahvistuu.';
   }
 
   @override
-  String get ctaGoHome => 'Home';
+  String get ctaGoHome => 'Etusivulle';
 
   @override
-  String get ctaUseNow => 'Use it now';
+  String get ctaUseNow => 'Käytä nyt';
 
   @override
-  String get iapFailTitle => 'The payment didn\'t go through';
+  String get iapFailTitle => 'Maksu ei mennyt läpi';
 
   @override
-  String get iapFailBody => 'You can try again';
+  String get iapFailBody => 'Voit yrittää uudelleen';
 
   @override
-  String get paywallLeaveTitle => 'Jos poistut nyt, tilausta ei tehdä';
+  String get paywallGuardTitle => 'Voit jatkaa ilmaiseksi';
 
   @override
-  String get paywallLeaveBody =>
-      'Etusi avautuvat heti maksun jälkeen. Voit palata milloin tahansa Oma sivu -näkymästä.';
+  String get paywallGuardBody =>
+      'Saat edelleen 5 minuuttia puheluita päivässä.';
 
   @override
-  String get ctaKeepLooking => 'Jatka katselua';
+  String get ctaMaybeLater => 'Ehkä myöhemmin';
 
   @override
-  String get ctaLeaveAnyway => 'Poistu silti';
+  String get winbackOfferBadge => '50 % alennus ensimmäisestä kuukaudesta';
+
+  @override
+  String get winbackOfferTitle => 'Tervetuloa takaisin';
+
+  @override
+  String get ctaGetHalfOff => 'Hanki 50 % alennus';
 
   @override
   String get iapCharacterSuccessTitle => 'Uusi ystävä liittyi seuraan!';
@@ -2089,9 +2166,6 @@ class AppLocalizationsFi extends AppLocalizations {
   String get takeLevelTest => 'Tee tasotesti';
 
   @override
-  String get reviewToSeeScore => 'Kertaa nähdäksesi ääntämispisteesi';
-
-  @override
   String get playAgain => 'Pelaa uudelleen';
 
   @override
@@ -2105,4 +2179,804 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get difficultyLabel => 'Vaikeustaso';
+
+  @override
+  String get connected => 'Yhdistetty';
+
+  @override
+  String get unlockedWithMax => 'Sisältyy pakettiisi';
+
+  @override
+  String get fcEndedTitle => 'Ilmainen puhelusi päättyi';
+
+  @override
+  String get fcEndedBody =>
+      'Ilmaiset puhelut kestävät enintään 5 minuuttia\nTilaa, niin voit jutella pidempään';
+
+  @override
+  String get ctaSubscribeKeepTalking => 'Tilaa ja jatka juttelua';
+
+  @override
+  String get kgTitle => 'Jatketaanko?';
+
+  @override
+  String get kgBody =>
+      'Puhelut jatkuvat lyhyissä jaksoissa.\nKysymme uudelleen joka kerta.';
+
+  @override
+  String get pcEndedTitleToday => 'Lopetetaan tämän päivän puhelu.';
+
+  @override
+  String get pcEndedBodyToday =>
+      'Kertaa, mistä puhuimme, ja soita minulle taas huomenna!';
+
+  @override
+  String get pcEndedTitle => 'Lopetetaan tämä puhelu.';
+
+  @override
+  String get pcEndedBody => 'Kertaa, mistä puhuimme, ja soita minulle taas!';
+
+  @override
+  String get ctaKeepTalking => 'Jatka juttelua';
+
+  @override
+  String get callModeSheetTitle => 'Miten haluat jutella?';
+
+  @override
+  String get callModeSheetSubtitle => 'Astuu voimaan heti tässä puhelussa';
+
+  @override
+  String get callModeFreeTalk => 'Vapaa juttelu';
+
+  @override
+  String get callModeFreeTalkDesc => 'Juttele ilman korjauksia';
+
+  @override
+  String get callModeChange => 'Vaihda tila';
+
+  @override
+  String get callModeKeep => 'Ei nyt';
+
+  @override
+  String get callExitTitle => 'Lopetetaanko puhelu?';
+
+  @override
+  String get callExitSubtitle =>
+      'Tähän asti puhuttu aika lasketaan silti tämän päivän käyttöön';
+
+  @override
+  String get callExitKeep => 'Jatka puhumista';
+
+  @override
+  String get callExitConfirm => 'Lopeta puhelu';
+
+  @override
+  String get callMicMute => 'Mykistä';
+
+  @override
+  String get callMicUnmute => 'Poista mykistys';
+
+  @override
+  String get callPushToTalk => 'Pidä pohjassa puhuaksesi';
+
+  @override
+  String get callFreeEndedTitle => 'Ilmainen puhelusi päättyi';
+
+  @override
+  String get callFreeEndedCta => 'Tilaa ja jatka juttelua';
+
+  @override
+  String get callKeepGoingTitle => 'Jatketaanko?';
+
+  @override
+  String get callKeepGoingSubtitle =>
+      'Puhelut jatkuvat 5 minuutin jaksoissa. Kysymme joka kerta uudelleen.';
+
+  @override
+  String get articulationSelectedWord => 'Valittu sana';
+
+  @override
+  String get articulationYouSaid => 'Ääntämisesi';
+
+  @override
+  String get articulationTargetSound => 'Tavoite';
+
+  @override
+  String get reportEntry => 'Ilmoita';
+
+  @override
+  String get reportTitle => 'Ilmoitus';
+
+  @override
+  String get reportPrompt => 'Mikä oli ongelmana?';
+
+  @override
+  String get reportGuide =>
+      'Kerro, mikä tekoälyhahmon sisältö häiritsi sinua. Käymme läpi jokaisen ilmoituksen.';
+
+  @override
+  String get reportReasonSexual => 'Seksuaalinen sisältö';
+
+  @override
+  String get reportReasonHate => 'Viha tai syrjintä';
+
+  @override
+  String get reportReasonViolence => 'Väkivaltainen tai uhkaava sisältö';
+
+  @override
+  String get reportReasonSelfHarm => 'Kannustaa itsensä vahingoittamiseen';
+
+  @override
+  String get reportReasonMisinfo => 'Virheellistä tietoa';
+
+  @override
+  String get reportReasonOther => 'Jokin muu';
+
+  @override
+  String get reportDetailHint => 'Kuvaile, mitä tapahtui (valinnainen)';
+
+  @override
+  String get reportSubmit => 'Lähetä ilmoitus';
+
+  @override
+  String get reportDoneTitle => 'Ilmoituksesi on vastaanotettu';
+
+  @override
+  String get reportDoneBody =>
+      'Käymme sen läpi ja ryhdymme tarvittaviin toimiin. Kiitos, että pidät BeaverTalkin turvallisena.';
+
+  @override
+  String get reportFailed => 'Ilmoitusta ei voitu lähettää. Yritä uudelleen.';
+
+  @override
+  String get hwTitle => 'Kotitehtävät';
+
+  @override
+  String get hwJoinCodeTitle => 'Syötä luokkakoodisi';
+
+  @override
+  String get hwJoinCodeSubtitle =>
+      'Se on opettajaltasi saatu 6-merkkinen koodi';
+
+  @override
+  String get hwJoinCodeLabel => 'Luokkakoodi';
+
+  @override
+  String get hwJoinCodeHelp => 'Koodi ei erottele isoja ja pieniä kirjaimia';
+
+  @override
+  String get hwJoinConfirmTitle => 'Onko tämä oikea luokka?';
+
+  @override
+  String get hwJoinConfirmSubtitle => 'Jos ei, tarkista koodi uudelleen';
+
+  @override
+  String get hwJoinFieldInstitution => 'Oppilaitos';
+
+  @override
+  String get hwJoinFieldTeacher => 'Opettaja';
+
+  @override
+  String get hwJoinFieldLearners => 'Oppijat';
+
+  @override
+  String get hwJoinFieldTerm => 'Jakso';
+
+  @override
+  String get hwJoinConfirmNote =>
+      'Luokan nimi näkyy juuri niin kuin opettajasi sen kirjoitti. Emme käännä sitä.';
+
+  @override
+  String get hwJoinConfirmYes => 'Kyllä, tämä se on';
+
+  @override
+  String get hwJoinConfirmRetry => 'Syötä koodi uudelleen';
+
+  @override
+  String get hwJoinProfileTitle => 'Mitä nimeä käytät luokassa?';
+
+  @override
+  String get hwJoinProfileSubtitle => 'Opettajasi vertaa sitä luokkalistaan';
+
+  @override
+  String get hwJoinNameLabel => 'Nimi';
+
+  @override
+  String get hwJoinNameHelp => 'Se voi olla eri kuin nimesi sovelluksessa';
+
+  @override
+  String get hwJoinStudentNoLabel => 'Opiskelijanumero (valinnainen)';
+
+  @override
+  String get hwJoinStudentNoHelp =>
+      'Opettajasi käyttää sitä luokkalistan kanssa';
+
+  @override
+  String get hwJoinConsentTitle => 'Mitä opettajasi näkee';
+
+  @override
+  String get hwJoinConsentSubtitle =>
+      'Sinun on hyväksyttävä liittyäksesi luokkaan';
+
+  @override
+  String get hwJoinConsentSharedHeading => 'Jaetaan opettajallesi';
+
+  @override
+  String get hwJoinConsentShared1 => 'Luokan nimi ja opiskelijanumero';
+
+  @override
+  String get hwJoinConsentShared2 => 'Teitkö kotitehtävän';
+
+  @override
+  String get hwJoinConsentShared3 => 'Läpäistyt ja epäonnistuneet lauseet';
+
+  @override
+  String get hwJoinConsentShared4 => 'Tehtäväpuhelun kesto ja tiivistelmä';
+
+  @override
+  String get hwJoinConsentNotSharedHeading => 'Ei jaeta';
+
+  @override
+  String get hwJoinConsentNotShared1 => 'Sähköposti ja puhelinnumero';
+
+  @override
+  String get hwJoinConsentNotShared2 => 'Sovelluksen nimi, profiili ja hahmo';
+
+  @override
+  String get hwJoinConsentNotShared3 => 'Kansalaisuus ja äidinkieli';
+
+  @override
+  String get hwJoinConsentNotShared4 =>
+      'Puhelut ja opiskelu luokan ulkopuolella';
+
+  @override
+  String get hwJoinConsentNotShared5 => 'Tilaus- ja maksutiedot';
+
+  @override
+  String get hwJoinConsentAgree => 'Hyväksyn yllä olevan';
+
+  @override
+  String get hwJoinConsentCta => 'Hyväksy ja liity';
+
+  @override
+  String hwJoinDoneTitle(String className) {
+    return 'Liityit luokkaan $className';
+  }
+
+  @override
+  String hwJoinDoneSubtitle(int count) {
+    return '$count tehtävää odottaa';
+  }
+
+  @override
+  String get hwJoinDoneNoAssignment => 'Ei vielä tehtäviä';
+
+  @override
+  String get hwJoinDoneNextDue => 'Seuraava määräaika';
+
+  @override
+  String get hwJoinDoneRosterName => 'Nimesi luokassa';
+
+  @override
+  String get hwJoinDoneCta => 'Katso kotitehtävät';
+
+  @override
+  String get hwJoinErrorNotFound => 'Koodia ei löytynyt';
+
+  @override
+  String get hwJoinErrorNotFoundBody => 'Tarkista kuusi numeroa uudelleen.';
+
+  @override
+  String get hwJoinErrorExpired => 'Koodi on vanhentunut';
+
+  @override
+  String get hwJoinErrorExpiredBody => 'Pyydä opettajaltasi uusi koodi.';
+
+  @override
+  String get hwJoinErrorFull => 'Luokka on täynnä';
+
+  @override
+  String get hwJoinErrorFullBody => 'Kerro asiasta opettajallesi.';
+
+  @override
+  String get hwJoinFailed =>
+      'Liittyminen ei onnistunut. Yritä hetken kuluttua uudelleen.';
+
+  @override
+  String get hwSectionInProgress => 'Käynnissä';
+
+  @override
+  String get hwSectionUpcoming => 'Tulossa';
+
+  @override
+  String get hwSectionDone => 'Valmis';
+
+  @override
+  String get hwLeaveClassLink => 'Poistu luokasta';
+
+  @override
+  String get hwListEmptyTitle => 'Ei vielä kotitehtäviä';
+
+  @override
+  String get hwListEmptyBody => 'Ne näkyvät tässä, kun opettajasi antaa niitä.';
+
+  @override
+  String get hwListFailed => 'Kotitehtäviä ei voitu ladata.';
+
+  @override
+  String get hwRetry => 'Yritä uudelleen';
+
+  @override
+  String get hwBadgeDone => 'Valmis';
+
+  @override
+  String get hwBadgeOverdue => 'Palauttamatta';
+
+  @override
+  String hwBadgeOverdueDays(int days) {
+    return 'Palauttamatta, $days vrk myöhässä';
+  }
+
+  @override
+  String hwBadgeDday(int days) {
+    return 'D-$days';
+  }
+
+  @override
+  String get hwBadgeDueToday => 'Määräaika tänään';
+
+  @override
+  String get hwActivitySpeaking => 'Ääntäminen';
+
+  @override
+  String get hwActivityConversation => 'Keskustelu';
+
+  @override
+  String get hwActivityWorkbook => 'Työkirja';
+
+  @override
+  String hwChapterLabel(String chapter) {
+    return 'Luku $chapter';
+  }
+
+  @override
+  String get hwTaskSpeakingDesc => 'Tarkista ääntämispisteesi';
+
+  @override
+  String get hwTaskConversationDesc => 'Käytä oppimaasi oikeassa keskustelussa';
+
+  @override
+  String get hwConversationOnce =>
+      'Keskustelun voi käydä kerran per kotitehtävä.';
+
+  @override
+  String get hwTaskWorkbookDesc => 'Harjoittele kirjoittamalla työkirjaan';
+
+  @override
+  String get hwCtaStudy => 'Aloita';
+
+  @override
+  String get hwCtaResult => 'Katso tulos';
+
+  @override
+  String get hwCtaDownload => 'Lataa';
+
+  @override
+  String get hwSpeakingNoScore => 'Et ole vielä tehnyt puhetehtävää';
+
+  @override
+  String get hwWorkbookUnavailable =>
+      'Työkirjatiedosto ei ole vielä saatavilla.';
+
+  @override
+  String get hwDetailClosed =>
+      'Tämä tehtävä on suljettu. Et voi enää palauttaa.';
+
+  @override
+  String get hwLeaveTitle => 'Poistutaanko luokasta?';
+
+  @override
+  String get hwLeaveBody => 'Opettajasi ei enää näe kotitehtäviesi tuloksia.';
+
+  @override
+  String get hwLeaveConfirm => 'Poistu';
+
+  @override
+  String get hwLeaveCancel => 'Jää';
+
+  @override
+  String get hwLeaveFailed => 'Luokasta ei voitu poistua.';
+
+  @override
+  String get hwMyClass => 'Oma luokka';
+
+  @override
+  String get hwClassEmptyTitle => 'Et ole liittynyt luokkaan';
+
+  @override
+  String get hwClassEmptySubtitle => 'Syötä opettajaltasi saama koodi';
+
+  @override
+  String get hwClassEmptyCta => 'Syötä luokkakoodi';
+
+  @override
+  String get hwClassContinueCta => 'Jatka';
+
+  @override
+  String hwHomeBannerDueTomorrow(int count) {
+    return '$count tehtävän määräaika on huomenna';
+  }
+
+  @override
+  String hwHomeBannerOverdue(int count) {
+    return 'Sinulla on $count palauttamatonta tehtävää';
+  }
+
+  @override
+  String get hwSpeakingUnavailable =>
+      'Tämän tehtävän lauseet eivät ole vielä saatavilla.';
+
+  @override
+  String get hwBadgeClosed => 'Suljettu';
+
+  @override
+  String hwSpeakingProgress(int passed, int total) {
+    return '$passed/$total lausetta läpäisty';
+  }
+
+  @override
+  String get challengeFirstWord => 'Ensimmäinen sana';
+
+  @override
+  String get challengeSeeAnalysis => 'Katso tulokset';
+
+  @override
+  String get challengePaused => 'Keskeytetty';
+
+  @override
+  String get challengePausedNote => 'Ajastin ja tallennus pysähtyivät yhdessä.';
+
+  @override
+  String get challengeTimeLeft => 'Aikaa jäljellä';
+
+  @override
+  String get challengeScoreLabel => 'Pisteet';
+
+  @override
+  String get challengeResume => 'Jatka';
+
+  @override
+  String get challengeBlockedTitle => 'Kameraa ei voi käyttää';
+
+  @override
+  String get challengeBlockedNote =>
+      'Ota kameran ja mikrofonin käyttöoikeus käyttöön asetuksissa.';
+
+  @override
+  String get challengeGoBack => 'Takaisin';
+
+  @override
+  String get challengeOpenSettings => 'Avaa asetukset';
+
+  @override
+  String get saveDone => 'Tallennettu galleriaan';
+
+  @override
+  String get saveFailed => 'Tallennus epäonnistui';
+
+  @override
+  String get saveDeniedNote => 'Kuvien käyttöoikeus vaaditaan';
+
+  @override
+  String get callIncomingCallerFallback => 'Beaver-ohjaaja';
+
+  @override
+  String get callIncomingHandle => 'Korean kielen puhelu';
+
+  @override
+  String get callMissedTitle => 'Vastaamaton puhelu';
+
+  @override
+  String get callMissedChannelDescription =>
+      'Kertoo, kun et ehdi vastata Beaver:n puheluun.';
+
+  @override
+  String callMissedBody(String name) {
+    return '$name yritti soittaa sinulle';
+  }
+
+  @override
+  String get callBeaverFallbackName => 'Beaver';
+
+  @override
+  String get callNotifPermissionRationale =>
+      'Puheluiden vastaanottamiseen tarvitaan ilmoituslupa.';
+
+  @override
+  String get callNotifPermissionRequired => 'Salli ilmoitukset asetuksissa.';
+
+  @override
+  String get callHintLockedTitle =>
+      'Vihjeet eivät ole käytettävissä Opiskelu-tilassa';
+
+  @override
+  String get wsTitle => 'Vaikeat äänteet';
+
+  @override
+  String get wsToList => 'Takaisin listaan';
+
+  @override
+  String get wsNext => 'Seuraava';
+
+  @override
+  String get wsRetry => 'Yritä uudelleen';
+
+  @override
+  String get wsDone => 'Valmis';
+
+  @override
+  String get wsContinue => 'Jatka';
+
+  @override
+  String get wsQuit => 'Poistu';
+
+  @override
+  String get wsRetryLater => 'Yritä hetken kuluttua uudelleen.';
+
+  @override
+  String get wsMissingTitle => 'Emme löytäneet sitä äännettä';
+
+  @override
+  String get wsMissingBody => 'Valitse se uudelleen listasta.';
+
+  @override
+  String get wsListLoadFailed => 'Listaa ei voitu ladata';
+
+  @override
+  String get wsLessonLoadFailed => 'Harjoitusta ei voitu ladata';
+
+  @override
+  String get wsNationalTitle => 'Aksenttisi vaikeat äänteet';
+
+  @override
+  String get wsNationalPending =>
+      'Täytämme tämän, kun aksenttisi on analysoitu';
+
+  @override
+  String get wsNationalPicked => 'Valittu aksenttianalyysisi perusteella';
+
+  @override
+  String get wsNationalEmptyBody =>
+      'Käy vielä muutama puhelu, niin analysoimme aksenttisi.';
+
+  @override
+  String get wsMineTitle => 'Omat vaikeat äänteet';
+
+  @override
+  String get wsMineSubtitle => 'Viimeaikaisissa puheluissasi mitatut äänteet';
+
+  @override
+  String get wsMineEmptyBody =>
+      'Kun soitat ja kertaat, vaikeat äänteesi kertyvät tänne.';
+
+  @override
+  String get wsNoDataYet => 'Ei vielä tietoja';
+
+  @override
+  String get wsGoToCall => 'Aloita puhelu';
+
+  @override
+  String get wsRule => 'Sääntö';
+
+  @override
+  String get wsRecommended => 'Suositeltu';
+
+  @override
+  String get wsNotMeasured => 'Ei mitattu';
+
+  @override
+  String get wsStepUnderstand => 'Opi';
+
+  @override
+  String get wsStepWords => 'Sanat';
+
+  @override
+  String get wsStepSentence => 'Lause';
+
+  @override
+  String get wsStepTest => 'Testi';
+
+  @override
+  String get wsQuitTitle => 'Lopetetaanko harjoittelu?';
+
+  @override
+  String get wsQuitBody => 'Jos poistut nyt, tätä harjoitusta ei tallenneta.';
+
+  @override
+  String get wsHowToSound => 'Näin äänne muodostetaan';
+
+  @override
+  String get wsPracticeWords => 'Harjoittele sanoja';
+
+  @override
+  String get wsPracticeSentence => 'Harjoittele lausetta';
+
+  @override
+  String get wsPracticeAgain => 'Vielä kerran';
+
+  @override
+  String get wsStartTest => 'Tee lopputesti';
+
+  @override
+  String get wsThisSentence => 'Tämä lause';
+
+  @override
+  String get wsNoScoreNote =>
+      'Tästä vaiheesta ei tule pisteitä. Toista vain perässä.';
+
+  @override
+  String get wsListen => 'Kuuntele tarkasti';
+
+  @override
+  String get wsSayNow => 'Toista nyt perässä';
+
+  @override
+  String get wsPracticeDone => 'Harjoitus valmis';
+
+  @override
+  String get wsPaused => 'Tauolla';
+
+  @override
+  String get wsAudioFailed => 'Ääntä ei voitu ladata. Lue teksti ääneen.';
+
+  @override
+  String get wsReadAloud => 'Lue alla oleva lause ääneen';
+
+  @override
+  String get wsTapToStart => 'Napauta aloittaaksesi';
+
+  @override
+  String get wsTapWhenDone => 'Napauta, kun olet valmis';
+
+  @override
+  String get wsScoring => 'Arvioidaan';
+
+  @override
+  String get wsMicFailed => 'Mikrofonia ei voitu avata.';
+
+  @override
+  String get wsMicPermissionBody =>
+      'Tässä testissä luet ääneen, joten tarvitaan mikrofoni. Salli mikrofonin käyttö asetuksista.';
+
+  @override
+  String get wsNoSound => 'Emme kuulleet mitään. Yritetäänkö uudelleen?';
+
+  @override
+  String get wsScoreFailed => 'Arviointi epäonnistui. Yritä uudelleen.';
+
+  @override
+  String get wsSomethingWrong => 'Jokin meni vikaan.';
+
+  @override
+  String get wsLearnDone => 'Oppitunti valmis';
+
+  @override
+  String get wsRetest => 'Testaa uudelleen';
+
+  @override
+  String get wsFirstMeasure => 'Ensimmäinen mittaus';
+
+  @override
+  String get wsFinalTest => 'Lopputesti';
+
+  @override
+  String wsPoints(int score) {
+    return '$score p';
+  }
+
+  @override
+  String wsBeforePoints(int score) {
+    return 'Ennen $score p';
+  }
+
+  @override
+  String wsGoalPoints(int score) {
+    return 'Tavoite $score p';
+  }
+
+  @override
+  String wsGoalPrefix(String desc) {
+    return 'Tavoite · $desc';
+  }
+
+  @override
+  String wsAccentOf(String country) {
+    return 'Aksentti: $country';
+  }
+
+  @override
+  String wsWordsRepeated(int count) {
+    return '$count sanaa toistettu';
+  }
+
+  @override
+  String wsChunksRepeated(int count) {
+    return '$count lauseen osaa toistettu';
+  }
+
+  @override
+  String get wsStartRecommended => 'Aloita suositellusta äänteestä';
+
+  @override
+  String wsStartRecommendedWith(String label) {
+    return 'Aloita: $label';
+  }
+
+  @override
+  String get wsPointsUnit => 'p';
+
+  @override
+  String get wsEnterFromMypage => 'Harjoittele vaikeita äänteitä';
+
+  @override
+  String wsGoalOnly(int score) {
+    return 'Tavoite $score';
+  }
+
+  @override
+  String wsSoundOf(String label) {
+    return 'Äänne $label';
+  }
+
+  @override
+  String wsResultTip(String desc) {
+    return '$desc. Kuvittele tämä muoto, kun äänne tulee vastaan puhelussa.';
+  }
+
+  @override
+  String wsNationalSubtitle(String country) {
+    return '$country – äänteet, joissa puhujat usein erehtyvät';
+  }
+
+  @override
+  String get wsRetryPackLabel => 'Harjoittele usein väärin menneitä äänteitä';
+
+  @override
+  String wsRetryPackTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count usein väärin mennyttä äännettä tällä kerralla',
+      one: '1 usein väärin mennyt äänne tällä kerralla',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get wsRetryPackBody =>
+      'Keräsimme äänteet, jotka menivät väärin vähintään 2 kertaa. Harjoittele jokaista 4 vaiheessa.';
+
+  @override
+  String get wsRetryPackCta => 'Harjoittele äänteitä';
+
+  @override
+  String get wsRetryListTitle => 'Usein väärin menneet äänteet';
+
+  @override
+  String get wsRetryListSection => 'Tämän kerran äänteet';
+
+  @override
+  String get wsRetryListSub =>
+      'Äänteet, jotka menivät väärin vähintään 2 kertaa tällä kerralla';
+
+  @override
+  String wsRetryListSubWithCall(String title) {
+    return 'Äänteet, jotka menivät väärin vähintään 2 kertaa puhelussa ”$title”';
+  }
+
+  @override
+  String get wsRetryListAllDone => 'Harjoittelit kaikki äänteet';
+
+  @override
+  String get wsRetryBackToReport => 'Takaisin raporttiin';
 }

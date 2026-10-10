@@ -1,5 +1,7 @@
 import 'package:flutter/widgets.dart';
 
+import '../components/organisms/home_gnb.dart';
+
 /// In-memory mock data for the design_app screens (no backend). Mirrors the
 /// shapes the FastAPI/SpeechSuper contract would return, so screens can later
 /// swap mock → real with minimal change.
@@ -265,3 +267,29 @@ const mockCallResult = MockCallResult(
   overall: 98, pronunciation: 96, fluency: 91, rhythm: 91,
   sentences: mockSentences,
 );
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 홈 학습 현황 픽스처 (Home/GNB · Figma `5925:26645`)
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// 홈 상단 학습 현황 목 3종 — 화면은 이제 서버(`GET /cur/me`)를 읽는다.
+///
+/// 남겨 둔 이유는 **테스트**다. `i18n_overflow_test` 가 30 로케일 × 3 변형을
+/// 이 픽스처로 돌린다 — 서버를 못 부르는 하네스에서 변형별 문구 길이를 재려면
+/// 고정된 입력이 필요하다. 값은 Figma 실측 그대로다.
+const mockHomeCourse = HomeCourse(
+  kind: HomeCourseKind.expression,
+  unitCode: 'A1-01',
+  topic: '처음 만난 반 친구와 이름과 나라 말하기',
+  expressionsLeft: 14,
+);
+
+/// `GNB/자유회화` 픽스처 — 표현을 다 익힌 뒤.
+const mockHomeCourseFreetalk = HomeCourse(
+  kind: HomeCourseKind.freetalk,
+  unitCode: 'A1-01',
+  topic: '처음 만난 반 친구와 이름과 나라 말하기',
+);
+
+/// `GNB/레벨미정` 픽스처 — 서버가 차시를 못 줄 때.
+const mockHomeCourseNoLevel = HomeCourse(kind: HomeCourseKind.noLevel);

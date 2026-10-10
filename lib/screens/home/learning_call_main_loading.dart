@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 
+import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../components/atoms/skeleton.dart';
+import '../../components/layout/need_based_rows.dart';
 import '../../components/molecules/pronunciation_result.dart';
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_color_tokens.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
+import 'table_columns.dart';
 
 /// The waiting state for [LearningCallMainScreen] — Figma
 /// `screen/learning_main_loading` (`3583:34469`).
@@ -184,9 +187,8 @@ class LearningCallMainLoadingScreen extends StatelessWidget {
               ),
             ),
             // Footer/PrimaryAction (3583:34709) — the CTA's slot, held.
-            const Padding(
-              padding: EdgeInsets.fromLTRB(
-                  AppSpacing.s20, 0, AppSpacing.s20, AppSpacing.s20),
+            const ContentColumn(
+              padding: EdgeInsets.only(bottom: AppSpacing.s20),
               child: Skeleton.bar(height: 60),
             ),
           ],
@@ -194,6 +196,17 @@ class LearningCallMainLoadingScreen extends StatelessWidget {
       ),
     );
   }
+
+  Widget _label(String? label, Widget? labelWidget) =>
+      labelWidget ??
+      Text(
+        label!,
+        style: AppType.body2.m,
+        // 구획 이름은 자르지 않는다 — 아래 표가 무엇의 표인지
+        // 알려 주는 유일한 단서다(전수감사).
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+      );
 
   /// The loaded screen's section rhythm (24 above, 8 under the label). Takes
   /// either a real [label] or a [labelWidget] for the one that is itself a
@@ -206,26 +219,12 @@ class LearningCallMainLoadingScreen extends StatelessWidget {
   }) =>
       [
         const SizedBox(height: AppSpacing.s24),
-        Row(
-          children: [
-            Expanded(
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: labelWidget ??
-                    Text(
-                      label!,
-                      style: AppType.body2.m,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-              ),
-            ),
-            if (trailing != null) ...[
-              const SizedBox(width: AppSpacing.s8),
-              Flexible(child: trailing),
-            ],
-          ],
-        ),
+        // 뒤쪽 칸은 오른쪽 끝에 붙는다(Figma justify-between) — 로드된 화면과 같은 `LabelValueRow`.
+        // 옛 `Expanded` + `Flexible` 은 제목을 절반 폭에 가둬 긴 번역에서 일찍 줄을 바꿨다(09-24).
+        if (trailing == null)
+          Align(alignment: AlignmentDirectional.centerStart, child: _label(label, labelWidget))
+        else
+          LabelValueRow(label: _label(label, labelWidget), value: trailing),
         const SizedBox(height: AppSpacing.s8),
         child,
       ];
@@ -252,22 +251,38 @@ class LearningCallMainLoadingScreen extends StatelessWidget {
     required int rowCount,
     required List<double> nameWidths,
     required List<double> valueWidths,
-  }) =>
-      Container(
+  }) {
+    // 고정 열은 머리의 가장 긴 낱말까지 넓힌다 — 로드된 표와 같은 규칙([fitTableColumns]).
+    final wanted = <double?>[
+      for (final h in header)
+        h.width == null ? null : longestWordWidth(context, h.text, h._style(context)),
+    ];
+    return Container(
         decoration: BoxDecoration(
           color: context.c.backgroundElevatedAlternative,
           borderRadius: BorderRadius.circular(AppRadius.sm),
         ),
         padding: const EdgeInsets.fromLTRB(AppSpacing.s16, 4, AppSpacing.s16, 6),
-        child: Column(
+        child: LayoutBuilder(builder: (context, box) {
+          final widths = fitTableColumns(
+            spec: [for (final h in header) h.width],
+            wanted: wanted,
+            innerWidth: box.maxWidth,
+            gap: AppSpacing.s8,
+          );
+          final cols = [
+            for (var i = 0; i < header.length; i++)
+              widths[i] == null ? header[i] : _H.fixed(header[i].text, widths[i]!),
+          ];
+          return Column(
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 10),
               child: Row(
                 children: [
-                  for (var i = 0; i < header.length; i++) ...[
+                  for (var i = 0; i < cols.length; i++) ...[
                     if (i > 0) const SizedBox(width: AppSpacing.s8),
-                    header[i].build(context),
+                    cols[i].build(context),
                   ],
                 ],
               ),
@@ -291,10 +306,10 @@ class LearningCallMainLoadingScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                    for (var i = 1; i < header.length; i++) ...[
+                    for (var i = 1; i < cols.length; i++) ...[
                       const SizedBox(width: AppSpacing.s8),
                       SizedBox(
-                        width: header[i].width,
+                        width: cols[i].width,
                         child: Align(
                           alignment: Alignment.centerRight,
                           child: Skeleton.bar(
@@ -309,8 +324,10 @@ class LearningCallMainLoadingScreen extends StatelessWidget {
               ),
             ],
           ],
-        ),
+        );
+        }),
       );
+  }
 }
 
 /// The L1 box keeps its tint while empty (`3583:34523`) — the reassurance is the
@@ -337,12 +354,17 @@ class _H {
   final String text;
   final double? width;
 
+  TextStyle _style(BuildContext context) =>
+      AppType.caption2.r.copyWith(color: context.c.labelAlternative);
+
   Widget build(BuildContext context) {
     final child = Text(
       text,
-      style: AppType.caption2.r.copyWith(color: context.c.labelAlternative),
+      style: _style(context),
       textAlign: width == null ? TextAlign.left : TextAlign.right,
-      maxLines: 1,
+      // 컬럼 헤더가 잘리면 그 열의 숫자가 무슨 숫자인지 모른다. 표는 폭이
+      // 빡빡한 자리라 두 줄이 정상이다(전수감사 67건).
+      maxLines: 2,
       overflow: TextOverflow.ellipsis,
     );
     return width == null

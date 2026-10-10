@@ -2,19 +2,30 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/pressable.dart';
 import '../../components/atoms/skeleton.dart';
-import '../../components/icons/app_icons.dart';
 import '../../components/molecules/hero_avatar.dart';
+import '../../components/organisms/home_gnb.dart';
+import '../../components/organisms/home_header_mode.dart';
+import '../../core/error/app_exception.dart';
+import '../../features/normalcall/domain/entities/call_course.dart';
+import '../../features/normalcall/presentation/normalcall_controller.dart';
+import '../../features/normalcall/presentation/normalcall_providers.dart';
+import '../../features/normalcall/presentation/home_mode_provider.dart';
+import '../../features/normalcall/presentation/streak_provider.dart';
 import '../../components/organisms/bottom_nav_bar.dart';
+import '../../features/auth/presentation/providers/my_profile_provider.dart';
 import '../../features/character/presentation/providers/character_providers.dart';
 import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
 import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
+import '../classroom/widgets/homework_home_banner.dart';
+import '../plans/winback_trigger.dart';
 
 /// Home — the post-login landing screen. Figma `screen/home` (`2117:23988`).
 ///
@@ -34,10 +45,24 @@ class HomeScreen extends ConsumerWidget {
   /// Diameter of the hero beaver avatar (Figma improved `2296:26379`).
   static const double _avatarSize = 120;
 
-  /// Requests the mic permission, then enters the call flow with the member's
-  /// representative character id (falling back to `1` / 비비). When permission is
+  /// Requests the mic permission, then enters the call flow. When permission is
   /// denied the call is blocked and the user is guided to settings/mic_denied.
+  ///
+  /// ⭐ **`auto` 코스로 건다**(사장님 결정 2026-09-13). 서버가 진도로 이번 통화의
+  ///   코스(표현학습/프리토킹)를 정하고 `call_started.course` 로 알린다 — 위 학습 현황
+  ///   블록이 그리는 «이번 통화»(`/cur/me`.`next_course`)와 **같은 판정**이다(서버가
+  ///   그 필드를 «auto 로 걸면 정할 코스» 로 정의한다). 힌트 가림 등 코스별 UI 는
+  ///   `call_started.course` 로 이미 갈린다.
+  ///   ⛔ 여기만이다. 수신(알림) 통화·레벨테스트·숙제·기록 화면의 진입점은 종전 그대로
+  ///     (`call_type` 미전송 = 서버 D11 라우팅).
+  /// 캐릭터는 서버가 정한다(member.character_id) — 인자에 싣지 않는다.
+  ///
+  /// ⭐ **대화 모드는 `chat` 으로 건다**(사장님 정의 2026-09-22: 학습 = 커리큘럼,
+  ///   대화 = 제한 없는 자유 대화). 진도 게이트가 없다 — [CallCourse.chat] 참조.
   Future<void> _startCall(BuildContext context, WidgetRef ref) async {
+    final course = ref.read(homeModeProvider) == HomeMode.talk
+        ? CallCourse.chat
+        : CallCourse.auto;
     final status = await Permission.microphone.request();
     if (!context.mounted) return;
     if (!status.isGranted) {
@@ -45,16 +70,52 @@ class HomeScreen extends ConsumerWidget {
       return;
     }
     if (!context.mounted) return;
-    // 캐릭터는 서버가 정한다(member.character_id) — 인자를 싣지 않는다.
-    Navigator.pushNamed(context, Routes.callLoading);
+    Navigator.pushNamed(
+      context,
+      Routes.callLoading,
+      arguments: CourseCallRequest(course),
+    );
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // ⭐ 통화가 끝나면 학습 현황을 **다시 읽는다.** 홈은 첫 라우트라 통화 내내 살아
+    //   있고, [curMeProvider] 는 autoDispose 여도 홈이 붙들고 있어 안 버려진다 — 그러면
+    //   통화로 진도가 바뀌어도 «이번 통화» 가 옛 값(예: 표현학습)을 그대로 보여 주고,
+    //   다음 통화는 서버가 프리토킹으로 연다. 표시와 실제가 어긋나는 유일한 구멍이라
+    //   여기서 막는다. 판정은 「통화 중이었다가 통화가 아니게 됐다」 한 가지다.
+    ref.listen<CallPhase>(
+      normalCallControllerProvider.select((s) => s.phase),
+      (prev, next) {
+        const live = {
+          CallPhase.connecting,
+          CallPhase.inCall,
+          CallPhase.awaitingContinue,
+          CallPhase.ending,
+        };
+        if (live.contains(prev) && !live.contains(next)) {
+          ref.invalidate(curMeProvider);
+          // 연속일은 서버 달력(신서버) 또는 통화 기록(구서버)에서 센다 — 둘 다 무효화해야
+          // 새로 읽는다.
+          ref.invalidate(monthCalendarProvider);
+          ref.invalidate(callHistoryProvider);
+        }
+      },
+    );
     return AppScaffold(
       background: context.c.backgroundNormalNormal,
       body: _buildHome(context, ref),
     );
+  }
+
+  /// 아바타 화면으로 간다. 히어로가 실패 상태([retry])면 카탈로그를 먼저 다시 부른다 —
+  /// 캐시된 오류를 들고 가면 아바타 화면도 오류부터 보인다(QA F009).
+  void _openAvatar(BuildContext context, WidgetRef ref, {required bool retry}) {
+    if (retry) {
+      ref.invalidate(charactersProvider);
+      ref.invalidate(myProfileProvider);
+    }
+    Navigator.pushNamed(context, Routes.avatar);
   }
 
   /// 실제 홈 콘텐츠(헤더 + 히어로 + 하단 네비).
@@ -78,53 +139,88 @@ class HomeScreen extends ConsumerWidget {
     // few hundred ms and then swapped. `selected == null` covers the whole
     // window, because `selected` is exactly "we know who the partner is".
     //
-    // On failure `selected` stays null and this shimmers rather than resolving.
-    // That is the intended trade: the previous behaviour asserted a partner the
-    // user does not have.
-    final heroLoading = selected == null;
+    // Settled without a partner — the catalog or profile request failed, or
+    // the member's id has no catalog entry (null id included). This used to
+    // shimmer forever: the catalog provider is not autoDispose, so its error
+    // stayed cached and nothing on home ever asked again (QA F009, 09-26).
+    // Now it shows the static avatar, no name — still not asserting a partner
+    // the user may not have — and a tap refetches the catalog on the way to
+    // the avatar screen, whose own error state carries the retry.
+    final catalog = ref.watch(charactersProvider);
+    final profile = ref.watch(myProfileProvider);
+    final heroFailed = selected == null &&
+        (catalog.hasError ||
+            profile.hasError ||
+            (catalog.hasValue && profile.hasValue));
+    final heroLoading = selected == null && !heroFailed;
+    final mode = ref.watch(homeModeProvider);
+    final streak = ref.watch(callStreakProvider);
     return Column(
       children: [
-          // Header — GNB-style 56-tall bar, trailing profile icon → mypage.
-          SizedBox(
-            height: 56,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20, vertical: 14),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Semantics(
-                    button: true,
-                    label: l10n.myPage,
-                    child: Pressable(
-                      onTap: () =>
-                          Navigator.pushNamed(context, Routes.mypage),
-                      // Figma `2296:26381` — a surface2 circle holding a muted
-                      // (label/assistive) person, not a bare white glyph.
-                      child: Container(
-                        width: AppSpacing.s28,
-                        height: AppSpacing.s28,
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: context.c.backgroundNormalAlternative,
-                        ),
-                        child: AppIcons.profile(
-                          size: 20,
-                          color: context.c.labelAssistive,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+          // Header — Figma `Home/Header-Mode`(`6177:29151`): 모드 토글 · 연속일 칩 ·
+          // 프로필. 칩은 조회에 실패하면 **그리지 않는다** — 0 으로 그리면 끊긴 것처럼
+          // 거짓말하고, 셔머로 두면 영영 안 끝나는 로딩이 된다.
+          HomeHeaderMode(
+            mode: mode,
+            onModeChanged: (m) =>
+                ref.read(homeModeProvider.notifier).state = m,
+            streak: streak.valueOrNull,
+            showStreak: !streak.hasError,
+            onStreakTap: () =>
+                Navigator.pushNamed(context, Routes.streakCalendar),
+            onProfileTap: () => Navigator.pushNamed(context, Routes.mypage),
           ),
           // Hero — avatar + change badge + title, pinned near the top (Figma
           // body top 37), horizontally centered.
           Expanded(
-            child: Column(
+            // 글자 배율을 키우면 학습 현황 블록이 자란다(고정 92 가 아니라
+            // **최소** 92 다). 그때 이 칸이 모자라면 이번엔 화면이 넘치므로,
+            // 넘치는 대신 스크롤로 흡수한다 — 평소 배율에서는 내용이 칸보다
+            // 작아 스크롤이 생기지 않고 보이는 것도 종전과 같다.
+            child: SingleChildScrollView(
+              child: Column(
               children: [
-                const SizedBox(height: 37),
+                // 학습 현황 — Figma `Home/GNB`(`5925:26645`). 헤더 바로 아래
+                // 붙고, 히어로와는 16 을 띄운다(정본 abs 100~192 · 히어로 208).
+                //
+                // 종전의 `SizedBox(height: 37)` 자리다. 그 37 은 히어로를 내리는
+                // 여백일 뿐이었고, 이제 이 블록(92) + 간격 16 = 108 이 그 일을
+                // 대신한다.
+                //
+                // 값은 서버가 준다 — `GET /cur/me`([curMeProvider]).
+                //
+                // ⛔ 아바타의 [heroLoading] 과 **겹치지 않는다.** 둘은 다른
+                //   요청이라(캐릭터 카탈로그 vs 커리큘럼) 도착 시각이 다르고,
+                //   하나로 묶으면 늦은 쪽이 빠른 쪽을 잡아 둔다.
+                //
+                // ★**404 는 실패가 아니다.** 커리큘럼이 아직 안 붙은 회원에게
+                //   서버는 차시를 **안 주는 것**으로 답한다(실측 2026-09-12:
+                //   레벨 Stage 1 인 계정이 `/cur/me` 에서 `NotFoundFailure`).
+                //   그러니 그건 「레벨 미정」 변형 그대로다 — 빈 칸으로 두면
+                //   커리큘럼 시작 전인 회원의 홈이 영영 비어 있게 된다.
+                //
+                // 그 밖의 실패는 **자리만 남기고 아무 말도 안 한다.** 셔머를 계속
+                // 돌리면 「영영 안 끝나는 로딩」이 되고, 레벨미정으로 떨어뜨리면
+                // 네트워크가 끊겼을 뿐인 사용자에게 레벨이 없다고 거짓말한다.
+                // 높이를 유지하는 것은 아래 히어로가 안 튀게 하기 위해서다.
+                // 대화 모드는 커리큘럼과 무관하다 — 서버를 기다리지 않고 바로 그린다.
+                if (mode == HomeMode.talk)
+                  const HomeGnb(course: HomeCourse.talk)
+                else
+                ref.watch(curMeProvider).when(
+                      loading: () => const HomeGnbSkeleton(),
+                      error: (e, _) {
+                        if (e is NotFoundFailure) {
+                          return const HomeGnb(course: HomeCourse.noLevel);
+                        }
+                        // 조용히 삼키면 「블록이 왜 비었지」를 화면만 보고는
+                        // 가릴 수 없다 — 이 화면에서 실제로 그 일을 겪었다.
+                        debugPrint('홈 학습 현황 조회 실패 → 빈 칸: $e');
+                        return const SizedBox(height: HomeGnb.height);
+                      },
+                      data: (me) => HomeGnb(course: HomeCourse.fromCurMe(me)),
+                    ),
+                const SizedBox(height: AppSpacing.s16),
                 if (heroLoading)
                   // Same footprint as [HeroAvatar] so nothing shifts when the
                   // real image lands. Not tappable: there is nothing to change
@@ -134,12 +230,12 @@ class HomeScreen extends ConsumerWidget {
                   )
                 else
                   Pressable(
-                    onTap: () => Navigator.pushNamed(context, Routes.avatar),
+                    onTap: () => _openAvatar(context, ref, retry: heroFailed),
                     child: HeroAvatar(
                       imageProvider: heroImage,
                       size: _avatarSize,
                       onEditTap: () =>
-                          Navigator.pushNamed(context, Routes.avatar),
+                          _openAvatar(context, ref, retry: heroFailed),
                     ),
                   ),
                 const SizedBox(height: AppSpacing.s16),
@@ -147,10 +243,13 @@ class HomeScreen extends ConsumerWidget {
                 // placeholder until the profile lands, because
                 // [characterName] answers a null id with 'Bibi'. That is a
                 // guess: a Baba user would read their partner as Bibi for as
-                // long as the request takes, then watch it change. The box
-                // keeps Title 3's 32 line-height so nothing shifts.
+                // long as the request takes, then watch it change.
+                //
+                // 상자 높이는 글자의 줄높이와 **같이 간다** — Body 1 은 24 다
+                // (Title 3 이던 시절엔 32 였다). 안 맞추면 셔머와 실제 이름의
+                // 자리가 달라져 데이터가 올 때 한 번 튄다.
                 SizedBox(
-                  height: 32,
+                  height: 24,
                   // Shares [heroLoading] with the avatar above so the two never
                   // disagree. The old `isLoading && !hasValue` released this
                   // the moment the profile returned, which is earlier than the
@@ -158,43 +257,65 @@ class HomeScreen extends ConsumerWidget {
                   child: heroLoading
                       ? const SkeletonShimmer(
                           child: Center(
-                            child: Skeleton.bar(width: 170, height: 22),
+                            child: Skeleton.bar(width: 120, height: 16),
                           ),
                         )
+                      // No partner known — leave the slot empty rather than
+                      // guess a name (see [heroFailed]).
+                      : selected == null
+                      ? const SizedBox.shrink()
                       : Center(
                           child: Text(
-                            // Non-null here by construction: [heroLoading] IS
-                            // `selected == null`, so this branch only runs once
+                            // Non-null here: the branch above takes every
+                            // `selected == null` case, so this only runs once
                             // the catalog entry is known. The old
                             // `?? characterName(id)` fallback is gone with it —
                             // that was the guess that printed "Bibi".
                             selected.name,
-                            // Figma `2296:26390` — Title 3 / Bold (24px).
+                            // 24 → 16(Body 1 / Bold). 사용자 지시 2026-09-13 —
+                            // 위에 학습 현황 블록이 생기면서 이름이 그만큼 세게
+                            // 읽힐 이유가 없어졌다.
                             style:
-                                AppType.title3.b.copyWith(color: context.c.labelStrong),
+                                AppType.body1.b.copyWith(color: context.c.labelStrong),
                           ),
                         ),
                 ),
               ],
             ),
+            ),
           ),
+          // 숙제 진입 배너 — 하단 내비 바로 위(Figma `screen/main_home` y=588).
+          // 급한 숙제가 없으면 스스로 사라진다.
+          // ⛔ `Padding(horizontal: s20)` 이 아니라 [ContentColumn] 이다 — 같은 파일
+          //   헤더(위 [ContentColumn])와 **같은 밴드**에 서야 한다. 고정 20 이면
+          //   800dp 태블릿에서 헤더 100~700, 배너 20~780 으로 갈려 한 화면에 폭이
+          //   세 개가 된다(하단 탭바는 또 375 캡이다).
+          //   ⚠ 이 자리는 숙제 병합이 **새로 만든 블록**이라 충돌이 안 났고, 그래서
+          //     폭 규칙 검열을 그냥 통과했다. 새 블록을 넣을 땐 밴드부터 확인하라.
+          const ContentColumn(child: HomeworkHomeBanner()),
+          // 구독 만료 뒤 첫 실행에 윈백 설문을 한 번 띄운다(PM-DEC-034). 크기 0.
+          const WinbackTrigger(),
+          const SizedBox(height: 18),
           // Bottom navigation — call tab is the center action.
           BottomNavBar(
             items: [
+              // 왼쪽은 알람 목록이다 — 아이콘·접근성 이름도 알람(QA F019 · PM-DEC-026).
+              // 전엔 달력 아이콘 + 「Calendar」 라 학습 달력(상단 칩)과 헷갈렸다.
               BottomNavItem(
-                key: 'calendar',
-                icon: BottomNavGlyph.calendar,
-                label: l10n.navCalendar,
+                key: 'alarm',
+                icon: BottomNavGlyph.alarmClock,
+                label: l10n.alarms,
               ),
               BottomNavItem(
                 key: 'call',
                 icon: BottomNavGlyph.call,
                 label: l10n.navCall,
               ),
+              // 오른쪽은 기록 목록이다 — 접근성 이름 「Stats」 → 「Records」(QA F019).
               BottomNavItem(
                 key: 'history',
                 icon: BottomNavGlyph.history,
-                label: l10n.navStats,
+                label: l10n.tabRecords,
               ),
             ],
             activeKey: 'call',
@@ -202,7 +323,7 @@ class HomeScreen extends ConsumerWidget {
               switch (key) {
                 case 'call': // center → start a call (mic permission first)
                   _startCall(context, ref);
-                case 'calendar': // left → alarm settings (etc_alarm)
+                case 'alarm': // left → alarm settings (etc_alarm)
                   Navigator.pushNamed(context, Routes.alarms);
                 case 'history': // right → conversation records (record_list)
                   Navigator.pushNamed(context, Routes.records);

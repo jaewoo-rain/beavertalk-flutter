@@ -6,50 +6,59 @@ import '../../theme/app_color_tokens.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
+import '../../theme/score_band.dart';
+import '../layout/need_based_rows.dart';
+import 'score_gauge_painter.dart';
 
 /// Visual state of a [PronunciationResult].
 ///
 /// Figma component set `2224:20999` (pronunciation_result), states
 /// `active` / `inactive`.
 enum PronunciationState {
-  /// A real, scored result: progress arc + center percent in
-  /// `Primary/Normal`.
+  /// A real, scored result: filled gauge + center percent in the score band colour.
   active,
 
-  /// No score yet: track is dimmed (`Primary/Normal-24`), no progress
-  /// arc, center shows `-%`.
+  /// No score yet: only the five band tracks (18%), no fill, center shows `-%`.
   inactive,
 }
 
 /// A single labelled metric shown in the footer (e.g. Pronunciation 96%).
 class PronunciationMetric {
-  const PronunciationMetric({required this.label, required this.value});
+  const PronunciationMetric({
+    required this.label,
+    required this.value,
+    this.score,
+  });
 
   /// Caption label ([AppType.caption1]), e.g. "Pronunciation".
   final String label;
 
-  /// Value text ([AppType.body1] SemiBold), e.g. "96%".
+  /// Value text ([AppType.body1] SemiBold), e.g. "96%" — shown as-is when
+  /// [score] is null (e.g. `-%`).
   final String value;
+
+  /// 0–100. 있으면 값 글자를 이 점수의 구간 글자색(`Score/n Text`)으로 칠하고 0부터 센다.
+  final num? score;
 }
 
 /// PronunciationResult — a semicircle score gauge with a metrics footer.
 ///
-/// Figma component set `2224:20999` (pronunciation_result).
-///
-/// Measured from Figma:
-/// - Outer column, `gap` 16, width 335.
-/// - Gauge: a 180° semicircle, frame ≈ 255×127.5 (2:1 → half circle).
-///   Track + rounded-cap progress arc drawn by [_GaugePainter]. Center
-///   percent in [AppType.title1] Bold, `Primary/Normal`.
-/// - `inactive`: track `Primary/Normal-24`, no progress arc, center "-%"
-///   tinted `Primary/Normal-24`.
-/// - Footer card: fill `Background/Normal/Alternative` (`Background/Normal/Alternative`),
-///   `borderRadius` [AppRadius.sm] (12), vertical padding 12, horizontal 12.
-///   Three equal columns (label caption1 `Label/Normal` + value
-///   body1.sb white), separated by 1px `Line/Normal` dividers.
+/// Figma component set `2224:20999` (pronunciation_result) — **H4 「채움 + 구간 배경」**
+/// (09-24 사장님 확정 · 엔드캡 없음 · 원장 P32):
+/// - 반원 링 255×127.5 · 두께 18. 0–100 을 20점씩 다섯 조각으로 나누고 조각 사이를 0.4%씩
+///   비운다(틈). 조각 배경 = 그 구간 색 18%, 채움 = 0부터 점수까지 **지나는 조각마다 그 조각의
+///   구간 색**. 끝은 평평하다(butt).
+/// - 가운데 점수([AppType.title1] Bold) = 전체 점수의 `Score/n Text`.
+/// - 지표 3칸 값 = 각자 점수의 `Score/n Text` · 라벨 `Label/Normal`.
+/// - 지표 패널 테두리 1px(안쪽) = 전체 점수의 `Score/n`.
+/// - inactive = 조각 배경만 · 채움·테두리 없음 · `-%`.
+/// - 채워지는 애니메이션(시안 `6364:3509`): 게이지 0→점수 900ms easeOutCubic · 가운데 숫자
+///   같은 곡선으로 카운트업(색은 최종 구간색 고정) · 지표 3칸은 450ms 부터 100ms 간격으로 각
+///   400ms. **처음 그려질 때 1회만.** 애니메이션 끄기(`MediaQuery.disableAnimations`)면 최종값만.
+///   글로우 없음.
 ///
 /// Presentation-only: pass [score] (0–100), [metrics], and [state].
-class PronunciationResult extends StatelessWidget {
+class PronunciationResult extends StatefulWidget {
   const PronunciationResult({
     super.key,
     required this.score,
@@ -83,71 +92,174 @@ class PronunciationResult extends StatelessWidget {
   static const double _gaugeWidth = 255;
   static const double _gaugeHeight = 127.5;
 
+  /// 게이지 채움 900ms, 지표는 450ms 부터 100ms 간격 · 각 400ms.
+  static const int _gaugeMs = 900,
+      _metricStartMs = 450,
+      _metricStepMs = 100,
+      _metricMs = 400;
+
+  @override
+  State<PronunciationResult> createState() => _PronunciationResultState();
+}
+
+class _PronunciationResultState extends State<PronunciationResult>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _anim;
+  bool _started = false;
+
+  bool get _active => widget.state == PronunciationState.active;
+
+  int get _totalMs => math.max(
+        PronunciationResult._gaugeMs,
+        PronunciationResult._metricStartMs +
+            PronunciationResult._metricStepMs *
+                math.max<int>(0, widget.metrics.length - 1) +
+            PronunciationResult._metricMs,
+      );
+
+  @override
+  void initState() {
+    super.initState();
+    _anim = AnimationController(
+        vsync: this, duration: Duration(milliseconds: _totalMs));
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_started) return;
+    _started = true;
+    // 처음 그려질 때 1회만. 점수가 없거나 애니메이션을 끈 기기면 최종값만 보인다.
+    if (!_active || MediaQuery.maybeDisableAnimationsOf(context) == true) {
+      _anim.value = 1;
+    } else {
+      _anim.forward();
+    }
+  }
+
+  @override
+  void didUpdateWidget(PronunciationResult old) {
+    super.didUpdateWidget(old);
+    // 다시 재생하지 않는다 — 점수가 늦게 바뀌면 최종값으로 바로 간다.
+    if (old.score != widget.score || old.state != widget.state) {
+      _anim.value = 1;
+    }
+  }
+
+  @override
+  void dispose() {
+    _anim.dispose();
+    super.dispose();
+  }
+
+  double _phase(int startMs, int lengthMs) {
+    final total = _totalMs.toDouble();
+    return Interval(
+      startMs / total,
+      math.min(1, (startMs + lengthMs) / total),
+      curve: Curves.easeOutCubic,
+    ).transform(_anim.value);
+  }
+
   @override
   Widget build(BuildContext context) {
-    final bool active = state == PronunciationState.active;
-    final double clamped = score.clamp(0, 100).toDouble();
+    final c = context.c;
+    final double clamped = widget.score.clamp(0, 100).toDouble();
+    final int band = scoreBand(clamped);
 
-    return SizedBox(
-      width: 335,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SizedBox(
-            width: _gaugeWidth,
-            height: _gaugeHeight,
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                CustomPaint(
-                  size: const Size(_gaugeWidth, _gaugeHeight),
-                  painter: _GaugePainter(
-                    trackColor: context.c.primaryNormal24,
-                    arcColor: context.c.primaryNormal,
-                    progress: active ? clamped / 100 : 0,
-                    active: active,
-                  ),
-                ),
-                Align(
-                  alignment: const Alignment(0, 0.65),
-                  child: Text(
-                    active ? '${clamped.round()}%' : '-%',
-                    style: AppType.title1.b.copyWith(
-                      color: active
-                          ? context.c.primaryNormal
-                          : context.c.primaryNormal24,
+    // 폭은 부모(콘텐츠 컬럼)를 채운다 — 폰 335, 태블릿 600. 안의 게이지는
+    // [_gaugeWidth] 고정이라 커지지 않고 가운데 선다.
+    return AnimatedBuilder(
+      animation: _anim,
+      builder: (context, _) {
+        final gaugeT =
+            _active ? _phase(0, PronunciationResult._gaugeMs) : 0.0;
+        final shown = clamped * gaugeT;
+        return SizedBox(
+          width: double.infinity,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(
+                width: PronunciationResult._gaugeWidth,
+                height: PronunciationResult._gaugeHeight,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    CustomPaint(
+                      size: const Size(PronunciationResult._gaugeWidth,
+                          PronunciationResult._gaugeHeight),
+                      painter: ScoreGaugePainter(
+                        bands: [for (var i = 1; i <= 5; i++) c.scoreColor(i)],
+                        progress: _active ? shown / 100 : 0,
+                      ),
                     ),
-                  ),
+                    Align(
+                      alignment: const Alignment(0, 0.65),
+                      child: Text(
+                        _active ? '${shown.round()}%' : '-%',
+                        style: AppType.title1.b.copyWith(
+                          // 숫자 색은 최종 구간색으로 고정 — 세는 동안 색이 바뀌지 않는다.
+                          color:
+                              _active ? c.scoreTextColor(band) : c.primaryNormal24,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: AppSpacing.s16),
+              _MetricsFooter(
+                metrics: widget.metrics,
+                active: _active,
+                border: _active ? c.scoreColor(band) : null,
+                progressOf: (i) => _active
+                    ? _phase(
+                        PronunciationResult._metricStartMs +
+                            PronunciationResult._metricStepMs * i,
+                        PronunciationResult._metricMs,
+                      )
+                    : 1,
+              ),
+              // Figma `Hint` (`Hint#4863:0`) — the component grows 218 → 258 with
+              // it: 20 gap + a 20-tall line.
+              if (widget.hint != null) ...[
+                const SizedBox(height: AppSpacing.s20),
+                Text(
+                  widget.hint!,
+                  textAlign: TextAlign.center,
+                  style: AppType.label1.r.copyWith(color: c.labelNormal),
                 ),
               ],
-            ),
+            ],
           ),
-          const SizedBox(height: AppSpacing.s16),
-          _MetricsFooter(metrics: metrics),
-          // Figma `Hint` (`Hint#4863:0`) — the component grows 218 → 258 with
-          // it: 20 gap + a 20-tall line.
-          if (hint != null) ...[
-            const SizedBox(height: AppSpacing.s20),
-            Text(
-              hint!,
-              textAlign: TextAlign.center,
-              style: AppType.label1.r.copyWith(color: context.c.labelNormal),
-            ),
-          ],
-        ],
-      ),
+        );
+      },
     );
   }
 }
 
 /// Three-column metrics footer with vertical dividers.
 class _MetricsFooter extends StatelessWidget {
-  const _MetricsFooter({required this.metrics});
+  const _MetricsFooter({
+    required this.metrics,
+    required this.active,
+    required this.border,
+    required this.progressOf,
+  });
 
   final List<PronunciationMetric> metrics;
+  final bool active;
+
+  /// 패널 테두리(전체 점수의 구간 색) — inactive 면 없음.
+  final Color? border;
+
+  /// 칸 i 의 카운트업 진행(0~1).
+  final double Function(int i) progressOf;
 
   @override
   Widget build(BuildContext context) {
+    final c = context.c;
     final children = <Widget>[];
     for (int i = 0; i < metrics.length; i++) {
       if (i > 0) {
@@ -157,12 +269,13 @@ class _MetricsFooter extends StatelessWidget {
             child: VerticalDivider(
               width: 1,
               thickness: 1,
-              color: context.c.lineNormal,
+              color: c.lineNormal,
             ),
           ),
         );
       }
       final m = metrics[i];
+      final score = active ? m.score : null;
       children.add(
         Expanded(
           child: Column(
@@ -170,18 +283,24 @@ class _MetricsFooter extends StatelessWidget {
             children: [
               Text(
                 m.label,
-                maxLines: 1,
+                // 지표 이름은 자르지 않는다 — 「발음」인지 「유창성」인지 모르면
+                // 그 아래 점수가 무슨 점수인지 모른다(전수감사 20건).
+                maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: AppType.caption1.r
-                    .copyWith(color: context.c.labelNormal),
+                style: AppType.caption1.r.copyWith(color: c.labelNormal),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 6),
               Text(
-                m.value,
+                score == null
+                    ? m.value
+                    : '${(score.clamp(0, 100) * progressOf(i)).round()}%',
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: AppType.body1.sb,
+                style: score == null
+                    ? AppType.body1.sb
+                    : AppType.body1.sb
+                        .copyWith(color: c.scoreTextColor(scoreBand(score))),
                 textAlign: TextAlign.center,
               ),
             ],
@@ -191,7 +310,8 @@ class _MetricsFooter extends StatelessWidget {
     }
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s12, vertical: AppSpacing.s12),
+      padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.s12, vertical: AppSpacing.s12),
       decoration: BoxDecoration(
         // `Background/Surface/Alternative`, which is what every
         // `pronunciation_result` instance in Figma binds here (verified on
@@ -199,91 +319,39 @@ class _MetricsFooter extends StatelessWidget {
         //
         // It used to be `backgroundNormalAlternative`. The two are the same
         // #252932 in Dark, so the mistake was invisible there — but in Light
-        // they diverge (#FFFFFF vs #F6F6F7), and the strip drew a grey box on
+        // they diverge (#FFFFFF vs #DBDCE2), and the strip drew a grey box on
         // screens where the design has none. Note the strip is *meant* to melt
         // into its parent on surfaces that share this token (the MyPage card,
         // screen/learning_main__pronunciation): there it reads as bare text
         // with two dividers, exactly as Figma renders it.
-        color: context.c.backgroundSurfaceAlternative,
+        //
+        // 채점 전(inactive)은 반투명 `Fill/Alternative` — 09-26 사용자 시안 B(흰 카드 위 불투명
+        // 회색이 너무 진했다 · Figma `Pronunciation/Result` `2224:20999`). 반투명이라 어느 면
+        // 위에서도 한 단계만 짙어진다. 점수가 있는 패널은 그대로.
+        color: active ? c.backgroundSurfaceAlternative : c.fillAlternative,
         borderRadius: BorderRadius.circular(AppRadius.sm),
       ),
-      child: IntrinsicHeight(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: children,
+      // 테두리는 **안쪽** 1px(Figma stroke inside) — `foregroundDecoration` 이라 칸 폭·높이가
+      // 안 바뀐다. inactive ↔ active 로 바뀌어도 패널 크기가 그대로다.
+      foregroundDecoration: border == null
+          ? null
+          : BoxDecoration(
+              border: Border.all(color: border!),
+              borderRadius: BorderRadius.circular(AppRadius.sm),
+            ),
+      // 지표 3칸은 균등 격자가 디자인이다 — Figma `pronunciation_result` `2224:20997` 지표 행
+      // `2224:20974`: 칸 3개 모두 FILL(92) + 1px 구분선(09-24 app designer 실측).
+      child: FigmaEqualColumns(
+        figmaNode: '2224:20974',
+        child: IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: children,
+          ),
         ),
       ),
     );
   }
-}
-
-/// Paints the semicircle gauge: a full 180° track plus a progress arc with
-/// a rounded cap.
-///
-/// Geometry measured from Figma (`2224:20970`/`20939`): frame ≈ 255×127.5,
-/// a true half circle. Center sits at the bottom-middle; the arc spans
-/// 180° (π) from left (180°) to right (0°), swept clockwise.
-class _GaugePainter extends CustomPainter {
-  const _GaugePainter({
-    required this.progress,
-    required this.active,
-    required this.trackColor,
-    required this.arcColor,
-  });
-
-  /// `Primary/Normal-24` (the unfilled ring) and `Primary/Normal` (the filled
-  /// arc), read from the theme by the caller — a painter has no context.
-  final Color trackColor, arcColor;
-
-  /// 0–1 fraction of the 180° arc to fill.
-  final double progress;
-
-  /// When false only the dimmed track is drawn (no progress arc).
-  final bool active;
-
-  static const double _stroke = 12;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final double radius = (size.width - _stroke) / 2;
-    final Offset center = Offset(size.width / 2, size.height - _stroke / 2);
-    final Rect arcRect = Rect.fromCircle(center: center, radius: radius);
-
-    const double startAngle = math.pi; // left
-    const double sweep = math.pi; // 180° to the right
-
-    final track = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = _stroke
-      ..strokeCap = StrokeCap.round
-      ..color = trackColor;
-
-    canvas.drawArc(arcRect, startAngle, sweep, false, track);
-
-    if (active && progress > 0) {
-      final fg = Paint()
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = _stroke
-        ..strokeCap = StrokeCap.round
-        ..color = arcColor;
-      canvas.drawArc(
-        arcRect,
-        startAngle,
-        sweep * progress.clamp(0, 1),
-        false,
-        fg,
-      );
-    }
-  }
-
-  @override
-  bool shouldRepaint(_GaugePainter old) =>
-      old.progress != progress ||
-      old.active != active ||
-      // The colours are theme-dependent now; without these the gauge would keep
-      // the previous mode's ring until the score happened to change.
-      old.trackColor != trackColor ||
-      old.arcColor != arcColor;
 }
 
 /// Gallery demo exposing both [PronunciationResult] states.
@@ -293,9 +361,9 @@ class PronunciationResultDemo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const metrics = [
-      PronunciationMetric(label: 'Pronunciation', value: '96%'),
-      PronunciationMetric(label: 'Fluency', value: '91%'),
-      PronunciationMetric(label: 'Rhythm', value: '91%'),
+      PronunciationMetric(label: 'Pronunciation', value: '96%', score: 96),
+      PronunciationMetric(label: 'Fluency', value: '71%', score: 71),
+      PronunciationMetric(label: 'Rhythm', value: '52%', score: 52),
     ];
     const emptyMetrics = [
       PronunciationMetric(label: 'Pronunciation', value: '-%'),
@@ -309,7 +377,7 @@ class PronunciationResultDemo extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: const [
           PronunciationResult(
-            score: 98,
+            score: 72,
             metrics: metrics,
             state: PronunciationState.active,
           ),

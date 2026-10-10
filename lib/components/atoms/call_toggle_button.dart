@@ -1,20 +1,28 @@
 import 'package:flutter/material.dart';
 
 import '../../theme/app_color_tokens.dart';
+import '../../theme/app_motion.dart';
 import '../icons/app_icons.dart';
 
-/// A 40×40 circular on/off toggle used in the in-call control row — the
-/// parametric atom behind both Figma `btn/hint` (`3226:13`) and `btn/subtitle`
-/// (`3226:18`).
+/// 통화 푸터의 원형 on/off 토글 — Figma `btn/hint`(`3226:13`) ·
+/// `btn/subtitle`(`3226:18`) 의 공통 아톰. 실측 2026-09-13.
 ///
-/// Measured from Figma:
-/// - 40×40, fully rounded (pill).
-/// - **on**  → filled with [activeFill], glyph [AppColors.text] (white).
-/// - **off** → transparent, 1px `Line/Neutral` stroke, glyph
-///   `Label/Normal`.
+/// | | on | off |
+/// |---|---|---|
+/// | 면 | [activeFill] | `Fill/Alternative` |
+/// | 글리프 | [activeGlyph] | `Icon/Normal`(= `labelNormal`) |
 ///
-/// The two instances differ only by [activeFill]: hint = `hintAccent` (orange),
-/// subtitle = `surface2`. Controlled: pass [active] and handle [onChanged].
+/// 크기는 [size] 가 정한다 — 정본 변형이 40·56 둘이고 `footer/main_call` 은 56 을
+/// 쓴다. 글리프는 56 에서 28, 40 에서 24다(정본 실측).
+///
+/// ## off 가 테두리에서 **면**으로 바뀌었다
+/// 종전 off 는 투명 + 1px `Line/Neutral` 테두리였다. 정본이 옅은 면
+/// (`Fill/Alternative`)으로 바꿨다 — 테두리만 있던 버튼은 통화 화면의 어두운
+/// 배경에서 거의 안 보였다. 보간은 **면끼리** 이어지므로 켜고 끌 때 테두리가
+/// 나타났다 사라지는 일도 없어졌다.
+///
+/// 두 인스턴스는 [activeFill]·[activeGlyph] 만 다르다. Controlled — [active] 를
+/// 넘기고 [onChanged] 를 처리한다.
 class CallToggleButton extends StatelessWidget {
   const CallToggleButton({
     super.key,
@@ -24,6 +32,8 @@ class CallToggleButton extends StatelessWidget {
     required this.semanticLabel,
     this.onChanged,
     this.activeGlyph,
+    this.inactiveGlyph,
+    this.size = 56,
   });
 
   /// Glyph builder (e.g. `AppIcons.lightbulb`, `AppIcons.cc`).
@@ -47,40 +57,67 @@ class CallToggleButton extends StatelessWidget {
   /// which is light in Light mode and would swallow a white glyph).
   final Color? activeGlyph;
 
-  static const double _size = 40;
-  static const double _iconSize = 24;
+  /// Glyph colour while off. Defaults to `Icon/Normal`(= `labelNormal`).
+  ///
+  /// 기능을 **쓸 수 없는** 자리(표현학습의 힌트)는 `Label/Disabled` 를 넘긴다.
+  /// 면은 off 그대로(`Fill/Alternative`) 두고 글리프만 내린다 — Figma
+  /// `tooltip/hint_locked` 시안(2026-09-15)의 비활성 표현이다.
+  final Color? inactiveGlyph;
+
+  /// 지름. 정본 변형은 40·56 이고 `footer/main_call` 은 **56** 이다.
+  final double size;
+
+  /// 글리프 크기 — 정본이 56→28, 40→24 로 준다.
+  double get _iconSize => size >= 56 ? 28 : 24;
 
   @override
   Widget build(BuildContext context) {
-    final Color fill = active ? activeFill : Colors.transparent;
-    // Active sits on the coloured [activeFill] and its glyph is always white
-    // (staticWhite, not labelStrong — that flips to #000 in Light). Inactive is
-    // a transparent chip, so the theme label colour is right there.
+    // ⚠ 채움을 `active ? activeFill : ...` 로 **미리 접지 마라.** 그러면 끌 때
+    //   목표색이 그 순간 확정돼 보간이 한 프레임에 끝난다. 아래에서 양 끝 색을
+    //   그대로 두고 t 로만 섞는다.
+    //
+    // off 글리프는 `Icon/Normal` 인데 이 앱 토큰에는 그 이름이 없다.
+    // `labelNormal` 이 Light 에서 #333333 로 같은 값이라 그것을 쓴다(홈 학습
+    // 현황 블록도 같은 매핑이다).
     final Color glyph = active
         ? (activeGlyph ?? context.c.staticWhite)
-        : context.c.labelNormal;
+        : (inactiveGlyph ?? context.c.labelNormal);
 
+    // 채움·테두리·글리프를 한 프레임에 갈면 잉크 물결만 남고 상태 변화가 안
+    // 읽힌다. [Material.color] 는 암시적 애니메이션이 없으므로 색을 직접
+    // 보간해서 넣는다.
     return Semantics(
       button: true,
       toggled: active,
       label: semanticLabel,
-      child: Material(
-        color: fill,
-        shape: CircleBorder(
-          side: active
-              ? BorderSide.none
-              : BorderSide(color: context.c.lineNeutral),
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          customBorder: const CircleBorder(),
-          onTap: onChanged == null ? null : () => onChanged!(!active),
-          child: SizedBox(
-            width: _size,
-            height: _size,
-            child: Center(child: icon(size: _iconSize, color: glyph)),
-          ),
-        ),
+      child: TweenAnimationBuilder<double>(
+        tween: Tween<double>(end: active ? 1 : 0),
+        duration: AppMotion.medium,
+        curve: AppMotion.toggle,
+        builder: (context, t, _) {
+          // off 도 면이다 — 투명이 아니라 `Fill/Alternative` 에서 출발한다.
+          final Color fillNow =
+              Color.lerp(context.c.fillAlternative, activeFill, t)!;
+          return Material(
+            color: fillNow,
+            shape: const CircleBorder(),
+            clipBehavior: Clip.antiAlias,
+            child: InkWell(
+              customBorder: const CircleBorder(),
+              onTap: onChanged == null ? null : () => onChanged!(!active),
+              child: SizedBox(
+                width: size,
+                height: size,
+                child: Center(
+                  child: AnimatedGlyphColor(
+                    color: glyph,
+                    builder: (c) => icon(size: _iconSize, color: c),
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }

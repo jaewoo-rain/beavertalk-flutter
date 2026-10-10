@@ -56,7 +56,21 @@ docs
 tools/service-account.json
 service-account.json
 google-services.json
+# iOS Firebase 설정(google-services.json 과 같은 취급). Xcode 프로젝트는 참조만 하므로
+# 새 작업트리·맥 빌드 머신에 직접 복사해야 한다.
+ios/Runner/GoogleService-Info.plist
 # 벤더링한 flutter_pcm_sound 의 로컬 Gradle 캐시 (빌드 산출물)
 packages/**/.gradle/
 # 자산 교체 전 백업 — 로컬 전용(레포에 영상 사본을 쌓지 않는다)
 backup_old_assets/
+
+# 로컬 전용 백업 — 공개 저장소라 .env 사본이 실수로 올라가면 그대로 유출이다
+*.bak
+.env.bak*
+
+# 업로드 키스토어 — 잃으면 앱 업데이트가 영구 불가하고, 새면 위조 서명이 가능하다.
+# android/.gitignore 가 android/ 아래를 이미 막지만, 저장소 루트에 잘못 만드는
+# 사고를 대비해 여기서 한 번 더 막는다(실측: 루트 경로는 안 막히고 있었다).
+*.jks
+*.keystore
+key.properties

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../../app/adaptive.dart';
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_color_tokens.dart';
+import '../../theme/app_motion.dart';
 import '../icons/app_icons.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
@@ -168,10 +170,9 @@ class BottomSheetAlarmSettings extends StatelessWidget {
   /// while storing to the Sun-indexed model the server/schedulers expect.
   static const List<int> _visualToDataIndex = [1, 2, 3, 4, 5, 6, 0];
 
-  /// Max sheet width — matches [AppScaffold]'s 430px phone-column cap; the
-  /// sheet otherwise fills its host width (Figma reference device: 375).
-  static const double _maxWidth = 430;
-
+  // 시트는 전폭이다(정본 규격: 「전폭 유지. 하단 정렬. 내부만 콘텐츠
+  // 컬럼으로 패딩」). 예전의 430 캡은 AppScaffold 의 폰 칼럼을 그대로
+  // 베낀 것이라, 시트만 좁고 뒤 배경은 넓은 어긋난 화면이 됐다.
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -181,50 +182,47 @@ class BottomSheetAlarmSettings extends StatelessWidget {
         top: Radius.circular(AppRadius.lg),
       ),
       clipBehavior: Clip.antiAlias,
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: _maxWidth),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            _header(context, l10n),
-            // The redesign made the body tall enough (quick-start cards, the
-            // time card, the partner row and the summary) that it no longer
-            // clears a short viewport — it overflowed a 600-high one by 73.
-            // Flexible + a scroll view keeps the sheet hugging its content
-            // wherever there is room, and scrolls instead of clipping where
-            // there isn't; the header and the save button stay put either way.
-            Flexible(
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      _quickStartSection(context, l10n),
-                      const SizedBox(height: 20),
-                      _timeAndDaysCard(context, l10n),
-                      const SizedBox(height: 20),
-                      _partnerSection(context, l10n),
-                      const SizedBox(height: 20),
-                      _summary(context, l10n),
-                    ],
-                  ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+          _header(context, l10n),
+          // The redesign made the body tall enough (quick-start cards, the
+          // time card, the partner row and the summary) that it no longer
+          // clears a short viewport — it overflowed a 600-high one by 73.
+          // Flexible + a scroll view keeps the sheet hugging its content
+          // wherever there is room, and scrolls instead of clipping where
+          // there isn't; the header and the save button stay put either way.
+          Flexible(
+            child: SingleChildScrollView(
+              child: ContentColumn(
+                padding: const EdgeInsets.only(top: 16, bottom: 24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _quickStartSection(context, l10n),
+                    const SizedBox(height: 20),
+                    _timeAndDaysCard(context, l10n),
+                    const SizedBox(height: 20),
+                    _partnerSection(context, l10n),
+                    const SizedBox(height: 20),
+                    _summary(context, l10n),
+                  ],
                 ),
               ),
             ),
-            _footer(context, l10n),
-          ],
-        ),
+          ),
+        _footer(context, l10n),
+        ],
       ),
     );
   }
 
   /// GNB `sub-2` header: centered title, close glyph on the right.
   Widget _header(BuildContext context, AppLocalizations l10n) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+    return ContentColumn(
+      padding: const EdgeInsets.symmetric(vertical: 14),
       child: Row(
         children: [
           const SizedBox(width: 28, height: 28),
@@ -472,8 +470,8 @@ class BottomSheetAlarmSettings extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+        ContentColumn(
+          padding: const EdgeInsets.only(top: 12),
           child: SizedBox(
             width: double.infinity,
             child: Button(
@@ -520,7 +518,10 @@ class _QuickStartCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final content = Container(
+    // 채움·테두리·아이콘·글자 넷이 한 프레임에 갈리던 자리다.
+    final content = AnimatedContainer(
+      duration: AppMotion.medium,
+      curve: AppMotion.toggle,
       // 91 in the frame; a min instead of a fixed height so a locale with a
       // longer preset name grows the card rather than overflowing it.
       constraints: const BoxConstraints(minHeight: 91),
@@ -529,7 +530,7 @@ class _QuickStartCard extends StatelessWidget {
         vertical: AppSpacing.s12,
       ),
       decoration: BoxDecoration(
-        color: selected ? context.c.primaryNormal4 : null,
+        color: selected ? context.c.primaryNormal4 : Colors.transparent,
         // 16. ⚠️ Figma's radius scale is shifted one step from [AppRadius]'s —
         // Figma `lg` is 16 where [AppRadius.lg] is 24. Read the number, not the
         // name.
@@ -543,9 +544,9 @@ class _QuickStartCard extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
-          icon(
-            size: 24,
+          AnimatedGlyphColor(
             color: selected ? context.c.primaryStrong : context.c.labelNormal,
+            builder: (c) => icon(size: 24, color: c),
           ),
           const SizedBox(height: 10), // no s10 token
           Text(
@@ -656,13 +657,19 @@ class _MeridiemSegment extends StatelessWidget {
           behavior: HitTestBehavior.opaque,
           onTap: onChanged == null ? null : () => onChanged!(value),
           child: Center(
-            child: Text(
-              label,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+            // 썸은 150ms 로 미끄러지는데 글자색만 한 프레임에 갈리면, 썸이 아직
+            // 오는 중인 칸이 먼저 어두워진다. 같은 150ms·easeOut 으로 맞춘다.
+            child: AnimatedDefaultTextStyle(
+              duration: const Duration(milliseconds: 150),
+              curve: Curves.easeOut,
               style: AppType.label2.r.copyWith(
                 // On the mint thumb the label must go dark, not white.
                 color: on ? context.c.primaryOnPrimary : context.c.labelNormal,
+              ),
+              child: Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ),

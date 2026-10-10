@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 
+import '../../app/adaptive.dart';
 import '../../theme/app_color_tokens.dart';
 import '../../theme/app_typography.dart';
 import '../atoms/button.dart';
 import '../icons/app_icons.dart';
 import '../molecules/benefit_row.dart';
 import 'bottom_sheet.dart' show SheetAction;
+import '../layout/need_based_rows.dart';
 
 /// Content form of a [BottomSheetContent] — the Figma `content=*` variant
 /// (`BottomSheet-Content` `4399:2039`).
@@ -99,10 +101,9 @@ class SheetStreakDay {
 ///
 /// Fifteen of the nineteen subscription overlays are instances of this one
 /// component (work order §3-2), so its shape is load-bearing: grabber → mark →
-/// header → content → benefit → caption → CTA, with the CTA block stacking the
-/// primary action **above** the secondary (unlike the legacy `BottomSheet`
-/// organism, whose two-button column is secondary-first — that is why the CTA
-/// is built here rather than delegated).
+/// header → content → benefit → caption → CTA. CTA 두 버튼의 위 · 아래는 화면마다
+/// [secondaryOnTop] 으로 정한다(09-26 사용자 화면별 배치) — 그래서 CTA 는 옛 `BottomSheet`
+/// 두 버튼형에 맡기지 않고 여기서 짓는다.
 ///
 /// This is the sheet body only. Presenting it modally, the dim scrim and the
 /// close conventions (dim tap closes, sheet body does nothing, closing never
@@ -126,8 +127,13 @@ class BottomSheetContent extends StatelessWidget {
     this.benefitLabel,
     this.benefitTier = BenefitTier.pro,
     this.caption,
+    this.child,
+    this.childGap = 24,
+    this.hero,
+    this.titleStyle,
     required this.primaryAction,
     this.secondaryAction,
+    this.secondaryOnTop = false,
   });
 
   /// Content form; see [SheetContentType].
@@ -159,8 +165,9 @@ class BottomSheetContent extends StatelessWidget {
   /// placeholder composition (avatar disc + self-view).
   final Widget? videoPreview;
 
-  /// Struck anchor price of the video sheet (`$29.99`) — rendered in body
-  /// colour with a strikethrough, per work order §6-4.
+  /// Struck anchor price of the video sheet — rendered in body colour with a
+  /// strikethrough, per work order §6-4. No screen passes one: Premium shows
+  /// its price alone (the $29.99 anchor was dropped · PM-DEC-100 · 09-27).
   final String? videoPriceOriginal;
 
   /// Live price line of the video sheet (`$23.99 per month`).
@@ -175,17 +182,68 @@ class BottomSheetContent extends StatelessWidget {
   /// Price/cancel caption under the content, or null for none.
   final String? caption;
 
-  /// Main CTA — always present, always on top.
+  /// Free-form content under the header (e.g. the call-rating choices,
+  /// Figma `screen/call_finish__rating` `6249:13158`). Rendered after the
+  /// typed [type] content and before the benefit line; giving it turns the
+  /// sheet into the card form (screen-background surface).
+  final Widget? child;
+
+  /// Space above [child]. 24 by default; a sheet whose Figma stacks its parts
+  /// at 16 (e.g. `BottomSheet/CharacterBundle` `6438:4772`) passes 16.
+  final double childGap;
+
+  /// Artwork above the header, where [mark] sits on notice sheets — e.g. the
+  /// bundle sheet's character trio and discount badge. 16 below it.
+  final Widget? hero;
+
+  /// Title size override (drawn Bold), colour kept. For a sheet whose Figma title is not
+  /// the shared `heading2`/`headline1` SemiBold — e.g. the bundle sheet's
+  /// `Sheet/Copy` 18 Bold. Existing sheets pass nothing.
+  final AppType? titleStyle;
+
+  /// Main CTA — always present. 위 · 아래는 [secondaryOnTop] 이 정한다.
   final SheetAction primaryAction;
 
-  /// Quiet CTA below the main one (`Not now` / `Close`). These only ever
-  /// dismiss; spec §7-2 forbids a closing action from changing any state.
+  /// Quiet CTA (`Not now` / `Close`). These only ever dismiss; spec §7-2
+  /// forbids a closing action from changing any state.
   final SheetAction? secondaryAction;
 
-  /// Max sheet width — matches the legacy `BottomSheet.maxWidth` phone cap.
-  static const double maxWidth = 430;
+  /// 보조 버튼을 **위**, 주요 버튼을 아래에 둔다. 기본(false)은 주요 위.
+  ///
+  /// ⛔ 기본값을 뒤집지 마라 — **화면마다 정한다.** 09-26 사용자가 화면별로 UX · CTA 를 보고
+  /// 배치했다(「주요버튼이라기보다는 사용자 UX와 CTA를 고려해서 내가 배치했음」 · 정본 Figma
+  /// Workspace `6465:4667` · 디자인 세션 경유).
+  /// - true(CTA 아래): 통화 평가 · 복원 없음 · 복원 다른 계정 · 해지 다운셀 · 연간/월간 전환 ·
+  ///   캐릭터 제안 · 학습 마이크 권한 · 캐릭터 구매 완료 · 결제 오류 3종(사용자 「이대로 가」)
+  /// - false(CTA 위): 환불 도움 · 이미 구독 · 해지 대상 아님
+  /// - 나머지 구독 오버레이(체험 종료 · 체험 시작 · 연간 제안 · 통화 한도 · 통화 종료 등)는 09-26
+  ///   목록에 없어 종전(false) 유지 · 디자인 세션 확인 대기
+  final bool secondaryOnTop;
 
-  bool get _onCard => type != SheetContentType.none;
+  // 시트는 전폭이다(정본 규격: 「전폭 유지. 하단 정렬. 내부만 콘텐츠
+  // 컬럼으로 패딩」). 예전의 430 캡은 AppScaffold 의 폰 칼럼을 그대로
+  // 베낀 것이라, 시트만 좁고 뒤 배경은 넓은 어긋난 화면이 됐다.
+  bool get _onCard => type != SheetContentType.none || child != null;
+
+  Widget _primaryButton() => SizedBox(
+        width: double.infinity,
+        child: Button(
+          type: BtnType.primaryFill,
+          size: BtnSize.s60,
+          text: primaryAction.label,
+          onPressed: primaryAction.onPressed,
+        ),
+      );
+
+  Widget _secondaryButton() => SizedBox(
+        width: double.infinity,
+        child: Button(
+          type: BtnType.secondaryFill,
+          size: BtnSize.s60,
+          text: secondaryAction!.label,
+          onPressed: secondaryAction!.onPressed,
+        ),
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -193,16 +251,15 @@ class BottomSheetContent extends StatelessWidget {
     // The `none` sheet is a floating card (elevated surface, thin grabber);
     // the card forms sit on the screen background with a heavier grabber —
     // both pairs measured off the component set.
-    final bg =
-        _onCard ? c.backgroundNormalNormal : c.backgroundElevatedAlternative;
+    final bg = _onCard
+        ? c.backgroundNormalNormal
+        : c.backgroundElevatedAlternative;
     final grabber = _onCard ? c.backgroundElevatedNormal : c.lineNormal;
 
     return Container(
-      constraints: const BoxConstraints(maxWidth: maxWidth),
       decoration: BoxDecoration(
         color: bg,
-        borderRadius:
-            const BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -220,56 +277,50 @@ class BottomSheetContent extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                if (mark != null) ...[
-                  Center(child: _Mark(tone: mark!)),
-                  const SizedBox(height: 16),
-                ],
-                _header(context),
-                ..._content(context),
-                if (benefitLabel != null) ...[
-                  const SizedBox(height: 16),
-                  BenefitRow(tier: benefitTier, label: benefitLabel!),
-                ],
-                if (caption != null) ...[
-                  const SizedBox(height: 16),
-                  Text(
-                    caption!,
-                    textAlign: TextAlign.center,
-                    style: AppType.caption1.r.copyWith(color: c.labelNormal),
-                  ),
-                ],
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
-            child: SizedBox(
-              width: double.infinity,
-              child: Button(
-                type: BtnType.primaryFill,
-                size: BtnSize.s60,
-                text: primaryAction.label,
-                onPressed: primaryAction.onPressed,
-              ),
-            ),
-          ),
-          if (secondaryAction != null)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
-              child: SizedBox(
-                width: double.infinity,
-                child: Button(
-                  type: BtnType.secondaryFill,
-                  size: BtnSize.s60,
-                  text: secondaryAction!.label,
-                  onPressed: secondaryAction!.onPressed,
+          // 본문만 스크롤한다 — 버튼은 아래에 붙어 있다. 짧으면 픽셀이 그대로고, 화면보다
+          // 길면(작은 폰 · 긴 로케일 · 큰 글꼴) 넘치는 대신 본문이 스크롤된다. 예전엔
+          // 스크롤이 없어 320×640 에서 해지·결제 수정 시트가 영어로도 넘쳤다.
+          Flexible(
+            child: SingleChildScrollView(
+              child: ContentColumn(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    if (mark != null) ...[
+                      Center(child: ResultMark(tone: mark!)),
+                      const SizedBox(height: 16),
+                    ],
+                    if (hero != null) ...[hero!, const SizedBox(height: 16)],
+                    _header(context),
+                    ..._content(context),
+                    if (child != null) ...[SizedBox(height: childGap), child!],
+                    if (benefitLabel != null) ...[
+                      const SizedBox(height: 16),
+                      BenefitRow(tier: benefitTier, label: benefitLabel!),
+                    ],
+                    if (caption != null) ...[
+                      const SizedBox(height: 16),
+                      Text(
+                        caption!,
+                        textAlign: TextAlign.center,
+                        style: AppType.caption1.r.copyWith(
+                          color: c.labelNormal,
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
               ),
+            ),
+          ),
+          for (final button in [
+            if (secondaryOnTop && secondaryAction != null) _secondaryButton(),
+            _primaryButton(),
+            if (!secondaryOnTop && secondaryAction != null) _secondaryButton(),
+          ])
+            ContentColumn(
+              padding: const EdgeInsets.only(top: 12),
+              child: button,
             ),
           // Bottom safe-area inset — clears the OS gesture bar, replacing the
           // design frame's fake HomeIndicator (same trade as `BottomSheet`).
@@ -286,18 +337,23 @@ class BottomSheetContent extends StatelessWidget {
   Widget _header(BuildContext context) {
     final c = context.c;
     final big = type == SheetContentType.none || type == SheetContentType.video;
-    final titleStyle = (big ? AppType.heading2 : AppType.headline1)
-        .sb
+    final override = this.titleStyle;
+    final titleStyle = (override != null
+            ? override.b
+            : (big ? AppType.heading2 : AppType.headline1).sb)
         .copyWith(color: c.labelStrong);
     return Column(
       children: [
         Text(title, textAlign: TextAlign.center, style: titleStyle),
-        SizedBox(height: big ? 6 : 8),
-        Text(
-          body,
-          textAlign: TextAlign.center,
-          style: AppType.label1.r.copyWith(color: c.labelNormal),
-        ),
+        // 본문이 없는 시트(제목 한 줄로 끝나는 안내)는 간격·빈 줄을 그리지 않는다.
+        if (body.isNotEmpty) ...[
+          SizedBox(height: big ? 6 : 8),
+          Text(
+            body,
+            textAlign: TextAlign.center,
+            style: AppType.label1.r.copyWith(color: c.labelNormal),
+          ),
+        ],
       ],
     );
   }
@@ -346,14 +402,16 @@ class BottomSheetContent extends StatelessWidget {
                     children: [
                       Text(
                         p.name,
-                        style: AppType.label2.sb
-                            .copyWith(color: c.commonWhiteAndDark),
+                        style: AppType.label2.sb.copyWith(
+                          color: c.commonWhiteAndDark,
+                        ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         p.topic,
-                        style:
-                            AppType.caption1.r.copyWith(color: c.labelNormal),
+                        style: AppType.caption1.r.copyWith(
+                          color: c.labelNormal,
+                        ),
                       ),
                     ],
                   ),
@@ -461,9 +519,10 @@ class _RowLine extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.c;
+    // 높이는 최소 56 — 고정하면 줄바꿈한 라벨·값이 잘린다.
     return Container(
-      height: 56,
-      padding: const EdgeInsets.symmetric(horizontal: 12),
+      constraints: const BoxConstraints(minHeight: 56),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: last
           ? null
           : BoxDecoration(
@@ -471,21 +530,21 @@ class _RowLine extends StatelessWidget {
                 bottom: BorderSide(color: c.lineAlternative, width: 0.5),
               ),
             ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Text(
-              data.label,
-              style: AppType.label1.r.copyWith(color: c.commonWhiteAndDark),
-            ),
+      // 값은 오른쪽 끝(Figma justify-between). 폭은 글자 폭대로 나눈다(LabelValueRow) —
+      // Expanded+Flexible 은 「가능 / 무료 플랜에서도 사용」 에서 104px 를 버렸다(09-24 D).
+      // ⛔ 값(가격·날짜)은 **자르지 않는다** — 잘린 금액은 빈 값보다 나쁘다. 줄을 바꾼다.
+      child: LabelValueRow(
+        label: Text(
+          data.label,
+          style: AppType.label1.r.copyWith(color: c.commonWhiteAndDark),
+        ),
+        value: Text(
+          data.value,
+          textAlign: TextAlign.end,
+          style: AppType.label1.r.copyWith(
+            color: data.highlighted ? c.primaryNormal : c.labelNormal,
           ),
-          Text(
-            data.value,
-            style: AppType.label1.r.copyWith(
-              color: data.highlighted ? c.primaryNormal : c.labelNormal,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -525,9 +584,14 @@ class _DayCell extends StatelessWidget {
 }
 
 /// 56px result disc — Figma `Mark` (`4365:31487`).
-class _Mark extends StatelessWidget {
-  const _Mark({required this.tone});
+///
+/// 시트 밖에서도 쓴다 — 신고 접수 완료 화면(`screens/report/report_content.dart`)
+/// 이 같은 표식을 쓴다. 결과 표식은 이 하나뿐이니 화면마다 원을 새로 그리지 마라.
+class ResultMark extends StatelessWidget {
+  /// Creates the result disc.
+  const ResultMark({super.key, required this.tone});
 
+  /// Which disc to draw.
   final SheetMarkTone tone;
 
   @override

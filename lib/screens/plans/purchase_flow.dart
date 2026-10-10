@@ -1,6 +1,8 @@
+import '../../app/adaptive.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/app_scaffold.dart';
@@ -8,7 +10,9 @@ import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
 import '../../components/icons/app_icons.dart';
 import '../../components/molecules/benefit_row.dart';
+import '../../components/molecules/stacked_button_pair.dart';
 import '../../components/organisms/gnb.dart';
+import '../../features/normalcall/presentation/normalcall_controller.dart';
 import '../../features/subscription/domain/entities/subscription_state.dart';
 import '../../features/subscription/domain/iap_service.dart';
 import '../../features/subscription/presentation/providers/subscription_providers.dart';
@@ -19,6 +23,7 @@ import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 import '../overlays/subscription_overlays.dart';
+import 'winback_offer_sheet.dart' show openStoreSubscriptions;
 
 /// `depth/purchase_processing` (`4514:5654`) — receipt-confirmation limbo.
 ///
@@ -40,13 +45,33 @@ class _PurchaseProcessingScreenState
   StreamSubscription<IapPurchase>? _sub;
   bool _kicked = false;
 
+  /// Armed by the first `pending` event; fires if nothing final arrives in
+  /// [kPurchasePendingNoticeAfter] (QA F004).
+  Timer? _pendingTimer;
+
+  /// 윈백 오퍼 결제([WinbackPurchase] 인자 · 안드로이드 · PM-DEC-049)인가.
+  ///
+  /// 실패·취소 때 재시도 시트를 띄우지 않는다 — 그 시트의 「다시 시도」 는 정가 월간을 사서,
+  /// 할인을 보고 들어온 회원에게 정가를 청구하게 된다. 조용히 닫는다.
+  bool get _winback =>
+      ModalRoute.of(context)?.settings.arguments is WinbackPurchase;
+
+  /// 월간↔연간 전환 — 기존 구독을 교체하는 구매(QA F083).
+  bool get _switching =>
+      ModalRoute.of(context)?.settings.arguments is SwitchPurchase;
+
   /// What to buy — a [PurchaseRequest] argument, or a bare tier (legacy call
-  /// sites), or the Pro-monthly default.
+  /// sites), or the Premium-monthly default (Pro is no longer sold).
   PurchaseRequest get _request {
     final args = ModalRoute.of(context)?.settings.arguments;
     if (args is PurchaseRequest) return args;
+    if (args is SwitchPurchase) {
+      return (tier: SubscriptionTier.max, annual: args.annual);
+    }
+    // 윈백 오퍼는 월간 Premium 이다(첫 달만 할인).
+    if (args is WinbackPurchase) return (tier: SubscriptionTier.max, annual: false);
     if (args is SubscriptionTier) return (tier: args, annual: false);
-    return (tier: SubscriptionTier.pro, annual: false);
+    return (tier: SubscriptionTier.max, annual: false);
   }
 
   @override
@@ -57,8 +82,12 @@ class _PurchaseProcessingScreenState
     final iap = ref.read(iapServiceProvider);
     final request = _request;
     final tier = request.tier;
+    // A new purchase supersedes a late-result watch left by an earlier one
+    // (QA F066) — otherwise both would react to this purchase's result.
+    cancelLatePurchaseWatch();
     _sub = iap.purchases.listen((p) {
       if (!mounted) return;
+      if (p.state != IapPurchaseState.pending) _pendingTimer?.cancel();
       switch (p.state) {
         case IapPurchaseState.purchased:
         case IapPurchaseState.restored:
@@ -68,53 +97,158 @@ class _PurchaseProcessingScreenState
           // bug). Then drop the server caches so a real backend refetches.
           ref.read(sessionEntitlementProvider.notifier).state = tier;
           ref.invalidate(serverSubscriptionStatusProvider);
+          // 방금 산 구독으로 주기·전환 판단을 다시 읽는다 — 안 하면 앱을 다시 켤 때까지 요금 줄이
+          // 비고 「Compare plans」 가 남는다(09-28 실기기).
+          ref.invalidate(premiumAnnualProvider);
           ref.invalidate(subscriptionsProvider);
+          // 통화가 5분 시트에서 이 퍼널을 띄워 놓고 **기다리고 있는가.**
+          //
+          // 그렇다면 성공 화면(`depth/purchase_success_pro`)을 띄우지 않는다. 그 시안의
+          // primary CTA 는 「Start a call」이라 **이미 통화 중인 사람에게 성립하지 않고**,
+          // 애초에 통화 밖에서 결제한 사람을 위해 그려진 화면이다. 대신 통화 화면까지
+          // 되돌려 대화를 잇는다 — 시트 카피가 약속한 「keep talking」이 그 뜻이다.
+          //
+          // ⛔ 이 판정을 `sessionEntitlementProvider` 를 감시하는 쪽(통화 화면)에 두지
+          //   마라. 바로 위에서 그 provider 를 set 하고 **같은 동기 블록에서** 아래
+          //   네비게이션이 돌기 때문에, 리스너는 microtask 로 한 박자 늦게 깬다.
+          //   그러면 성공 화면이 한 번 번쩍이고 사라진다. 퍼널이 직접 갈라야 결정적이다.
+          final callParked = ref.read(normalCallControllerProvider).phase ==
+              CallPhase.awaitingContinue;
+          if (callParked) {
+            // `|| r.isFirst` 는 안전망이다 — [Navigator.popUntil] 은 술어가 끝내 참이
+            // 되지 않으면 **스택을 다 비운다.** 통화 화면이 어떤 이유로든 스택에
+            // 없을 때 결제한 사람을 빈 화면에 떨구는 것보다 홈이 낫다.
+            Navigator.of(context).popUntil(
+                (r) => r.settings.name == Routes.call || r.isFirst);
+            return;
+          }
+          // 유료는 Premium 하나(상품·서버 코드 `max`) — 성공 화면도 하나다.
           Navigator.pushReplacementNamed(
             context,
-            tier == SubscriptionTier.max
-                ? Routes.purchaseSuccessMax
-                : Routes.purchaseSuccessPro,
-            // The success screen suppresses the annual OTO when the purchase
-            // was already annual (spec §8-2).
-            arguments: request.annual,
+            Routes.purchaseSuccessMax,
+            arguments: (annual: request.annual, trial: p.startedTrial),
           );
         case IapPurchaseState.canceled:
         case IapPurchaseState.failed:
-          _onFailed(p.state, request);
+          _onFailed(p, request);
         case IapPurchaseState.pending:
-          break;
+          // StoreKit reports every purchase as pending while its sheet is up,
+          // so wait before calling it slow. Past that, let the member go — the
+          // spinner used to hold them (back blocked) until the payment cleared,
+          // which for a cash payment is days (QA F004).
+          _pendingTimer ??= Timer(kPurchasePendingNoticeAfter, _onPendingTooLong);
       }
     });
     // Fire the purchase after the listener is attached. The cycle picks the
     // product: the paywall's annual selection and the OTO's yearly switch
     // used to be dropped here, quietly buying monthly every time.
-    unawaited(iap.getProducts(IapProductIds.subscriptions).then((products) {
-      final id = switch ((tier, request.annual)) {
-        (SubscriptionTier.max, true) => IapProductIds.maxYearly,
-        (SubscriptionTier.max, false) => IapProductIds.maxMonthly,
-        (_, true) => IapProductIds.proYearly,
-        (_, false) => IapProductIds.proMonthly,
-      };
-      final product = products.where((p) => p.id == id).firstOrNull;
-      if (product != null) return iap.purchase(product);
-    }));
+    unawaited(_kick(iap, request));
   }
 
-  /// Back to the paywall beneath, then the matching `purchase_failed` sheet
-  /// over it (P4). The retry CTA rebuys the same tier AND cycle.
-  void _onFailed(IapPurchaseState state, PurchaseRequest request) {
-    if (!mounted) return;
+  /// Asks the store for the chosen product and starts the payment sheet.
+  ///
+  /// Every way this can go wrong ends on the failure sheet. This screen blocks
+  /// the back key — the flow is supposed to leave through the purchase stream
+  /// — so a store query that throws or comes back empty would otherwise strand
+  /// the member on a spinner with no way out. That was survivable against a
+  /// mock rail that could not fail; a real one goes offline.
+  Future<void> _kick(IapService iap, PurchaseRequest request) async {
+    if (_winback) {
+      try {
+        if (await iap.purchaseWinbackOffer()) return;
+      } catch (_) {}
+      // 오퍼를 못 열었다(조회 실패·오퍼 비활성) — 정가로 사게 두지 않고 스토어 구독 화면으로
+      // 보낸다(iOS 와 같은 길 · PM-DEC-035).
+      if (!mounted) return;
+      Navigator.pop(context);
+      unawaited(openStoreSubscriptions());
+      return;
+    }
+    final id = productIdFor(request);
+    try {
+      final products = await iap.getProducts(IapProductIds.subscriptions);
+      final product = products.where((p) => p.id == id).firstOrNull;
+      if (product == null) {
+        if (mounted) _onStoreError(request);
+        return;
+      }
+      if (_switching) {
+        await iap.purchaseSwitch(product);
+      } else {
+        await iap.purchase(product);
+      }
+    } catch (_) {
+      if (mounted) _onStoreError(request);
+    }
+  }
+
+  /// The store could not be asked, or does not sell this — `purchase_failed —
+  /// 스토어 오류`.
+  ///
+  /// Deliberately **not** the declined sheet. Nothing was declined: no payment
+  /// was ever attempted. Offering "update your payment method" here points the
+  /// member at a card that is perfectly fine and hides the real cause.
+  void _onStoreError(PurchaseRequest request) {
+    if (_winback) {
+      Navigator.pop(context);
+      return;
+    }
     final navCtx = Navigator.of(context, rootNavigator: true).context;
-    final overlay = state == IapPurchaseState.canceled
+    Navigator.pop(context);
+    showSubscriptionOverlay(navCtx, SubscriptionOverlay.purchaseFailedStore,
+        retryTier: request.tier,
+        retryAnnual: request.annual,
+        retrySwitch: _switching);
+  }
+
+  /// Back to the paywall beneath, then the matching sheet over it (P4). The
+  /// retry CTA rebuys the same tier AND cycle.
+  ///
+  /// The declined-card sheet only when the store itself failed. When the store
+  /// took the money and our server has not confirmed it, or refused it, the
+  /// member is told that instead (QA F005 · F028).
+  void _onFailed(IapPurchase p, PurchaseRequest request) {
+    if (!mounted) return;
+    final overlay = p.state == IapPurchaseState.canceled
         ? SubscriptionOverlay.purchaseFailedCanceled
-        : SubscriptionOverlay.purchaseFailedDeclined;
+        : purchaseFailureOverlayFor(p);
+    // Winback: no retry sheets (their retry buys full price). A payment that
+    // went through but is unconfirmed or refused is still said, though.
+    final retrySheet = overlay == SubscriptionOverlay.purchaseFailedCanceled ||
+        overlay == SubscriptionOverlay.purchaseFailedDeclined;
+    if (_winback && retrySheet) {
+      Navigator.pop(context);
+      return;
+    }
+    final navCtx = Navigator.of(context, rootNavigator: true).context;
     Navigator.pop(context);
     showSubscriptionOverlay(navCtx, overlay,
-        retryTier: request.tier, retryAnnual: request.annual);
+        retryTier: request.tier,
+        retryAnnual: request.annual,
+        retrySwitch: _switching);
+  }
+
+  /// Still pending after [kPurchasePendingNoticeAfter] — say so and let go.
+  /// The rail delivers the purchase whenever the store completes it.
+  void _onPendingTooLong() {
+    if (!mounted) return;
+    final rootNav = Navigator.of(context, rootNavigator: true);
+    // The screen goes, the purchase does not: on iOS a member can simply sit
+    // on Apple's sheet past the timer and still pay. Keep listening past this
+    // screen so that success still refreshes the plan and says so (QA F004
+    // 재검증 — 지급은 됐는데 성공 안내·상태 갱신이 없었다).
+    watchLatePurchaseResult(
+      container: ProviderScope.containerOf(context, listen: false),
+      navigator: rootNav,
+      request: _request,
+    );
+    Navigator.pop(context);
+    showSubscriptionOverlay(rootNav.context, SubscriptionOverlay.purchasePending);
   }
 
   @override
   void dispose() {
+    _pendingTimer?.cancel();
     _sub?.cancel();
     super.dispose();
   }
@@ -157,13 +291,143 @@ class _PurchaseProcessingScreenState
   }
 }
 
+/// Waits for the final result of a purchase whose processing screen already
+/// left on the pending notice (QA F004), for up to [_lateResultWindow].
+///
+/// Success refreshes the plan and opens the success screen; a failure shows
+/// its sheet; a cancel is silent. One result ends the watch.
+///
+/// Guarded against the regression QA caught on the first version (F066):
+/// - only **this** subscription product's result counts — a character
+///   purchase or a restore inside the window used to promote a Free member to
+///   Premium for the session and open the Premium success screen;
+/// - one watch at a time — a new processing screen cancels it
+///   ([cancelLatePurchaseWatch]);
+/// - during a call nothing is pushed over the call screen: the plan is
+///   refreshed and the result is left for the subscription screen (the success
+///   screen's exit, `popUntil(isFirst)`, would otherwise tear the call down).
+///   A **failure** during a call is not dropped (QA F069): its sheet waits and
+///   shows once, when the call phase ends. The call state is only listened to —
+///   call files stay untouched (PM-DEC-059).
+void watchLatePurchaseResult({
+  required ProviderContainer container,
+  required NavigatorState navigator,
+  required PurchaseRequest request,
+}) {
+  cancelLatePurchaseWatch();
+  final iap = container.read(iapServiceProvider);
+  final productId = productIdFor(request);
+  _lateGuard = Timer(_lateResultWindow, cancelLatePurchaseWatch);
+  _lateSub = iap.purchases.listen((p) {
+    if (p.productId != productId || p.state == IapPurchaseState.pending) return;
+    cancelLatePurchaseWatch();
+    if (!navigator.mounted) return;
+    final inCall = _callPhases.contains(
+        container.read(normalCallControllerProvider).phase);
+    switch (p.state) {
+      case IapPurchaseState.purchased:
+      case IapPurchaseState.restored:
+        container.read(sessionEntitlementProvider.notifier).state = request.tier;
+        container.invalidate(serverSubscriptionStatusProvider);
+        container.invalidate(premiumAnnualProvider);
+        container.invalidate(subscriptionsProvider);
+        if (!inCall) {
+          navigator.pushNamed(Routes.purchaseSuccessMax,
+              arguments: (annual: request.annual, trial: p.startedTrial));
+        }
+      case IapPurchaseState.failed:
+        final overlay = purchaseFailureOverlayFor(p);
+        if (!inCall) {
+          showSubscriptionOverlay(navigator.context, overlay);
+        } else {
+          _showAfterCall(container, navigator, overlay);
+        }
+      case IapPurchaseState.canceled:
+      case IapPurchaseState.pending:
+        break;
+    }
+  });
+}
+
+/// Shows [overlay] once the call screen has left (QA F069).
+///
+/// Waits for [CallPhase.idle], not merely for the call phases to end: the call
+/// screen consumes the finished call (`clearFinished` → idle) and **then**
+/// replaces itself (`pushReplacementNamed` / `popUntil`) in the same turn. A
+/// sheet shown at `ended` sat on top and was the route that got replaced. At
+/// idle the navigation has already been issued, so the next frame shows the
+/// sheet over whatever screen the call left for.
+void _showAfterCall(ProviderContainer container, NavigatorState navigator,
+    SubscriptionOverlay overlay) {
+  _afterCall?.close();
+  _afterCall = container.listen<CallState>(normalCallControllerProvider,
+      (_, next) {
+    if (next.phase != CallPhase.idle) return;
+    _afterCall?.close();
+    _afterCall = null;
+    SchedulerBinding.instance
+      ..addPostFrameCallback((_) {
+        if (navigator.mounted) {
+          showSubscriptionOverlay(navigator.context, overlay);
+        }
+      })
+      ..ensureVisualUpdate();
+  });
+}
+
+/// Ends the late-result watch, if any.
+///
+/// A failure sheet still waiting for a call to end is dropped too: a new
+/// purchase attempt supersedes it.
+void cancelLatePurchaseWatch() {
+  _lateGuard?.cancel();
+  _lateGuard = null;
+  _lateSub?.cancel();
+  _lateSub = null;
+  _afterCall?.close();
+  _afterCall = null;
+}
+
+StreamSubscription<IapPurchase>? _lateSub;
+Timer? _lateGuard;
+ProviderSubscription<CallState>? _afterCall;
+
+/// A call is on screen — don't push results over it.
+///
+/// `ended` and `error` count too: the call screen is still up and about to
+/// replace itself (`pushReplacementNamed` / `popUntil`) once it consumes the
+/// call, which would take a sheet shown now with it (QA F084).
+const _callPhases = {
+  CallPhase.connecting,
+  CallPhase.inCall,
+  CallPhase.awaitingContinue,
+  CallPhase.ending,
+  CallPhase.ended,
+  CallPhase.error,
+};
+
+/// The store product a [PurchaseRequest] buys. The winback offer rides the
+/// monthly Premium product (the rail labels it so).
+String productIdFor(PurchaseRequest request) =>
+    switch ((request.tier, request.annual)) {
+      (SubscriptionTier.max, true) => IapProductIds.maxYearly,
+      (SubscriptionTier.max, false) => IapProductIds.maxMonthly,
+      (_, true) => IapProductIds.proYearly,
+      (_, false) => IapProductIds.proMonthly,
+    };
+
+/// How long [watchLatePurchaseResult] keeps listening.
+const _lateResultWindow = Duration(minutes: 30);
+
 /// `depth/purchase_success_pro` / `_max` (`4514:5666` / `4514:5684`).
 ///
 /// Close-GNB, success mark, headline, three unlocked-benefit rows and a
 /// sticky CTA pair. Pro is mint; Max is gold end to end.
 ///
-/// The Pro variant also fires the one-time-offer: `overlay/oto_annual` 0.8s
-/// after entry (spec §8-2) — once per app run, monthly purchases only.
+/// 단일 티어(09-22): Premium 성공 화면 하나(Figma `depth/purchase_success` `4514:5684`).
+/// 옛 Pro 성공 화면이 띄우던 연간 전환 OTO(`overlay/oto_annual`)는 **껐다** — 연간은 팔되
+/// 유도하지 않는다(가치 사다리 정본 §1 · §11-4).
+/// [tier] 는 호출부 호환으로 남겼다. 무엇이 와도 Premium 으로 그린다.
 class PurchaseSuccessScreen extends StatefulWidget {
   /// Creates a success screen for [tier].
   const PurchaseSuccessScreen({super.key, required this.tier});
@@ -176,29 +440,6 @@ class PurchaseSuccessScreen extends StatefulWidget {
 }
 
 class _PurchaseSuccessScreenState extends State<PurchaseSuccessScreen> {
-  /// Once per app run — the OTO never nags (spec §8-2: 신규 결제 직후 1회).
-  static bool _otoShownThisRun = false;
-
-  SubscriptionTier get tier => widget.tier;
-
-  bool get _isMax => tier == SubscriptionTier.max;
-
-  /// Whether the purchase that landed here was annual — the processing screen
-  /// hands it through as the route argument. Annual buyers never see the
-  /// annual OTO (spec §8-2: 월간 신규 결제 직후 1회).
-  bool get _wasAnnual =>
-      ModalRoute.of(context)?.settings.arguments as bool? ?? false;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (_isMax || _otoShownThisRun || _wasAnnual) return;
-    _otoShownThisRun = true;
-    Future.delayed(const Duration(milliseconds: 800), () {
-      if (!mounted) return;
-      showSubscriptionOverlay(context, SubscriptionOverlay.otoAnnual);
-    });
-  }
 
   /// The whole purchase funnel sits beneath this screen; going "back" into a
   /// spent paywall or the processing limbo helps no one. Every exit — system
@@ -206,21 +447,38 @@ class _PurchaseSuccessScreenState extends State<PurchaseSuccessScreen> {
   void _exitToRoot(BuildContext context) =>
       Navigator.of(context).popUntil((route) => route.isFirst);
 
+  /// What was bought — the route argument `(annual:, trial:)`, or a bare
+  /// `bool` (annual) from older call sites.
+  ({bool annual, bool trial}) get _bought {
+    final args = ModalRoute.of(context)?.settings.arguments;
+    if (args is ({bool annual, bool trial})) return args;
+    return (annual: args == true, trial: false);
+  }
+
+  /// The charge line under the CTAs — it must match the product and cycle
+  /// just bought (09-28 device: a yearly trial read "₩33,000 is charged
+  /// monthly"). Existing keys only.
+  String _caption(AppLocalizations l10n) => switch (_bought) {
+        (annual: true, trial: true) =>
+          l10n.ctaCaptionMaxYearlyTrial(PlanPrices.maxYearly),
+        (annual: true, trial: false) =>
+          l10n.ctaCaptionMaxYearly(PlanPrices.maxYearly),
+        (annual: false, trial: true) =>
+          l10n.ctaCaptionMaxTrial(PlanPrices.maxMonthly),
+        _ => l10n.successMaxCaption(PlanPrices.maxMonthly),
+      };
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final c = context.c;
-    final benefits = _isMax
-        ? [
-            l10n.successMaxBenefit1,
-            l10n.successMaxBenefit2,
-            l10n.successMaxBenefit3
-          ]
-        : [
-            l10n.successProBenefit1,
-            l10n.successProBenefit2,
-            l10n.successProBenefit3
-          ];
+    // 페이월·플랜 비교와 **같은 네 줄**이다 — 산 것과 판 것이 같아야 한다.
+    final benefits = [
+      (AppIcons.duoVideo(), l10n.premiumBulletVideo),
+      (AppIcons.duoChart(), l10n.premiumBulletAnalysis),
+      (AppIcons.duoTarget(), l10n.premiumBulletWeakSounds),
+      (AppIcons.duoBubble(), l10n.bulletProCorrections),
+    ];
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, _) {
@@ -234,8 +492,7 @@ class _PurchaseSuccessScreenState extends State<PurchaseSuccessScreen> {
             height: 56,
             child: Align(
               alignment: Alignment.centerLeft,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
+              child: ContentColumn(
                 child: GestureDetector(
                   onTap: () => _exitToRoot(context),
                   child: AppIcons.close(size: 28, color: c.commonWhiteAndDark),
@@ -244,74 +501,81 @@ class _PurchaseSuccessScreenState extends State<PurchaseSuccessScreen> {
             ),
           ),
           Expanded(
-            child: ListView(
-              padding: const EdgeInsets.fromLTRB(AppSpacing.s20,
-                  AppSpacing.s24, AppSpacing.s20, AppSpacing.s24),
-              children: [
-                Container(
-                  width: 56,
-                  height: 56,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: c.primaryNormal14,
+            child: ContentColumn(
+              child: ListView(
+                padding: const EdgeInsets.only(top: AppSpacing.s24, bottom: AppSpacing.s24),
+                children: [
+                  Container(
+                    width: 56,
+                    height: 56,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: c.primaryNormal14,
+                    ),
+                    child: AppIcons.check(size: 32, color: c.primaryNormal),
                   ),
-                  child: AppIcons.check(size: 32, color: c.primaryNormal),
-                ),
-                const SizedBox(height: AppSpacing.s24),
-                Text(
-                  _isMax ? l10n.successMaxTitle : l10n.successProTitle,
-                  style: AppType.title3.sb.copyWith(color: c.labelStrong),
-                ),
-                const SizedBox(height: AppSpacing.s24),
-                Text(
-                  _isMax ? l10n.successMaxSub : l10n.successProSub,
-                  style: AppType.label1.r.copyWith(color: c.labelNormal),
-                ),
-                const SizedBox(height: AppSpacing.s24),
-                for (var i = 0; i < benefits.length; i++) ...[
-                  if (i > 0) const SizedBox(height: 14),
-                  BenefitRow(
-                    tier: _isMax ? BenefitTier.max : BenefitTier.pro,
-                    label: benefits[i],
+                  const SizedBox(height: AppSpacing.s24),
+                  Text(
+                    l10n.successMaxTitle,
+                    // Figma: 제목만 가운데 정렬(본문·혜택 줄은 왼쪽).
+                    textAlign: TextAlign.center,
+                    style: AppType.title3.sb.copyWith(color: c.labelStrong),
                   ),
+                  const SizedBox(height: AppSpacing.s24),
+                  Text(
+                    l10n.successMaxSub,
+                    style: AppType.label1.r.copyWith(color: c.labelNormal),
+                  ),
+                  const SizedBox(height: AppSpacing.s24),
+                  for (var i = 0; i < benefits.length; i++) ...[
+                    if (i > 0) const SizedBox(height: 14),
+                    // Figma `purchase_success`(`4514:5684`): 페이월·플랜 비교와 같은 듀오톤
+                    // 아이콘 줄(`Paywall/Benefit`).
+                    BenefitRow(icon: benefits[i].$1, label: benefits[i].$2),
+                  ],
                 ],
-              ],
+              ),
             ),
           ),
           Container(
-            padding: const EdgeInsets.fromLTRB(
-                AppSpacing.s20, AppSpacing.s12, AppSpacing.s20, 0),
             decoration: BoxDecoration(
               border: Border(top: BorderSide(color: c.lineAlternative)),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Button(
-                  type: _isMax ? BtnType.gold : BtnType.primaryFill,
-                  size: BtnSize.s60,
-                  text: _isMax ? l10n.ctaStartAVideoCall : l10n.ctaStartACall,
-                  onPressed: () => _exitToRoot(context),
-                ),
-                const SizedBox(height: 6),
-                Button(
-                  type: BtnType.secondaryFill,
-                  size: BtnSize.s60,
-                  text: l10n.ctaSeeYourSubscription,
-                  // Drop the spent funnel (paywall → processing → success)
-                  // underneath: back from the manage screen should land on the
-                  // root, not replay a completed purchase.
-                  onPressed: () => Navigator.pushNamedAndRemoveUntil(
-                      context, Routes.subscription, (route) => route.isFirst),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  _isMax ? l10n.successMaxCaption(PlanPrices.maxMonthly) : l10n.successProCaption(PlanPrices.proMonthly),
-                  textAlign: TextAlign.center,
-                  style: AppType.caption1.r.copyWith(color: c.labelNormal),
-                ),
-              ],
+            child: ContentColumn(
+              padding: const EdgeInsets.only(top: AppSpacing.s12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // 버튼 쌍 세로(09-24 사장님 확정) — Figma `depth/purchase_success` 순서:
+                  // 「See your subscription」 위 · 「Start a video call」(gold) 아래, 버튼 사이 12 ·
+                  // 안내 문구와는 6(Sticky-CTA gap 6 안에 Buttons gap 12).
+                  StackedButtonPair(
+                    top: Button(
+                      type: BtnType.secondaryFill,
+                      size: BtnSize.s60,
+                      text: l10n.ctaSeeYourSubscription,
+                      // Drop the spent funnel (paywall → processing → success)
+                      // underneath: back from the manage screen should land on the
+                      // root, not replay a completed purchase.
+                      onPressed: () => Navigator.pushNamedAndRemoveUntil(
+                          context, Routes.subscription, (route) => route.isFirst),
+                    ),
+                    bottom: Button(
+                      type: BtnType.gold,
+                      size: BtnSize.s60,
+                      text: l10n.ctaStartAVideoCall,
+                      onPressed: () => _exitToRoot(context),
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    _caption(l10n),
+                    textAlign: TextAlign.center,
+                    style: AppType.caption1.r.copyWith(color: c.labelNormal),
+                  ),
+                ],
+              ),
             ),
           ),
           const SafeArea(
@@ -371,36 +635,36 @@ class PlansErrorScreen extends StatelessWidget {
             ),
           ),
           Container(
-            padding: const EdgeInsets.fromLTRB(
-                AppSpacing.s20, AppSpacing.s12, AppSpacing.s20, 0),
             decoration: BoxDecoration(
               border: Border(top: BorderSide(color: c.lineAlternative)),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Button(
-                  type: BtnType.primaryFill,
-                  size: BtnSize.s60,
-                  text: l10n.ctaTryAgain,
-                  onPressed: () => Navigator.pushReplacementNamed(
-                      context, Routes.plansCompare),
-                ),
-                const SizedBox(height: 6),
-                Button(
-                  type: BtnType.secondaryFill,
-                  size: BtnSize.s60,
-                  text: l10n.billingRestorePurchases,
-                  onPressed: () => showSubscriptionOverlay(
-                      context, SubscriptionOverlay.restoreSuccess),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  l10n.plansErrorCaption,
-                  textAlign: TextAlign.center,
-                  style: AppType.caption1.r.copyWith(color: c.labelNormal),
-                ),
-              ],
+            child: ContentColumn(
+              padding: const EdgeInsets.only(top: AppSpacing.s12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Button(
+                    type: BtnType.primaryFill,
+                    size: BtnSize.s60,
+                    text: l10n.ctaTryAgain,
+                    onPressed: () => Navigator.pushReplacementNamed(
+                        context, Routes.plansCompare),
+                  ),
+                  const SizedBox(height: 6),
+                  Button(
+                    type: BtnType.secondaryFill,
+                    size: BtnSize.s60,
+                    text: l10n.billingRestorePurchases,
+                    onPressed: () => runRestoreFlow(context),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    l10n.plansErrorCaption,
+                    textAlign: TextAlign.center,
+                    style: AppType.caption1.r.copyWith(color: c.labelNormal),
+                  ),
+                ],
+              ),
             ),
           ),
           const SafeArea(

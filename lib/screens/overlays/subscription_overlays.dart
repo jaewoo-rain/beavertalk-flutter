@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../app/routes.dart';
+import '../../features/character/presentation/providers/character_providers.dart';
+import '../../features/legal/legal_urls.dart' show contactMailUri;
+import '../../features/subscription/domain/iap_service.dart';
+import '../../features/subscription/presentation/providers/subscription_state_providers.dart';
 import '../../components/molecules/benefit_row.dart';
 import '../../components/organisms/bottom_sheet.dart' show SheetAction;
 import '../../components/organisms/bottom_sheet_content.dart';
@@ -32,6 +37,15 @@ enum SubscriptionOverlay {
 
   /// `overlay/restore — 다른 계정에 연결됨` (`4514:4834`).
   restoreOtherAccount,
+
+  /// 복원 — 캐릭터만 돌아옴(구독 없음 · QA F097 · PM-DEC-166). 둘 이상.
+  restoreCharacters,
+
+  /// 복원 — 캐릭터 하나만 돌아옴(단수 제목 · QA F110).
+  restoreCharacter,
+
+  /// 복원 — 캐릭터 영수증이 다른 BeaverTalk 계정 것(09-28 실기기 · 409).
+  restoreCharacterOtherAccount,
 
   /// `overlay/character_offer` (`4663:6353`).
   characterOffer,
@@ -79,6 +93,19 @@ enum SubscriptionOverlay {
   /// `overlay/purchase_failed — 스토어 오류` (`4514:5403`).
   purchaseFailedStore,
 
+  /// 결제는 됐고 서버 확인이 아직 — 「카드 거절」 이 아니다(QA F005 · 09-27).
+  /// Figma 에 없는 시트라 스토어 오류 시트와 같은 틀(오류 표식 없음)을 쓴다.
+  purchaseVerifying,
+
+  /// 스토어가 결제를 보류로 알렸다(느린 카드·현금 결제) — 화면을 떠나도 된다(QA F004).
+  purchasePending,
+
+  /// 스토어가 영수증을 무효로 판정했다(서버 `INVALID_RECEIPT` · QA F028).
+  purchaseRejected,
+
+  /// 구매 복원 중 스토어·서버에 닿지 못했다 — 「복원할 것 없음」 이 아니다(QA F003).
+  restoreUnavailable,
+
   /// `overlay/already_subscribed` (`4514:5442`).
   alreadySubscribed,
 
@@ -86,58 +113,242 @@ enum SubscriptionOverlay {
   /// reassembly backup — reconfirm against the 04_통화 host section.
   freeLimitCall,
 
-  /// `free_limit — 발음분석 소진` (§7-1, host: analysis).
-  freeLimitCheck,
+
+  /// `free_call_ended` (`4952:18151`) — **무료 회원이 5분 구간을 다 썼다.**
+  ///
+  /// [freeLimitCall] 과 형제지만 뜻이 다르다: 저쪽은 "오늘 통화 시간을 다 썼다"(하루 합산 5분),
+  /// 이쪽은 "이번 통화의 5분이 끝났다"다. 무료에는 연장이 없으므로 두 번째 버튼은
+  /// 통화 종료다.
+  freeCallEnded,
+
+  /// `keep_going` (`4952:18344`) — **유료 회원에게 5분마다 묻는다.**
+  ///
+  /// 하루 합산 15분(09-23) 안에서 조각을 이어가고, 매 조각 끝에서 이 시트가 뜬다
+  /// (`kgBody` 「Calls continue in short stretches.」 — 조각 길이는 서버 `remaining_s` 라
+  /// 숫자를 쓰지 않는다). 상한을 다 쓰면 이 시트를 띄우지 않고 통화를 끝낸다 — 누를 수
+  /// 없는 버튼을 보여 줄 이유가 없다.
+  keepGoing,
+
+  /// `call_main_live_5minute_premium` (`5026:24871`) — **유료 통화가 15분 상한을 다
+  /// 썼다.** 연장은 없고 버튼은 「End Call」 하나다(P19, 사용자 결정 2026-09-22).
+  ///
+  /// 문구는 [lastCallToday] 로 갈린다. Premium 은 하루 합산 15분(09-23 확정)이라 상한
+  /// 도달이 곧 오늘 예산 소진이다 — 실사용에서는 「내일 또」 쪽이다. 「통화가 더 남음」
+  /// 쪽은 서버가 예산이 남았다고 답할 때(한도 면제 admin)만 쓴다.
+  premiumCallEnded,
 }
 
 /// Shows [overlay] as a modal bottom sheet over the current screen.
 ///
 /// [expiresAt] feeds the sheets that quote a date (server value); [usage] and
 /// [scores] feed the free-limit sheets. Returns when the sheet closes.
+///
+/// [onContinue] / [onEndCall] 은 통화 구간 시트([SubscriptionOverlay.keepGoing],
+/// [SubscriptionOverlay.freeCallEnded]) 전용이다. 그 시트의 버튼은 **시트를 닫는 것
+/// 만으로 끝나지 않고 통화 자체를 움직여야 해서**, 다른 시트들과 달리 호출부의
+/// 동작을 받는다.
 Future<void> showSubscriptionOverlay(
   BuildContext context,
   SubscriptionOverlay overlay, {
   DateTime? expiresAt,
-  SubscriptionTier retryTier = SubscriptionTier.pro,
+  SubscriptionTier retryTier = SubscriptionTier.max,
   bool retryAnnual = false,
+  bool retrySwitch = false,
   ({String used, String limit})? usage,
   Widget? avatar,
   String? characterName,
   String? lastTopic,
   List<SheetRowData>? scores,
+  VoidCallback? onContinue,
+  VoidCallback? onEndCall,
+  VoidCallback? onSubscribe,
+  bool lastCallToday = false,
 }) {
+  // 통화 구간 시트는 **결정을 받아야 하는** 시트다. 딤을 눌러서 흘려보내면 통화가
+  // 결정을 기다리는 상태로 남는다(소리도 없고 화면도 안 바뀐다). 그래서 이 둘만
+  // 딤 탭·드래그로 닫히지 않게 한다.
+  final mustDecide = overlay == SubscriptionOverlay.keepGoing ||
+      overlay == SubscriptionOverlay.freeCallEnded ||
+      overlay == SubscriptionOverlay.premiumCallEnded;
   return showModalBottomSheet<void>(
     context: context,
     backgroundColor: Colors.transparent,
     // Dim tap = close; pinned to the app scrim.
     barrierColor: context.c.materialDim,
     isScrollControlled: true,
+    isDismissible: !mustDecide,
+    enableDrag: !mustDecide,
     builder: (sheetCtx) => _OverlaySheet(
       overlay: overlay,
       expiresAt: expiresAt,
       retryTier: retryTier,
       retryAnnual: retryAnnual,
+      retrySwitch: retrySwitch,
       usage: usage,
       avatar: avatar,
       characterName: characterName,
       lastTopic: lastTopic,
       scores: scores,
+      onContinue: onContinue,
+      onEndCall: onEndCall,
+      onSubscribe: onSubscribe,
+      lastCallToday: lastCallToday,
     ),
   );
 }
+
+/// `구매 복원` — the one implementation, for all five buttons that offer it.
+///
+/// ## Why this is shared
+///
+/// Restore is reachable from the billing list, the trial-expired notice, the
+/// paywall footer, the plans-error screen and the store-failure sheet. Every
+/// one of them used to open the success sheet directly — a mock rail's habit,
+/// harmless while nothing could actually be restored and a lie the moment the
+/// store is real. On a device with no purchases at all, five buttons cheerfully
+/// announced "Pro is back".
+///
+/// One entry point is what keeps the next new button honest: there is nowhere
+/// left to hand-roll a fake.
+///
+/// ## What it does
+///
+/// Asks the store to replay everything this account owns, counts what came
+/// back, and picks the sheet from that count. Nothing restored is a normal
+/// outcome, not an error — a member who never bought anything deserves a clear
+/// "there was nothing here", not a failure.
+Future<void> runRestoreFlow(BuildContext context) async {
+  // Two taps in flight would double-count and race the sheets.
+  if (_restoring) return;
+  _restoring = true;
+  // The container, not a widget's `ref`.
+  //
+  // Restore takes a second or two, and one of the callers is a bottom sheet
+  // that pops itself the moment it is tapped. Its `ref` is dead before the
+  // store answers — `Bad state: Cannot use "ref" after the widget was
+  // disposed`, observed on device — so the refresh never ran and no result
+  // sheet appeared. The container outlives every screen that can start this.
+  final container = ProviderScope.containerOf(context, listen: false);
+  final iap = container.read(iapServiceProvider);
+  // 누른 즉시 진행 표시를 띄운다 — 스토어 조회·대기·서버 확인에 1~3초가 걸리는데
+  // 그동안 화면이 그대로라 「안 눌렸다」고 보고 다시 누르게 되고, 그 탭은 위의
+  // 중복 방지에 막혀 무시된다(10-06 사용자 「아이콘에서만 눌리는 것 같다」).
+  // 루트 내비게이터에 띄워, 시트에서 호출돼 시트가 먼저 닫혀도 닫을 수 있게 한다.
+  final rootNav = Navigator.of(context, rootNavigator: true);
+  final c = context.c;
+  showDialog<void>(
+    context: context,
+    useRootNavigator: true,
+    barrierDismissible: false,
+    builder: (_) => PopScope(
+      canPop: false,
+      child: Center(
+        child: SizedBox(
+          width: 56,
+          height: 56,
+          child: CircularProgressIndicator(
+            strokeWidth: 4,
+            color: c.primaryNormal,
+            backgroundColor: c.primaryNormal10,
+          ),
+        ),
+      ),
+    ),
+  );
+  // The rail's verdict, not a count of `restored` events (QA F003): the server
+  // can refuse every receipt with a 200, and an unreachable server is not
+  // "nothing to restore".
+  RestoreOutcome outcome;
+  try {
+    outcome = await iap.restore();
+  } catch (_) {
+    outcome = RestoreOutcome.unavailable;
+  } finally {
+    _restoring = false;
+    if (rootNav.mounted) rootNav.pop();
+  }
+  container.invalidate(charactersProvider);
+  container.invalidate(ownedCharactersProvider);
+  container.invalidate(serverSubscriptionStatusProvider);
+  if (!context.mounted) return;
+  showSubscriptionOverlay(context, restoreOverlayFor(outcome));
+}
+
+bool _restoring = false;
+
+/// The result sheet for a restore.
+@visibleForTesting
+SubscriptionOverlay restoreOverlayFor(RestoreOutcome outcome) =>
+    switch (outcome) {
+      RestoreOutcome.restored => SubscriptionOverlay.restoreSuccess,
+      RestoreOutcome.restoredCharacters => SubscriptionOverlay.restoreCharacters,
+      RestoreOutcome.restoredCharacter => SubscriptionOverlay.restoreCharacter,
+      RestoreOutcome.unconfirmed => SubscriptionOverlay.purchaseRejected,
+      RestoreOutcome.verifying => SubscriptionOverlay.purchaseVerifying,
+      RestoreOutcome.charactersNotThisAccount =>
+        SubscriptionOverlay.restoreCharacterOtherAccount,
+      RestoreOutcome.nothing => SubscriptionOverlay.restoreEmpty,
+      RestoreOutcome.notThisAccount => SubscriptionOverlay.restoreOtherAccount,
+      RestoreOutcome.unavailable => SubscriptionOverlay.restoreUnavailable,
+    };
+
+/// The sheet for a failed purchase event (QA F005 · F028) — the declined-card
+/// sheet only when the store itself failed.
+SubscriptionOverlay purchaseFailureOverlayFor(IapPurchase p) =>
+    switch (p.failure) {
+      IapFailure.verifyPending => SubscriptionOverlay.purchaseVerifying,
+      IapFailure.rejected => SubscriptionOverlay.purchaseRejected,
+      IapFailure.otherAccount => SubscriptionOverlay.restoreOtherAccount,
+      IapFailure.alreadyOwned => SubscriptionOverlay.alreadySubscribed,
+      IapFailure.store || null => SubscriptionOverlay.purchaseFailedDeclined,
+    };
+
+/// 시트 한 장을 띄우지 않고 위젯으로 돌려준다 — i18n 잘림·넘침 하네스 전용.
+///
+/// 가격·날짜가 든 시트를 로케일마다 실제로 그려 봐야 해서 연다(잘린 금액·날짜는 빈 값보다
+/// 나쁘다). 앱 코드는 [showSubscriptionOverlay] 를 쓴다.
+@visibleForTesting
+Widget subscriptionOverlayForTest(
+  SubscriptionOverlay overlay, {
+  DateTime? expiresAt,
+  ({String used, String limit})? usage,
+  Widget? avatar,
+  String? characterName,
+  String? lastTopic,
+  List<SheetRowData>? scores,
+  bool lastCallToday = false,
+}) =>
+    _OverlaySheet(
+      overlay: overlay,
+      expiresAt: expiresAt,
+      usage: usage,
+      avatar: avatar,
+      characterName: characterName,
+      lastTopic: lastTopic,
+      scores: scores,
+      lastCallToday: lastCallToday,
+    );
 
 class _OverlaySheet extends StatelessWidget {
   const _OverlaySheet({
     required this.overlay,
     this.expiresAt,
-    this.retryTier = SubscriptionTier.pro,
+    this.retryTier = SubscriptionTier.max,
     this.retryAnnual = false,
+    this.retrySwitch = false,
     this.usage,
     this.avatar,
     this.characterName,
     this.lastTopic,
     this.scores,
+    this.onContinue,
+    this.onEndCall,
+    this.onSubscribe,
+    this.lastCallToday = false,
   });
+
+  /// [SubscriptionOverlay.premiumCallEnded] 전용 — 오늘 마지막 통화였는가.
+  final bool lastCallToday;
 
   final SubscriptionOverlay overlay;
   final DateTime? expiresAt;
@@ -149,11 +360,35 @@ class _OverlaySheet extends StatelessWidget {
   /// Whether the failed purchase was annual, so the retry rebuys the same
   /// product instead of quietly falling back to monthly.
   final bool retryAnnual;
+
+  /// Whether the failed purchase was a monthly↔yearly switch — the retry must
+  /// stay a replacement, not become a second subscription (QA F083).
+  final bool retrySwitch;
+
+  /// The route argument a `Try again` re-fires.
+  Object get _retryArgs => retrySwitch
+      ? SwitchPurchase(annual: retryAnnual)
+      : (tier: retryTier, annual: retryAnnual);
   final ({String used, String limit})? usage;
   final Widget? avatar;
   final String? characterName;
   final String? lastTopic;
   final List<SheetRowData>? scores;
+
+  /// 「Keep talking」 — 다음 5분 구간을 연다. 통화 구간 시트에서만 쓴다.
+  final VoidCallback? onContinue;
+
+  /// 「End Call」 — 통화를 끝낸다. 통화 구간 시트에서만 쓴다.
+  ///
+  /// ⚠ 이 버튼은 **시트만 닫으면 안 된다.** 통화는 결정을 기다리는 상태로 멈춰
+  ///   있으므로, 닫기만 하면 소리도 안 나고 화면도 안 바뀌는 상태에 갇힌다.
+  final VoidCallback? onEndCall;
+
+  /// 「Subscribe and keep talking」 — 통화를 끝내고 결제 화면으로.
+  ///
+  /// 안 주면 결제 화면으로 밀기만 한다(마이페이지 데모 허브처럼 통화가 없는 곳).
+  /// 통화 중에는 **반드시 넘겨야 한다** — 이유는 호출 지점 주석 참조.
+  final VoidCallback? onSubscribe;
 
   String _date(BuildContext context, DateTime? d) =>
       d == null ? '—' : localizedFullDate(context, d);
@@ -194,8 +429,33 @@ class _OverlaySheet extends StatelessWidget {
           primaryAction:
               SheetAction(label: l10n.ctaContinue, onPressed: () => _close(context)),
         );
+      // 캐릭터만 돌아왔다 — 「Premium is back」 이 아니다(QA F097 · PM-DEC-166).
+      case SubscriptionOverlay.restoreCharacters:
+      case SubscriptionOverlay.restoreCharacter:
+        return BottomSheetContent(
+          title: l10n.ovRestoreCharactersTitle(
+              overlay == SubscriptionOverlay.restoreCharacter ? 1 : 2),
+          // 제목만(PM-DEC-182 · QA F110) — 「이 캐릭터는…」 단수 본문이 여러 캐릭터 복원과 안 맞았다.
+          body: '',
+          mark: SheetMarkTone.success,
+          primaryAction:
+              SheetAction(label: l10n.ctaContinue, onPressed: () => _close(context)),
+        );
+      // 캐릭터 영수증만 올라갔는데 지급이 없다 — 다른 계정에서 산 캐릭터(09-28 실기기 · 409).
+      case SubscriptionOverlay.restoreCharacterOtherAccount:
+        return BottomSheetContent(
+          secondaryOnTop: true,
+          title: l10n.ovRestoreCharacterOtherTitle,
+          body: '',
+          primaryAction: SheetAction(
+              label: l10n.ctaSignInThatAccount,
+              onPressed: () => pushAfterClose(Routes.mypageSettings)),
+          secondaryAction:
+              SheetAction(label: l10n.ctaGetHelp, onPressed: () => _close(context)),
+        );
       case SubscriptionOverlay.restoreEmpty:
         return BottomSheetContent(
+          secondaryOnTop: true, // CTA 아래(09-26 사용자 배치 · Figma 6465:4667)
           title: l10n.ovRestoreEmptyTitle,
           body: l10n.ovRestoreEmptyBody,
           primaryAction: SheetAction(
@@ -206,6 +466,7 @@ class _OverlaySheet extends StatelessWidget {
         );
       case SubscriptionOverlay.restoreOtherAccount:
         return BottomSheetContent(
+          secondaryOnTop: true, // CTA 아래(09-26 사용자 배치 · Figma 6465:4667)
           title: l10n.ovRestoreOtherTitle,
           body: l10n.ovRestoreOtherBody,
           primaryAction: SheetAction(
@@ -216,6 +477,7 @@ class _OverlaySheet extends StatelessWidget {
         );
       case SubscriptionOverlay.characterOffer:
         return BottomSheetContent(
+          secondaryOnTop: true, // CTA 아래(09-26 사용자 배치 · Figma 6465:4667)
           type: SheetContentType.rows,
           title: l10n.ovCharacterOfferTitle,
           body: l10n.ovCharacterOfferBody,
@@ -245,13 +507,14 @@ class _OverlaySheet extends StatelessWidget {
         );
       case SubscriptionOverlay.cancelDownsell:
         return BottomSheetContent(
+          secondaryOnTop: true, // CTA 아래(09-26 사용자 배치 · Figma 6465:4667)
           type: SheetContentType.rows,
           title: l10n.ovCancelDownsellTitle,
           body: l10n.ovCancelDownsellBody,
           rows: [
             SheetRowData(
                 label: l10n.rowPayYearlyInstead,
-                value: l10n.rowYearlyMonthEquiv(PlanPrices.proYearlyPerMonth),
+                value: l10n.rowYearlyMonthEquiv(PlanPrices.maxYearlyPerMonth),
                 highlighted: true),
             SheetRowData(
                 label: l10n.rowCharactersYouBought,
@@ -266,43 +529,39 @@ class _OverlaySheet extends StatelessWidget {
               onPressed: () => _then(
                   context,
                   () => rootNav.pushNamed(Routes.purchaseProcessing,
-                      arguments: (
-                        tier: SubscriptionTier.pro,
-                        annual: true
-                      )))),
+                      arguments: const SwitchPurchase(annual: true)))),
           secondaryAction: SheetAction(
               label: l10n.ctaContinueToStore,
               onPressed: () => _toStore(context)),
         );
       case SubscriptionOverlay.annualSwitch:
         return BottomSheetContent(
+          secondaryOnTop: true, // CTA 아래(09-26 사용자 배치 · Figma 6465:4667)
           type: SheetContentType.rows,
-          title: l10n.ovAnnualSwitchTitle(PlanPrices.proYearlySaved),
+          title: l10n.ovAnnualSwitchTitle(PlanPrices.maxYearlySaved),
           body: l10n.ovAnnualSwitchBody,
           rows: [
             SheetRowData(
                 label: l10n.rowYouSave,
-                value: l10n.amountSaved(PlanPrices.proYearlySaved),
+                value: l10n.amountSaved(PlanPrices.maxYearlySaved),
                 highlighted: true),
-            SheetRowData(label: l10n.rowYearly, value: l10n.amountYearly(PlanPrices.proYearly)),
+            SheetRowData(label: l10n.rowYearly, value: l10n.amountYearly(PlanPrices.maxYearly)),
             SheetRowData(
                 label: l10n.rowMonthlyForYear,
-                value: l10n.amountMonthlyForYear(PlanPrices.proYearlyAnchor)),
+                value: l10n.amountMonthlyForYear(PlanPrices.maxYearlyAnchor)),
           ],
           primaryAction: SheetAction(
               label: l10n.ctaSwitchToYearly,
               onPressed: () => _then(
                   context,
                   () => rootNav.pushNamed(Routes.purchaseProcessing,
-                      arguments: (
-                        tier: SubscriptionTier.pro,
-                        annual: true
-                      )))),
+                      arguments: const SwitchPurchase(annual: true)))),
           secondaryAction:
               SheetAction(label: l10n.ctaNotNow, onPressed: () => _close(context)),
         );
       case SubscriptionOverlay.monthlySwitch:
         return BottomSheetContent(
+          secondaryOnTop: true, // CTA 아래(09-26 사용자 배치 · Figma 6465:4667)
           type: SheetContentType.rows,
           title: l10n.ovMonthlySwitchTitle,
           body: l10n.ovMonthlySwitchBody(_date(context, expiresAt)),
@@ -312,20 +571,17 @@ class _OverlaySheet extends StatelessWidget {
                 value: _date(context, expiresAt),
                 highlighted: true),
             SheetRowData(
-                label: l10n.rowMonthlyLabel, value: l10n.proMonthlyPriceLine(PlanPrices.proMonthly)),
+                label: l10n.rowMonthlyLabel, value: l10n.proMonthlyPriceLine(PlanPrices.maxMonthly)),
             SheetRowData(
                 label: l10n.rowYearlyWorkedOut,
-                value: l10n.rowYearlyMonthEquiv(PlanPrices.proYearlyPerMonth)),
+                value: l10n.rowYearlyMonthEquiv(PlanPrices.maxYearlyPerMonth)),
           ],
           primaryAction: SheetAction(
               label: l10n.ctaSwitchToMonthly,
               onPressed: () => _then(
                   context,
                   () => rootNav.pushNamed(Routes.purchaseProcessing,
-                      arguments: (
-                        tier: SubscriptionTier.pro,
-                        annual: false
-                      )))),
+                      arguments: const SwitchPurchase(annual: false)))),
           secondaryAction:
               SheetAction(label: l10n.ctaNotNow, onPressed: () => _close(context)),
         );
@@ -345,12 +601,14 @@ class _OverlaySheet extends StatelessWidget {
           body: l10n.subCancelBody(_date(context, expiresAt)),
           blockTitle: l10n.subWhatYouLose,
           rows: [
-            SubscriptionActionRow(l10n.benefitCalls15),
+            // Figma `overlay/cancel_subscription`·`resubscribe`: 영상통화 · 글자 단위 채점 ·
+            // 모든 지표와 문장(분석 전체). 첫 줄은 「하루 15분」 문구다(09-23 하루 합산 확정).
+            SubscriptionActionRow(l10n.premiumBulletVideo),
             SubscriptionActionRow(l10n.benefitScoring),
-            SubscriptionActionRow(l10n.benefitEveryCharacter),
+            SubscriptionActionRow(l10n.benefitEveryMetric),
           ],
           primaryAction:
-              SheetAction(label: l10n.ctaKeepPro, onPressed: () => _close(context)),
+              SheetAction(label: l10n.ctaKeepMax, onPressed: () => _close(context)),
           secondaryAction: SheetAction(
               label: l10n.ctaContinueToStore,
               onPressed: () => _toStore(context)),
@@ -380,9 +638,11 @@ class _OverlaySheet extends StatelessWidget {
           body: l10n.subResubBody(_date(context, expiresAt)),
           blockTitle: l10n.subWhatYouKeep,
           rows: [
-            SubscriptionActionRow(l10n.benefitCalls15),
+            // Figma `overlay/cancel_subscription`·`resubscribe`: 영상통화 · 글자 단위 채점 ·
+            // 모든 지표와 문장(분석 전체). 첫 줄은 「하루 15분」 문구다(09-23 하루 합산 확정).
+            SubscriptionActionRow(l10n.premiumBulletVideo),
             SubscriptionActionRow(l10n.benefitScoring),
-            SubscriptionActionRow(l10n.benefitEveryCharacter),
+            SubscriptionActionRow(l10n.benefitEveryMetric),
           ],
           primaryAction: SheetAction(
               label: l10n.ctaTurnItBackOn, onPressed: () => _toStore(context)),
@@ -439,12 +699,12 @@ class _OverlaySheet extends StatelessWidget {
           rows: [
             SheetRowData(
                 label: l10n.rowYouSave,
-                value: l10n.amountSaved(PlanPrices.proYearlySaved),
+                value: l10n.amountSaved(PlanPrices.maxYearlySaved),
                 highlighted: true),
-            SheetRowData(label: l10n.rowYearly, value: l10n.amountYearly(PlanPrices.proYearly)),
+            SheetRowData(label: l10n.rowYearly, value: l10n.amountYearly(PlanPrices.maxYearly)),
             SheetRowData(
                 label: l10n.rowMonthlyForYear,
-                value: l10n.amountMonthlyForYear(PlanPrices.proYearlyAnchor)),
+                value: l10n.amountMonthlyForYear(PlanPrices.maxYearlyAnchor)),
           ],
           primaryAction: SheetAction(
               label: l10n.ctaSwitchToYearly,
@@ -454,6 +714,7 @@ class _OverlaySheet extends StatelessWidget {
         );
       case SubscriptionOverlay.purchaseFailedDeclined:
         return BottomSheetContent(
+          secondaryOnTop: true, // CTA 아래(09-26 사용자 확정 「이대로 가」)
           title: l10n.ovFailedDeclinedTitle,
           body: l10n.ovFailedDeclinedBody,
           mark: SheetMarkTone.error,
@@ -465,6 +726,7 @@ class _OverlaySheet extends StatelessWidget {
         );
       case SubscriptionOverlay.purchaseFailedCanceled:
         return BottomSheetContent(
+          secondaryOnTop: true, // CTA 아래(09-26 사용자 확정 「이대로 가」)
           title: l10n.ovFailedCanceledTitle,
           body: l10n.ovFailedCanceledBody,
           primaryAction: SheetAction(
@@ -472,12 +734,13 @@ class _OverlaySheet extends StatelessWidget {
               onPressed: () => _then(
                   context,
                   () => rootNav.pushNamed(Routes.purchaseProcessing,
-                      arguments: (tier: retryTier, annual: retryAnnual)))),
+                      arguments: _retryArgs))),
           secondaryAction:
               SheetAction(label: l10n.ctaNotNow, onPressed: () => _close(context)),
         );
       case SubscriptionOverlay.purchaseFailedStore:
         return BottomSheetContent(
+          secondaryOnTop: true, // CTA 아래(09-26 사용자 확정 「이대로 가」)
           title: l10n.ovFailedStoreTitle,
           body: l10n.ovFailedStoreBody,
           mark: SheetMarkTone.error,
@@ -486,13 +749,56 @@ class _OverlaySheet extends StatelessWidget {
               onPressed: () => _then(
                   context,
                   () => rootNav.pushNamed(Routes.purchaseProcessing,
-                      arguments: (tier: retryTier, annual: retryAnnual)))),
+                      arguments: _retryArgs))),
           secondaryAction: SheetAction(
               label: l10n.billingRestorePurchases,
-              onPressed: () => _then(context, () {
-                    showSubscriptionOverlay(
-                        rootNav.context, SubscriptionOverlay.restoreSuccess);
-                  })),
+              onPressed: () =>
+                  _then(context, () => runRestoreFlow(rootNav.context))),
+        );
+      case SubscriptionOverlay.purchaseVerifying:
+        return BottomSheetContent(
+          secondaryOnTop: true,
+          title: l10n.ovVerifyingTitle,
+          body: l10n.ovVerifyingBody,
+          primaryAction: SheetAction(
+              label: l10n.ctaClose, onPressed: () => _close(context)),
+          secondaryAction: SheetAction(
+              label: l10n.billingRestorePurchases,
+              onPressed: () =>
+                  _then(context, () => runRestoreFlow(rootNav.context))),
+        );
+      case SubscriptionOverlay.purchasePending:
+        return BottomSheetContent(
+          title: l10n.ovPendingTitle,
+          body: l10n.ovPendingBody,
+          primaryAction: SheetAction(
+              label: l10n.ctaClose, onPressed: () => _close(context)),
+        );
+      case SubscriptionOverlay.purchaseRejected:
+        return BottomSheetContent(
+          secondaryOnTop: true,
+          title: l10n.ovRejectedTitle,
+          body: l10n.ovRejectedBody,
+          mark: SheetMarkTone.error,
+          primaryAction: SheetAction(
+              label: l10n.contactUs,
+              onPressed: () => _then(
+                  context, () => launchUrl(contactMailUri()).ignore())),
+          secondaryAction:
+              SheetAction(label: l10n.ctaClose, onPressed: () => _close(context)),
+        );
+      case SubscriptionOverlay.restoreUnavailable:
+        return BottomSheetContent(
+          secondaryOnTop: true,
+          title: l10n.connectionFailedTitle,
+          body: l10n.connectionFailedBody,
+          mark: SheetMarkTone.error,
+          primaryAction: SheetAction(
+              label: l10n.ctaTryAgain,
+              onPressed: () =>
+                  _then(context, () => runRestoreFlow(rootNav.context))),
+          secondaryAction:
+              SheetAction(label: l10n.ctaClose, onPressed: () => _close(context)),
         );
       case SubscriptionOverlay.alreadySubscribed:
         return BottomSheetContent(
@@ -503,6 +809,68 @@ class _OverlaySheet extends StatelessWidget {
               onPressed: () => pushAfterClose(Routes.subscription)),
           secondaryAction:
               SheetAction(label: l10n.ctaClose, onPressed: () => _close(context)),
+        );
+      // 무료 회원이 이번 통화의 5분을 다 썼다 — 연장은 없고 구독 유도만 있다.
+      // `freeLimitCall`(오늘 통화 소진)과 **레이아웃은 같고 문구·행동만 다르다.**
+      case SubscriptionOverlay.freeCallEnded:
+        return BottomSheetContent(
+          type: SheetContentType.preview,
+          title: l10n.fcEndedTitle,
+          body: l10n.fcEndedBody,
+          preview: SheetPreviewData(
+            avatar: avatar ?? const SizedBox.shrink(),
+            name: characterName ?? '',
+            // 통화 **중간**에 주제를 뽑는 기능이 아직 없다(`/calls/{id}/result` 는
+            // 종료 후 분석이다). 서버가 줄 수 있게 되면 [lastTopic] 으로 들어온다.
+            topic: lastTopic ?? '',
+            usage: usage == null ? '' : l10n.flUsage(usage!.used, usage!.limit),
+          ),
+          benefitLabel: l10n.premiumBulletVideo,
+          benefitTier: BenefitTier.max,
+          caption: l10n.flCaption(PlanPrices.maxMonthly),
+          // ⛔ 여기서 직접 결제 화면으로 밀지 않는다. 통화를 끝내는 일과 화면을 옮기는
+          //    일이 **둘 다** 일어나야 하는데, 통화 종료는 화면의 요약 이동 리스너를
+          //    깨운다. 여기서 push 하면 그 리스너의 `pushReplacement` 가 방금 띄운
+          //    결제 화면을 덮어써서, 「구독하기」를 눌렀는데 요약 화면이 뜬다.
+          //    순서를 아는 건 호출부뿐이라 [onSubscribe] 로 넘긴다.
+          primaryAction: SheetAction(
+              label: l10n.ctaSubscribeKeepTalking,
+              onPressed: () => _then(
+                  context,
+                  onSubscribe ??
+                      () => rootNav.pushNamed(Routes.paywallProLimit,
+                          arguments: 'call'))),
+          secondaryAction: SheetAction(
+              label: l10n.endCall,
+              onPressed: () => _then(context, () => onEndCall?.call())),
+        );
+      // 유료 회원에게 5분마다 묻는다. 상한(15분)을 다 쓰면 화면이 이 시트를 아예
+      // 띄우지 않는다 — 여기서 「Keep talking」 이 보이면 반드시 눌러지는 상태다.
+      case SubscriptionOverlay.premiumCallEnded:
+        return BottomSheetContent(
+          type: SheetContentType.preview,
+          title: lastCallToday ? l10n.pcEndedTitleToday : l10n.pcEndedTitle,
+          body: lastCallToday ? l10n.pcEndedBodyToday : l10n.pcEndedBody,
+          preview: SheetPreviewData(
+            avatar: avatar ?? const SizedBox.shrink(),
+            name: characterName ?? '',
+            topic: lastTopic ?? '',
+            usage: usage == null ? '' : l10n.flUsage(usage!.used, usage!.limit),
+          ),
+          primaryAction: SheetAction(
+              label: l10n.endCall,
+              onPressed: () => _then(context, () => onEndCall?.call())),
+        );
+      case SubscriptionOverlay.keepGoing:
+        return BottomSheetContent(
+          title: l10n.kgTitle,
+          body: l10n.kgBody,
+          primaryAction: SheetAction(
+              label: l10n.ctaKeepTalking,
+              onPressed: () => _then(context, () => onContinue?.call())),
+          secondaryAction: SheetAction(
+              label: l10n.endCall,
+              onPressed: () => _then(context, () => onEndCall?.call())),
         );
       case SubscriptionOverlay.freeLimitCall:
         return BottomSheetContent(
@@ -517,32 +885,14 @@ class _OverlaySheet extends StatelessWidget {
                 ? ''
                 : l10n.flUsage(usage!.used, usage!.limit),
           ),
-          benefitLabel: l10n.flBenefitCalls,
-          benefitTier: BenefitTier.pro,
-          caption: l10n.flCaption(PlanPrices.proMonthly),
+          benefitLabel: l10n.premiumBulletVideo,
+          benefitTier: BenefitTier.max,
+          caption: l10n.flCaption(PlanPrices.maxMonthly),
           primaryAction: SheetAction(
-              label: l10n.ctaGoUnlimited,
+              label: l10n.ctaGetPremium,
               onPressed: () => _then(context, () {
                     rootNav.pushNamed(Routes.paywallProLimit,
                         arguments: 'call');
-                  })),
-          secondaryAction: SheetAction(
-              label: l10n.ctaMaybeTomorrow, onPressed: () => _close(context)),
-        );
-      case SubscriptionOverlay.freeLimitCheck:
-        return BottomSheetContent(
-          type: SheetContentType.rows,
-          title: l10n.flCheckTitle,
-          body: l10n.flCheckBody,
-          rows: scores ?? const [],
-          benefitLabel: l10n.flBenefitChecks,
-          benefitTier: BenefitTier.pro,
-          caption: l10n.flCaption(PlanPrices.proMonthly),
-          primaryAction: SheetAction(
-              label: l10n.ctaGoUnlimited,
-              onPressed: () => _then(context, () {
-                    rootNav.pushNamed(Routes.paywallProLimit,
-                        arguments: 'check');
                   })),
           secondaryAction: SheetAction(
               label: l10n.ctaMaybeTomorrow, onPressed: () => _close(context)),

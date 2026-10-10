@@ -25,6 +25,7 @@ class AlarmData {
     this.characterName,
     this.imageUrl,
     this.active = true,
+    this.callMode = AlarmCallMode.learn,
   });
 
   /// Server alarm id (null in add mode, set in edit mode).
@@ -54,6 +55,23 @@ class AlarmData {
   /// Whether the alarm is enabled.
   bool active;
 
+  /// 이 알람 통화의 모드(학습 · 자유대화 · 서버 `call_type`).
+  AlarmCallMode callMode;
+
+  /// 0–23 — the 24-hour wheel of the new add sheet (Figma `Picker-Time`).
+  int get hour24 =>
+      meridiem == Meridiem.am ? hour % 12 : (hour % 12) + 12;
+
+  /// Sets [hour]/[meridiem] from a 24-hour value.
+  set hour24(int h) {
+    meridiem = h < 12 ? Meridiem.am : Meridiem.pm;
+    final h12 = h % 12;
+    hour = h12 == 0 ? 12 : h12;
+  }
+
+  /// "8:00" · "21:30" — the list row (Figma `Row-Alarm`, 24-hour, no AM/PM).
+  String get clock24 => '$hour24:${minute.toString().padLeft(2, '0')}';
+
   /// "8:00" — the editor clock face.
   String get clockLabel => '$hour:${minute.toString().padLeft(2, '0')}';
 
@@ -75,6 +93,7 @@ class AlarmData {
         characterName: characterName,
         imageUrl: imageUrl,
         active: active,
+        callMode: callMode,
       );
 
   /// Builds an editor view-model from a server [Alarm] entity.
@@ -88,6 +107,7 @@ class AlarmData {
         characterName: a.characterName,
         imageUrl: a.imageUrl,
         active: a.active,
+        callMode: a.callMode,
       );
 
   /// Converts back to a server [Alarm] entity for create/update.
@@ -101,6 +121,7 @@ class AlarmData {
         characterName: characterName,
         imageUrl: imageUrl,
         active: active,
+        callMode: callMode,
       );
 }
 

@@ -4,6 +4,8 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'standalone_l10n.dart';
+
 /// App UI locale, driven by the user's selected native language.
 ///
 /// The picker (onboarding / mypage) calls [LocaleController.setLanguage] with a
@@ -46,6 +48,9 @@ class LocaleController extends Notifier<Locale> {
     final next = localeFromCode(bcp47);
     if (next == state) return;
     state = next;
+    // 위젯 밖(수신 전화·부재중 알림)에서 쓰는 번역 캐시를 버린다. 안 버리면
+    // 언어를 바꾼 뒤에도 전화 화면만 이전 언어로 남는다.
+    StandaloneL10n.invalidate();
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString(_prefKey, bcp47);

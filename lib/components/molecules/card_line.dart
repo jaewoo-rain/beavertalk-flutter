@@ -4,6 +4,7 @@ import '../../theme/app_color_tokens.dart';
 import '../icons/app_icons.dart';
 import '../../theme/app_typography.dart';
 import '../atoms/toggle.dart';
+import '../layout/need_based_rows.dart';
 
 /// The three line-row layouts of [CardLine].
 enum CardLineType {
@@ -13,12 +14,12 @@ enum CardLineType {
 
   /// A label/value row with a trailing chevron (e.g. a settings entry).
   ///
-  /// Defaults to a fixed 56px height.
+  /// 높이 하한 56px(내용이 넘으면 늘어난다).
   defaultRow,
 
   /// A label row with a trailing [AppToggle].
   ///
-  /// Defaults to a fixed 56px height.
+  /// 높이 하한 56px(내용이 넘으면 늘어난다).
   defaultToggle,
 }
 
@@ -29,13 +30,14 @@ enum CardLineType {
 /// (Line/Normal/Alternative, white @ 6%) at 0.5px and `8px 12px` padding.
 ///
 /// * [CardLineType.payment] — a column laying out one space-between row.
-///   The left side stacks [label] (Label 1 Regular, white) over a [meta] row
-///   (Label 1 Regular, `textSecondary`) separated by a 2×2 `textTertiary` dot;
-///   `meta` is split on `·` into segments. The right side stacks [value]
+///   The left side stacks [label] (Label 1 Regular, white) over a meta row
+///   (Label 1 Regular, `textSecondary`) whose segments ([metaSegments], or
+///   [meta] split on `·`) are separated by a 2×2 `textTertiary` dot. Segments
+///   that don't fit on one line move down to the next (PM-DEC-065). The right side stacks [value]
 ///   (Label 1 SemiBold, white) over [status] (Label 1 Regular, `success`).
-/// * [CardLineType.defaultRow] — a 56px row: [label]/[value] (Body 1 Regular,
+/// * [CardLineType.defaultRow] — a min-56px row: [label]/[value] (Body 1 Regular,
 ///   white) space-between, with a trailing 24px chevron.
-/// * [CardLineType.defaultToggle] — a 56px row: [label] (Body 1 Regular, white)
+/// * [CardLineType.defaultToggle] — a min-56px row: [label] (Body 1 Regular, white)
 ///   with a trailing [AppToggle] driven by [checked]/[onChanged].
 class CardLine extends StatelessWidget {
   /// Creates a card line of the given [type].
@@ -45,6 +47,7 @@ class CardLine extends StatelessWidget {
     required this.label,
     this.value,
     this.meta,
+    this.metaSegments,
     this.status,
     this.checked = false,
     this.onChanged,
@@ -69,7 +72,19 @@ class CardLine extends StatelessWidget {
 
   /// Secondary meta line for [CardLineType.payment], split on `·` into
   /// dot-separated segments (e.g. `"6월 3일·신한카드 1234"`).
+  ///
+  /// Only for fixed copy. Server text can itself contain `·` (a card label like
+  /// 「Google Play · Visa」) and would be cut into extra segments — pass
+  /// [metaSegments] for that (QA 09-27 · PM-DEC-065).
   final String? meta;
+
+  /// The meta line's segments as given — never re-split. Wins over [meta].
+  final List<String>? metaSegments;
+
+  List<String> get _metaSegments => [
+        for (final s in metaSegments ?? meta?.split('·') ?? const <String>[])
+          if (s.trim().isNotEmpty) s.trim(),
+      ];
 
   /// Status text shown under [value] in [CardLineType.payment]
   /// (e.g. `"완료"`), rendered in `Status/Positive`.
@@ -82,6 +97,15 @@ class CardLine extends StatelessWidget {
   /// non-interactive.
   final ValueChanged<bool>? onChanged;
 
+  /// 정본 행 높이. **고정이 아니라 하한이다.**
+  ///
+  /// 예전에는 `SizedBox(height: 56)` 이었는데, 그러면 글꼴 배율 1.3배나 긴
+  /// 번역에서 내용이 56을 넘어가는 순간 넘친 줄이 **통째로 잘린다**. 실측
+  /// (2026-09-22, 네팔어 · 배율 200%→상한 1.3): 설정 이메일 행이
+  /// `soardick@gmail.` 로, 가입일 라벨은 둘째 줄이 잘려 나왔다.
+  ///
+  /// 잘림은 넘침보다 나쁘다 — 화면 안에 남아서 **틀린 내용으로 읽힌다.**
+  /// 그래서 56은 지키되 위로 열어 둔다(`minHeight`).
   static const double _rowHeight = 56;
 
   // A divider colour is mode-aware, so this can no longer be a static
@@ -131,15 +155,20 @@ class CardLine extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: AppType.label1.r.copyWith(color: context.c.labelStrong),
                   ),
-                  if (meta != null) ...[
+                  if (_metaSegments case final segments
+                      when segments.isNotEmpty) ...[
                     const SizedBox(height: 7),
-                    _MetaRow(meta: meta!),
+                    _MetaRow(segments: segments),
                   ],
                 ],
               ),
             ),
             const SizedBox(width: 12),
             // Not flexed: sizes to the amount/status, staying pinned right.
+            //
+            // ⛔ 금액과 상태를 한 줄로 자르지 마라 — 「1.790.0…」 은 틀린 금액이고,
+            //   잘린 결제 상태는 잘못된 사실이다. 이 Column 은 비유연이라 제 크기를
+            //   가지므로, 줄만 늘려도 넘치지 않는다.
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               mainAxisSize: MainAxisSize.min,
@@ -147,16 +176,14 @@ class CardLine extends StatelessWidget {
                 if (value != null)
                   Text(
                     value!,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.end,
                     style: AppType.label1.sb.copyWith(color: context.c.labelStrong),
                   ),
                 if (status != null) ...[
                   const SizedBox(height: 7),
                   Text(
                     status!,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.end,
                     style: AppType.label1.r.copyWith(color: context.c.statusPositive),
                   ),
                 ],
@@ -171,44 +198,40 @@ class CardLine extends StatelessWidget {
   Widget _buildDefaultRow(BuildContext context) {
     return DecoratedBox(
       decoration: showDivider ? _divider(context) : const BoxDecoration(),
-      child: SizedBox(
-        height: _rowHeight,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: _rowHeight),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Expanded(
-                child: Row(
-                  // Keep the original label-left / value-right split; only wrap
-                  // the two texts in Flexible + ellipsis so long translations
-                  // shrink in place instead of overflowing (design preserved).
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Flexible(
-                      child: Text(
+                // 라벨 왼쪽 끝 · 값 오른쪽 끝(Figma justify-between). 폭은 **글자 폭대로** 나눈다
+                // (LabelValueRow) — Flexible 둘은 짧은 칸이 남긴 폭을 긴 칸이 못 써서 「Lernsprache」
+                // 가 줄을 바꾸는데 옆 「한국어」 는 67px 가 남았다(09-24 전수조사 A).
+                child: value == null
+                    ? Text(
                         label,
-                        maxLines: 1,
+                        maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style:
-                            AppType.body1.r.copyWith(color: context.c.labelStrong),
-                      ),
-                    ),
-                    if (value != null) ...[
-                      const SizedBox(width: 8),
-                      Flexible(
-                        child: Text(
-                          value!,
-                          maxLines: 1,
+                        style: AppType.body1.r.copyWith(color: context.c.labelStrong),
+                      )
+                    : LabelValueRow(
+                        label: Text(
+                          label,
+                          maxLines: 2,
                           overflow: TextOverflow.ellipsis,
+                          style:
+                              AppType.body1.r.copyWith(color: context.c.labelStrong),
+                        ),
+                        // 값은 자르지 않는다 — 금액·상태가 잘리면 거짓이 된다.
+                        value: Text(
+                          value!,
                           textAlign: TextAlign.end,
                           style:
                               AppType.body1.r.copyWith(color: context.c.labelStrong),
                         ),
                       ),
-                    ],
-                  ],
-                ),
               ),
               const SizedBox(width: 10),
               AppIcons.chevronRight(
@@ -225,8 +248,8 @@ class CardLine extends StatelessWidget {
   Widget _buildDefaultToggle(BuildContext context) {
     return DecoratedBox(
       decoration: showDivider ? _divider(context) : const BoxDecoration(),
-      child: SizedBox(
-        height: _rowHeight,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: _rowHeight),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           child: Row(
@@ -235,7 +258,9 @@ class CardLine extends StatelessWidget {
               Expanded(
                 child: Text(
                   label,
-                  maxLines: 1,
+                  // 설정 항목 이름. 행 높이는 이미 하한이라 두 줄이 들어간다
+                  // (de 「Benachrichtigung」 전수감사 1건).
+                  maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: AppType.body1.r.copyWith(color: context.c.labelStrong),
                 ),
@@ -252,19 +277,73 @@ class CardLine extends StatelessWidget {
 
 /// Dot-separated meta row for [CardLineType.payment].
 ///
-/// Segments are split on `·`; a 2×2 [AppColors.textTertiary] dot separates them.
+/// A 2×2 [AppColors.textTertiary] dot separates the segments. They share one
+/// line when they fit; otherwise each segment that would run past the edge
+/// starts the next line (PM-DEC-065). Leading segments used to be fixed-width
+/// on a single line, so 「date · long card label」 overflowed the row — ne at
+/// 320px by 17px with the real font, far more once a card label carried its
+/// own `·` and was cut into several fixed pieces.
 class _MetaRow extends StatelessWidget {
-  const _MetaRow({required this.meta});
+  const _MetaRow({required this.segments});
 
-  final String meta;
+  final List<String> segments;
+
+  /// Gap · dot · gap between two segments.
+  static const double _separatorWidth = 4 + 2 + 4;
 
   @override
   Widget build(BuildContext context) {
-    final segments = meta
-        .split('·')
-        .map((s) => s.trim())
-        .where((s) => s.isNotEmpty)
-        .toList();
+    final style = AppType.label1.r.copyWith(color: context.c.labelNormal);
+    return LayoutBuilder(builder: (context, constraints) {
+      final lines = _pack(context, style, constraints.maxWidth);
+      if (lines.length == 1) return _line(context, lines.single, style);
+      // 줄 사이 추가 간격 없음 — Label 1 줄 높이(20)만으로 벌어진다. 날짜·결제수단이
+      // 한 덩어리로 읽히게(디자이너 확인 09-27 · 정본에 없는 새 치수를 만들지 않음).
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [for (final line in lines) _line(context, line, style)],
+      );
+    });
+  }
+
+  /// Greedy line packing by measured width. A segment wider than a whole line
+  /// gets a line of its own and ellipsizes there.
+  List<List<String>> _pack(BuildContext context, TextStyle style, double maxWidth) {
+    if (!maxWidth.isFinite) return [segments];
+    final painter = TextPainter(
+      textDirection: Directionality.of(context),
+      textScaler: MediaQuery.textScalerOf(context),
+      maxLines: 1,
+    );
+    final merged = DefaultTextStyle.of(context).style.merge(style);
+    double widthOf(String s) {
+      painter.text = TextSpan(text: s, style: merged);
+      painter.layout();
+      return painter.width;
+    }
+
+    final lines = <List<String>>[];
+    var current = <String>[];
+    var used = 0.0;
+    for (final s in segments) {
+      final w = widthOf(s);
+      final needed = current.isEmpty ? w : used + _separatorWidth + w;
+      if (current.isEmpty || needed <= maxWidth) {
+        current.add(s);
+        used = needed;
+      } else {
+        lines.add(current);
+        current = [s];
+        used = w;
+      }
+    }
+    if (current.isNotEmpty) lines.add(current);
+    painter.dispose();
+    return lines;
+  }
+
+  Widget _line(BuildContext context, List<String> segments, TextStyle style) {
     final children = <Widget>[];
     for (var i = 0; i < segments.length; i++) {
       if (i > 0) {
@@ -285,7 +364,7 @@ class _MetaRow extends StatelessWidget {
         segments[i],
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
-        style: AppType.label1.r.copyWith(color: context.c.labelNormal),
+        style: style,
       );
       // Only the last segment may shrink. Wrapping every segment in Flexible
       // split the row evenly between them, so "6월 3일 · 신한카드 1234" gave the

@@ -2,16 +2,25 @@ package im.beavertalk.beavertalk
 
 import android.app.Activity
 import android.app.KeyguardManager
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.hardware.display.DisplayManager
 import android.hardware.display.VirtualDisplay
+import android.media.AudioAttributes
+import android.media.AudioDeviceCallback
+import android.media.AudioDeviceInfo
+import android.media.AudioManager
 import android.media.MediaRecorder
 import android.media.projection.MediaProjection
 import android.media.projection.MediaProjectionManager
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.WindowManager
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
@@ -26,16 +35,27 @@ import java.io.File
  * SURFACE video source to capture the composited screen (live camera texture +
  * game canvas) — the one path that captures external textures, which
  * `RenderRepaintBoundary.toImage()` cannot. Video only, by design: opening the
- * mic here would contend with the Vosk STT capture that drives the game.
+ * mic here would contend with the server-STT mic capture that drives the game.
  *
- * Works on API 26–33 without a foreground service. API 34+ additionally
- * requires a mediaProjection foreground service before `getMediaProjection`;
- * that path is not wired yet (TODO) — on 34+ `start` fails gracefully and the
- * game falls back to the score-card image share.
+ * API 26~28 은 포그라운드 서비스 없이 돌아간다. API 29+ 는 `getMediaProjection`
+ * 앞에 mediaProjection 형식의 포그라운드 서비스를 요구하므로(targetSdk ≥ Q —
+ * 34 부터가 아니다, QA F056) [ScreenCaptureService] 를 먼저 띄우고, 그 서비스가
+ * `startForeground()` 를 마쳤다는 통지를 받은 뒤에야 캡처를 시작한다.
  */
 class MainActivity : FlutterActivity() {
     private val channelName = "beavertalk/challenge_recorder"
     private val lockscreenChannelName = "beavertalk/lockscreen"
+
+    /**
+     * iOS 는 이 채널로 라우팅 제어(routeToSpeaker 등)를 받지만 Android 에는 핸들러가
+     * 아예 없었다. barge-in 진행도 보고가 "어느 출력으로 나가던 중이었나"를 실어야
+     * 해서 여기에 신설한다.
+     *
+     * ⚠ Android 에서는 `getAudioRoute` 하나만 구현한다. 기존 iOS 전용 메서드들
+     * (routeToSpeaker / stopCallAudioRouting / isHeadsetConnected / logAudioState)은
+     * Dart 쪽에서 `defaultTargetPlatform == iOS` 로 막혀 있어 여기로 오지 않는다.
+     */
+    private val audioChannelName = "beavertalk/audio"
     private val screenCaptureRequest = 0xB3A7
 
     /**
@@ -165,14 +185,492 @@ class MainActivity : FlutterActivity() {
                     else -> result.notImplemented()
                 }
             }
+        val audio = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, audioChannelName)
+        audio.setMethodCallHandler { call, result ->
+            when (call.method) {
+                "getAudioRoute" -> result.success(currentAudioRoute())
+                "setVoiceCallMode" ->
+                    result.success(setVoiceCallMode(call.argument<Boolean>("enable") == true))
+                "getAudioDiag" -> result.success(audioDiag())
+                else -> result.notImplemented()
+            }
+        }
+        audioChannel = audio
+        registerRouteWatcher()
+    }
+
+    /** `beavertalk/audio` — 라우트 변경을 Dart 로 **밀어 올리기** 위해 들고 있는다. */
+    private var audioChannel: MethodChannel? = null
+    private var routeCallback: AudioDeviceCallback? = null
+
+    /**
+     * 출력 장치가 붙거나 빠지면 Dart 에 알린다(`routeChanged`).
+     *
+     * ⛔ **폴링이 아니라 이벤트다.** 라우트 전환은 드물지만(통화당 0~2회) 순간적이고,
+     *   1초 폴링이면 전환 순간을 최대 1초 놓치는데 **그 1초가 정확히 에코가 터지는 구간**이다
+     *   (이어폰을 뽑은 직후 스피커폰). `registerAudioDeviceCallback` 은 API 23+ 이고
+     *   우리 minSdk 는 26 이라 분기 없이 쓴다.
+     *
+     * ⚠ **라우트 값 자체는 안 보낸다.** 콜백은 장치 목록이 바뀐 순간에 오는데 그때는
+     *   활성 라우트가 아직 안 굳었을 수 있다. Dart 가 `getAudioRoute` 로 한 번 더 물어
+     *   그 값을 서버에 싣는다(그 왕복 5~15ms 만큼 보고가 늦다 — 서버 제안서에 명시).
+     *
+     * ⚠ 새 채널(EventChannel)을 안 판다. MethodChannel 은 양방향이라 이걸로 충분하고,
+     *   네이티브 표면을 늘리지 않는 쪽이 낫다.
+     */
+    private fun registerRouteWatcher() {
+        val am = getSystemService(Context.AUDIO_SERVICE) as? AudioManager ?: return
+        if (routeCallback != null) return
+        val cb = object : AudioDeviceCallback() {
+            override fun onAudioDevicesAdded(added: Array<out AudioDeviceInfo>?) {
+                onCallDevicesChanged()
+                audioChannel?.invokeMethod("routeChanged", null)
+            }
+
+            override fun onAudioDevicesRemoved(removed: Array<out AudioDeviceInfo>?) {
+                onCallDevicesChanged()
+                audioChannel?.invokeMethod("routeChanged", null)
+            }
+        }
+        try {
+            // 메인 스레드 핸들러 — MethodChannel 은 플랫폼 스레드에서만 부를 수 있다.
+            am.registerAudioDeviceCallback(cb, Handler(Looper.getMainLooper()))
+            routeCallback = cb
+        } catch (_: Throwable) {
+            // 진단이 통화를 죽이면 안 된다(R5). 못 걸면 라우트 변경 통지만 없다.
+        }
+    }
+
+    override fun onDestroy() {
+        val cb = routeCallback
+        if (cb != null) {
+            routeCallback = null
+            try {
+                (getSystemService(Context.AUDIO_SERVICE) as? AudioManager)
+                    ?.unregisterAudioDeviceCallback(cb)
+            } catch (_: Throwable) {
+            }
+        }
+        audioChannel = null
+        super.onDestroy()
+    }
+
+    /**
+     * 비버 오디오가 **지금 실제로 나가고 있는 출력**의 종류.
+     *
+     * 서버가 barge-in 측정을 해석할 때 쓴다 — 같은 결과라도 스피커폰이냐 이어폰이냐에
+     * 따라 의미가 정반대가 된다(스피커폰은 에코 최악 조건, 이어폰은 음향 결합이 거의 없다).
+     *
+     * ⚠ **모르면 빈 문자열이다. "speaker" 로 떨어뜨리지 마라.** 서버가 "못 읽음"과
+     *   "스피커였음"을 구분해야 하는데, 기본값을 speaker 로 두면 그 구분이 사라지고
+     *   측정 못 한 기기가 전부 스피커폰 통계에 섞인다.
+     */
+    private fun currentAudioRoute(): String {
+        val am = getSystemService(Context.AUDIO_SERVICE) as? AudioManager ?: return ""
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                // API 31+ 만 "이 속성으로 재생하면 어디로 나가는가"를 직접 답해준다.
+                //
+                // ⚠ 속성은 재생 트랙과 **같아야** 한다. 통화 경로(USAGE_VOICE_COMMUNICATION)
+                //   로 물으면 라우팅이 달라질 수 있어(예: 미디어는 스피커, 통화는 리시버)
+                //   실제와 다른 답이 나온다. 그래서 [voiceCallMode] 를 따라간다 —
+                //   AEC 스위치를 켜면 트랙도 여기도 같이 통화 속성으로 넘어간다.
+                val attrs = AudioAttributes.Builder()
+                    .setUsage(
+                        if (voiceCallMode) AudioAttributes.USAGE_VOICE_COMMUNICATION
+                        else AudioAttributes.USAGE_MEDIA
+                    )
+                    .setContentType(
+                        if (voiceCallMode) AudioAttributes.CONTENT_TYPE_SPEECH
+                        else AudioAttributes.CONTENT_TYPE_MUSIC
+                    )
+                    .build()
+                val type = am.getAudioDevicesForAttributes(attrs).firstOrNull()?.type
+                if (type != null) return mapDeviceType(type)
+            }
+            // API 26~30 폴백: "지금 활성 라우트"를 직접 묻는 API 가 없어 우선순위로 좁힌다.
+            // Android 라우팅 우선순위(SCO > A2DP > 유선 > 스피커)를 따른다.
+            //
+            // 마지막 분기가 추측이 아닌 이유: 헤드셋·BT 가 하나도 안 붙어 있고 스피커폰도
+            // 꺼져 있으면 USAGE_MEDIA 오디오는 **내장 스피커로 간다**. 리시버로는 안 간다
+            // (그건 통화 usage 의 경로다). 그래서 내장 스피커 존재만 확인해 speaker 로
+            // 답하고, 없으면 빈 문자열로 떨어진다.
+            @Suppress("DEPRECATION")
+            return when {
+                // A2DP 는 음악 전용 — 통화 모드에서는 통화 경로가 아니다(10-04 수화기 결함).
+                am.isBluetoothScoOn || am.isWiredHeadsetOn ||
+                    (!voiceCallMode && am.isBluetoothA2dpOn) -> "headset"
+                am.isSpeakerphoneOn -> "speaker"
+                // 통화 usage 는 스피커폰이 꺼져 있으면 **리시버**로 간다. 여기서
+                // speaker 로 답하면 "에코가 왜 이렇게 적지"의 원인을 영영 못 찾는다.
+                voiceCallMode -> hasOutput(am, AudioDeviceInfo.TYPE_BUILTIN_EARPIECE)
+                else -> hasOutput(am, AudioDeviceInfo.TYPE_BUILTIN_SPEAKER)
+            }
+        } catch (_: Throwable) {
+            // 진단이 통화를 죽이면 안 된다. 모르면 모른다고 답한다.
+            return ""
+        }
+    }
+
+    /**
+     * 통화 용도 오디오 모드가 켜져 있는가. **기본은 꺼짐(=종전 동작)**.
+     *
+     * [currentAudioRoute] 가 이 값을 따라 질의 속성을 바꾼다 — 재생 트랙과 다른 속성으로
+     * 물으면 실제와 다른 라우트가 나오기 때문이다.
+     */
+    private var voiceCallMode = false
+
+    /**
+     * 통화 용도 오디오 모드를 켜고 끈다. 켜야 플랫폼 AEC 가 참조할 다운링크가 생긴다.
+     *
+     * ⚠ **켜면 기본 출력이 리시버(귀에 대는 구멍)로 빠진다.** 그래서 출력을 직접 고른다
+     *   ([applyCallRoute]): 유선 이어폰 → 그대로 · 통화용 블루투스 → BT 통화 경로(SCO) ·
+     *   둘 다 없으면 → 스피커.
+     *
+     * 끌 때는 **역순으로** 되돌린다(경로 먼저, 모드 나중). 모드를 먼저 NORMAL 로
+     * 돌리면 그 시점의 스피커폰 설정이 미디어 라우팅에 남는다.
+     *
+     * 반환은 [audioDiag] — 실제로 무엇이 적용됐는지 호출자가 눈으로 확인해야 한다.
+     * "켜라고 했다"와 "켜졌다"는 다르다.
+     */
+    private fun setVoiceCallMode(enable: Boolean): Map<String, Any> {
+        val am = getSystemService(Context.AUDIO_SERVICE) as? AudioManager
+            ?: return emptyMap()
+        try {
+            if (enable) {
+                am.mode = AudioManager.MODE_IN_COMMUNICATION
+                voiceCallMode = true
+                registerScoReceiver()
+                applyCallRoute(am, "통화 시작")
+                // 예약 알람 수락은 시스템 통화 서비스가 **우리 뒤에** 경로를 되돌린다
+                // (10-04 Note20 실측: 수락 순간 SCO 해제 + setSpeakerphoneOn(false)).
+                // 그래서 잠시 뒤 실제 상태를 한 번 더 보고, 어긋났으면 다시 잡는다.
+                routeHandler.postDelayed(recheckRoute, ROUTE_RECHECK_MS)
+            } else {
+                voiceCallMode = false
+                routeHandler.removeCallbacks(recheckRoute)
+                cancelScoFallback()
+                unregisterScoReceiver()
+                releaseCallRoute(am)
+                @Suppress("DEPRECATION")
+                am.isSpeakerphoneOn = false
+                am.mode = AudioManager.MODE_NORMAL
+                callRoute = ""
+                lastDeviceKey = ""
+                btDeclinedKey = ""
+            }
+        } catch (_: Throwable) {
+            // 모드 전환 실패가 통화를 죽이면 안 된다. 아래 진단이 실패를 그대로 드러낸다.
+        }
+        return audioDiag()
+    }
+
+    // ── 통화 출력 경로(A2 · 10-04 PM-DEC-358) ────────────────────────────────
+    //
+    // ⛔ 결함(10-04 Note20 실측): AirPods 연결 상태로 예약 알람 전화를 받으면 소리가
+    //   **수화기**로 나갔다. 옛 판정은 `isBluetoothA2dpOn` 도 헤드셋으로 봐서 스피커를 안
+    //   켰는데, A2DP 는 음악 전용 경로라 통화 모드(IN_COMMUNICATION)에서는 쓰이지 않는다.
+    //   통화용 BT 경로(SCO)는 아무도 안 열었으니 남은 출력은 수화기뿐이었다.
+    //   ⇒ 헤드셋은 「유선 이어폰」 또는 「통화용 BT 장치(SCO · BLE 통화)」만이다.
+
+    /** 지금 고른 통화 출력 — `speaker`·`bluetooth`·`wired`(진단·로그용 · 빈 문자열 = 통화 아님). */
+    private var callRoute = ""
+
+    /** 마지막으로 경로를 고른 장치 조합 — 같은 조합이면 장치 콜백이 와도 다시 고르지 않는다. */
+    private var lastDeviceKey = ""
+
+    /** 우리가 통신 기기를 지정했는가(API 31+) — 지정한 쪽만 [releaseCallRoute] 가 푼다. */
+    private var commDeviceSetByUs = false
+
+    /** 우리가 BT SCO 를 열었는가(API 30 이하) — 연 쪽만 닫는다. */
+    private var scoStartedByUs = false
+
+    /** BT SCO 가 실제로 연결됐는가(ACTION_SCO_AUDIO_STATE_UPDATED 로 받는다). */
+    private var scoConnected = false
+
+    /**
+     * 사용자가 BT 를 놔두고 다른 출력으로 옮긴 장치 조합(10-06 결함 ①).
+     *
+     * 사용자 「에어팟 끼고 시작했다가 출력 기기 바꾸면 전환이 안됨」 — 시스템 출력 선택으로
+     * 휴대폰을 고르면 SCO 가 끊기는데, AirPods 는 아직 붙어 있어서 [applyCallRoute] 가
+     * 곧바로 BT 를 다시 열었다. 같은 장치 조합인 동안은 BT 를 다시 잡지 않는다.
+     * 장치가 새로 붙거나 빠지면(조합이 바뀌면) 풀린다.
+     */
+    private var btDeclinedKey = ""
+
+    private val routeHandler = Handler(Looper.getMainLooper())
+    private var scoFallback: Runnable? = null
+    private var scoReceiver: BroadcastReceiver? = null
+
+    private val recheckRoute = Runnable {
+        val am = getSystemService(Context.AUDIO_SERVICE) as? AudioManager
+        if (am != null && voiceCallMode && !routeHolds(am)) applyCallRoute(am, "재확인 · 어긋남")
+    }
+
+    private fun hasWiredHeadset(am: AudioManager): Boolean =
+        am.getDevices(AudioManager.GET_DEVICES_OUTPUTS).any { it.type in WIRED_TYPES }
+
+    /** 통화에 쓸 수 있는 BT 장치 — A2DP(음악 전용)는 넣지 않는다. */
+    private fun btCallDevice(am: AudioManager): AudioDeviceInfo? =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            am.availableCommunicationDevices.firstOrNull {
+                it.type == AudioDeviceInfo.TYPE_BLUETOOTH_SCO ||
+                    it.type == AudioDeviceInfo.TYPE_BLE_HEADSET
+            }
+        } else {
+            am.getDevices(AudioManager.GET_DEVICES_OUTPUTS)
+                .firstOrNull { it.type == AudioDeviceInfo.TYPE_BLUETOOTH_SCO }
+        }
+
+    private fun deviceKey(am: AudioManager) = "${hasWiredHeadset(am)}/${btCallDevice(am) != null}"
+
+    /** 출력을 고른다 — 유선 > 통화용 BT > 스피커. 실패해도 통화를 죽이지 않는다. */
+    @Suppress("DEPRECATION")
+    private fun applyCallRoute(am: AudioManager, reason: String) {
+        try {
+            cancelScoFallback()
+            lastDeviceKey = deviceKey(am)
+            if (btDeclinedKey != lastDeviceKey) btDeclinedKey = ""
+            val bt = btCallDevice(am)?.takeIf { btDeclinedKey.isEmpty() }
+            when {
+                hasWiredHeadset(am) -> {
+                    releaseCallRoute(am)
+                    am.isSpeakerphoneOn = false
+                    callRoute = "wired"
+                }
+                bt != null && routeToBluetooth(am, bt) -> {
+                    am.isSpeakerphoneOn = false
+                    callRoute = "bluetooth"
+                }
+                else -> routeToSpeaker(am)
+            }
+            Log.i(AUDIO_TAG, "callRoute=$callRoute ($reason) bt=${bt?.productName}")
+        } catch (e: Throwable) {
+            Log.w(AUDIO_TAG, "applyCallRoute 실패($reason): $e")
+        }
+    }
+
+    @Suppress("DEPRECATION")
+    private fun routeToSpeaker(am: AudioManager) {
+        releaseCallRoute(am)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            am.availableCommunicationDevices
+                .firstOrNull { it.type == AudioDeviceInfo.TYPE_BUILTIN_SPEAKER }
+                ?.let { commDeviceSetByUs = am.setCommunicationDevice(it) }
+        }
+        // 옛 API 도 같이 둔다(API 30 이하는 이것뿐이고, 31+ 에서도 해가 없다).
+        am.isSpeakerphoneOn = true
+        callRoute = "speaker"
+    }
+
+    /**
+     * BT 통화 경로를 연다. API 31+ 는 통신 기기 지정, 30 이하는 SCO 를 직접 연다.
+     * 30 이하는 연결이 비동기라 [SCO_TIMEOUT_MS] 안에 연결 소식이 없으면 스피커로 물러난다 —
+     * 그대로 두면 다시 수화기다.
+     */
+    @Suppress("DEPRECATION")
+    private fun routeToBluetooth(am: AudioManager, bt: AudioDeviceInfo): Boolean {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            commDeviceSetByUs = am.setCommunicationDevice(bt)
+            return commDeviceSetByUs
+        }
+        if (!am.isBluetoothScoAvailableOffCall) return false
+        if (!scoConnected) {
+            am.startBluetoothSco()
+            scoStartedByUs = true
+        }
+        am.isBluetoothScoOn = true
+        val fallback = Runnable {
+            if (voiceCallMode && !scoConnected) {
+                Log.w(AUDIO_TAG, "BT SCO 가 ${SCO_TIMEOUT_MS}ms 안에 안 열렸다 → 스피커")
+                routeToSpeaker(am)
+            }
+        }
+        scoFallback = fallback
+        routeHandler.postDelayed(fallback, SCO_TIMEOUT_MS)
+        return true
+    }
+
+    /** 우리가 잡은 경로만 푼다 — 시스템 통화가 잡은 것은 건드리지 않는다. */
+    @Suppress("DEPRECATION")
+    private fun releaseCallRoute(am: AudioManager) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && commDeviceSetByUs) {
+            am.clearCommunicationDevice()
+            commDeviceSetByUs = false
+        }
+        if (scoStartedByUs) {
+            am.isBluetoothScoOn = false
+            am.stopBluetoothSco()
+            scoStartedByUs = false
+        }
+    }
+
+    /** 고른 경로가 아직 유지되는가 — [recheckRoute] 가 쓴다. */
+    @Suppress("DEPRECATION")
+    private fun routeHolds(am: AudioManager): Boolean = when (callRoute) {
+        "speaker" -> am.isSpeakerphoneOn
+        "bluetooth" ->
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                am.communicationDevice?.type.let {
+                    it == AudioDeviceInfo.TYPE_BLUETOOTH_SCO || it == AudioDeviceInfo.TYPE_BLE_HEADSET
+                }
+            } else {
+                am.isBluetoothScoOn
+            }
+        else -> true
+    }
+
+    private fun cancelScoFallback() {
+        scoFallback?.let { routeHandler.removeCallbacks(it) }
+        scoFallback = null
+    }
+
+    /** 통화 중 장치가 붙거나 빠지면 다시 고른다 — 유선·BT 조합이 바뀐 때만(무한 재지정 방지). */
+    private fun onCallDevicesChanged() {
+        if (!voiceCallMode) return
+        val am = getSystemService(Context.AUDIO_SERVICE) as? AudioManager ?: return
+        if (deviceKey(am) != lastDeviceKey) applyCallRoute(am, "장치 변경")
+    }
+
+    /** API 30 이하 SCO 연결·끊김 소식. 통화 중 BT 가 끊기면 스피커로 다시 고른다. */
+    private fun registerScoReceiver() {
+        if (scoReceiver != null) return
+        val r = object : BroadcastReceiver() {
+            override fun onReceive(context: Context?, intent: Intent?) {
+                val state = intent?.getIntExtra(
+                    AudioManager.EXTRA_SCO_AUDIO_STATE, AudioManager.SCO_AUDIO_STATE_ERROR,
+                ) ?: return
+                val was = scoConnected
+                scoConnected = state == AudioManager.SCO_AUDIO_STATE_CONNECTED
+                Log.i(AUDIO_TAG, "SCO state=$state connected=$scoConnected route=$callRoute")
+                // 장치 목록은 그대로라 장치 콜백이 안 온다 — 출력이 바뀐 것을 Dart 에 직접 알린다
+                // (재생 게인이 스피커일 때만 걸리므로 라우트를 다시 읽어야 한다).
+                if (was != scoConnected) audioChannel?.invokeMethod("routeChanged", null)
+                if (scoConnected) cancelScoFallback()
+                if (!voiceCallMode) return
+                val am = getSystemService(Context.AUDIO_SERVICE) as? AudioManager ?: return
+                if (was && !scoConnected && callRoute == "bluetooth") {
+                    // ⛔ 결함 ②(10-06 「블루투스 연결 끊으면 마이크가 먹통됨」): SCO 가 끊겨도
+                    //   우리가 켠 `isBluetoothScoOn` 이 남아 마이크 입력이 없는 SCO 에 묶였다.
+                    //   끊긴 쪽이 어느 쪽이든 먼저 내린다.
+                    @Suppress("DEPRECATION")
+                    am.isBluetoothScoOn = false
+                    @Suppress("DEPRECATION")
+                    am.stopBluetoothSco()
+                    scoStartedByUs = false
+                    if (btCallDevice(am) != null) {
+                        // 장치는 그대로인데 SCO 만 끊겼다 = 사용자가 출력을 휴대폰으로 옮겼다(결함 ①).
+                        btDeclinedKey = deviceKey(am)
+                        applyCallRoute(am, "사용자 출력 변경 · BT → 휴대폰")
+                    } else {
+                        applyCallRoute(am, "SCO 끊김 · BT 해제")
+                    }
+                } else if (!was && scoConnected && callRoute != "bluetooth") {
+                    // 사용자가 출력을 BT 로 골랐다 — 스피커폰을 내려야 BT 로 나간다.
+                    btDeclinedKey = ""
+                    @Suppress("DEPRECATION")
+                    am.isSpeakerphoneOn = false
+                    callRoute = "bluetooth"
+                    Log.i(AUDIO_TAG, "callRoute=bluetooth (사용자 출력 변경 · 휴대폰 → BT)")
+                }
+            }
+        }
+        try {
+            registerReceiver(r, IntentFilter(AudioManager.ACTION_SCO_AUDIO_STATE_UPDATED))
+            scoReceiver = r
+        } catch (_: Throwable) {
+            // 수신기를 못 걸면 SCO 끊김 자동 복귀만 없다. 통화는 계속한다.
+        }
+    }
+
+    private fun unregisterScoReceiver() {
+        val r = scoReceiver ?: return
+        scoReceiver = null
+        try {
+            unregisterReceiver(r)
+        } catch (_: Throwable) {
+            // 이미 풀렸다 — 할 일 없음.
+        }
+    }
+
+    /**
+     * 오디오 상태 스냅샷 — **AEC 를 바꿨을 때 같이 바뀌는 것들**을 한 번에 읽는다.
+     *
+     * 라우팅과 볼륨 스트림이 같이 움직이기 때문에, "에코는 줄었는데 소리가 리시버로 빠졌다"
+     * 를 측정이 끝난 뒤에 알면 늦다. 리그가 측정 전후로 이걸 찍어 리포트에 싣는다.
+     */
+    private fun audioDiag(): Map<String, Any> {
+        val am = getSystemService(Context.AUDIO_SERVICE) as? AudioManager
+            ?: return emptyMap()
+        return try {
+            @Suppress("DEPRECATION")
+            mapOf(
+                "mode" to when (am.mode) {
+                    AudioManager.MODE_NORMAL -> "normal"
+                    AudioManager.MODE_IN_COMMUNICATION -> "in_communication"
+                    AudioManager.MODE_IN_CALL -> "in_call"
+                    AudioManager.MODE_RINGTONE -> "ringtone"
+                    else -> "other(${am.mode})"
+                },
+                "speakerphone" to am.isSpeakerphoneOn,
+                "call_route" to callRoute,
+                "route" to currentAudioRoute(),
+                // 볼륨 키가 실제로 무엇을 조절하는지는 앱이 못 읽는다. 대신 두 스트림의
+                // 현재 값을 같이 실어, 통화 스트림 볼륨이 낮게 방치돼 있는지를 드러낸다.
+                "music_vol" to am.getStreamVolume(AudioManager.STREAM_MUSIC),
+                "music_vol_max" to am.getStreamMaxVolume(AudioManager.STREAM_MUSIC),
+                "voice_vol" to am.getStreamVolume(AudioManager.STREAM_VOICE_CALL),
+                "voice_vol_max" to am.getStreamMaxVolume(AudioManager.STREAM_VOICE_CALL),
+            )
+        } catch (_: Throwable) {
+            emptyMap()
+        }
+    }
+
+    private fun hasOutput(am: AudioManager, type: Int): String {
+        val found = am.getDevices(AudioManager.GET_DEVICES_OUTPUTS).any { it.type == type }
+        return if (found) mapDeviceType(type) else ""
+    }
+
+    /**
+     * AudioDeviceInfo 타입 → 서버 계약 문자열. **speaker / headset 두 값만** 낸다.
+     *
+     * 서버는 이 값을 분류표가 아니라 **그룹 키**로 쓴다 — "이 라우트에서 hal_drained 가
+     * 한 번이라도 나왔나", "라우트가 바뀌었는데도 계속 0건인가" 를 보는 용도다. 그래서
+     * 요구되는 성질은 정확한 분류명이 아니라 **같은 라우트엔 항상 같은 문자열**이다.
+     * 세분화하면 오히려 해롭다: 같은 헤드셋이 SCO 를 물었다 놨다 하면서 두 키로 쪼개지면
+     * "라우트가 바뀌었다"는 신호가 희석된다.
+     *
+     * ⚠ 모르는 타입은 빈 문자열이다. speaker 로 떨어뜨리면 서버가 "못 읽음"과
+     *   "스피커였음"을 구분하지 못해, 못 읽은 기기가 전부 스피커폰 통계에 섞인다.
+     *
+     * ⚠ 리시버(귀에 대는 통화 스피커)는 **"receiver" 라는 제3의 값**이다. 스피커폰도
+     *   헤드셋도 아니고(음향 결합이 스피커폰보다 훨씬 약하다), 그렇다고 빈 문자열도 아니다.
+     *   빈 문자열은 서버가 "라우트 불명"으로 읽어 판정을 보류하고 "이어폰을 꽂았다 빼며
+     *   재측정하라"는 처방을 낸다 — 우리가 **아는데** 모른다고 하면 측정하는 사람이
+     *   헛수고한다. "모르면 빈 문자열"은 *추측으로 채우지 마라*는 뜻이지 *아는 것도
+     *   숨겨라*가 아니다. 서버는 라우트를 그룹 키로만 쓰므로 새 값이 들어와도 동작한다.
+     *   우리 재생은 USAGE_MEDIA 라 안드로이드에서는 리시버로 안 가지만, iOS 에서
+     *   defaultToSpeaker 가 안 먹으면 나올 수 있다.
+     *
+     * 블루투스 A2DP/HFP 구분은 **일부러 하지 않는다**(나중 단계). 다만 그때 필요해진다 —
+     * A2DP 는 출력만 블루투스이고 마이크는 폰 본체라 스피커폰과 같은 결합이 생기는데,
+     * HFP 는 마이크도 헤드셋이라 결합이 없다. "블루투스 = 안전"이 아니다.
+     */
+    private fun mapDeviceType(type: Int): String = when (type) {
+        AudioDeviceInfo.TYPE_BUILTIN_SPEAKER -> "speaker"
+        AudioDeviceInfo.TYPE_BUILTIN_EARPIECE -> "receiver"
+        AudioDeviceInfo.TYPE_WIRED_HEADSET,
+        AudioDeviceInfo.TYPE_WIRED_HEADPHONES,
+        AudioDeviceInfo.TYPE_BLUETOOTH_A2DP,
+        AudioDeviceInfo.TYPE_BLUETOOTH_SCO,
+        AudioDeviceInfo.TYPE_USB_HEADSET,
+        AudioDeviceInfo.TYPE_USB_DEVICE,
+        AudioDeviceInfo.TYPE_USB_ACCESSORY -> "headset"
+        else -> ""
     }
 
     private fun onStart(result: MethodChannel.Result) {
-        // API 34+ needs a mediaProjection foreground service first; not wired.
-        if (Build.VERSION.SDK_INT >= 34) {
-            result.success(false)
-            return
-        }
         if (recorder != null) {
             result.success(false)
             return
@@ -202,13 +700,70 @@ class MainActivity : FlutterActivity() {
             pending?.success(false)
             return
         }
-        val ok = try {
-            beginRecording(resultCode, data)
-        } catch (e: Exception) {
-            teardown()
-            false
+        // Android 10(API 29)+ : getMediaProjection() 은 mediaProjection 형식의
+        // 포그라운드 서비스가 **이미 떠 있을 때만** 허용된다. 서비스 시작은
+        // 비동기라 startForeground() 완료 통지를 받고 나서 캡처로 넘어간다.
+        //
+        // ⛔ 34 가 아니라 29 다(QA F056 · 09-26). 프레임워크는 Android 10 부터
+        //   `targetSdk >= Q` 인 앱에 이 서비스를 요구한다(android10-release
+        //   MediaProjectionManagerService: requiresForegroundService() =
+        //   mTargetSdkVersion >= Q && !mIsPrivileged → SecurityException). 34 로 두어
+        //   Android 10~13 기기(Note20 = API 29)에서 서비스 없이 캡처로 가 예외가 났고,
+        //   아래 catch 가 조용히 false 를 돌려 결과 화면에 녹화 영상 카드가 안 떴다.
+        if (Build.VERSION.SDK_INT >= 29) {
+            awaitCaptureService { started ->
+                if (!started) {
+                    ScreenCaptureService.stop(this)
+                    pending.success(false)
+                } else {
+                    pending.success(runBeginRecording(resultCode, data))
+                }
+            }
+        } else {
+            pending.success(runBeginRecording(resultCode, data))
         }
-        pending.success(ok)
+    }
+
+    /** [beginRecording] 을 감싸 실패 시 확보한 자원을 반드시 되돌린다. */
+    private fun runBeginRecording(resultCode: Int, data: Intent): Boolean = try {
+        beginRecording(resultCode, data)
+    } catch (e: Exception) {
+        // 조용히 삼키면 「영상 카드가 왜 없지」를 로그로도 못 가린다(F056 이 그랬다).
+        Log.e("BeaverRecord", "녹화 시작 실패 → 클립 없이 진행", e)
+        teardown()
+        false
+    }
+
+    /**
+     * [ScreenCaptureService] 를 띄우고 `startForeground()` 가 끝났다는 통지를
+     * 기다린다. 통지는 메인 스레드에서 **한 번만** 온다.
+     *
+     * 3초 안에 통지가 없으면 실패로 본다. 알림이 막혔거나 서비스가 못 뜬 상황인데,
+     * 그대로 `getMediaProjection()` 을 부르면 SecurityException 으로 앱이 죽는다.
+     * 클립 하나를 포기하는 편이 낫다 — 녹화는 없어도 되는 덤이고, 게임은 계속된다.
+     */
+    private fun awaitCaptureService(onResult: (Boolean) -> Unit) {
+        val handler = Handler(Looper.getMainLooper())
+        var settled = false
+        val settle = fun(ok: Boolean) {
+            if (settled) return
+            settled = true
+            ScreenCaptureService.onForeground = null
+            onResult(ok)
+        }
+        val timeout = Runnable { settle(false) }
+        ScreenCaptureService.onForeground = {
+            handler.removeCallbacks(timeout)
+            settle(true)
+        }
+        try {
+            ScreenCaptureService.start(this)
+        } catch (e: Exception) {
+            handler.removeCallbacks(timeout)
+            settle(false)
+            return
+        }
+        handler.postDelayed(timeout, 3_000)
     }
 
     private fun beginRecording(resultCode: Int, data: Intent): Boolean {
@@ -303,6 +858,9 @@ class MainActivity : FlutterActivity() {
         virtualDisplay = null
         projection = null
         projectionCallback = null
+        // 권한 상태를 만드는 것 말고는 할 일이 없는 서비스다 — 캡처가 끝나면
+        // 바로 내린다. API 34 미만에서는 띄운 적이 없어 무해한 no-op 이다.
+        try { ScreenCaptureService.stop(this) } catch (_: Exception) {}
         tearingDown = false
     }
 
@@ -315,5 +873,19 @@ class MainActivity : FlutterActivity() {
          * 통화 모드가 조용히 꺼진다(비번을 다시 묻게 된다).
          */
         const val EXTRA_CALLKIT_CALL_DATA = "EXTRA_CALLKIT_CALL_DATA"
+
+        const val AUDIO_TAG = "BeaverTalkAudio"
+
+        /** 알람 수락 뒤 시스템이 경로를 되돌릴 시간을 넉넉히 준 재확인 시점. */
+        const val ROUTE_RECHECK_MS = 1500L
+
+        /** API 30 이하 SCO 연결 대기 상한 — 넘으면 스피커로 물러난다. */
+        const val SCO_TIMEOUT_MS = 4000L
+
+        val WIRED_TYPES = setOf(
+            AudioDeviceInfo.TYPE_WIRED_HEADSET,
+            AudioDeviceInfo.TYPE_WIRED_HEADPHONES,
+            AudioDeviceInfo.TYPE_USB_HEADSET,
+        )
     }
 }

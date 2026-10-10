@@ -12,6 +12,13 @@ import 'package:flutter_test/flutter_test.dart';
 ///      옮기는 순간 1008 로 닫힌다.
 /// SttService 는 연결 실패를 던지지 않고 탭 입력으로 폴백하므로(설계), 게임은 멀쩡히
 /// 돌고 음성만 안 먹는 상태가 오래 안 드러났다. 그래서 주소 조립을 테스트로 고정한다.
+///
+/// `PRON_STT_BASE_URL` 로 STT 호스트만 갈아끼울 수 있게 열어 뒀다. **기본값은 안 바꿨다**
+/// (과금 방어 결정이라 코드가 임의로 뒤집을 수 없다).
+///
+/// ⚠ 09-08 에 이 자리에 「앱 백엔드 403 = 라우트 없음」 이라고 적었는데 **틀렸다**(QA F027 ·
+/// 09-26 정정). 앱 서버는 `d269bb6`(07-22)부터 `/pron/stt/ws` 를 갖고 있고, 그 403 은 토큰
+/// 없는 핸드셰이크를 수락 전에 닫은 것이다 — 없는 경로도 똑같이 403 이다. [Env.pronSttBaseUrl] 참조.
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -28,6 +35,25 @@ void main() {
     expect(url, isNot(contains('us-central1')));
   });
 
+  test('PRON_STT_BASE_URL 이 있으면 STT 만 그 호스트로 간다', () {
+    dotenv.clean();
+    dotenv.testLoad(fileInput: '''
+API_BASE_URL=https://app.test
+PRON_STT_BASE_URL=https://stt.test
+''');
+    expect(pronSttWsUrl('t'), startsWith('wss://stt.test/api/v1/'));
+    // 통화는 안 따라간다 — 옮기는 건 STT 소켓 하나뿐이다.
+    expect(normalcallWsUrl('t'), startsWith('wss://app.test/api/v1/'));
+  });
+
+  test('PRON_STT_BASE_URL 이 없으면 종전대로 API_BASE_URL 을 따른다', () {
+    dotenv.clean();
+    dotenv.testLoad(fileInput: '''
+API_BASE_URL=https://app.test
+''');
+    expect(pronSttWsUrl('t'), startsWith('wss://app.test/api/v1/'));
+  });
+
   test('STT 는 토큰을 싣는다 — 없으면 서버가 1008 로 닫는다', () {
     expect(pronSttWsUrl('tok'), endsWith('/pron/stt/ws?token=tok'));
   });
@@ -37,7 +63,7 @@ void main() {
     expect(url, endsWith('token=a%2Bb%2Fc%3Dd'));
   });
 
-  test('통화 스트림과 STT 가 같은 호스트·스킴을 쓴다', () {
+  test('키가 없으면 통화 스트림과 STT 가 같은 호스트·스킴을 쓴다', () {
     final call = Uri.parse(normalcallWsUrl('t'));
     final stt = Uri.parse(pronSttWsUrl('t'));
     expect(stt.scheme, call.scheme);

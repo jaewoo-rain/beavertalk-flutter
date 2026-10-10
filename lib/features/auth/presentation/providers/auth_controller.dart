@@ -1,25 +1,24 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
 import 'package:crypto/crypto.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../app/navigation.dart';
+import '../../../../core/analytics/app_analytics.dart';
 import '../../../../core/error/app_exception.dart';
 import '../../../../core/i18n/locale_controller.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../mock/mock_data.dart' show clearBookmarks;
-import '../../../alarm/presentation/providers/alarm_list_controller.dart';
-import '../../../bookmark/presentation/providers/bookmark_providers.dart';
-import '../../../character/presentation/providers/character_providers.dart';
 import '../../../incoming_call/presentation/incoming_call_providers.dart';
-import '../../../subscription/presentation/providers/subscription_state_providers.dart';
 import 'auth_providers.dart';
 import 'my_profile_provider.dart';
-import 'signup_draft_provider.dart';
+import 'user_scoped_providers.dart';
 
 /// Deep link Supabase OAuth (Kakao, and the Apple/Android fallback) redirects
 /// back to after the browser consent step. Must be registered in three places:
@@ -70,7 +69,13 @@ class AuthController extends Notifier<AuthStatus> {
   /// a refresh-restored session flips the gate automatically.
   Future<void> bootstrap() async {
     _subscribeOnce();
-    state = _client.auth.currentSession != null
+    final session = _client.auth.currentSession;
+    // 시작할 때 저장된 세션이 없으면 로그인 화면은 401 이 아니라 이 줄에서 나온다
+    // (PM-DEC-056 진단 — 업데이트 뒤 로그아웃이 어느 경로인지 가른다).
+    debugPrint(session == null
+        ? '[auth] 시작 — 저장된 세션 없음 → 로그인 화면'
+        : '[auth] 시작 — 저장된 세션 있음 (만료=${session.isExpired})');
+    state = session != null
         ? AuthStatus.authenticated
         : AuthStatus.unauthenticated;
   }
@@ -88,27 +93,16 @@ class AuthController extends Notifier<AuthStatus> {
   /// 401 expiry, and the `signedOut` event) and on sign-in as a belt-and-braces
   /// guard against state cached before the session existed.
   ///
-  /// Only [myProfileProvider] used to be invalidated here. The rest of these are
-  /// plain (non-autoDispose) providers, so their cached values outlived sign-out
-  /// entirely — user A's alarms would still be in memory when user B signed in
-  /// on the same device, and [InboundCallScheduler] reads that cache on a timer,
-  /// so B's phone would ring with A's alarm and A's character.
-  /// [callListProvider] is `.autoDispose` and needs no entry here.
+  /// **무엇을 지우는지는 여기 없다** — [userScopedProviders] 에 있다. 목록이 이 메서드
+  /// 안에 손으로 나열돼 있던 동안 같은 사고가 두 번 났다(`charactersProvider`,
+  /// `myAccentProvider` 가 각각 빠져 다음 회원에게 앞 회원 데이터가 보였다). 나열을
+  /// 코드 밖으로 빼서, 새 provider 를 만들 때 분류가 강제되게 했다. 그 파일의 주석에
+  /// 각 항목이 왜 지워지는지/왜 안 지워지는지가 적혀 있다.
   void _clearUserScopedState() {
-    ref.invalidate(myProfileProvider);
-    // A's alarms → B's ring (see above). Also clears a 401 cached pre-login.
-    ref.invalidate(alarmListControllerProvider);
-    // A's saved sentences would show in B's 보관 tab.
-    ref.invalidate(bookmarkListProvider);
-    // A's owned characters would show in B's avatar screen.
-    ref.invalidate(ownedCharactersProvider);
-    // A's in-session plan purchase would upgrade B's subscription screens.
-    ref.invalidate(sessionEntitlementProvider);
-    // A's language/name/reasons would prefill B's onboarding — the login screen
-    // skips the language sheet when `language != null`, and the reason step
-    // would open with A's answers already checked and Continue enabled.
-    ref.invalidate(signupDraftProvider);
-    // Top-level global, outside Riverpod — must be cleared by hand.
+    for (final provider in userScopedProviders) {
+      ref.invalidate(provider);
+    }
+    // Riverpod 밖의 전역이라 목록에 못 들어간다 — 손으로 지운다.
     clearBookmarks();
   }
 
@@ -139,6 +133,10 @@ class AuthController extends Notifier<AuthStatus> {
             state = AuthStatus.authenticated;
           }
         case AuthChangeEvent.signedOut:
+          // 앱이 부른 signOut(로그아웃·만료 처리) 뒤에도 오지만, Supabase 가 스스로
+          // 세션을 버릴 때(갱신 토큰 거절 · 복원 실패)는 이것만 온다 — 경로를 가르는 로그.
+          debugPrint('[auth] Supabase signedOut 이벤트 (state=${state.name}, '
+              'rejected=$_sessionRejected)');
           _clearUserScopedState();
           if (state != AuthStatus.unauthenticated) {
             state = AuthStatus.unauthenticated;
@@ -156,6 +154,7 @@ class AuthController extends Notifier<AuthStatus> {
     required String email,
     required String password,
   }) async {
+    AppAnalytics.instance.noteLoginMethod('email');
     try {
       await _client.auth.signInWithPassword(email: email, password: password);
       state = AuthStatus.authenticated;
@@ -200,6 +199,9 @@ class AuthController extends Notifier<AuthStatus> {
           language: language,
           reasons: reasons,
         );
+    // 온보딩 제출 = 가입 완료(GA4 sign_up). 이름만 바꾸는 [updateName] 은 이 메서드를
+    // 거치지 않으므로 중복으로 세지 않는다.
+    AppAnalytics.instance.logSignUp();
   }
 
   /// Requests a password-recovery code email (Supabase recovery OTP — a 6-digit
@@ -259,6 +261,7 @@ class AuthController extends Notifier<AuthStatus> {
     required String idToken,
     String? accessToken,
   }) async {
+    AppAnalytics.instance.noteLoginMethod('google');
     try {
       await _client.auth.signInWithIdToken(
         provider: OAuthProvider.google,
@@ -289,11 +292,44 @@ class AuthController extends Notifier<AuthStatus> {
   /// for real users requires the Kakao app to be a 비즈 앱; that conversion is
   /// done.) Add nickname/profile here only after enabling them as consent items.
   Future<void> signInWithKakao() async {
+    AppAnalytics.instance.noteLoginMethod('kakao');
     try {
       await _client.auth.signInWithOAuth(
         OAuthProvider.kakao,
         redirectTo: kOAuthRedirect,
         scopes: 'account_email',
+        authScreenLaunchMode: LaunchMode.externalApplication,
+      );
+    } on AuthException catch (e) {
+      throw _mapAuthException(e, context: _AuthContext.login);
+    }
+  }
+
+  /// Facebook sign-in via Supabase OAuth.
+  ///
+  /// Same shape as [signInWithKakao]: Facebook's consent page opens in an
+  /// external browser, the deep link [kOAuthRedirect] returns to the app, and
+  /// `onAuthStateChange` (wired in [_subscribeOnce]) flips the gate — so this
+  /// method does NOT set [state] itself and the caller needs no post-login
+  /// navigation. Returns as soon as the browser is launched; the session
+  /// arrives asynchronously.
+  ///
+  /// No Facebook App ID lives in the client: the browser flow is driven entirely
+  /// by the Supabase Facebook provider, which holds the App ID + secret. (A
+  /// *native* Limited Login path would need `flutter_facebook_auth` plus
+  /// per-platform token handling — deliberately out of scope here.)
+  ///
+  /// `scopes` is left at Supabase's default (`email`, `public_profile`) — the
+  /// two permissions Meta grants without App Review. Widening this pulls the app
+  /// into review, so don't add scopes casually.
+  ///
+  /// Throws [AppException] if the browser can't be launched.
+  Future<void> signInWithFacebook() async {
+    AppAnalytics.instance.noteLoginMethod('facebook');
+    try {
+      await _client.auth.signInWithOAuth(
+        OAuthProvider.facebook,
+        redirectTo: kOAuthRedirect,
         authScreenLaunchMode: LaunchMode.externalApplication,
       );
     } on AuthException catch (e) {
@@ -319,6 +355,7 @@ class AuthController extends Notifier<AuthStatus> {
   /// Throws [AppException] on failure (caller shows it). A user cancel is a no-op.
   Future<void> signInWithApple() async {
     final native = !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS;
+    AppAnalytics.instance.noteLoginMethod('apple');
     if (native) {
       try {
         final rawNonce = _generateNonce();
@@ -343,7 +380,8 @@ class AuthController extends Notifier<AuthStatus> {
       } on SignInWithAppleAuthorizationException catch (e) {
         // User dismissed the sheet — not a failure worth surfacing.
         if (e.code == AuthorizationErrorCode.canceled) return;
-        throw UnknownFailure(e.message);
+        // `e.message` is the plugin's English text — never shown (QA F017).
+        throw UnknownFailure(_l10n.loginAppleSignInFailed);
       } on AuthException catch (e) {
         throw _mapAuthException(e, context: _AuthContext.login);
       }
@@ -375,6 +413,7 @@ class AuthController extends Notifier<AuthStatus> {
   /// login. The `onAuthStateChange` listener also flips the gate, but we set it
   /// here too for immediacy.
   Future<void> logout() async {
+    debugPrint('[auth] 명시 로그아웃');
     // Delete this device's FCM token BEFORE signOut, while the session is still
     // valid — the `signedOut` listener also unregisters, but by then signOut()
     // has cleared the session so its `DELETE /devices` is unauthenticated (401)
@@ -396,6 +435,7 @@ class AuthController extends Notifier<AuthStatus> {
     } catch (_) {
       // Ignored on purpose: the local session is gone either way.
     }
+    unawaited(_signOutGoogle());
     _clearUserScopedState();
     state = AuthStatus.unauthenticated;
     _popToRoot();
@@ -419,6 +459,10 @@ class AuthController extends Notifier<AuthStatus> {
   Future<void> updateLanguage(String language) async {
     await ref.read(authRepositoryProvider).updateLanguage(language);
     ref.invalidate(myProfileProvider);
+    // 서버가 회원 언어로 번역해 주는 콘텐츠 — 안 버리면 이전 언어 설명이 남는다.
+    for (final provider in memberLanguageScopedProviders) {
+      ref.invalidate(provider);
+    }
   }
 
   /// Persists the member's **learning** language (`PATCH /members/me`
@@ -445,7 +489,24 @@ class AuthController extends Notifier<AuthStatus> {
   /// the admin/service key) — the client SDK cannot delete its own auth user.
   /// Without that, the same email can sign back in and be find-or-created again.
   Future<void> deleteAccount() async {
-    await ref.read(authRepositoryProvider).deleteAccount();
+    // Delete this device's push token BEFORE the member goes away, while the
+    // session is still valid — same reason as logout(). Afterwards the member is
+    // gone and `DELETE /devices` can no longer be authorized, so the token would
+    // survive and a scheduled alarm could still ring a deleted account's phone.
+    final devices = ref.read(deviceRegistrationControllerProvider);
+    try {
+      await devices.unregister();
+    } catch (_) {
+      // Best-effort: a failed token delete must not block account deletion.
+    }
+    try {
+      await ref.read(authRepositoryProvider).deleteAccount();
+    } catch (_) {
+      // The account still exists and the user stays logged in — put the token
+      // back so calls and alarms keep arriving on this device.
+      unawaited(devices.register());
+      rethrow;
+    }
     // The backend delete already succeeded — a failed network revoke must not
     // leave the user staring at a deleted account's UI. Same reasoning as logout().
     try {
@@ -453,6 +514,8 @@ class AuthController extends Notifier<AuthStatus> {
     } catch (_) {
       // Ignored on purpose: the local session is gone either way.
     }
+    // 탈퇴는 구글 앱 권한까지 철회한다 — 지운 계정의 연결을 기기에 남기지 않는다(QA F082).
+    unawaited(_signOutGoogle(disconnect: true));
     _clearUserScopedState();
     state = AuthStatus.unauthenticated;
     _popToRoot();
@@ -461,16 +524,42 @@ class AuthController extends Notifier<AuthStatus> {
   /// Called by the auth interceptor on a 401. Best-effort sign-out, drops the
   /// cached profile, and marks the session expired so AuthGate shows login
   /// (prevents the next user briefly seeing stale member info).
-  void onSessionExpired() {
+  ///
+  /// [reason] only feeds the `[auth]` log (PM-DEC-056) — which path signed the
+  /// member out.
+  void onSessionExpired({String reason = 'unknown'}) {
     // 이미 만료 처리(미인증)했으면 재실행 금지 — AuthGate 가 에러 프레임마다 이걸
     // 스케줄해 생기는 signOut/무효화 churn 과 /members/me 401 재조회 폭주를 끊는다.
     if (state == AuthStatus.unauthenticated) return;
+    debugPrint('[auth] 세션 만료 처리 → 로그아웃 ($reason)');
     _sessionRejected = true; // 명시 재로그인 전까지 백그라운드 리프레시로 되살리지 않음
     // Best-effort: don't await (interceptor callback is sync); errors ignored.
     _client.auth.signOut().ignore();
+    unawaited(_signOutGoogle());
     _clearUserScopedState();
     state = AuthStatus.unauthenticated;
     _popToRoot();
+  }
+
+  /// Forgets the Google account on this device (best-effort, mobile only).
+  ///
+  /// Supabase sign-out leaves `google_sign_in`'s cached account in place, so the
+  /// next Google login returned the previous account with no chooser — on a
+  /// shared institution device, the next person landed in the last person's
+  /// account (QA F082). [disconnect] also revokes the app's grant (withdrawal).
+  /// Web signs in through GIS, which this plugin instance does not own.
+  Future<void> _signOutGoogle({bool disconnect = false}) async {
+    if (kIsWeb) return;
+    try {
+      final google = GoogleSignIn();
+      if (disconnect) {
+        await google.disconnect();
+      } else {
+        await google.signOut();
+      }
+    } catch (_) {
+      // Nothing cached, or the plugin is unavailable — nothing to forget.
+    }
   }
 
   /// Clears any pushed routes so the (now unauthenticated) AuthGate root —
@@ -480,7 +569,7 @@ class AuthController extends Notifier<AuthStatus> {
   }
 
   /// Maps a Supabase [AuthException] to the app's typed [AppException] with a
-  /// Korean message, matching the previous backend error semantics.
+  /// localized message, matching the previous backend error semantics.
   AppException _mapAuthException(
     AuthException e, {
     required _AuthContext context,
@@ -508,11 +597,16 @@ class AuthController extends Notifier<AuthStatus> {
             e.code == 'otp_expired')) {
       return ValidationFailure(_l10n.authResetCodeInvalid);
     }
-    // Fallback: surface Supabase's message.
-    return UnknownFailure(e.message);
+    // Fallback: never surface Supabase's raw text — it is English in every
+    // locale (QA F017, 09-26). An offline device lands here as a retryable
+    // fetch failure, so that one gets the connection copy.
+    if (e is AuthRetryableFetchException) {
+      return NetworkFailure(_l10n.connectionFailedTitle);
+    }
+    return UnknownFailure(_l10n.somethingWentWrong);
   }
 }
 
 /// Discriminates which call produced an [AuthException] so the mapper can pick
-/// the right Korean message.
+/// the right localized message.
 enum _AuthContext { login, signup, reset }

@@ -2,15 +2,18 @@ import 'package:flutter/material.dart' hide Badge, Banner;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/badge.dart';
 import '../../components/atoms/button.dart';
+import '../../components/atoms/skeleton.dart';
 import '../../components/icons/app_icons.dart';
 import '../../components/molecules/banner.dart';
 import '../../core/format/dates.dart';
 import '../../core/format/money.dart';
 import '../../core/store/store_subscription_link.dart';
+import '../../features/normalcall/presentation/normalcall_providers.dart';
 import '../../features/subscription/domain/entities/subscription_state.dart';
 import '../../features/subscription/domain/subscription_status_resolver.dart';
 import '../../features/subscription/presentation/providers/subscription_state_providers.dart';
@@ -18,16 +21,18 @@ import '../../features/subscription/domain/plan_prices.dart';
 import '../../l10n/app_localizations.dart';
 import '../../components/organisms/gnb.dart';
 import '../overlays/subscription_overlays.dart';
+import '../system/network_error.dart';
 import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
+import '../../components/layout/need_based_rows.dart';
 
 /// Subscription management — the eight state screens of spec §4-1, rendered
 /// from one widget because they are one screen with state-driven parts.
 ///
 /// Measured off the Dark originals (`4514:4739` free · `4514:5111` trial ·
 /// `4514:5050` active · `4514:5081` max · `4514:4900` grace · `4652:27757`
-/// hold · `4514:5193` ending · `4514:5179` expired). The layout skeleton —
+/// hold · `4514:5193` ending · `6527:4210` expired). The layout skeleton —
 /// GNB → banners → plan card → billing list → notes — never changes; only the
 /// pieces spec §6-1 varies (badge, banners, slot ① and ⑦, footnotes) do.
 ///
@@ -39,11 +44,87 @@ class SubscriptionManageScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Kicks the store catalog query and rebuilds this subtree when it lands.
+    // Child widgets read [PlanPrices] statically, so this one watch is what
+    // turns list prices into the member's real storefront prices — and what
+    // makes a console-side discount show up without an app release.
+    ref.watch(storePricesProvider);
+    // 모르는 동안 Free 로 그리지 않는다(QA F014) — 오프라인인 Premium 회원이 Free 카드와
+    // 업그레이드 배너를 봤다. 로딩이면 자리표시, 둘 다 실패면 다시 시도.
+    final availability = ref.watch(subscriptionStatusAvailabilityProvider);
+    if (availability != SubscriptionStatusAvailability.known) {
+      return _StatusUnknown(
+          failed: availability == SubscriptionStatusAvailability.failed);
+    }
     final status = ref.watch(subscriptionStatusProvider);
     if (status.state == SubscriptionState.expired) {
       return _TrialExpiredNotice(status: status);
     }
     return _ManageBody(status: status);
+  }
+}
+
+/// 구독 상태를 아직 모를 때 — 로딩이면 플랜 카드 자리표시, 실패면 다시 시도(QA F014).
+///
+/// GNB 는 그대로 둔다. 뒤로 가기는 상태와 무관하게 늘 있어야 한다.
+class _StatusUnknown extends ConsumerWidget {
+  const _StatusUnknown({required this.failed});
+
+  final bool failed;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final c = context.c;
+    return AppScaffold(
+      background: c.backgroundNormalNormal,
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Gnb.main(
+            title: l10n.subscriptionTitle,
+            onBack: () => Navigator.pop(context),
+          ),
+          Expanded(
+            child: failed
+                ? NetworkErrorView(onRetry: () => retrySubscriptionStatus(ref))
+                : SkeletonShimmer(
+                    child: ContentColumn(
+                      child: ListView(
+                        padding: const EdgeInsets.only(top: AppSpacing.s24),
+                        children: [
+                          // 플랜 카드(`card` 16/14 · gap 10)와 같은 틀.
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 14),
+                            decoration: BoxDecoration(
+                              color: c.backgroundSurfaceAlternative,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Skeleton.bar(width: 96, height: 22),
+                                    Skeleton.pill(width: 56, height: 22),
+                                  ],
+                                ),
+                                SizedBox(height: 10),
+                                Skeleton.bar(width: 160, height: 18),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -59,16 +140,35 @@ String _shortDate(BuildContext context, DateTime d) =>
 
 /// The plan-card monthly price line: server value when present, otherwise the
 /// plan's list price (the design's `$15.99` / `$23.99`).
-String _priceLine(AppLocalizations l10n, SubscriptionStatus status) {
-  final minor = status.source?.price;
+String? _priceLine(AppLocalizations l10n, SubscriptionStatus status,
+    {required bool? annual}) {
+  // 연간 회원에게 월 요금을 보이면 해지 판단이 틀어진다(QA F077). Premium 은 스토어가 주기를
+  // 말할 때만 요금 줄을 그린다 — 모르면(조회 실패·스토어에 구독 없음·다른 계정) 월간으로 단정하지
+  // 않고 줄을 뺀다(09-28 실기기: 연간 체험이 「₩33,000 per month」 로 보였다).
+  if (status.tier == SubscriptionTier.max) {
+    if (annual == null) return null;
+    if (annual) {
+      return l10n.maxAnnualPriceLine(
+          PlanPrices.maxYearly, PlanPrices.maxYearlyPerMonth);
+    }
+  }
+  // 0 은 「무료로 청구된다」 가 아니다 — 스토어 결제 없이 부여된 Premium(관리자 부여 등)이
+  // 가격 0 으로 온다. 「$0 per month」 는 틀린 청구 안내라 모름(null)과 같이 다룬다(QA F022).
+  // 부여 여부를 가를 필드(`source`)는 서버 요청서에 올렸다.
+  final raw = status.source?.price;
+  final minor = raw != null && raw > 0 ? raw : null;
   // The fallback used to carry its own copy of the price in minor units, and
   // it went stale twice while the list prices moved — it was still quoting
   // $19.90/$12.90 two rounds later. Route it through the one place instead.
-  final price = minor != null
-      ? formatUsd(minor)
-      : (status.tier == SubscriptionTier.max
-          ? PlanPrices.maxMonthly
-          : PlanPrices.proMonthly);
+  //
+  // 스토어 현지가가 서버 값을 이긴다. 서버 `price` 는 카탈로그 USD 라, ₩33,000 을 낸 회원에게
+  // 「$23.99 per month」 로 보였다(09-28 실결제). 서버 값은 스토어가 답하지 않을 때만 쓴다.
+  final isMax = status.tier == SubscriptionTier.max;
+  final price = isMax && PlanPrices.isStoreBacked
+      ? PlanPrices.maxMonthly
+      : minor != null
+          ? formatUsd(minor)
+          : (isMax ? PlanPrices.maxMonthly : PlanPrices.proMonthly);
   return l10n.pricePerMonthLine(price);
 }
 
@@ -91,23 +191,24 @@ class _ManageBody extends StatelessWidget {
             onBack: () => Navigator.pop(context),
           ),
           Expanded(
-            child: ListView(
-              padding: const EdgeInsets.fromLTRB(AppSpacing.s20,
-                  AppSpacing.s24, AppSpacing.s20, AppSpacing.s32),
-              children: [
-                // Payment-trouble banner rides on top of everything —
-                // grace/hold only (spec §6-1), measured above the plan card.
-                if (state.showsPaymentFailureBanner) ...[
-                  _dangerBanner(context, l10n),
+            child: ContentColumn(
+              child: ListView(
+                padding: const EdgeInsets.only(top: AppSpacing.s24, bottom: AppSpacing.s32),
+                children: [
+                  // Payment-trouble banner rides on top of everything —
+                  // grace/hold only (spec §6-1), measured above the plan card.
+                  if (state.showsPaymentFailureBanner) ...[
+                    _dangerBanner(context, l10n),
+                    const SizedBox(height: AppSpacing.s24),
+                  ],
+                  _PlanCard(status: status),
+                  ..._upsell(context, l10n),
                   const SizedBox(height: AppSpacing.s24),
+                  _BillingList(status: status),
+                  const SizedBox(height: AppSpacing.s24),
+                  ..._notes(context, l10n),
                 ],
-                _PlanCard(status: status),
-                ..._upsell(context, l10n),
-                const SizedBox(height: AppSpacing.s24),
-                _BillingList(status: status),
-                const SizedBox(height: AppSpacing.s24),
-                ..._notes(context, l10n),
-              ],
+              ),
             ),
           ),
         ],
@@ -128,40 +229,21 @@ class _ManageBody extends StatelessWidget {
 
   /// The banner below the plan card, when the state carries one.
   ///
-  /// Free sells Pro (brand), Pro-tier states sell Max (gold), Max sells the
-  /// annual cycle (gold). Trial and hold show none — hold because payment
-  /// recovery comes first (spec §6-1), trial per the measured original
-  /// (`4514:5111` carries no banner; spec §6-1's table disagrees and the
-  /// design is the canon — flagged for review).
+  /// 단일 티어(09-22 · Figma `subscription_manage_free` 외): **Free 만** 배너를 단다 —
+  /// 「Premium 으로 얼굴 보며」(→ Premium 페이월). 유료 상태의 업셀(옛 Pro→Max · 연간 전환)은
+  /// 없앴다: 올려 팔 티어가 없고, 연간은 팔되 유도하지 않는다(연간 전환은 결제 목록 ① 한 줄).
   List<Widget> _upsell(BuildContext context, AppLocalizations l10n) {
-    final Banner? banner = switch (status.state) {
-      SubscriptionState.free => Banner(
-          tone: BannerTone.brand,
-          title: l10n.bannerGoUnlimitedTitle,
-          sub: l10n.bannerGoUnlimitedSub(PlanPrices.proMonthly),
-          onTap: () => Navigator.pushNamed(context, Routes.paywallPro),
-        ),
-      SubscriptionState.activePro ||
-      SubscriptionState.grace ||
-      SubscriptionState.ending =>
-        Banner(
-          tone: BannerTone.gold,
-          title: l10n.bannerMaxUpsellTitle,
-          sub: l10n.bannerMaxUpsellSub(PlanPrices.maxMonthly),
-          onTap: () => Navigator.pushNamed(context, Routes.paywallMax),
-        ),
-      SubscriptionState.activeMax => Banner(
-          tone: BannerTone.gold,
-          title: l10n.bannerAnnualSwitchTitle,
-          sub: l10n.bannerAnnualSwitchSub(PlanPrices.maxYearly, PlanPrices.maxYearlyPerMonth),
-          onTap: () => showSubscriptionOverlay(
-              context, SubscriptionOverlay.annualSwitch,
-              expiresAt: status.expiresAt),
-        ),
-      _ => null,
-    };
-    if (banner == null) return const [];
-    return [const SizedBox(height: AppSpacing.s24), banner];
+    if (status.state != SubscriptionState.free) return const [];
+    return [
+      const SizedBox(height: AppSpacing.s24),
+      // Figma `subscription_manage_free`: 민트 톤(브랜드). 금색은 Light 대비가 안 나온다(P17).
+      Banner(
+        tone: BannerTone.brand,
+        title: l10n.bannerMaxUpsellTitle,
+        sub: l10n.bannerMaxUpsellSub(PlanPrices.maxMonthly),
+        onTap: () => Navigator.pushNamed(context, Routes.paywallMax),
+      ),
+    ];
   }
 
   /// The caption block(s) under the billing list — copy measured per state.
@@ -177,10 +259,8 @@ class _ManageBody extends StatelessWidget {
       else if (state == SubscriptionState.trial) ...[
         if (expiry != null) l10n.noteTrialEnds(_shortDate(context, expiry)),
       ] else ...[
+        // 공정 사용 문구는 뺐다 — 「무제한」 약속이 사라져 걸 대상이 없다.
         l10n.noteStoreHandled,
-        // The Max original carries only the store-handled line; every other
-        // paid state adds the fair-use line (measured).
-        if (state != SubscriptionState.activeMax) l10n.noteFairUse,
       ],
       if (state == SubscriptionState.grace) l10n.noteGrace,
       if (state == SubscriptionState.onHold) l10n.noteHold,
@@ -200,7 +280,7 @@ class _ManageBody extends StatelessWidget {
 /// The plan summary card. Two measured paddings exist in the originals —
 /// `card` (16/14, gap 10) on free/trial/max and `Card/status` (24/16, gap 12)
 /// on active/grace/hold/ending — and both are kept as measured.
-class _PlanCard extends StatelessWidget {
+class _PlanCard extends ConsumerWidget {
   const _PlanCard({required this.status});
 
   final SubscriptionStatus status;
@@ -214,7 +294,7 @@ class _PlanCard extends StatelessWidget {
       };
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final c = context.c;
     final l10n = AppLocalizations.of(context);
     final state = status.state;
@@ -242,13 +322,29 @@ class _PlanCard extends StatelessWidget {
       SubscriptionState.free => l10n.freePlanPriceLine,
       SubscriptionState.trial =>
         expiry == null ? l10n.planMaxTrial : l10n.freeUntilDate(_fullDate(context, expiry)),
-      _ => _priceLine(l10n, status),
+      // 스토어 판정이 먼저, 스토어가 모르면 서버 billing_period(§22-⑤ · F085).
+      _ => _priceLine(l10n, status,
+          annual: ref.watch(premiumAnnualProvider).valueOrNull ?? status.annual),
     };
 
-    final (String rowLabel, String rowValue) = switch (state) {
-      // TODO(server): today's usage is not on any endpoint yet; 0-of-1 is the
-      // Free default until the usage counter ships (see plan doc §5).
-      SubscriptionState.free => (l10n.todaysCalls, l10n.callsUsedOfLimit(0, 1)),
+    // Free 의 「오늘 통화 시간」 — 하루 합산 5분(09-23 확정)을 서버 `daily-status` 로 읽는다.
+    // 예전엔 「0 of 1 used」 를 박아 두어 실제 사용량과 무관했다. 모르면(구서버·실패) 행째
+    // 숨긴다 — 지어낸 0 을 보여 주지 않는다. 분은 올림(10초 써도 1분) · 한도는 내림.
+    final daily = state == SubscriptionState.free
+        ? ref.watch(dailyStatusProvider).valueOrNull
+        : null;
+    final budget = daily?.budgetSec;
+    final used = daily?.usedSec;
+    final (String rowLabel, String rowValue)? row = switch (state) {
+      SubscriptionState.free => budget == null || used == null
+          ? null
+          : (
+              l10n.todaysCalls,
+              l10n.callsUsedOfLimit(
+                ((used + 59) ~/ 60).clamp(0, budget ~/ 60),
+                budget ~/ 60,
+              ),
+            ),
       SubscriptionState.trial => (
           l10n.firstPaymentLabel,
           expiry == null ? '—' : _fullDate(context, expiry),
@@ -267,10 +363,11 @@ class _PlanCard extends StatelessWidget {
               status.tier == SubscriptionTier.max ? l10n.planMax : l10n.planPro),
           expiry == null ? '—' : _fullDate(context, expiry),
         ),
-      _ => (
-          l10n.nextPaymentLabel,
-          expiry == null ? '—' : _fullDate(context, expiry),
-        ),
+      // 다음 결제일을 모르면 행째 뺀다 — 「Next payment —」 는 결제가 곧 있을 것처럼
+      // 읽힌다(QA F022 · 스토어 결제 없이 부여된 Premium 은 만료일이 없다).
+      _ => expiry == null
+          ? null
+          : (l10n.nextPaymentLabel, _fullDate(context, expiry)),
     };
 
     return Container(
@@ -284,49 +381,49 @@ class _PlanCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  title,
-                  style: AppType.headline1.sb.copyWith(color: c.labelStrong),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Badge(tone: badgeTone, label: badgeLabel),
-            ],
+          // 배지는 오른쪽 끝(Figma 4514:4739 justify-between). 폭은 글자 폭대로 나눈다
+          // (LabelValueRow) — Expanded+Flexible 은 「체험 중 / Premium 체험」 에서 83px 를
+          // 버렸다(09-24 전수조사 C). 배지는 폭 상한을 받아 스스로 줄을 바꾼다(자르지 않음).
+          LabelValueRow(
+            label: Text(
+              title,
+              style: AppType.headline1.sb.copyWith(color: c.labelStrong),
+            ),
+            value: Badge(tone: badgeTone, label: badgeLabel),
           ),
           SizedBox(height: _compact ? 10 : 12),
-          Text(
-            subtitle,
-            style: AppType.body2.r.copyWith(color: c.labelNormal),
-          ),
+          if (subtitle != null)
+            Text(
+              subtitle,
+              style: AppType.body2.r.copyWith(color: c.labelNormal),
+            ),
+          if (row case (final rowLabel, final rowValue)) ...[
           SizedBox(height: _compact ? 10 : 12),
           Container(height: 1, color: c.lineAlternative),
           SizedBox(height: _compact ? 10 : 12),
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  rowLabel,
-                  style: AppType.label1.r.copyWith(color: c.labelNormal),
-                ),
-              ),
-              const SizedBox(width: 8),
-              // Flexible + ellipsis, not a bare Text: the wordier locales'
-              // usage line ("0 of 1 used") ran the row off the right edge
-              // (hi/ur/kk overflowed up to 93px in the 320-wide sweep).
-              Flexible(
-                child: Text(
-                  rowValue,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.end,
-                  style: AppType.label1.sb.copyWith(color: c.labelStrong),
-                ),
-              ),
-            ],
+          // ⛔ **값을 자르지 마라.** 「0 of 1 used」가 「0 of 1 us…」가 되면 남은 횟수가
+          //   거짓이 된다 — 빈 값보다 나쁘다. 예전엔 값에 ellipsis 를 걸어 넘침을
+          //   막았는데(hi·ur·kk 가 93px 넘쳤다는 그 주석), 그건 넘침을 잘림으로
+          //   바꾼 것뿐이었다.
+          //   줄어드는 쪽은 **라벨**이다. 라벨은 줄어도 옆의 값이 무엇인지는 남는다.
+          // 라벨은 왼쪽 끝, 값은 오른쪽 끝(Figma 4514:4739). 폭은 글자 폭대로 나눈다
+          // (LabelValueRow) — Flexible 둘은 「다음 결제 / 2026년 6월 20일」 에서 69px 를
+          // 버리고 값을 줄바꿈시켰다(09-24 전수조사 B). 값은 자르지 않고 줄을 바꾼다.
+          LabelValueRow(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            label: Text(
+              rowLabel,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: AppType.label1.r.copyWith(color: c.labelNormal),
+            ),
+            value: Text(
+              rowValue,
+              textAlign: TextAlign.end,
+              style: AppType.label1.sb.copyWith(color: c.labelStrong),
+            ),
           ),
+          ],
         ],
       ),
     );
@@ -338,18 +435,28 @@ class _PlanCard extends StatelessWidget {
 /// Rows are never hidden; only slot ① and ⑦ change label and destination,
 /// and both of those decisions live on the domain extension
 /// ([SubscriptionStateX]), not here.
-class _BillingList extends StatelessWidget {
+class _BillingList extends ConsumerWidget {
   const _BillingList({required this.status});
 
   final SubscriptionStatus status;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final state = status.state;
+    // 스토어가 「지금 월간」 이라고 답할 때만 「Switch to yearly」, 아니면 플랜 비교(QA F067 · F071).
+    // 행 자체는 숨기지 않는다(§5-1).
+    final switchAvailable =
+        ref.watch(annualSwitchAvailableProvider).valueOrNull ?? false;
+    final hideSwitch =
+        state.planSlotLabel == BillingSlotLabel.switchToAnnual && !switchAvailable;
+    final planLabel =
+        hideSwitch ? BillingSlotLabel.compareAllPlans : state.planSlotLabel;
+    final planDestination =
+        hideSwitch ? BillingDestination.plansCompare : state.planSlotDestination;
 
     String slotLabel(BillingSlotLabel label) => switch (label) {
-          BillingSlotLabel.changePlan => l10n.billingChangePlan,
+          BillingSlotLabel.switchToAnnual => l10n.bannerAnnualSwitchTitle,
           BillingSlotLabel.compareAllPlans => l10n.billingCompareAllPlans,
           BillingSlotLabel.cancelSubscription => l10n.billingCancelSubscription,
           BillingSlotLabel.resubscribe => l10n.billingResubscribe,
@@ -362,17 +469,16 @@ class _BillingList extends StatelessWidget {
         const SizedBox(height: AppSpacing.s16),
         _card(context, [
           _BillingRow(
-            label: slotLabel(state.planSlotLabel),
-            destination: state.planSlotDestination,
+            label: slotLabel(planLabel),
+            destination: planDestination,
+            // 연간 전환 시트가 「언제부터」를 말하려면 지금 기간의 끝이 필요하다.
+            expiresAt: status.expiresAt,
           ),
           _BillingRow(
             label: l10n.billingBuyACharacter,
             destination: BillingDestination.characterOffer,
           ),
-          _BillingRow(
-            label: l10n.billingRestorePurchases,
-            destination: state.restoreDestination,
-          ),
+          const _RestoreRow(),
           _BillingRow(
             label: l10n.billingPaymentHistory,
             destination: BillingDestination.paymentHistory,
@@ -395,9 +501,16 @@ class _BillingList extends StatelessWidget {
             destination: BillingDestination.refundHelp,
             external: true,
           ),
+          const _RedeemCodeRow(),
           _BillingRow(
             label: slotLabel(state.statusSlotLabel),
-            destination: state.statusSlotDestination,
+            // 체험 해지 시트는 「연간으로 바꾸기」 를 판다 — 스토어가 월간이라고 할 때만. 연간이거나
+            // 모르면 교체 없는 두 번째 구독이 될 수 있어 일반 해지 시트로(QA F075).
+            destination: state.statusSlotDestination ==
+                        BillingDestination.cancelDownsell &&
+                    !switchAvailable
+                ? BillingDestination.cancelSubscription
+                : state.statusSlotDestination,
             external: true,
             last: true,
             expiresAt: status.expiresAt,
@@ -422,6 +535,60 @@ class _BillingList extends StatelessWidget {
       );
 }
 
+/// `구매 복원` — the row that actually restores.
+///
+/// It used to open the success or the empty sheet straight from the state
+/// machine, which was fine against a mock rail and is not fine now: App Review
+/// rejects a non-consumable app whose restore does not restore, and a member
+/// on a new phone has no other way back to characters they own. So this asks
+/// the store, counts what came back, and only then picks the sheet.
+class _RestoreRow extends ConsumerStatefulWidget {
+  const _RestoreRow();
+
+  @override
+  ConsumerState<_RestoreRow> createState() => _RestoreRowState();
+}
+
+class _RestoreRowState extends ConsumerState<_RestoreRow> {
+  @override
+  Widget build(BuildContext context) {
+    return _BillingRow(
+      label: AppLocalizations.of(context).billingRestorePurchases,
+      onTap: () => runRestoreFlow(context),
+    );
+  }
+}
+
+/// `코드 사용` — opens the platform's offer-code redemption.
+///
+/// The app-side half of every discount the console can issue. Codes can be
+/// generated and campaigns started at any time without an app review, but only
+/// if the binary already has somewhere to spend one; without this row a
+/// discount campaign drags a release behind it.
+///
+/// StoreKit raises a sheet in-app. Play has no equivalent, so the rail says so
+/// and the member goes to Play's redemption page instead.
+class _RedeemCodeRow extends ConsumerWidget {
+  const _RedeemCodeRow();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return _BillingRow(
+      label: AppLocalizations.of(context).billingRedeemCode,
+      external: true,
+      onTap: () async {
+        final opened =
+            await ref.read(iapServiceProvider).presentOfferCodeRedemption();
+        if (opened) return;
+        await launchUrl(
+          StoreSubscriptionLink.googlePlayRedeem,
+          mode: LaunchMode.externalApplication,
+        );
+      },
+    );
+  }
+}
+
 /// Store-group rows whose labels are fixed (not slot-driven).
 enum _StoreRowLabel { manage, refund }
 
@@ -431,7 +598,8 @@ class _BillingRow extends StatelessWidget {
   const _BillingRow({
     required this.label,
     this.labelKey,
-    required this.destination,
+    this.destination,
+    this.onTap,
     this.external = false,
     this.last = false,
     this.expiresAt,
@@ -439,7 +607,13 @@ class _BillingRow extends StatelessWidget {
 
   final String? label;
   final _StoreRowLabel? labelKey;
-  final BillingDestination destination;
+
+  /// Where the row goes. Null only when [onTap] does the work instead —
+  /// the rows that talk to the store rail rather than navigate.
+  final BillingDestination? destination;
+
+  /// Overrides [destination]. For rows whose tap is an action, not a route.
+  final VoidCallback? onTap;
   final bool external;
   final bool last;
 
@@ -455,37 +629,43 @@ class _BillingRow extends StatelessWidget {
           _StoreRowLabel.manage => l10n.billingManageInTheStore,
           _StoreRowLabel.refund => l10n.billingRefundHelp,
         };
-    return GestureDetector(
-      onTap: () => _open(context),
-      behavior: HitTestBehavior.opaque,
-      child: Container(
-        height: 56,
-        padding: const EdgeInsets.symmetric(horizontal: 12),
-        decoration: last
-            ? null
-            : BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(color: c.lineAlternative, width: 0.5),
+    // 줄 전체가 눌리는 자리다 — 누른 순간 줄 전체에 눌림 효과를 보여 준다
+    // (10-06 사용자 「아이콘에서만 눌리는 것 같다」 · 예전 GestureDetector 는 반응이 없었다).
+    return Material(
+      type: MaterialType.transparency,
+      child: InkWell(
+        onTap: onTap ?? () => _open(context),
+        child: Container(
+          // 높이 하한. 「스토어에서 관리」·「환불 문의」는 언어에 따라 두 줄이 되고,
+          // 고정 56 이면 둘째 줄이 잘려 무슨 동작인지 알 수 없게 된다.
+          constraints: const BoxConstraints(minHeight: 56),
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          decoration: last
+              ? null
+              : BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(color: c.lineAlternative, width: 0.5),
+                  ),
+                ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  text,
+                  style: AppType.label1.r.copyWith(color: c.commonWhiteAndDark),
                 ),
               ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Text(
-                text,
-                style: AppType.label1.r.copyWith(color: c.commonWhiteAndDark),
+              SizedBox(
+                width: 24,
+                height: 24,
+                child: Center(
+                  child: external
+                      ? AppIcons.externalLink(size: 20, color: c.labelNormal)
+                      : AppIcons.chevronRight(size: 20, color: c.labelNormal),
+                ),
               ),
-            ),
-            SizedBox(
-              width: 24,
-              height: 24,
-              child: Center(
-                child: external
-                    ? AppIcons.externalLink(size: 20, color: c.labelNormal)
-                    : AppIcons.chevronRight(size: 20, color: c.labelNormal),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -494,6 +674,8 @@ class _BillingRow extends StatelessWidget {
   /// Routes a [BillingDestination]. Screens push; overlays present as modal
   /// sheets over this screen (spec §7 — the background stays put).
   void _open(BuildContext context) {
+    final destination = this.destination;
+    if (destination == null) return;
     switch (destination) {
       case BillingDestination.manageInStore:
         // The store's own subscription page — external by definition. Product
@@ -507,10 +689,9 @@ class _BillingRow extends StatelessWidget {
         Navigator.pushNamed(context, Routes.paymentHistory);
       case BillingDestination.plansCompare:
         Navigator.pushNamed(context, Routes.plansCompare);
-      case BillingDestination.planChangeUpgrade:
-        Navigator.pushNamed(context, Routes.planChangeUpgrade);
-      case BillingDestination.planChangeDowngrade:
-        Navigator.pushNamed(context, Routes.planChangeDowngrade);
+      case BillingDestination.annualSwitch:
+        showSubscriptionOverlay(context, SubscriptionOverlay.annualSwitch,
+            expiresAt: expiresAt);
       case BillingDestination.characterOffer:
         showSubscriptionOverlay(context, SubscriptionOverlay.characterOffer);
       case BillingDestination.restoreSuccess:
@@ -535,7 +716,7 @@ class _BillingRow extends StatelessWidget {
   }
 }
 
-/// `depth/trial_expired` (`4514:5179`) — the notice screen, not a manage
+/// `depth/trial_expired` (`6527:4210`) — the notice screen, not a manage
 /// surface: a centred error mark, two lines, and a sticky CTA pair. No
 /// billing list by design (spec §4-1).
 class _TrialExpiredNotice extends StatelessWidget {
@@ -574,7 +755,11 @@ class _TrialExpiredNotice extends StatelessWidget {
                   ),
                   const SizedBox(height: AppSpacing.s20),
                   Text(
-                    l10n.trialExpiredTitle,
+                    // 체험이 끝났으면 체험 문구, 아니면 중립 문구(09-28 실기기 · PM-DEC-143 해제 —
+                    // 서버 `is_trial` §22-⑦). 모르면(구서버) 체험에도 맞는 중립 문구다.
+                    status.isTrial == true
+                        ? l10n.trialExpiredTitle
+                        : l10n.winbackTitle,
                     style: AppType.heading2.sb.copyWith(color: c.labelStrong),
                   ),
                   const SizedBox(height: AppSpacing.s20),
@@ -589,30 +774,30 @@ class _TrialExpiredNotice extends StatelessWidget {
           // Sticky CTA — top hairline, 12px shelf, 6px between buttons, all
           // measured off the original.
           Container(
-            padding: const EdgeInsets.fromLTRB(
-                AppSpacing.s20, AppSpacing.s12, AppSpacing.s20, 0),
             decoration: BoxDecoration(
               border: Border(top: BorderSide(color: c.lineAlternative)),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Button(
-                  type: BtnType.primaryFill,
-                  size: BtnSize.s60,
-                  text: l10n.seePlans,
-                  onPressed: () =>
-                      Navigator.pushNamed(context, Routes.plansCompare),
-                ),
-                const SizedBox(height: 6),
-                Button(
-                  type: BtnType.secondaryFill,
-                  size: BtnSize.s60,
-                  text: l10n.billingRestorePurchases,
-                  onPressed: () => showSubscriptionOverlay(
-                      context, SubscriptionOverlay.restoreSuccess),
-                ),
-              ],
+            child: ContentColumn(
+              padding: const EdgeInsets.only(top: AppSpacing.s12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Button(
+                    type: BtnType.primaryFill,
+                    size: BtnSize.s60,
+                    text: l10n.seePlans,
+                    onPressed: () =>
+                        Navigator.pushNamed(context, Routes.plansCompare),
+                  ),
+                  const SizedBox(height: 6),
+                  Button(
+                    type: BtnType.secondaryFill,
+                    size: BtnSize.s60,
+                    text: l10n.billingRestorePurchases,
+                    onPressed: () => runRestoreFlow(context),
+                  ),
+                ],
+              ),
             ),
           ),
           const SafeArea(

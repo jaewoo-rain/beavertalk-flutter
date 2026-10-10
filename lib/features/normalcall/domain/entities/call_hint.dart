@@ -8,10 +8,18 @@ library;
 
 /// One example answer inside a [HintData] — a Korean sentence plus its
 /// romanization and native-language gloss. `roman` may be null.
+/// ⛔ **문장 id 가 없다 — 서버가 힌트 시점에 DB 를 안 건드리기 때문이다**
+/// (사장님 결정 2026-09-05: "즐겨찾기 안해도 DB저장되면 너무 낭비인데?" — 5분 통화에
+/// 힌트 5회면 15행이 쌓이는데 대부분 아무도 안 담는다). 사이드카가 예시를 만들어 WS 로
+/// 쏘고 끝이라 서버 어디에도 저장되지 않는다.
+///
+/// ⇒ 🔖 를 **누른 그 순간** `POST /sentences/from-hint` 가 문장을 만들고 id 를 준다.
+/// 그래서 [korean]·[native] 를 그때 그대로 돌려보내야 한다 — 서버에는 대조할 원본이 없다.
 class HintExample {
   const HintExample({
     required this.korean,
     this.roman,
+    this.reading,
     required this.native,
   });
 
@@ -19,14 +27,24 @@ class HintExample {
   final String korean;
 
   /// Revised-Romanization of [korean]; null when the server omitted it.
+  ///
+  /// ⚠ 담을 때는 보내지 않는다 — `Sentence` 에 대응 필드가 없다(서버 규약).
   final String? roman;
 
+  /// 표면형의 **읽기**(가나). 학습 언어가 일본어일 때만 온다 — 다른 언어는 키 자체가
+  /// 없어 null 이다. 카드가 표면형 아래 작은 글씨로 그린다; null 이면 아무것도 안 그려
+  /// 한국어 화면은 픽셀이 안 바뀐다.
+  final String? reading;
+
   /// Native-language translation of [korean] (may be empty).
+  ///
+  /// ⚠ 서버의 담기 API 는 이걸 **필수(1자 이상)** 로 받는다. 비어 있으면 담을 수 없다.
   final String native;
 
   factory HintExample.fromJson(Map<String, dynamic> json) => HintExample(
         korean: (json['korean'] as String?)?.trim() ?? '',
         roman: (json['roman'] as String?)?.trim(),
+        reading: (json['reading'] as String?)?.trim(),
         native: (json['native'] as String?)?.trim() ?? '',
       );
 }
@@ -45,18 +63,43 @@ class HintData {
   final List<HintExample> examples;
 
   /// Parses a `hint` frame; returns null when it carries no usable example.
-  static HintData? fromJson(Map<String, dynamic> json) {
-    final turnId = json['turn_id'] as String?;
-    if (turnId == null) return null;
+  ///
+  /// ⚠ **왜 버렸는지 알아야 할 때는 [parse] 를 써라.** 이 함수는 이유를 삼킨다.
+  static HintData? fromJson(Map<String, dynamic> json) => parse(json).hint;
+
+  /// `hint` 프레임 파싱 — **버릴 때는 이유를 같이 돌려준다.**
+  ///
+  /// ⛔ 이게 필요한 이유: 서버는 힌트를 보냈는데(`hint[turn=b4]: 3개`) 앱에는 아무 흔적도
+  /// 없던 통화가 있었다(2026-08-12). 형식이 조금만 어긋나면 **흔적 없이 사라진다** —
+  /// 그러면 "서버가 안 보냈나 / 우리가 버렸나"를 아무도 못 가른다.
+  ///
+  /// ⚠ `turn_id` 를 `as String?` 로 읽지 않는다. 서버가 int 로 보내면 **TypeError 가 나고
+  /// 그건 WS 스트림 핸들러까지 올라가 통화를 죽인다** — 같은 함정을 다른 자리에서 이미 겪었다.
+  static ({HintData? hint, String? drop}) parse(Map<String, dynamic> json) {
+    final rawTurn = json['turn_id'];
+    final turnId = rawTurn is String
+        ? rawTurn
+        : (rawTurn is int ? '$rawTurn' : null);
+    if (turnId == null || turnId.isEmpty) {
+      return (hint: null, drop: 'turn_id 없음/형식오류(${rawTurn.runtimeType})');
+    }
     final raw = json['examples'];
-    if (raw is! List) return null;
-    final examples = raw
-        .whereType<Map<String, dynamic>>()
+    if (raw is! List) {
+      return (hint: null, drop: 'examples 가 배열이 아님(${raw.runtimeType})');
+    }
+    final maps = raw.whereType<Map<String, dynamic>>().toList(growable: false);
+    final examples = maps
         .map(HintExample.fromJson)
         .where((e) => e.korean.isNotEmpty)
         .toList(growable: false);
-    if (examples.isEmpty) return null;
-    return HintData(turnId: turnId, examples: examples);
+    if (examples.isEmpty) {
+      return (
+        hint: null,
+        drop: 'korean 이 있는 예시가 0개(원본 ${raw.length}개 중 '
+            'Map ${maps.length}개)',
+      );
+    }
+    return (hint: HintData(turnId: turnId, examples: examples), drop: null);
   }
 }
 

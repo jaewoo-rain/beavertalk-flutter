@@ -2,6 +2,12 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>발음 챌린지 결과 영상을 사진 앱에 저장하기 위해 사용해요.</string>
+	<!-- gal 이 사진 앱 읽기 API 도 링크한다. Add 키만 두면 Apple 처리 단계에서
+	     90683(Missing purpose string)으로 빌드가 반려된다. 앱이 읽지 않아도 키는 필요하다. -->
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>발음 챌린지 결과 영상을 사진 앱에 저장하기 위해 사용해요.</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>ITSAppUsesNonExemptEncryption</key>
@@ -9,7 +15,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Beavertalk</string>
+	<string>BeaverTalk</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -24,6 +30,8 @@
 	<string>$(FLUTTER_BUILD_NAME)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>GIDClientID</key>
+	<string>333511894671-v5vce7nnr5kqbunhvm4m14cdns58oomt.apps.googleusercontent.com</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -34,6 +42,16 @@
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>im.beavertalk.beavertalk</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>google-sign-in</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.333511894671-v5vce7nnr5kqbunhvm4m14cdns58oomt</string>
 			</array>
 		</dict>
 	</array>
@@ -80,15 +98,36 @@
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<!-- iPad 세로 잠금은 이 키가 없으면 성립하지 않는다.
+
+	     이 키가 빠져 있으면 iOS 는 앱을 멀티태스킹(Split View) 지원으로 보고
+	     방향 제한을 무시한다 — 그래서 main.dart 의 setPreferredOrientations 를
+	     걸어 놨는데도 iPad 는 가로로 돌아갔다. 위 배열에서 가로를 빼는 것과
+	     이 키는 한 쌍이다: 멀티태스킹 지원 앱은 네 방향을 전부 선언해야 하므로
+	     둘 중 하나만 하면 어긋난다. -->
+	<key>UIRequiresFullScreen</key>
+	<true/>
+	<!-- GA4(firebase_analytics). 근거: lib/core/analytics/app_analytics.dart -->
+	<!-- 기본은 수집 안 함. GA_COLLECT=true 로 구운 빌드만 런타임에 켠다. -->
+	<key>FIREBASE_ANALYTICS_COLLECTION_ENABLED</key>
+	<false/>
+	<!-- 광고 식별자·광고 동의 전부 끔. -->
+	<key>GOOGLE_ANALYTICS_ADID_COLLECTION_ENABLED</key>
+	<false/>
+	<key>GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_STORAGE</key>
+	<false/>
+	<key>GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_USER_DATA</key>
+	<false/>
+	<key>GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_PERSONALIZATION_SIGNALS</key>
+	<false/>
+	<!-- 네이티브 자동 화면 보고 끔. 화면은 AnalyticsRouteObserver 가 보고한다. -->
+	<key>FirebaseAutomaticScreenReportingEnabled</key>
+	<false/>
 </dict>
 </plist>

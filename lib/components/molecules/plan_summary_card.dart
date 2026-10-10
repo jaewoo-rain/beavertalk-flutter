@@ -5,14 +5,15 @@ import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 import '../atoms/badge.dart';
 import '../atoms/button.dart';
+import 'benefit_row.dart';
 import 'bullet_row.dart';
 
 /// A plan summary card — the `card/pro` / `card/max` / `card/free` block
 /// shared by `plans_compare` (`4514:5232…`) and the paywalls (`4608:9721`,
 /// `4608:9771`).
 ///
-/// Header (title · badge · price column) → tagline → bullet list → optional
-/// CTA. 20/20 padding, radius 12, 16 gaps — measured. The paywalls use it
+/// Header (title · badge · price column) → tagline (optional) → bullet list →
+/// optional CTA. 20/20 padding, radius 12, 16 gaps — measured. The paywalls use it
 /// without a CTA (their CTA is the sticky bar); `plans_compare` puts one in
 /// the card.
 class PlanSummaryCard extends StatelessWidget {
@@ -25,16 +26,17 @@ class PlanSummaryCard extends StatelessWidget {
     this.perMonthUnit,
     this.badgeTone,
     this.badgeLabel,
-    required this.tagline,
-    required this.taglineColor,
+    this.tagline,
+    this.taglineColor,
     required this.bulletTone,
     required this.bullets,
+    this.bulletIcons,
     required this.face,
     this.border,
     this.cta,
     this.ctaType,
     this.onCta,
-  });
+  }) : assert(bulletIcons == null || bulletIcons.length == bullets.length);
 
   final String title;
   final String price;
@@ -48,10 +50,21 @@ class PlanSummaryCard extends StatelessWidget {
 
   final BadgeTone? badgeTone;
   final String? badgeLabel;
-  final String tagline;
-  final Color taglineColor;
+  /// The line under the header, or null for none.
+  ///
+  /// The Premium cards dropped theirs (PM-DEC-061 · QA F036 · F052): on the plan
+  /// comparison it was 「Now you can see them.」 with nothing on screen for
+  /// 「them」 to point at, and on the paywall it repeated the first bullet
+  /// (「15 minutes of video calls a day」) word for word.
+  final String? tagline;
+  final Color? taglineColor;
   final BulletTone bulletTone;
   final List<String> bullets;
+
+  /// Leading duotone icons, one per [bullets] entry — Figma `Paywall/Benefit`
+  /// (`6198:1999`: 20 icon · 12 gap · Label 1 Regular). Null keeps the dot
+  /// [BulletRow] (the Free card).
+  final List<Widget>? bulletIcons;
   final Color face;
   final Color? border;
   final String? cta;
@@ -88,7 +101,9 @@ class PlanSummaryCard extends StatelessWidget {
                     Flexible(
                       child: Text(
                         title,
-                        maxLines: 1,
+                        // 플랜 이름(Free·Pro·Max)은 식별자다. 「Ma…」 는 어느
+                        // 플랜인지 알려 주지 못한다.
+                        maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style:
                             AppType.headline2.sb.copyWith(color: c.labelStrong),
@@ -136,11 +151,16 @@ class PlanSummaryCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: AppSpacing.s16),
-          Text(tagline, style: AppType.label2.r.copyWith(color: taglineColor)),
-          const SizedBox(height: AppSpacing.s16),
+          if (tagline case final line?) ...[
+            Text(line, style: AppType.label2.r.copyWith(color: taglineColor)),
+            const SizedBox(height: AppSpacing.s16),
+          ],
           for (var i = 0; i < bullets.length; i++) ...[
             if (i > 0) const SizedBox(height: AppSpacing.s8),
-            BulletRow(tone: bulletTone, label: bullets[i]),
+            if (bulletIcons != null)
+              BenefitRow(icon: bulletIcons![i], label: bullets[i])
+            else
+              BulletRow(tone: bulletTone, label: bullets[i]),
           ],
           if (cta != null) ...[
             const SizedBox(height: AppSpacing.s16),

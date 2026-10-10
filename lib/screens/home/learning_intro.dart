@@ -1,3 +1,4 @@
+import '../../app/adaptive.dart';
 import 'dart:async';
 import 'dart:typed_data';
 
@@ -7,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
+import '../../components/atoms/icon_toggle.dart';
 import '../../components/atoms/mic_analysis.dart';
 import '../../components/atoms/mic_button.dart';
 import '../../components/atoms/record_circle_button.dart';
@@ -16,6 +18,23 @@ import '../../components/icons/app_icons.dart';
 import '../../components/organisms/gnb.dart';
 import '../../core/error/app_exception.dart';
 import '../../features/bookmark/presentation/providers/bookmark_toggle_controller.dart';
+import '../../features/classroom/presentation/assignment_attempt_provider.dart';
+import '../../features/classroom/presentation/classroom_providers.dart';
+import '../../features/character/presentation/providers/character_providers.dart';
+import '../../features/normalcall/presentation/avatar_assets.dart'
+    show
+        avatarAssetDirFor,
+        kEmotionCrying,
+        kEmotionExciting,
+        kEmotionNeutral,
+        kIdleListen,
+        kIdleThink,
+        kIdleWait;
+import '../../features/normalcall/presentation/sync_avatar.dart';
+import '../../features/pronunciation/domain/phoneme_diagram.dart';
+import '../../features/normalcall/presentation/normalcall_providers.dart';
+import '../../features/pronunciation/presentation/articulation_sheet.dart';
+import '../../features/pronunciation/presentation/review_word_chip.dart';
 import '../../features/review/data/audio_player.dart';
 import '../../features/review/data/audio_recorder.dart';
 import '../../features/review/data/wav_writer.dart';
@@ -77,6 +96,28 @@ const _kSlowScoring = Duration(seconds: 2);
 /// The result transition waits on `max(scoring, this)`.
 const _kMinScan = Duration(milliseconds: 1500);
 
+/// How far the scan cursor overhangs the sentence, top and bottom.
+///
+/// The frame draws an 84 bar (92 halo) over a 60-high sentence block, so the
+/// halo clears the text by 16 on each side. Expressing it as an overhang instead
+/// of a fixed height is what holds that clearance at any line count.
+///
+/// It does **not** reproduce the frame's 84/92, and the earlier version of this
+/// comment claiming it did was wrong. Measured on an SM G950N (2026-08-30, at
+/// dpr 3): 1 line is 52/60, 2 lines 80/88. `heading2` carries a 28 line-height,
+/// so a 1-line block is 28 and 28 + 2*16 = 60 is the ceiling — 84/92 is out of
+/// reach by construction. The frame's 60 counts the native subtitle as well
+/// (28 + 8 + 24); the cursor here covers the Korean line **only**, which is
+/// deliberate — see the Stack in `build`.
+const double _kScanOverhang = 16;
+
+/// 반응 영상을 「정답」으로 볼 최소 총점.
+///
+/// 화면이 글자를 칠할 때 이미 쓰는 밴드(85 상 · 70 중 — `_gradeColor`)의 **중간
+/// 문턱을 그대로 빌린다**. 반응만 다른 자를 쓰면 문장은 초록인데 비버는 화내는,
+/// 화면과 얼굴이 어긋나는 상태가 생긴다.
+const int _kReactionPassScore = 70;
+
 /// The whole learning flow for a sentence sequence — Figma `screen/learning_intro`
 /// (`2117:20089`) through `learning_next` (`2117:20110`) — as **one screen**.
 ///
@@ -133,6 +174,27 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
 
   final Set<int> _bookmarkInFlight = <int>{};
 
+  // ── 반응 영상 ─────────────────────────────────────────────────────────────
+  //
+  // 통화 화면과 **같은 클립·같은 위젯**([SyncAvatar])을 쓴다. 이 화면에서는 비버가
+  // 말하지 않으므로 입은 움직이지 않고, 국면([LearningPhase])이 클립을 고른다.
+
+  /// 음성 엔벨로프. 이 화면엔 비버 목소리가 없으므로 **항상 0** 이다.
+  final ValueNotifier<double> _avatarLevel = ValueNotifier<double>(0);
+
+  /// 발화 플래그. 평소 false 이고 **감정 클립을 내보내는 동안만** true 다.
+  ///
+  /// ⛔ 이것만으로는 감정이 안 뜬다. [SyncAvatar] 의 발화 판정은 `speaking` 이 아니라
+  ///    **오디오 레벨**로 켜지는데 이 화면의 [_avatarLevel] 은 항상 0 이다.
+  ///    감정을 여는 것은 `silentEmotion: true` 쪽이다 — [_reactToFeedback] 참조.
+  final ValueNotifier<bool> _avatarSpeaking = ValueNotifier<bool>(false);
+
+  /// 반응 감정 — 채점 직후 한 번 happy/angry 로 올렸다가 클립이 끝나면 내린다.
+  final ValueNotifier<int> _avatarEmotion = ValueNotifier<int>(kEmotionNeutral);
+
+  /// 대기 클립 종류 — 대기 / 듣는 중 / 생각 중. [_syncAvatarIdle] 이 국면에서 민다.
+  final ValueNotifier<int> _avatarIdleKind = ValueNotifier<int>(kIdleWait);
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -141,6 +203,23 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
     if (_initialized) return;
     _initialized = true;
     _index = args.index;
+    if (args.origin == LearningOrigin.assignment) {
+      // 과제 문장의 id 는 학습 항목 id 다 — 북마크 저장소(문장 id)와 축이 다르다.
+      // 씨딩하면 남의 문장이 저장된 것처럼 보인다.
+      final id = args.assignmentId;
+      if (id != null) {
+        // 상세 화면이 서버 값으로 이미 되살려 뒀다(`restore`). **덮어쓰지 마라** —
+        // 여기서 `start` 를 부르면 중간에 나갔던 학습자의 이전 채점이 날아간다.
+        // 되살릴 것이 없었을 때만 빈 시도를 연다.
+        Future.microtask(() {
+          final notifier = ref.read(assignmentAttemptProvider.notifier);
+          if (notifier.of(id) == null) {
+            notifier.start(assignmentId: id, total: args.sentences.length);
+          }
+        });
+      }
+      return;
+    }
     _seedBookmarkFor(args.sentences[_index]);
   }
 
@@ -153,7 +232,158 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
     _slowTimer?.cancel();
     _recorder.dispose();
     _player.dispose();
+    _avatarLevel.dispose();
+    _avatarSpeaking.dispose();
+    _avatarEmotion.dispose();
+    _avatarIdleKind.dispose();
     super.dispose();
+  }
+
+  // ── 반응 영상 ─────────────────────────────────────────────────────────────
+
+  /// 화면 국면을 **대기 클립**으로 옮긴다.
+  ///
+  /// 마이크가 열려 있으면 「듣는 얼굴」(`idle_listen`)이다 — 사용자가 말하는 동안
+  /// 비버가 가만히 있으면 「내 말을 듣고 있나」로 읽힌다. 채점 중에는 `idle_think`.
+  /// 자산이 없는 캐릭터는 [SyncAvatar] 가 조용히 `idle` 로 폴백한다.
+  void _syncAvatarIdle() {
+    switch (_phase) {
+      case LearningPhase.recording:
+        _avatarIdleKind.value = _recording ? kIdleListen : kIdleWait;
+      case LearningPhase.scoring:
+        _avatarIdleKind.value = kIdleThink;
+      case LearningPhase.result:
+      case LearningPhase.failed:
+        _avatarIdleKind.value = kIdleWait;
+    }
+  }
+
+  /// 채점 결과를 반응 영상 **한 번**으로 옮긴다 — 통과면 laugh, 아니면 sad.
+  ///
+  /// 「오답」의 자는 총점만이 아니다. 총점이 문턱을 넘어도 **하** 등급 글자가 있으면
+  /// 화면은 그 글자를 빨갛게 칠하는데([_gradeColor]), 그때 비버가 웃으면 문장과
+  /// 얼굴이 서로 다른 말을 한다. 그래서 둘 중 하나라도 걸리면 sad 로 간다.
+  ///
+  /// ⛔ happy·angry 가 아니다(2026-08-30 사용자 결정). 학습 반응은 **채점자의 감정**이
+  ///    아니라 **같이 기뻐하고 같이 아쉬워하는 짝의 감정**이다 — 맞히면 같이 신나고,
+  ///    틀리면 화내는 게 아니라 같이 운다.
+  ///
+  /// ⛔ 통화용 `emo_*`·`laugh` 로 되돌리지 마라(2026-08-31 사용자 결정). 그쪽은
+  ///    「말하면서 감정」으로 만들어져 **입이 움직인다** — 무발화 밴드에 얹으면
+  ///    소리 없이 입만 뻐끔거린다. `react_*` 는 표정·몸짓만 쓰는 전용 자산이다.
+  ///    5캐릭터 전부에 있고 [kEmotionExciting]·[kEmotionCrying] 로 매핑돼 있다.
+  void _reactToFeedback(ReviewFeedback feedback) {
+    final hasLow = feedback.charScores.any((c) => c.grade == CharGrade.low);
+    // 채점하지 못한 시도(evaluation null)는 통과로 치지 않는다.
+    final passed = !hasLow &&
+        (feedback.evaluation?.totalScore ?? 0) >= _kReactionPassScore;
+    _avatarEmotion.value = passed ? kEmotionExciting : kEmotionCrying;
+    // ⛔ `speaking` 을 켠다고 감정이 뜨는 게 아니다. `SyncAvatar` 의 발화 판정은
+    //   **오디오 레벨**로만 켜지는데([_onLevel] 의 `audible`), 이 밴드는 무음이라
+    //   레벨이 0 에 머문다. 그래서 `silentEmotion: true` 로 게이트를 연다
+    //   (2026-08-30 이전에는 이 한 줄이 없어 정답/오답 클립이 한 번도 안 떴다).
+    //   이 값은 끝났을 때 되돌릴 짝을 맞추려고 둔다 — [_onAvatarDiag] 가 내린다.
+    _avatarSpeaking.value = true;
+  }
+
+  /// [SyncAvatar] 가 흘리는 이벤트 중 **감정 클립이 끝났다**만 받는다.
+  ///
+  /// ⛔ 발화 플래그를 켠 채로 두면 감정 클립이 끝난 자리에 그 밑의 `talk.mp4`
+  ///    — 소리 없이 입만 움직이는 얼굴 — 이 드러난다. 반응은 한 번이고, 끝나면
+  ///    대기로 돌아가야 한다.
+  void _onAvatarDiag(String event, [Map<String, Object?>? fields]) {
+    if (event != 'vid_emo_end' || !mounted) return;
+    _avatarSpeaking.value = false;
+    _avatarEmotion.value = kEmotionNeutral;
+    // 대기 클립 교체를 **여기까지 미뤄 두었다** — 채점 직후에 바꾸면 감정 열기와
+    // 겹쳐 디코더가 넷이 된다. 채점 중 걸어 둔 `idle_think` 를 이제 `idle` 로 돌린다.
+    _syncAvatarIdle();
+  }
+
+  // ── 단어 칩 · 발음 교정 시트 ──────────────────────────────────────────────
+
+  /// 채점된 글자를 **어절로 묶어** 칩 한 줄로 만든다.
+  ///
+  /// 칩은 **주의·오답 어절만** 만든다. 정답 어절까지 칩으로 내면 긴 문장에서 줄이
+  /// 터진다 — 코퍼스 최장 문장은 어절이 15개다. 정답 여부는 문장 자체의 글자 색이
+  /// 이미 말하므로 칩이 또 말할 필요가 없다.
+  ///
+  /// `charScores` 는 공백을 뺀 글자열과 1:1 이라고 보고 순서대로 소비한다.
+  List<Widget> _wordChips(BuildContext context, String korean) {
+    final scores = _feedback?.charScores ?? const <CharScore>[];
+    if (scores.isEmpty) return const [];
+    var cursor = 0;
+    final chips = <Widget>[];
+    for (final word in korean.split(RegExp(r'\s+'))) {
+      if (word.isEmpty) continue;
+      final taken = <({int index, CharScore score})>[];
+      for (var i = 0; i < word.characters.length; i++) {
+        if (cursor >= scores.length) break;
+        taken.add((index: cursor, score: scores[cursor]));
+        cursor++;
+      }
+      if (taken.isEmpty) continue;
+      // 어절의 판정은 **가장 나쁜 글자**를 따른다. 평균을 내면 한 글자만 망가진
+      // 어절이 정답으로 접혀 교정 진입점이 사라진다.
+      taken.sort((x, y) => x.score.score.compareTo(y.score.score));
+      final worst = taken.first;
+      if (worst.score.grade == CharGrade.high) continue;
+      chips.add(
+        ReviewWordChip(
+          word: word,
+          worst: worst.score,
+          charIndex: worst.index,
+          misses: _feedback?.phonemeMisses ?? const <PhonemeMiss>[],
+          onOpen: (target, current) => _openArticulation(word, target, current),
+        ),
+      );
+    }
+    return chips;
+  }
+
+  void _openArticulation(
+    String word,
+    PhonemeDiagram target,
+    PhonemeDiagram? current,
+  ) {
+    showArticulationSheet(
+      context,
+      data: ArticulationSheetData(word: word, target: target, current: current),
+      onPlayNative: () {
+        Navigator.of(context).pop();
+        final args = ModalRoute.of(context)?.settings.arguments;
+        if (args is LearningArgs) _playStandard(args.sentences[_index]);
+      },
+    );
+  }
+
+  /// 반응 영상 밴드 — Figma `VideoBand`(375 폭 · 16:9 풀블리드, 아이콘줄 아래).
+  ///
+  /// 캐릭터에 클립이 없으면([avatarAssetDirFor] 가 null) **밴드째 접는다**. 정적
+  /// 이미지를 끼워 넣으면 16:9 자리만 차지하고 아무 상태도 말하지 않는다.
+  Widget _reactionBand() {
+    final dir = avatarAssetDirFor(
+      null,
+      ref.watch(selectedCharacterProvider)?.name,
+    );
+    if (dir == null) return const SizedBox.shrink();
+    return AspectRatio(
+      aspectRatio: 16 / 9,
+      child: ClipRect(
+        child: SyncAvatar(
+          assetDir: dir,
+          level: _avatarLevel,
+          speaking: _avatarSpeaking,
+          emotion: _avatarEmotion,
+          idleKind: _avatarIdleKind,
+          // ⛔ 이 밴드는 **무음**이다. [_avatarLevel] 은 아무도 안 쓰므로 0 에 머물고,
+          //   `SyncAvatar` 의 발화 판정은 레벨로만 켜진다 — 그래서 기본 설정이면
+          //   감정 클립이 영영 안 뜬다. 반응 밴드의 존재 이유가 그 클립이므로 연다.
+          silentEmotion: true,
+          onDiag: _onAvatarDiag,
+        ),
+      ),
+    );
   }
 
   // ── Bookmark ──────────────────────────────────────────────────────────────
@@ -175,7 +405,8 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
           .toggleBookmark(sentenceId, willSave);
     } catch (e) {
       toggleBookmark(sentenceId); // revert on failure
-      _snack(e is AppException ? e.message : l10n.saveSentenceFailed);
+      // 서버가 쓴 문구일 때만 그대로 — 앱 기본값은 한국어라 전 언어에 새어 나간다(QA F017).
+      _snack(e is AppException && e.fromServer ? e.message : l10n.saveSentenceFailed);
     } finally {
       _bookmarkInFlight.remove(sentenceId);
     }
@@ -184,21 +415,37 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
   // ── Audio ─────────────────────────────────────────────────────────────────
 
   /// Plays the current sentence's standard (native) pronunciation via the
-  /// server's on-demand TTS (`POST /sentences/{id}/tts`), cached after the first
-  /// fetch. Used by both the top speaker and the result's "Native" button.
+  /// server's on-demand TTS, cached after the first fetch. Used by both the top
+  /// speaker and the result's "Native" button.
+  ///
+  /// 🔴 **과제와 그 외는 서버가 다르다.** 앱 서버의 `/sentences/{id}/tts` 는 통화에서
+  /// 나온 문장 전용이고(`sentence.call_id` NOT NULL), 과제 문장의 id 는 문장 id 가
+  /// 아니라 **학습 항목 id** 다. 같은 id 로 부르면 남의 문장이 나오거나 404 다.
+  /// 그래서 과제는 b2b 의 항목 축 경로로 간다(2026-09-04).
   Future<void> _playStandard(MockSentence sentence) async {
     // Never play the standard audio while scoring or recording — it would bleed
     // into the take and skew the score.
     if (_phase == LearningPhase.scoring || _loadingTts || _recording) return;
     final l10n = AppLocalizations.of(context);
+    final args = ModalRoute.of(context)?.settings.arguments;
+    final int? assignmentId = (args is LearningArgs &&
+            args.origin == LearningOrigin.assignment)
+        ? args.assignmentId
+        : null;
     var url = _ttsUrl ?? sentence.voiceUrl;
     if (url == null || !url.startsWith('http')) {
       setState(() => _loadingTts = true);
       try {
-        url = await ref.read(reviewRepositoryProvider).sentenceTtsUrl(sentence.id);
+        url = assignmentId != null
+            ? await ref
+                  .read(classroomRepositoryProvider)
+                  .itemTtsUrl(assignmentId: assignmentId, itemId: sentence.id)
+            : await ref
+                  .read(reviewRepositoryProvider)
+                  .sentenceTtsUrl(sentence.id);
         _ttsUrl = url;
       } on AppException catch (e) {
-        _snack(e.message);
+        _snack(e.fromServer ? e.message : l10n.standardAudioPlayError);
         return;
       } catch (_) {
         _snack(l10n.standardAudioPlayError);
@@ -250,8 +497,11 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
       await _recorder.start();
       if (!mounted) return;
       setState(() => _recording = true);
-    } on StateError catch (e) {
-      _snack(e.message);
+      _syncAvatarIdle();
+    } on StateError {
+      // 녹음기의 `StateError` 는 권한 거부 하나뿐이다(`audio_recorder.dart:60`).
+      // ⛔ `e.message` 를 띄우지 마라 — 한국어로 박힌 문구라 전 언어에서 한국어가 나온다.
+      _snack(l10n.micPermissionNeededTitle);
     } catch (_) {
       _snack(l10n.recordStartFailed);
     }
@@ -265,6 +515,7 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
       _phase = LearningPhase.scoring;
       _scoringSlow = false;
     });
+    _syncAvatarIdle();
     _slowTimer?.cancel();
     _slowTimer = Timer(_kSlowScoring, () {
       if (mounted) setState(() => _scoringSlow = true);
@@ -273,7 +524,7 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
     try {
       final pcm = await _recorder.stop();
       // Guard an empty/too-short recording (< ~0.3s of PCM16 @16k).
-      if (pcm.lengthInBytes < 16000 * 2 * 0.3) {
+      if (isTooShortToScore(pcm)) {
         _snack(l10n.recordTooShort);
         _backToRecording();
         return;
@@ -283,16 +534,55 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
       // Start scoring and the minimum-scan floor together: total = max(scoring,
       // _kMinScan). A warm-server response still shows the scan for _kMinScan.
       // 복습(callReview)=공식점수 반영, 하나씩 연습(sentence)=미반영(데이터·채점은 저장).
-      final scoring = ref.read(reviewRepositoryProvider).submitAudio(
-            sentence.id,
-            wav,
-            applyScore: args.origin == LearningOrigin.callReview,
-          );
+      // 과제 발음은 **전용 무상태 경로**로 채점한다. 복습 경로는 `sentence` 행을
+      // 요구하는데 그 행은 `call_id` 가 NOT NULL 이라 통화부터 지어내야 한다.
+      final bool isAssignment = args.origin == LearningOrigin.assignment;
+      final Future<ReviewFeedback> scoring = isAssignment
+          ? ref
+                .read(classroomRepositoryProvider)
+                .scoreItem(
+                  assignmentId: args.assignmentId!,
+                  itemId: sentence.id,
+                  wavBytes: wav,
+                )
+                .then((s) {
+                  final score = s.feedback.evaluation;
+                  // 채점하지 못한 시도는 과제 평균에 넣지 않는다(0 으로 넣으면 평균이 내려간다).
+                  if (score != null) {
+                    ref
+                        .read(assignmentAttemptProvider.notifier)
+                        .record(
+                          assignmentId: args.assignmentId!,
+                          itemId: s.itemId,
+                          // 통과 판정은 서버가 한다 — 앱이 점수로 다시 재면 경계가
+                          // 두 곳이 되어 교사 화면과 어긋난다.
+                          passed: s.passed,
+                          totalScore: score.totalScore,
+                          pronunciation: score.pronunciation,
+                          fluency: score.fluency,
+                          rhythm: score.rhythm,
+                        );
+                  }
+                  return s.feedback;
+                })
+          : ref
+                .read(reviewRepositoryProvider)
+                .submitAudio(
+                  sentence.id,
+                  wav,
+                  applyScore: args.origin.countsTowardCallScore,
+                );
       await Future<void>.delayed(_kMinScan);
       final feedback = await scoring;
 
-      // Feed the running average for the analysis gauge.
-      ref.read(reviewScoresProvider.notifier).record(feedback);
+      // 통화 분석 게이지(통화 기록의 점수)는 **「발음 학습하기」(callReview)로 한 발음만** 반영한다
+      // — 서버 `apply_score` 와 같은 기준. 문장 하나만 연습(「새로 배운 표현」 카드 · 보관함의
+      // 연습하기, origin sentence)은 연습 모드라 통화 점수에 들어가면 안 된다(09-24 사장님 「문장만
+      // 단일 발음하면 conversation record 의 score 에는 반영되어서는 안돼」). 과제는 과제 카드가
+      // 그리므로 역시 넣지 않는다.
+      if (args.origin.countsTowardCallScore) {
+        ref.read(reviewScoresProvider.notifier).record(feedback);
+      }
 
       if (!mounted) return;
       _slowTimer?.cancel();
@@ -302,6 +592,12 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
         _recordedWav = wav;
         _scoringSlow = false;
       });
+      // ⛔ 여기서 [_syncAvatarIdle] 을 부르지 마라. 대기 클립 교체와 감정 클립 열기가
+      //   **같은 순간에** 겹쳐 디코더가 4개가 된다(실기기 실측 2026-08-30:
+      //   `[avatar] decoder +1 → 4 (idle) ⛔ 한계초과`). 하드웨어 한계는 2~3 이고
+      //   넘으면 영상이 언다 — 2026-08-15 통화 멈춤이 그 자리였다.
+      //   대기 클립은 감정이 끝난 뒤 [_onAvatarDiag] 가 바꾼다.
+      _reactToFeedback(feedback);
     } on NetworkFailure {
       // `proto/E_failed`'s caption is "연결이 끊겼어요", true only when the request
       // never reached the server — `dio_error_mapper` already classifies exactly
@@ -309,7 +605,7 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
       // failure below must not borrow that wording.
       _toFailed(l10n.scanConnectionLost);
     } on AppException catch (e) {
-      _toFailed(e.message);
+      _toFailed(e.fromServer ? e.message : l10n.gradingFailed);
     } catch (_) {
       _toFailed(l10n.gradingFailed);
     }
@@ -324,6 +620,7 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
       _failMessage = message;
       _scoringSlow = false;
     });
+    _syncAvatarIdle();
   }
 
   /// Return to the recording state on an aborted score (e.g. too-short take),
@@ -335,6 +632,7 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
       _phase = LearningPhase.recording;
       _scoringSlow = false;
     });
+    _syncAvatarIdle();
   }
 
   /// "다시하기" (result) / retry (E_failed) — re-record the same sentence.
@@ -346,12 +644,36 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
       _failMessage = null;
       _recording = false;
     });
+    _syncAvatarIdle();
   }
 
   /// "다음" — advance to the next sentence in place, or push the session's
   /// result screen after the last one.
   void _next(LearningArgs args) {
+    // 🔴 **결과 화면에서만 넘어간다.** 화살표를 두 번 빠르게 누르면 첫 탭이 다음
+    // 문장으로 넘기고 화면이 다시 그려지기 전에 두 번째가 또 넘겨, **문장 하나가
+    // 채점 없이 통째로 건너뛰어진다**(2026-09-04 실측: 38문장 중 `동생` 1건이
+    // 서버에 요청조차 안 갔다). 넘어간 자리는 조용히 비어서 나중에 「다 했는데
+    // 6까지밖에 안 됐다」로만 드러난다.
+    if (_phase != LearningPhase.result) return;
+
+    // 과제는 **아직 안 한 문장으로만** 넘어간다. 이어하기로 중간 빈자리에서 열린
+    // 학습자가 이미 읽은 문장을 끝까지 다시 눌러 지나가야 제출에 닿는 일을 막는다.
+    if (args.origin == LearningOrigin.assignment) {
+      final int? next = _nextUnscored(args);
+      if (next == null) {
+        _finishAssignment(args);
+      } else {
+        _goTo(args, next);
+      }
+      return;
+    }
+
     if (_index >= args.sentences.length - 1) {
+      // 분석 화면이 보던 이전 리포트 대신 마지막 채점까지 저장된 결과를 받는다.
+      if (args.origin == LearningOrigin.callReview && args.callId != null) {
+        ref.invalidate(pronunciationReportProvider(args.callId!));
+      }
       Navigator.pushNamed(
         context,
         args.origin == LearningOrigin.callReview
@@ -364,19 +686,105 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
           recordedWav: _recordedWav,
           origin: args.origin,
           callId: args.callId,
+          callTitle: args.callTitle,
         ),
       );
       return;
     }
+    _goTo(args, _index + 1);
+  }
+
+  /// 아직 채점받지 않은 다음 문장의 자리. 없으면 null(= 마무리).
+  ///
+  /// 앞쪽 빈자리까지 훑는다 — 이어하기는 **뒤로** 열리므로, 뒤가 다 찼어도 앞에
+  /// 남은 문장이 있을 수 있다.
+  int? _nextUnscored(LearningArgs args) {
+    final id = args.assignmentId;
+    if (id == null) return null;
+    final done =
+        ref.read(assignmentAttemptProvider)[id]?.results.keys.toSet() ??
+        const <int>{};
+    for (var i = _index + 1; i < args.sentences.length; i++) {
+      if (!done.contains(args.sentences[i].id)) return i;
+    }
+    for (var i = 0; i < _index; i++) {
+      if (!done.contains(args.sentences[i].id)) return i;
+    }
+    return null;
+  }
+
+  /// [to] 번째 문장을 녹음 단계로 연다.
+  void _goTo(LearningArgs args, int to) {
     setState(() {
-      _index++;
+      _index = to;
       _phase = LearningPhase.recording;
       _feedback = null;
       _recordedWav = null;
       _recording = false;
       _ttsUrl = null; // per-sentence TTS
     });
+    _syncAvatarIdle();
     _seedBookmarkFor(args.sentences[_index]);
+  }
+
+  /// 과제 발음을 마친다 — 문장 수를 한 번 올리고 숙제 상세로 돌아간다.
+  ///
+  /// 결과 화면을 새로 만들지 않는다. 상세의 과제 카드가 방금 친 결과를 보여주는
+  /// 것이 시안(`숙제/TaskCard state=after`)이다.
+  ///
+  /// 🔴 제출에 실패해도 화면은 되돌린다. 학습자는 이미 다 읽었고, 다시 읽게 하는
+  /// 것보다 교사 쪽 숫자가 늦는 편이 낫다. 실패는 스낵바로만 알린다.
+  Future<void> _finishAssignment(LearningArgs args) async {
+    final l10n = AppLocalizations.of(context);
+    final id = args.assignmentId;
+    final attempt = id == null
+        ? null
+        : ref.read(assignmentAttemptProvider.notifier).of(id);
+    final navigator = Navigator.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+
+    if (id != null && attempt != null && attempt.scored > 0) {
+      try {
+        await ref
+            .read(classroomRepositoryProvider)
+            .submitSpeaking(
+              assignmentId: id,
+              // 🔴 점수가 아니라 **알아들은 문장 수**다.
+              passed: attempt.passed,
+              total: attempt.total,
+              // 비워 보내면 교사 화면의 「다시 가르칠 문장」이 영원히 빈다.
+              failedItemIds: attempt.failedItemIds,
+            );
+        ref.invalidate(myAssignmentsProvider);
+      } on AppException catch (e) {
+        messenger
+          ..clearSnackBars()
+          ..showSnackBar(
+            SnackBar(
+              content: Text(e.fromServer ? e.message : l10n.hwJoinFailed),
+            ),
+          );
+      }
+    }
+    if (!mounted) return;
+    // 🔴 예전에는 여기서 그냥 pop 해 숙제 화면으로 떨어졌다. 38문장을 다 읽고도
+    //    결과를 못 보고 목록으로 튕기는 셈이라, 학습자는 자기가 몇 개를 통과했는지
+    //    알 수 없었다. 결과 화면으로 **바꿔 끼운다**(pushReplacement) — 뒤로
+    //    가기가 이미 해체된 녹음 화면으로 돌아가면 안 된다.
+    if (id == null) {
+      navigator.pop();
+      return;
+    }
+    // 결과는 **기존 세션 요약 화면**이 그린다(2026-09-04 사용자 결정). 과제
+    // 전용 화면을 따로 만들었다가 폐기했다 — 학습자가 아는 화면과 달라진다.
+    navigator.pushReplacementNamed(
+      Routes.learningCallMain,
+      arguments: LearningArgs(
+        sentences: args.sentences,
+        origin: LearningOrigin.assignment,
+        assignmentId: id,
+      ),
+    );
   }
 
   void _snack(String message) {
@@ -415,13 +823,34 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
     final sentence = args.sentences[_index];
     final scoring = _phase == LearningPhase.scoring;
     final isResult = _phase == LearningPhase.result;
+    // ⛔ `isResult` 로 막는다. [_wordChips] 는 [_feedback] 만 보는데 그 값은
+    //   재시도해도 남아 있어서, 안 막으면 녹음 단계에 지난 채점 배지가 뜬다.
+    final chips = isResult ? _wordChips(context, sentence.korean) : const <Widget>[];
 
     return AppScaffold(
-      background: context.c.backgroundNormalAlternative,
+      // 화면 바탕 = Background/Surface/Alternative(Light #FFF · Dark #252932) — 09-26 Light
+      // backgroundNormalAlternative 가 #DBDCE2 로 진해지며 드러난 오배정(Figma learn/* · 디자인 세션).
+      background: context.c.backgroundSurfaceAlternative,
       body: Column(
         children: [
           Gnb.main2(
-            progress: GnbProgress(current: _index + 1, total: args.sentences.length),
+            // 과제는 **위치가 아니라 진행**을 센다. 숙제에서 알고 싶은 것은 「몇
+            // 번째 문장인가」가 아니라 「몇 개 했나」다. 이어하기로 중간에 열리면
+            // 위치는 진행을 잘못 말한다 — 37개를 읽고 6번 자리에서 열렸는데
+            // 머리글이 「6 / 38」이라 다 지워진 것처럼 보였다(2026-09-04).
+            // 그 외 흐름(연습·복습)은 처음부터 끝까지 한 번에 도니 위치 = 진행이다.
+            progress: GnbProgress(
+              current: args.origin == LearningOrigin.assignment
+                  ? (args.assignmentId != null
+                        ? (ref
+                                  .watch(assignmentAttemptProvider)[args
+                                      .assignmentId]
+                                  ?.scored ??
+                              0)
+                        : _index + 1)
+                  : _index + 1,
+              total: args.sentences.length,
+            ),
             onClose: () => Navigator.pop(context),
           ),
           Expanded(
@@ -429,8 +858,7 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
               children: [
                 const SizedBox(height: AppSpacing.s16),
                 // Speaker / bookmark utility row — shared by every phase.
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
+                ContentColumn(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -441,84 +869,165 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
                           onTap: () => _playStandard(sentence),
                           behavior: HitTestBehavior.opaque,
                           child: AppIcons.volume(
-                              size: 32, color: context.c.labelStrong),
+                            size: 32,
+                            color: context.c.labelStrong,
+                          ),
                         ),
                       ),
-                      ValueListenableBuilder<Set<int>>(
-                        valueListenable: bookmarkedSentenceIds,
-                        builder: (context, ids, _) {
-                          final saved = ids.contains(sentence.id);
-                          return Semantics(
-                            button: true,
-                            label:
-                                saved ? l10n.unsaveSentence : l10n.saveSentence,
-                            child: GestureDetector(
+                      // 과제 문장은 북마크할 수 없다 — id 축이 다르다(위 주석).
+                      if (args.origin != LearningOrigin.assignment)
+                        ValueListenableBuilder<Set<int>>(
+                          valueListenable: bookmarkedSentenceIds,
+                          builder: (context, ids, _) {
+                            final saved = ids.contains(sentence.id);
+                            // 글리프를 즉시 갈아 끼우면 눌린 티가 안 난다.
+                            // 색은 두 상태가 같으므로 움직이는 건 페이드와 팝뿐이다.
+                            return IconToggle(
+                              value: saved,
+                              onIcon: AppIcons.bookmarkFill,
+                              offIcon: AppIcons.bookmarkLine,
+                              onColor: context.c.labelStrong,
+                              offColor: context.c.labelStrong,
+                              size: 32,
+                              semanticLabel: saved
+                                  ? l10n.unsaveSentence
+                                  : l10n.saveSentence,
                               onTap: () => _toggleBookmark(sentence.id),
-                              behavior: HitTestBehavior.opaque,
-                              child: saved
-                                  ? AppIcons.bookmarkFill(
-                                      size: 32, color: context.c.labelStrong)
-                                  : AppIcons.bookmarkLine(
-                                      size: 32, color: context.c.labelStrong),
-                            ),
-                          );
-                        },
-                      ),
+                            );
+                          },
+                        ),
                     ],
                   ),
                 ),
-                // Sentence — shared position across phases. Its colouring
-                // cross-fades between plain (recording/scoring) and per-character
-                // tinted (result), so nothing slides; while scoring, ScanCursor
-                // sweeps over it.
+                const SizedBox(height: AppSpacing.s8),
+                // 반응 영상 — Figma `VideoBand`. 아이콘줄 바로 아래, 문장 위.
+                //
+                // **상단 고정이다**(사장님 2026-09-13). 한때 문장과 한 덩어리로
+                // 가운데 정렬했는데, 여유가 있는 화면에서 영상이 내려와 보였다.
+                _reactionBand(),
+                // 문장 · 번역 · 발음 배지 — 남는 칸 **가운데**. 셋이 같이 스크롤한다.
+                //
+                // 셋 다 높이를 앱이 통제하지 못한다 — 문장은 서버 문장이고, 번역은
+                // 로케일마다 길이가 다르고(ru·de 는 두 줄), 배지는 틀린 어절 수만큼
+                // 늘어 줄바꿈한다. 종전엔 `Center` 하나였고, 영상이 202dp 를 고정으로
+                // 먹은 뒤 남은 칸이 모자라면 **그대로 넘쳤다**(실기기 2026-09-13 ru ·
+                // bottom overflowed by 37px). 이제 잘리는 대신 흘러간다.
+                //
+                // `minHeight` 를 뷰포트에 맞춰 두는 이유: 스크롤 뷰 안의 `Center` 는
+                // **자식이 뷰포트만 할 때만** 가운데로 간다. 안 걸어 두면 내용이 짧을
+                // 때 위로 붙어, 넘치지 않는 평소 화면의 그림이 바뀐다.
+                //
+                // 세로 여백 [_kScanOverhang] 은 채점 중 스캔 커서가 문장 위아래로
+                // 삐져나오는 몫이다. 스크롤 뷰는 제 칸 밖을 자르므로 미리 비워 둔다.
                 Expanded(
-                  child: Center(
-                    child: Padding(
+                  child: LayoutBuilder(
+                    builder: (context, constraints) => SingleChildScrollView(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: AppSpacing.s20),
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              AnimatedSwitcher(
-                                duration: const Duration(milliseconds: 250),
-                                child: isResult
-                                    ? _ScoredSentence(
-                                        key: const ValueKey('scored'),
-                                        charScores:
-                                            _feedback?.charScores ?? const [],
-                                        fallbackText: sentence.korean,
-                                      )
-                                    : Text(
-                                        sentence.korean,
-                                        key: const ValueKey('plain'),
-                                        textAlign: TextAlign.center,
-                                        style: AppType.heading2.sb.copyWith(
-                                            color: context.c.labelStrong),
+                        vertical: _kScanOverhang,
+                      ),
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          minHeight: constraints.maxHeight > _kScanOverhang * 2
+                              ? constraints.maxHeight - _kScanOverhang * 2
+                              : 0,
+                        ),
+                        child: Center(
+                          child: ContentColumn(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                // The cursor is stretched over the SENTENCE only, not
+                                // the whole block — a fixed 84 was measured off the
+                                // frame's 1-line sentence and stops covering the text
+                                // the moment it wraps to 2 lines.
+                                Stack(
+                                  alignment: Alignment.center,
+                                  clipBehavior: Clip.none,
+                                  children: [
+                                    // Keeps the sweep the full column width even when
+                                    // the sentence itself is short.
+                                    const SizedBox(width: double.infinity),
+                                    AnimatedSwitcher(
+                                      duration: const Duration(milliseconds: 250),
+                                      child: isResult
+                                          ? _ScoredSentence(
+                                              key: const ValueKey('scored'),
+                                              charScores:
+                                                  _feedback?.charScores ?? const [],
+                                              fallbackText: sentence.korean,
+                                            )
+                                          : Text(
+                                              sentence.korean,
+                                              key: const ValueKey('plain'),
+                                              textAlign: TextAlign.center,
+                                              style: AppType.heading2.sb.copyWith(
+                                                color: context.c.labelStrong,
+                                              ),
+                                            ),
+                                    ),
+                                    if (scoring)
+                                      const Positioned(
+                                        top: -_kScanOverhang,
+                                        bottom: -_kScanOverhang,
+                                        left: 0,
+                                        right: 0,
+                                        child: IgnorePointer(child: ScanCursor()),
                                       ),
-                              ),
-                              const SizedBox(height: AppSpacing.s8),
-                              Text(
-                                _feedback?.native ?? sentence.native,
-                                textAlign: TextAlign.center,
-                                style: AppType.body1.sb
-                                    .copyWith(color: context.c.labelNormal),
-                              ),
-                            ],
+                                  ],
+                                ),
+                                const SizedBox(height: AppSpacing.s8),
+                                Text(
+                                  _feedback?.native ?? sentence.native,
+                                  textAlign: TextAlign.center,
+                                  style: AppType.body1.sb.copyWith(
+                                    color: context.c.labelNormal,
+                                  ),
+                                ),
+                                // 틀린 어절 배지. 종전엔 하단 묶음에 있어서
+                                // 문장·번역과 따로 놀았고, 두 줄로 늘면 위 칸을
+                                // 밀어 **문장 블록을 넘치게 했다.**
+                                if (chips.isNotEmpty) ...[
+                                  const SizedBox(height: AppSpacing.s16),
+                                  Wrap(
+                                    alignment: WrapAlignment.center,
+                                    spacing: AppSpacing.s8,
+                                    runSpacing: AppSpacing.s8,
+                                    children: chips,
+                                  ),
+                                ],
+                              ],
+                            ),
                           ),
-                          if (scoring)
-                            const IgnorePointer(child: ScanCursor(height: 84)),
-                        ],
+                        ),
                       ),
                     ),
                   ),
                 ),
                 // Bottom — the only part that changes shape per phase, cross-faded.
-                AnimatedSwitcher(
+                //
+                // ⛔ `layoutBuilder` 를 기본값으로 두지 마라. 기본 레이아웃은 나가는
+                //    자식과 들어오는 자식을 **가운데 정렬**로 겹쳐 놓는데, 분석·실패
+                //    단계는 캡션 한 줄이 위에 붙어 더 높다. 그래서 사라지는 마이크가
+                //    (높이차 ÷ 2)만큼 위로 떠오르며 지워진다 — 정지 버튼을 누른 자리와
+                //    스피너 자리가 어긋나 보이는 원인이다(실측 약 19dp).
+                //    마이크·스피너·재시도는 전부 묶음의 **맨 아래**에 있으므로
+                //    아래를 맞추면 세 단계의 앵커가 정확히 겹친다.
+                //
+                // [AnimatedSize] 는 높이 변화 자체를 나눠 준다. 없으면 캡션이 생기는
+                // 프레임에 위 문장 블록이 한 번에 튄다. 정렬을 같은 `bottomCenter` 로
+                // 둬야 커지는 방향이 위쪽이라 앵커가 안 움직인다.
+                AnimatedSize(
                   duration: const Duration(milliseconds: 250),
-                  child: _bottom(context, l10n, args, sentence),
+                  curve: Curves.easeInOut,
+                  alignment: Alignment.bottomCenter,
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 250),
+                    layoutBuilder: (current, previous) => Stack(
+                      alignment: Alignment.bottomCenter,
+                      children: <Widget>[...previous, ?current],
+                    ),
+                    child: _bottom(context, l10n, args, sentence),
+                  ),
                 ),
               ],
             ),
@@ -530,8 +1039,7 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
 
   /// The caption between the sentence and the mic anchor — shared by scoring
   /// (`AnalyzingCaption` 3627:9708) and failed (E_failed 3627:9847).
-  Widget _caption(BuildContext context, String text) => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
+  Widget _caption(BuildContext context, String text) => ContentColumn(
         child: Text(
           text,
           textAlign: TextAlign.center,
@@ -539,8 +1047,12 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
         ),
       );
 
-  Widget _bottom(BuildContext context, AppLocalizations l10n, LearningArgs args,
-      MockSentence sentence) {
+  Widget _bottom(
+    BuildContext context,
+    AppLocalizations l10n,
+    LearningArgs args,
+    MockSentence sentence,
+  ) {
     switch (_phase) {
       case LearningPhase.recording:
         return BottomCtaBar(
@@ -564,10 +1076,9 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
             // `AnalyzingCaption` (`3627:9708`) — between the sentence and the
             // mic anchor.
             _caption(
-                context,
-                _scoringSlow
-                    ? l10n.analyzingTakingLonger
-                    : l10n.analyzingByWord),
+              context,
+              _scoringSlow ? l10n.analyzingTakingLonger : l10n.analyzingByWord,
+            ),
             const SizedBox(height: AppSpacing.s16),
             const BottomCtaBar(child: Center(child: MicAnalysis())),
           ],
@@ -587,18 +1098,20 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
                   icon: AppIcons.redo,
                   semanticLabel: l10n.retry,
                   onTap: _retry,
+                  // Figma `learning/9_failed` — 실패 후 재시도는 주의색이다.
+                  cautionary: true,
                 ),
               ),
             ),
           ],
         );
       case LearningPhase.result:
+        // 틀린 어절 배지는 여기 없다 — 문장·번역과 같은 스크롤 칸으로 올라갔다.
         return Column(
           key: const ValueKey('result'),
           mainAxisSize: MainAxisSize.min,
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
+            ContentColumn(
               child: Row(
                 children: [
                   Expanded(
@@ -607,7 +1120,9 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
                       size: BtnSize.s44,
                       text: l10n.nativeLabel,
                       leftIcon: AppIcons.volume(
-                          size: 20, color: context.c.labelStrong),
+                        size: 20,
+                        color: context.c.labelStrong,
+                      ),
                       onPressed: () => _playStandard(sentence),
                     ),
                   ),
@@ -618,14 +1133,19 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
                       size: BtnSize.s44,
                       text: l10n.meLabel,
                       leftIcon: AppIcons.volume(
-                          size: 20, color: context.c.labelStrong),
+                        size: 20,
+                        color: context.c.labelStrong,
+                      ),
                       onPressed: _playMe,
                     ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 36), // Native/Me → controls (Figma 36; no token)
+            // 원어민/나 → 컨트롤. [BottomCtaBar] 가 위쪽에 s12 를 **또** 주므로
+            // 화면에서 보이는 간격은 이 값 + 12 다. 시안 36 은 그 12 를 안 세서
+            // 실제로는 48 로 벌어졌다 — 너무 멀다(사장님 2026-09-13).
+            const SizedBox(height: AppSpacing.s12),
             BottomCtaBar(
               child: Center(
                 child: Row(
@@ -645,7 +1165,9 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
                       child: IconButton(
                         onPressed: () => _next(args),
                         icon: AppIcons.arrowForward(
-                            size: 32, color: context.c.primaryHeavy),
+                          size: 32,
+                          color: context.c.primaryHeavy,
+                        ),
                         iconSize: 32,
                         color: context.c.primaryHeavy,
                         tooltip: l10n.next,
@@ -663,6 +1185,30 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
 
 /// Renders the sentence character-by-character, each tinted by its grade. Falls
 /// back to a plain (un-tinted) sentence when no char scores exist.
+/// 원문 [text] 를 따라가며 [scoredChars] 를 순서대로 소비해, 글자마다 대응하는
+/// 채점 인덱스를 낸다. 대응이 없는 자리(공백·구두점)는 `-1`.
+///
+/// **왜 원문 기준인가** — 서버의 `char_scores` 는 채점한 글자만 담고 공백과 구두점을
+/// 뺀다. 그래서 그 목록을 그대로 이어붙이면 「저는 학생이에요.」가 화면에서
+/// 「저는학생이에요」가 된다(실측 2026-08-30 · review 208·209).
+///
+/// 정렬은 **순서대로 한 번만** 훑는다. 되돌아가서 맞추지 않으므로, 서버가 글자를
+/// 정규화해 원문과 어긋나면 그 지점부터 대응이 끊기고 `-1` 이 이어진다. 그 경우를
+/// 호출부가 알아볼 수 있도록 여기서는 판단하지 않고 인덱스만 낸다.
+List<int> alignScoresToText(String text, List<String> scoredChars) {
+  final out = <int>[];
+  var si = 0;
+  for (final ch in text.characters) {
+    if (si < scoredChars.length && scoredChars[si] == ch) {
+      out.add(si);
+      si++;
+    } else {
+      out.add(-1);
+    }
+  }
+  return out;
+}
+
 class _ScoredSentence extends StatelessWidget {
   const _ScoredSentence({
     super.key,
@@ -683,19 +1229,50 @@ class _ScoredSentence extends StatelessWidget {
         style: base.copyWith(color: context.c.labelStrong),
       );
     }
+    // 원문을 따라가며 색을 입힌다. **`char_scores` 를 그대로 이어붙이면 안 된다** —
+    // 서버는 채점한 글자만 담고 공백·구두점을 빼므로, 그러면 「저는 학생이에요.」가
+    // 화면에서 「저는학생이에요」가 된다(실측 2026-08-30, review 208·209).
+    final strong = context.c.labelStrong;
+    final chars = fallbackText.characters.toList();
+    final align = alignScoresToText(fallbackText, [
+      for (final cs in charScores) cs.char,
+    ]);
+    final spans = <TextSpan>[
+      for (var i = 0; i < chars.length; i++)
+        TextSpan(
+          text: chars[i],
+          style: base.copyWith(
+            color: align[i] < 0
+                ? strong
+                : _LearningIntroScreenState._gradeColor(
+                    context,
+                    charScores[align[i]],
+                  ),
+          ),
+        ),
+    ];
+    final si = align.where((i) => i >= 0).length;
+    // 하나도 못 맞추면 원문과 채점이 서로 다른 문장이라는 뜻이다. 그때는 색을 통째로
+    // 포기하는 대신 예전처럼 채점된 글자를 잇는다 — 색이 정보의 본체이기 때문이다.
+    if (si == 0) {
+      return RichText(
+        textAlign: TextAlign.center,
+        text: TextSpan(
+          children: [
+            for (final cs in charScores)
+              TextSpan(
+                text: cs.char,
+                style: base.copyWith(
+                  color: _LearningIntroScreenState._gradeColor(context, cs),
+                ),
+              ),
+          ],
+        ),
+      );
+    }
     return RichText(
       textAlign: TextAlign.center,
-      text: TextSpan(
-        children: [
-          for (final cs in charScores)
-            TextSpan(
-              text: cs.char,
-              style: base.copyWith(
-                color: _LearningIntroScreenState._gradeColor(context, cs),
-              ),
-            ),
-        ],
-      ),
+      text: TextSpan(children: spans),
     );
   }
 }

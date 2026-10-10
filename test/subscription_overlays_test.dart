@@ -1,3 +1,4 @@
+import 'package:beavertalk/components/atoms/button.dart';
 import 'package:beavertalk/components/organisms/bottom_sheet_content.dart';
 import 'package:beavertalk/features/subscription/domain/entities/subscription_state.dart';
 import 'package:beavertalk/features/subscription/domain/subscription_status_resolver.dart';
@@ -72,40 +73,105 @@ void main() {
 
   group('every overlay renders its measured title', () {
     const titles = {
-      SubscriptionOverlay.restoreSuccess: 'Pro is back',
+      SubscriptionOverlay.restoreSuccess: 'Premium is back',
       SubscriptionOverlay.restoreEmpty: 'Nothing to restore',
       SubscriptionOverlay.restoreOtherAccount:
           'That plan belongs to another account',
-      SubscriptionOverlay.characterOffer: 'Not ready for Pro?',
+      SubscriptionOverlay.restoreCharacters: 'Your characters are back',
+      SubscriptionOverlay.restoreCharacter: 'Your character is back',
+      SubscriptionOverlay.restoreCharacterOtherAccount:
+          'This character was bought on another account',
+      SubscriptionOverlay.characterOffer: 'Not ready for Premium?',
       SubscriptionOverlay.notEligible: 'Nothing to cancel',
       SubscriptionOverlay.cancelDownsell: 'Before you go',
-      SubscriptionOverlay.annualSwitch: r'Pay yearly, save $73.89',
+      SubscriptionOverlay.annualSwitch: r'Pay yearly, save $98.89',
       SubscriptionOverlay.monthlySwitch: 'Switch to monthly',
       SubscriptionOverlay.refundHelp: 'Refunds are handled by the store',
       SubscriptionOverlay.cancelSubscription: 'Cancel subscription',
       SubscriptionOverlay.paymentUpdate: 'Update payment',
       SubscriptionOverlay.resubscribe: 'Resubscribe',
       SubscriptionOverlay.trialEnding: 'Your trial ends tomorrow',
-      SubscriptionOverlay.trialStart: '7 days of Max, free',
+      SubscriptionOverlay.trialStart: '7 days of Premium, free',
       SubscriptionOverlay.otoAnnual: 'One more thing before you start',
       SubscriptionOverlay.purchaseFailedDeclined: 'Your card was declined',
       SubscriptionOverlay.purchaseFailedCanceled: 'Payment canceled',
       SubscriptionOverlay.purchaseFailedStore: 'Something went wrong',
-      SubscriptionOverlay.alreadySubscribed: "You're already on Pro",
-      SubscriptionOverlay.freeLimitCall: "That's today's call",
-      SubscriptionOverlay.freeLimitCheck: "That's today's check",
+      // QA F003·F004·F005·F028(09-27) — Figma 없는 시트, 앱 문구 기준.
+      SubscriptionOverlay.purchaseVerifying: 'Payment received',
+      SubscriptionOverlay.purchasePending: 'Payment pending',
+      SubscriptionOverlay.purchaseRejected: "We couldn't confirm this purchase",
+      SubscriptionOverlay.restoreUnavailable: 'Connection failed',
+      SubscriptionOverlay.alreadySubscribed: "You're already on Premium",
+      SubscriptionOverlay.freeLimitCall: "You've used today's call time",
+      SubscriptionOverlay.freeCallEnded: 'Your free call has ended',
+      SubscriptionOverlay.keepGoing: 'Keep going?',
+      // 기본은 「더 남음」 문구 — 오늘 마지막 통화 문구는 아래 별도 시험.
+      SubscriptionOverlay.premiumCallEnded: "Let's wrap up this call.",
     };
 
-    testWidgets('all 21 sheets mount with their title', (tester) async {
+    /// 결정을 받아야 하는 시트 — 딤 탭으로 닫히지 않는다. CTA 로 닫아야 한다.
+    const mustDecide = {
+      SubscriptionOverlay.freeCallEnded,
+      SubscriptionOverlay.keepGoing,
+      SubscriptionOverlay.premiumCallEnded,
+    };
+
+    test('제목 표가 enum 을 빠짐없이 덮는다', () {
+      // ⛔ 이 검사가 없으면 새 오버레이를 추가해도 위 표에 안 넣는 한 **아무 테스트도
+      //    안 도는데 초록으로 보인다.** 표를 갱신하도록 강제한다.
+      expect(titles.keys.toSet(), SubscriptionOverlay.values.toSet());
+    });
+
+    testWidgets('모든 시트가 제목과 함께 뜬다', (tester) async {
       for (final e in titles.entries) {
         await pumpHost(tester, e.key);
         // `monthly_switch` repeats its title as the CTA label — hence
         // at-least-one rather than exactly-one.
         expect(find.text(e.value), findsAtLeastNWidgets(1), reason: '${e.key}');
         // Dismiss for the next round.
-        await tester.tapAt(const Offset(187, 10));
+        if (mustDecide.contains(e.key)) {
+          await tester.tap(find.text('End Call'));
+        } else {
+          await tester.tapAt(const Offset(187, 10));
+        }
         await tester.pumpAndSettle();
+        expect(find.text(e.value), findsNothing, reason: '${e.key} 가 안 닫혔다');
       }
+    });
+  });
+
+  group('통화 구간 시트 (5분/15분)', () {
+    testWidgets('딤을 눌러도 안 닫힌다 — 결정을 받아야 한다', (tester) async {
+      // 흘려보내면 통화가 결정 대기 상태로 남는다: 소리도 없고 화면도 안 바뀐다.
+      await pumpHost(tester, SubscriptionOverlay.keepGoing);
+      expect(find.text('Keep going?'), findsOneWidget);
+      await tester.tapAt(const Offset(187, 10));
+      await tester.pumpAndSettle();
+      expect(find.text('Keep going?'), findsOneWidget);
+    });
+
+    testWidgets('무료 시트는 연장이 아니라 구독으로 보낸다', (tester) async {
+      await pumpHost(tester, SubscriptionOverlay.freeCallEnded);
+      expect(find.text('Your free call has ended'), findsOneWidget);
+      expect(find.text('Subscribe and keep talking'), findsOneWidget);
+      expect(find.text('Keep talking'), findsNothing,
+          reason: '무료에는 연장이 없다');
+      expect(find.text('End Call'), findsOneWidget);
+    });
+
+    testWidgets('유료 시트는 연장을 준다', (tester) async {
+      await pumpHost(tester, SubscriptionOverlay.keepGoing);
+      expect(find.text('Keep talking'), findsOneWidget);
+      expect(find.text('End Call'), findsOneWidget);
+      expect(find.text('Subscribe and keep talking'), findsNothing,
+          reason: '이미 유료다 — 구독을 다시 팔지 않는다');
+    });
+
+    testWidgets('무료 시트는 사용량과 Premium 혜택 줄을 보여 준다', (tester) async {
+      await pumpHost(tester, SubscriptionOverlay.freeCallEnded);
+      expect(find.text('4:58 of 5:00 used'), findsOneWidget);
+      expect(find.text('15 minutes of video calls a day'),
+          findsOneWidget);
     });
   });
 
@@ -180,10 +246,10 @@ void main() {
     testWidgets('cancel sheet quotes the server expiry date', (tester) async {
       await pumpHost(tester, SubscriptionOverlay.cancelSubscription);
       expect(
-          find.text('Pro runs until Jun 20, 2026. After that you move to Free.'),
+          find.text('Premium runs until Jun 20, 2026. After that you move to Free.'),
           findsOneWidget);
       expect(find.text('What you lose'), findsOneWidget);
-      expect(find.text('Keep Pro'), findsOneWidget);
+      expect(find.text('Keep Premium'), findsOneWidget);
       expect(find.text('Continue to the store'), findsOneWidget);
     });
 
@@ -191,8 +257,96 @@ void main() {
       await pumpHost(tester, SubscriptionOverlay.freeLimitCall);
       expect(find.text('Baba'), findsOneWidget);
       expect(find.text('4:58 of 5:00 used'), findsOneWidget);
-      expect(find.text(r'$15.99 per month · cancel anytime'), findsOneWidget);
+      expect(find.text(r'$23.99 per month · cancel anytime'), findsOneWidget);
       expect(find.text('Maybe tomorrow'), findsOneWidget);
     });
+  });
+
+  group('Premium 15분 종료 시트 (P19)', () {
+    Future<void> pump(WidgetTester tester, {required bool last}) async {
+      await tester.pumpWidget(MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('en'),
+        home: Scaffold(
+          body: Align(
+            alignment: Alignment.bottomCenter,
+            child: subscriptionOverlayForTest(
+              SubscriptionOverlay.premiumCallEnded,
+              usage: (used: '15:00', limit: '15:00'),
+              characterName: 'Baba',
+              lastCallToday: last,
+            ),
+          ),
+        ),
+      ));
+    }
+
+    testWidgets('오늘 마지막 통화면 「내일」 문구', (tester) async {
+      await pump(tester, last: true);
+      expect(find.text("Let's wrap up for today."), findsOneWidget);
+      expect(
+          find.text('Review what we talked about, and call me again tomorrow!'),
+          findsOneWidget);
+      expect(find.text('15:00 of 15:00 used'), findsOneWidget);
+      // 버튼은 End Call 하나 — 연장이 없다.
+      expect(find.text('End Call'), findsOneWidget);
+      expect(find.text('Keep talking'), findsNothing);
+    });
+
+    testWidgets('통화가 더 남았으면 「내일」이 없다', (tester) async {
+      await pump(tester, last: false);
+      expect(find.text("Let's wrap up this call."), findsOneWidget);
+      expect(find.textContaining('tomorrow'), findsNothing);
+    });
+  });
+
+  // 09-26 사용자가 화면별로 UX · CTA 를 보고 배치했다(Figma Workspace 6465:4667 · 디자인 세션 경유).
+  // 기본값이 아니라 화면마다 정한다 — CTA 아래 / CTA 위를 각각 못박는다.
+  group('버튼 순서 — 화면별 사용자 배치', () {
+    double topOf(WidgetTester tester, BtnType type) {
+      final f = find.byWidgetPredicate((w) => w is Button && w.type == type);
+      expect(f, findsOneWidget, reason: '$type 버튼이 하나가 아니다');
+      return tester.getTopLeft(f).dy;
+    }
+
+    const secondaryFirst = [
+      SubscriptionOverlay.restoreEmpty,
+      SubscriptionOverlay.restoreOtherAccount,
+      SubscriptionOverlay.restoreCharacterOtherAccount,
+      SubscriptionOverlay.characterOffer,
+      SubscriptionOverlay.cancelDownsell,
+      SubscriptionOverlay.annualSwitch,
+      SubscriptionOverlay.monthlySwitch,
+      SubscriptionOverlay.cancelSubscription,
+      SubscriptionOverlay.paymentUpdate,
+      SubscriptionOverlay.resubscribe,
+      SubscriptionOverlay.purchaseFailedDeclined,
+      SubscriptionOverlay.purchaseFailedCanceled,
+      SubscriptionOverlay.purchaseFailedStore,
+      SubscriptionOverlay.purchaseVerifying,
+      SubscriptionOverlay.purchaseRejected,
+      SubscriptionOverlay.restoreUnavailable,
+    ];
+    for (final overlay in secondaryFirst) {
+      testWidgets('${overlay.name}: CTA 아래', (tester) async {
+        await pumpHost(tester, overlay);
+        expect(topOf(tester, BtnType.secondaryFill),
+            lessThan(topOf(tester, BtnType.primaryFill)));
+      });
+    }
+
+    const primaryFirst = [
+      SubscriptionOverlay.refundHelp,
+      SubscriptionOverlay.alreadySubscribed,
+      SubscriptionOverlay.notEligible,
+    ];
+    for (final overlay in primaryFirst) {
+      testWidgets('${overlay.name}: CTA 위', (tester) async {
+        await pumpHost(tester, overlay);
+        expect(topOf(tester, BtnType.primaryFill),
+            lessThan(topOf(tester, BtnType.secondaryFill)));
+      });
+    }
   });
 }

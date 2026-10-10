@@ -212,6 +212,9 @@ void main() {
             (c.primaryNormal10, c.primaryNormal, c.primaryNormal),
         bt.BannerTone.neutral:
             (c.backgroundSurfaceAlternative, c.lineNormal, c.labelNormal),
+        // tone5 (`5269:22664`) — 홈 숙제 배너.
+        bt.BannerTone.elevated:
+            (c.backgroundElevatedAlternative, c.lineNormal, c.labelNormal),
       };
       for (final tone in bt.BannerTone.values) {
         await tester.pumpWidget(host(bt.Banner(

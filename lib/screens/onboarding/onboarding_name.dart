@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
@@ -61,69 +62,63 @@ class _OnboardingNameScreenState extends ConsumerState<OnboardingNameScreen> {
             onBack: () => Navigator.pop(context),
           ),
           Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.s20,
-                  AppSpacing.s24,
-                  AppSpacing.s20,
-                  AppSpacing.s24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    l10n.onboardingNameTitle,
-                    style: AppType.title3.b.copyWith(color: context.c.labelStrong),
-                  ),
-                  const SizedBox(height: AppSpacing.s8),
-                  Text(
-                    l10n.onboardingNameSubtitle,
-                    style: AppType.body1.r
-                        .copyWith(color: context.c.labelNormal),
-                  ),
-                  const SizedBox(height: AppSpacing.s24),
-                  Text(
-                    l10n.nameLabel,
-                    style: AppType.body1.r.copyWith(color: context.c.labelStrong),
-                  ),
-                  const SizedBox(height: AppSpacing.s12),
-                  InputField(
-                    value: _name,
-                    onChanged: (v) => setState(() => _name = v),
-                    hintText: l10n.nameHint,
-                    // Same rule the nickname editor states and enforces
-                    // (`edit_nickname`): English letters + digits, 2–12. This
-                    // screen used to accept anything, so a member could set a
-                    // name here that the editor would then refuse to save.
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9]')),
-                    ],
-                    maxLength: _maxLength,
-                    onSubmitted: (_) {
-                      if (canContinue) _next();
-                    },
-                  ),
-                  const SizedBox(height: AppSpacing.s8),
-                  Text(
-                    l10n.nicknameRule,
-                    style: AppType.body1.r
-                        .copyWith(color: context.c.labelNormal),
-                  ),
-                  const SizedBox(height: AppSpacing.s8),
-                  Text(
-                    l10n.nameHelper,
-                    style: AppType.body1.r
-                        .copyWith(color: context.c.labelNormal),
-                  ),
-                ],
+            child: ContentColumn(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.only(top: AppSpacing.s24, bottom: AppSpacing.s24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      l10n.onboardingNameTitle,
+                      style: AppType.title3.b.copyWith(color: context.c.labelStrong),
+                    ),
+                    const SizedBox(height: AppSpacing.s8),
+                    Text(
+                      l10n.onboardingNameSubtitle,
+                      style: AppType.body1.r
+                          .copyWith(color: context.c.labelNormal),
+                    ),
+                    const SizedBox(height: AppSpacing.s24),
+                    Text(
+                      l10n.nameLabel,
+                      style: AppType.body1.r.copyWith(color: context.c.labelStrong),
+                    ),
+                    const SizedBox(height: AppSpacing.s12),
+                    InputField(
+                      value: _name,
+                      onChanged: (v) => setState(() => _name = v),
+                      hintText: l10n.nameHint,
+                      // Same rule the nickname editor states and enforces
+                      // (`edit_nickname`): English letters + digits, 2–12. This
+                      // screen used to accept anything, so a member could set a
+                      // name here that the editor would then refuse to save.
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9]')),
+                      ],
+                      maxLength: _maxLength,
+                      onSubmitted: (_) {
+                        if (canContinue) _next();
+                      },
+                    ),
+                    const SizedBox(height: AppSpacing.s8),
+                    Text(
+                      l10n.nicknameRule,
+                      style: AppType.body1.r
+                          .copyWith(color: context.c.labelNormal),
+                    ),
+                    const SizedBox(height: AppSpacing.s8),
+                    Text(
+                      l10n.nameHelper,
+                      style: AppType.body1.r
+                          .copyWith(color: context.c.labelNormal),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(
-                AppSpacing.s20,
-                AppSpacing.s12,
-                AppSpacing.s20,
-                AppSpacing.s12),
+          ContentColumn(
+            padding: const EdgeInsets.only(top: AppSpacing.s12, bottom: AppSpacing.s12),
             child: SizedBox(
               width: double.infinity,
               child: Button(

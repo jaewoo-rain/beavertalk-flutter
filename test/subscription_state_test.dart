@@ -165,22 +165,21 @@ void main() {
       }
     });
 
-    test('slot ① is Change plan only on a paid plan', () {
+    test('slot ① — Premium 은 연간 전환, 나머지는 플랜 비교(단일 티어 09-22)', () {
       for (final s in SubscriptionState.values) {
-        final paid =
-            s == SubscriptionState.activePro || s == SubscriptionState.activeMax;
         expect(
           s.planSlotLabel,
-          paid
-              ? BillingSlotLabel.changePlan
+          s == SubscriptionState.activeMax
+              ? BillingSlotLabel.switchToAnnual
               : BillingSlotLabel.compareAllPlans,
           reason: 'slot ① label for $s',
         );
       }
-      expect(SubscriptionState.activePro.planSlotDestination,
-          BillingDestination.planChangeUpgrade);
       expect(SubscriptionState.activeMax.planSlotDestination,
-          BillingDestination.planChangeDowngrade);
+          BillingDestination.annualSwitch);
+      // 옛 Pro 는 더 팔지 않는다 — 바꿀 상대가 없으니 플랜 비교로.
+      expect(SubscriptionState.activePro.planSlotDestination,
+          BillingDestination.plansCompare);
     });
 
     test('slot ③ shows "nothing to restore" only on Free', () {
@@ -314,6 +313,23 @@ void main() {
           dto({'state': 'active_max', 'plan': 'max'}).toStatus()!;
       expect(status.tier, SubscriptionTier.max);
       expect(status.isPlanInferred, isFalse);
+    });
+
+    // 서버 `premium` 브랜치(09-23): state 7종 · plan 은 'premium' 하나. 앱의 Max 가 곧 Premium.
+    // 이게 틀리면 결제자가 Pro 로 떨어져 통화 화면이 영상 대신 원형 아바타가 된다(call.dart).
+    test('new server: active_premium + plan premium is the Max tier', () {
+      final status =
+          dto({'state': 'active_premium', 'plan': 'premium'}).toStatus()!;
+      expect(status.state, SubscriptionState.activeMax);
+      expect(status.tier, SubscriptionTier.max);
+      expect(status.isPlanInferred, isFalse);
+    });
+
+    test('new server: billing-trouble states keep plan premium as Max', () {
+      for (final s in ['grace', 'on_hold', 'ending']) {
+        final status = dto({'state': s, 'plan': 'premium'}).toStatus()!;
+        expect(status.tier, SubscriptionTier.max, reason: s);
+      }
     });
 
     test('a paid state without a plan stays honest about inferring', () {
@@ -456,6 +472,11 @@ void main() {
       expect(IapProductIds.characterFor(42), isNull);
     });
 
+    test('character list price before the store answers is US \$4.99 (PM-DEC-084)', () {
+      PlanPrices.reset();
+      expect(PlanPrices.characterFrom, r'$4.99');
+    });
+
     test('derived prices still follow from the ones they are derived from', () {
       // `$154.80` once outlived the `$12.90` it was twelve months of. The
       // arithmetic is the only thing that says these four belong together, so
@@ -476,9 +497,12 @@ void main() {
           cents(PlanPrices.proYearlyPerMonth));
       expect((cents(PlanPrices.maxYearly) / 12).round(),
           cents(PlanPrices.maxYearlyPerMonth));
-      // Anchors only make sense above the price they strike through.
-      expect(cents(PlanPrices.maxMonthlyAnchor),
-          greaterThan(cents(PlanPrices.maxMonthly)));
+      // Premium (`max`) — the only plan on sale — carries the same pair.
+      expect(cents(PlanPrices.maxYearlyAnchor), cents(PlanPrices.maxMonthly) * 12);
+      expect(
+        cents(PlanPrices.maxYearlySaved),
+        cents(PlanPrices.maxYearlyAnchor) - cents(PlanPrices.maxYearly),
+      );
     });
 
     test('a rail that cannot check intro eligibility says so', () {
@@ -531,6 +555,22 @@ void main() {
       expect(IapProductIds.logicalSkuFromPlay('bt_pro', 'yearly'),
           IapProductIds.proYearly);
       expect(IapProductIds.logicalSkuFromPlay('bt_pro', 'weekly'), isNull);
+    });
+
+    test('PM-DEC-121 — Premium 의 Play 구독 id 는 논리 SKU 와 같다', () {
+      // 서버는 앱이 보낸 product_id 를 구글 lineItems[].productId 와 그대로 비교한다.
+      // 한 구독 `bt_max` 에 기본 플랜 둘이던 때 늘 달라 422 INVALID_RECEIPT(09-28 실결제).
+      for (final sku in [IapProductIds.maxMonthly, IapProductIds.maxYearly]) {
+        expect(IapProductIds.playIdsFor(sku)!.subscriptionId, sku);
+      }
+      expect(IapProductIds.playIdsFor(IapProductIds.maxMonthly)!.basePlanId, 'monthly');
+      expect(IapProductIds.playIdsFor(IapProductIds.maxYearly)!.basePlanId, 'yearly');
+      expect(IapProductIds.logicalSkuFromPlay('bt_max_monthly', 'monthly'),
+          IapProductIds.maxMonthly);
+      expect(IapProductIds.logicalSkuFromPlay('bt_max', 'monthly'), isNull,
+          reason: '옛 구독 id 는 더 쓰지 않는다');
+      // 레거시 bt_pro_* 는 그대로.
+      expect(IapProductIds.playIdsFor(IapProductIds.proMonthly)!.subscriptionId, 'bt_pro');
     });
   });
 }

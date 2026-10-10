@@ -1,4 +1,7 @@
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
+import '../preview/cancel_rig_screen.dart';
+import '../preview/echo_rig_screen.dart';
 import '../preview/gallery_screen.dart';
 import '../theme/app_motion.dart';
 import 'placeholder_screen.dart';
@@ -27,7 +30,6 @@ import '../screens/home/learning_call_main.dart';
 import '../screens/home/learning_call_main_loading.dart';
 import '../screens/home/learning_sentence_main.dart';
 import '../screens/payment/payment_history.dart';
-import '../screens/system/permission.dart';
 import '../screens/system/mic_denied.dart';
 import '../screens/system/network_error.dart';
 import '../screens/mypage/mypage.dart';
@@ -35,17 +37,29 @@ import '../screens/mypage/edit_nickname.dart';
 import '../screens/mypage/settings.dart';
 import '../screens/mypage/subscription_manage.dart';
 import '../screens/plans/paywall.dart';
-import '../screens/plans/plan_change.dart';
+import '../screens/plans/winback_survey.dart';
 import '../screens/plans/plans_compare.dart';
 import '../screens/plans/purchase_flow.dart';
 import '../features/subscription/domain/entities/subscription_state.dart';
 import '../screens/mypage/avatar.dart';
-import '../screens/mypage/share.dart';
+import '../screens/home/streak_calendar.dart';
 import '../screens/alarm/alarm_list.dart';
 import '../screens/alarm/alarm_add.dart';
-import '../screens/alarm/alarm_empty.dart';
+import '../screens/weak_sound/learn_sentence.dart';
+import '../screens/weak_sound/learn_test.dart';
+import '../screens/weak_sound/learn_understand.dart';
+import '../screens/weak_sound/learn_words.dart';
+import '../screens/weak_sound/retry_sounds.dart';
+import '../screens/weak_sound/weak_sounds.dart';
 import '../screens/record/record_list.dart';
-import '../screens/record/record_empty.dart';
+import '../screens/report/report_content.dart';
+import '../screens/classroom/join_code.dart';
+import '../screens/classroom/join_confirm.dart';
+import '../screens/classroom/join_profile.dart';
+import '../screens/classroom/join_consent.dart';
+import '../screens/classroom/join_done.dart';
+import '../screens/classroom/assignment_list.dart';
+import '../screens/classroom/assignment_detail.dart';
 
 /// Route names for the design_app flows.
 abstract final class Routes {
@@ -70,6 +84,10 @@ abstract final class Routes {
   static const callFinish = '/call/finish';
   static const analysisLoading = '/analysis/loading';
   static const analysis = '/analysis';
+
+  /// 레벨업 축하(`screen/level_up` 6410:42174) — 통화 뒤 분석 화면 직전에 한 번. 인자가 필요해
+  /// 표에는 없고, 분석 대기 화면이 직접 띄운다(이름은 스택 판별용).
+  static const levelUp = '/level-up';
   static const learningIntro = '/learning/intro';
   static const learningSentenceMain = '/learning/sentence-main';
   static const learningCallMain = '/learning/call-main';
@@ -88,30 +106,67 @@ abstract final class Routes {
   static const editNickname = '/mypage/settings/nickname';
   static const subscription = '/mypage/subscription';
   static const avatar = '/mypage/avatar';
-  static const share = '/mypage/share';
 
   // ── Alarms ──
   static const alarms = '/alarms';
   static const alarmAdd = '/alarms/add';
-  static const alarmEmpty = '/alarms/empty';
+
+  // ── 취약 발음 학습 ──
+  //
+  // 학습 4단계는 전부 **인자로 `sound_key` 문자열**을 받는다(`coda_ㄹ`·`rule_연음`).
+  // 인자 없이 열면 화면이 스스로 「소리를 찾지 못했어요」로 내려앉는다(MissingSoundKey) —
+  // 흰 화면이나 404 로 숨기면 라우팅 실수를 서버 문제로 오해하게 된다.
+  static const weakSounds = '/weak-sounds';
+  static const weakSoundLearn = '/weak-sounds/learn';
+  static const weakSoundWords = '/weak-sounds/learn/words';
+  static const weakSoundSentence = '/weak-sounds/learn/sentence';
+  static const weakSoundTest = '/weak-sounds/learn/test';
+
+  /// 리포트에서 모은 「자주 틀린 소리」 목록(A5 · M2). 학습 결과 「목록으로」가 여기서도 멈춘다.
+  static const weakSoundRetry = '/weak-sounds/retry';
+
+  // ── 학습 달력(홈 불꽃 칩) ──
+  static const streakCalendar = '/streak-calendar';
 
   // ── Records ──
   static const records = '/records';
   static const recordsArchive = '/records/archive';
-  static const recordsEmpty = '/records/empty';
 
   // ── Subscription redesign (P3) ──
   static const plansCompare = '/plans/compare';
-  static const planChangeUpgrade = '/plans/change-upgrade';
-  static const planChangeDowngrade = '/plans/change-downgrade';
-  static const paywallPro = '/paywall/pro';
   static const paywallProLimit = '/paywall/pro-limit';
   static const paywallMax = '/paywall/max';
   static const purchaseProcessing = '/purchase/processing';
-  static const purchaseSuccessPro = '/purchase/success-pro';
   static const purchaseSuccessMax = '/purchase/success-max';
   static const plansError = '/plans/error';
   static const winbackSurvey = '/winback-survey';
+
+  // ── 숙제 (반 참여 · 과제) ──
+  //
+  // 하단 내비에 숙제 탭을 만들지 않았다(구현계획 §2.4). 3탭이 이미 통화를
+  // 가운데 FAB 로 쓰고 있어 네 번째가 들어가면 그 축이 무너진다. 진입은 홈
+  // 배너와 마이페이지 수업 카드 두 곳이다.
+
+  /// A1 참여 코드 입력. 인자로 코드 문자열(딥링크)을 받을 수 있다.
+  static const classroomJoin = '/classroom/join';
+
+  /// A2 반 확인. 앞 화면이 조회한 결과를 초안에서 읽는다.
+  static const classroomJoinConfirm = '/classroom/join/confirm';
+
+  /// A3 반에서 쓸 이름·학번.
+  static const classroomJoinProfile = '/classroom/join/profile';
+
+  /// A4 공유 동의. **참여 요청은 여기서 보낸다.**
+  static const classroomJoinConsent = '/classroom/join/consent';
+
+  /// A5 참여 완료. 인자는 `ClassroomMembership`.
+  static const classroomJoinDone = '/classroom/join/done';
+
+  /// A6 숙제 목록.
+  static const assignments = '/assignments';
+
+  /// A7 숙제 상세. 인자는 `ClassroomAssignment`.
+  static const assignmentDetail = '/assignments/detail';
 
   // ── Payment / permission / error ──
   //
@@ -119,7 +174,6 @@ abstract final class Routes {
   // v2 §2-3: IAP is the only rail, the OS sheet is the checkout. History
   // stays: it lists both product types (§6-5).
   static const paymentHistory = '/payment/history';
-  static const permission = '/permission';
   static const permissionMicDenied = '/permission/mic-denied';
 
   /// Whole-screen load failure. Most failures are regional and render
@@ -128,7 +182,21 @@ abstract final class Routes {
   /// nothing could open it.
   static const networkError = '/network-error';
 
+  /// AI 생성 콘텐츠 신고. Google Play 생성형 AI 정책이 "앱을 벗어나지 않고"
+  /// 신고할 수 있는 경로를 의무화하므로 **제품 플로우의 필수 화면이다.**
+  /// 인자는 `ReportArgs`(`screens/report/report_content.dart`).
+  static const reportContent = '/report';
+
   static const gallery = '/gallery';
+
+  /// 개발자 전용 계측 도구. 서버 에코 게이트 상수를 정하기 위한 실측 리그다.
+  /// [gallery] 와 같은 부류(제품 플로우에서 도달하지 않는 진입점)라 여기 둔다 —
+  /// 컴포넌트 갤러리에 끼워 넣지 않은 건 그쪽이 컴포넌트 미리보기 전용이기 때문이다.
+  static const echoRig = '/dev/echo-rig';
+
+  /// 개발자 전용 계측 도구. `audio_cancel` 수신 → 실제 무음까지(`client_stop_ms`)를
+  /// 잰다. 서버 dev 훅이 배포되기 전에도 클라 안에서 프레임을 주입해 배관을 발동시킨다.
+  static const cancelRig = '/dev/cancel-rig';
 }
 
 /// Central route table. Screens are swapped for real ones flow-by-flow; until
@@ -155,7 +223,15 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
   }
 
   final builders = <String, WidgetBuilder>{
-    Routes.gallery: (_) => const GalleryScreen(),
+    // 개발자 전용 화면은 **디버그 빌드에만 등록한다.**
+    //
+    // 진입 버튼을 kDebugMode 로 가리는 것만으로는 부족하다 — 라우트가 테이블에 남아
+    // 있으면 화면 클래스가 릴리즈 바이너리에 그대로 컴파일되고(실측: 릴리즈 libapp.so 에
+    // 리그 화면 문자열이 UTF-16 으로 남아 있었다), pushNamed 로 이름만 알면 도달할 수
+    // 있는 경로가 남는다. 여기서 막아야 트리셰이킹이 화면째 들어낸다.
+    if (kDebugMode) Routes.gallery: (_) => const GalleryScreen(),
+    if (kDebugMode) Routes.echoRig: (_) => const EchoRigScreen(),
+    if (kDebugMode) Routes.cancelRig: (_) => const CancelRigScreen(),
     Routes.onboarding: (_) => const OnboardingLanguageScreen(),
     Routes.onboardingName: (_) => const OnboardingNameScreen(),
     Routes.onboardingReason: (_) => const OnboardingReasonScreen(),
@@ -170,6 +246,20 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
     Routes.terms: (_) => const TermsScreen(),
     Routes.privacy: (_) => const PrivacyScreen(),
     Routes.home: (_) => const HomeScreen(),
+    Routes.classroomJoin: (_) => const JoinCodeScreen(),
+    Routes.classroomJoinConfirm: (_) => const JoinConfirmScreen(),
+    Routes.classroomJoinProfile: (_) => const JoinProfileScreen(),
+    Routes.classroomJoinConsent: (_) => const JoinConsentScreen(),
+    Routes.classroomJoinDone: (_) => const JoinDoneScreen(),
+    Routes.assignments: (_) => const AssignmentListScreen(),
+    Routes.assignmentDetail: (_) => const AssignmentDetailScreen(),
+    // 취약 발음 학습 — `sound_key` 는 화면이 settings.arguments 로 직접 읽는다.
+    Routes.weakSounds: (_) => const WeakSoundsScreen(),
+    Routes.weakSoundLearn: (_) => const LearnUnderstandScreen(),
+    Routes.weakSoundWords: (_) => const LearnWordsScreen(),
+    Routes.weakSoundSentence: (_) => const LearnSentenceScreen(),
+    Routes.weakSoundTest: (_) => const LearnTestScreen(),
+    Routes.weakSoundRetry: (_) => const RetrySoundsScreen(),
     Routes.callLoading: (_) => const CallLoadingScreen(),
     Routes.call: (_) => const CallScreen(),
     Routes.callFinish: (_) => const CallFinishScreen(),
@@ -183,7 +273,6 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
     Routes.pronunciationChallenge: (_) =>
         const PronunciationChallengeScreen(),
     Routes.paymentHistory: (_) => const PaymentHistoryScreen(),
-    Routes.permission: (_) => const PermissionScreen(),
     Routes.permissionMicDenied: (_) => const MicDeniedScreen(),
     Routes.networkError: (_) => const NetworkErrorScreen(),
     Routes.mypage: (_) => const MyPageScreen(),
@@ -191,36 +280,28 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
     Routes.editNickname: (_) => const EditNicknameScreen(),
     Routes.subscription: (_) => const SubscriptionManageScreen(),
     Routes.plansCompare: (_) => const PlansCompareScreen(),
-    Routes.paywallPro: (_) =>
-        const PaywallScreen(variant: PaywallVariant.pro),
     Routes.paywallProLimit: (_) =>
         const PaywallScreen(variant: PaywallVariant.proLimit),
     Routes.paywallMax: (_) =>
         const PaywallScreen(variant: PaywallVariant.max),
-    Routes.planChangeUpgrade: (_) =>
-        const PlanChangeScreen(direction: PlanChangeDirection.upgrade),
-    Routes.planChangeDowngrade: (_) =>
-        const PlanChangeScreen(direction: PlanChangeDirection.downgrade),
     Routes.purchaseProcessing: (_) => const PurchaseProcessingScreen(),
-    Routes.purchaseSuccessPro: (_) =>
-        const PurchaseSuccessScreen(tier: SubscriptionTier.pro),
     Routes.purchaseSuccessMax: (_) =>
         const PurchaseSuccessScreen(tier: SubscriptionTier.max),
     Routes.plansError: (_) => const PlansErrorScreen(),
     Routes.winbackSurvey: (_) => const WinbackSurveyScreen(),
     Routes.avatar: (_) => const AvatarScreen(),
-    Routes.share: (_) => const ShareScreen(),
     Routes.alarms: (_) => const AlarmListScreen(),
     Routes.alarmAdd: (_) => const AlarmAddScreen(),
-    Routes.alarmEmpty: (_) => const AlarmEmptyScreen(),
+    Routes.streakCalendar: (_) => const StreakCalendarScreen(),
     Routes.records: (_) => const RecordListScreen(),
     // Archive is now an in-page tab of RecordListScreen; the route is kept for
     // deep links and opens the same page pre-selected on the 보관 tab.
     Routes.recordsArchive: (_) => const RecordListScreen(initialTab: 1),
-    Routes.recordsEmpty: (_) => const RecordEmptyScreen(),
+    Routes.reportContent: (_) => const ReportContentScreen(),
   };
 
   final names = <String, String>{
+    Routes.reportContent: '신고',
     Routes.onboarding: '온보딩 · 언어 선택',
     Routes.onboardingName: '온보딩 · 이름',
     Routes.onboardingReason: '온보딩 · 이유',

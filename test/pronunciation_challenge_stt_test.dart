@@ -1,90 +1,22 @@
 import 'dart:math';
 
 import 'package:beavertalk/features/pronunciation_challenge/data/curated_word_source.dart';
+import 'package:beavertalk/features/pronunciation_challenge/data/stt_service.dart';
 import 'package:beavertalk/features/pronunciation_challenge/domain/challenge_card.dart';
 import 'package:beavertalk/features/pronunciation_challenge/domain/challenge_engine.dart';
 import 'package:beavertalk/features/pronunciation_challenge/domain/game_config.dart';
 import 'package:beavertalk/features/pronunciation_challenge/domain/matcher.dart';
-import 'package:beavertalk/features/pronunciation_challenge/domain/speech_matcher.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 ChallengeEngine _seededEngine() =>
     ChallengeEngine(wordSource: CuratedWordSource(random: Random(42)));
 
 void main() {
-  group('SpeechMatcher token consumption', () {
-    test('growing partials pass each spoken token at most once', () {
-      final matcher = SpeechMatcher();
-      final passed = <String>[];
-      final available = <String>['사과', '바다'];
-      bool attempt(String tok) {
-        if (available.remove(tok)) {
-          passed.add(tok);
-          return true;
-        }
-        return false;
-      }
-
-      matcher.feed('사', isFinal: false, attempt: attempt); // partial, no match
-      matcher.feed('사과', isFinal: false, attempt: attempt); // pass 사과
-      matcher.feed('사과', isFinal: false, attempt: attempt); // consumed → no repeat
-      expect(passed, <String>['사과']);
-
-      // Same utterance grows with a second word → the new token passes.
-      matcher.feed('사과 바다', isFinal: false, attempt: attempt);
-      expect(passed, <String>['사과', '바다']);
-    });
-
-    test('isFinal resets bookkeeping so the next utterance starts clean', () {
-      final matcher = SpeechMatcher();
-      final passed = <String>[];
-      bool attempt(String tok) {
-        if (tok == '사과') {
-          passed.add(tok);
-          return true;
-        }
-        return false;
-      }
-
-      matcher.feed('사과', isFinal: true, attempt: attempt);
-      matcher.feed('사과', isFinal: true, attempt: attempt); // fresh utterance
-      expect(passed, <String>['사과', '사과']);
-    });
-
-    test('a non-continuation partial (restart) resets the consumed cursor', () {
-      final matcher = SpeechMatcher();
-      final passed = <String>[];
-      bool attempt(String tok) {
-        if (tok == '사과') {
-          passed.add(tok);
-          return true;
-        }
-        return false;
-      }
-
-      matcher.feed('사과', isFinal: false, attempt: attempt); // pass, consumed=1
-      matcher.feed('배', isFinal: false, attempt: attempt); // restart → reset
-      matcher.feed('사과', isFinal: false, attempt: attempt); // passes again
-      expect(passed, <String>['사과', '사과']);
-    });
-
-    test('reset() clears the cursor', () {
-      final matcher = SpeechMatcher();
-      matcher.feed('사과', isFinal: false, attempt: (_) => true);
-      expect(matcher.consumed, 1);
-      matcher.reset();
-      expect(matcher.consumed, 0);
-    });
-
-    test('normalization strips punctuation before matching', () {
-      final matcher = SpeechMatcher();
-      final seen = <String>[];
-      matcher.feed('사과!', isFinal: true, attempt: (tok) {
-        seen.add(tok);
-        return false;
-      });
-      expect(seen, <String>['사과']); // '!' stripped by norm
-    });
+  // 옛 `SpeechMatcher`(Vosk 시절 발화별 토큰 장부)는 2026-09-26 삭제 — 서버 STT 이식
+  // (`92f0824`) 이후 `SttService._matchSpoken` 의 무상태 대조가 그 일을 한다(아래
+  // 「server-STT stateless matching」).
+  test('norm strips punctuation before matching', () {
+    expect(norm('사과!'), '사과');
   });
 
   group('wordMatch tolerance (particles + 1-char wobble)', () {
@@ -139,6 +71,28 @@ void main() {
       expect(sentenceMatch('바나나 주세요', '커피 주세요'), isFalse);
     });
 
+    test('a contracted subject still clears its card', () {
+      // Measured on device 2026-09-08: the recognizer renders "저는 선생님이에요"
+      // as "전 선생님이에요" — 저는 contracts to 전, which is ordinary Korean.
+      // Counting eojeols demanded a perfect hit on a two-eojeol sentence
+      // (ceil(2*0.7) == 2), so the player said it right and got nothing.
+      expect(sentenceMatch('전 선생님이에요', '저는 선생님이에요'), isTrue);
+      expect(sentenceMatch('전 학생이에요', '저는 학생이에요'), isTrue);
+    });
+
+    test('a different sentence sharing one eojeol does NOT clear it', () {
+      // The constraint that keeps the tolerance honest: these two cards sit on
+      // screen together, and they share "저는".
+      expect(sentenceMatch('저는 학생이에요', '저는 선생님이에요'), isFalse);
+      expect(sentenceMatch('저는 선생님이에요', '저는 학생이에요'), isFalse);
+    });
+
+    test('a fragment does not clear the whole sentence', () {
+      expect(sentenceMatch('선생님', '저는 선생님이에요'), isFalse);
+      expect(sentenceMatch('전 선생님이', '저는 선생님이에요'), isFalse);
+      expect(sentenceMatch('저는', '저는 선생님이에요'), isFalse);
+    });
+
     test('eojeol coverage passes a mostly-right long sentence', () {
       // 4 eojeols, one mis-heard → 3/4 ≥ ceil(0.7*4)=3.
       expect(
@@ -152,9 +106,7 @@ void main() {
       final card = ChallengeCard(
         id: 1,
         word: '저는 학생입니다',
-        colorIndex: 0,
-        x: GameConfig.zoneCx,
-        y: GameConfig.beltY,
+        k: 1.0, // at the judgment point
       );
       e.cards
         ..clear()
@@ -195,9 +147,7 @@ void main() {
           ChallengeCard(
             id: i + 1,
             word: w,
-            colorIndex: 0,
-            x: GameConfig.zoneCx,
-            y: GameConfig.beltY,
+            k: 1.0,
           ),
       ];
       e.cards
@@ -213,29 +163,72 @@ void main() {
     });
   });
 
+  group('recognizer hints', () {
+    test('default is the curated noun list (word mode)', () {
+      expect(SttService().hints, same(CuratedWordSource.words));
+    });
+
+    test('hints are replaceable with the active pool', () {
+      // Sentence rounds must hint the sentences. Left on the nouns the
+      // recognizer drags a spoken sentence toward them — measured on device:
+      // "저는 제니예요" came back as "내 재나요".
+      final stt = SttService();
+      final sentences = <String>['저는 학생이에요', '저는 선생님이에요'];
+      stt.hints = sentences;
+      expect(stt.hints, sentences);
+      expect(stt.hints, isNot(contains('가방')));
+    });
+  });
+
+  group('segmentByVocab (run-on speech)', () {
+    final vocab = buildVocabIndex(CuratedWordSource.words);
+
+    test('splits a run-on blob into vocabulary words, longest first', () {
+      // The recognizer returns continuous speech as one token: say "기차 책"
+      // and "기차책" arrives. Whitespace splitting alone finds nothing here.
+      expect(segmentByVocab('기차책', vocab), <String>['기차', '책']);
+      expect(segmentByVocab('머리가방', vocab), <String>['머리', '가방']);
+    });
+
+    test('skips particles and noise between words', () {
+      expect(segmentByVocab('머리는가방', vocab), <String>['머리', '가방']);
+    });
+
+    test('a lone word segments to itself', () {
+      expect(segmentByVocab('사과', vocab), <String>['사과']);
+    });
+
+    test('unknown text segments to nothing', () {
+      expect(segmentByVocab('와글와글', vocab), isEmpty);
+    });
+
+    test('clears the trailing word when only it is on screen', () {
+      // The failure the web comment calls out: with only "책" in the zone,
+      // wordMatch("기차책", "책") is false on every tier — exact no, prefix no
+      // ("기차책" does not start with "책"), lev 2. Segmentation is the only
+      // thing that rescues it.
+      expect(wordMatch('기차책', '책'), isFalse, reason: 'no tier catches this');
+      expect(segmentByVocab('기차책', vocab), contains('책'));
+    });
+  });
+
   group('ChallengeEngine.tryPassToken', () {
     test('passes only an exact, in-zone match (front-most first)', () {
       final e = _seededEngine()..start();
       final near = ChallengeCard(
         id: 1,
         word: '사과',
-        colorIndex: 0,
-        x: GameConfig.zoneCx,
-        y: GameConfig.beltY,
+        k: 1.0, // at the judgment point
       );
       final behind = ChallengeCard(
         id: 2,
         word: '바다',
-        colorIndex: 0,
-        x: GameConfig.zoneCx + 100,
-        y: GameConfig.beltY,
+        k: 0.8, // judgeable, but further out than `near`
       );
       final far = ChallengeCard(
         id: 3,
         word: '포도',
-        colorIndex: 0,
-        x: GameConfig.zoneCx + GameConfig.acceptMargin + 200,
-        y: GameConfig.beltY,
+        k: GameConfig.kSpawn, // far from the viewer → below kAccept
       );
       e.cards
         ..clear()
@@ -253,23 +246,6 @@ void main() {
     test('returns false when not running', () {
       final e = _seededEngine();
       expect(e.tryPassToken('사과'), isFalse);
-    });
-
-    test('SpeechMatcher wired to tryPassToken clears matching cards', () {
-      final e = _seededEngine()..start();
-      final apple = ChallengeCard(
-        id: 1,
-        word: '사과',
-        colorIndex: 0,
-        x: GameConfig.zoneCx,
-        y: GameConfig.beltY,
-      );
-      e.cards
-        ..clear()
-        ..add(apple);
-      final matcher = SpeechMatcher();
-      matcher.feed('사과', isFinal: false, attempt: e.tryPassToken);
-      expect(apple.state, CardState.pass);
     });
   });
 }

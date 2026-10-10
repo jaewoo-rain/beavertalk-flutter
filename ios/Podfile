@@ -1,6 +1,11 @@
 # Uncomment this line to define a global platform for your project
 platform :ios, '15.0'
 
+# GA4: 광고 식별자(IDFA)를 쓰지 않는 Analytics 변형. 처리방침 제13조 ⑤.
+# ⚠ 플러그인을 SPM 으로 받는 빌드에서는 이 변수가 아니라 빌드 환경변수
+#   FIREBASE_ANALYTICS_WITHOUT_ADID=true 가 같은 일을 한다(firebase_analytics Package.swift).
+$FirebaseAnalyticsWithoutAdIdSupport = true
+
 # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
 

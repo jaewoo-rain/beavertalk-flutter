@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../app/adaptive.dart';
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_color_tokens.dart';
 import '../../theme/app_radius.dart';
@@ -17,8 +18,9 @@ import '../atoms/dim.dart';
 ///   (Figma `state=single-button-sub`).
 /// - [twoButtonCol] — two full-width buttons stacked vertically; the secondary
 ///   action sits above the primary action.
-/// - [twoButtonRow] — two buttons side by side (secondary outline + primary),
-///   each filling half the row with a 10px gap.
+///
+/// 옛 `twoButtonRow`(가로 1:1)는 없앴다 — 버튼 쌍은 항상 위아래다(09-24 사장님 확정).
+/// Figma `state=two-button-row` 를 쓰던 화면(네트워크 오류 · 온보딩 완료)은 `StackedButtonPair`.
 enum BottomSheetLayout {
   /// Single full-width primary button.
   singleButton,
@@ -28,9 +30,6 @@ enum BottomSheetLayout {
 
   /// Two full-width buttons stacked in a column (secondary on top).
   twoButtonCol,
-
-  /// Two buttons in a row (secondary outline + primary).
-  twoButtonRow,
 }
 
 /// A single sheet action — its [label] and tap [onPressed] callback.
@@ -66,7 +65,7 @@ class SheetAction {
 ///
 /// ```dart
 /// BottomSheet(
-///   layout: BottomSheetLayout.twoButtonRow,
+///   layout: BottomSheetLayout.twoButtonCol,
 ///   primaryAction: SheetAction(label: '확인', onPressed: () {}),
 ///   secondaryAction: SheetAction(label: '취소', onPressed: () {}),
 ///   child: const Text('정말 삭제하시겠어요?'),
@@ -85,32 +84,31 @@ class BottomSheet extends StatelessWidget {
   /// Footer button arrangement; see [BottomSheetLayout].
   final BottomSheetLayout layout;
 
-  /// Primary (right / bottom / sole) action.
+  /// Primary (bottom / sole) action.
   final SheetAction? primaryAction;
 
-  /// Secondary (left / top) action — only used by the two-button layouts.
+  /// Secondary (top) action — only used by [BottomSheetLayout.twoButtonCol].
   final SheetAction? secondaryAction;
 
   /// Optional content rendered above the footer (inside the sheet body).
   final Widget? child;
 
-  /// Max sheet width — matches [AppScaffold]'s 430px phone-column cap. The
-  /// sheet otherwise fills its host width (Figma reference device: 375).
-  static const double maxWidth = 430;
-
+  // 시트는 전폭이다(정본 규격: 「전폭 유지. 하단 정렬. 내부만 콘텐츠
+  // 컬럼으로 패딩」). 예전의 430 캡은 AppScaffold 의 폰 칼럼을 그대로
+  // 베낀 것이라, 시트만 좁고 뒤 배경은 넓은 어긋난 화면이 됐다.
   /// Footer top padding (Figma `12`).
   static const double _footerTop = 12;
 
   /// Footer horizontal padding (Figma `20`).
   static const double _footerH = 20;
 
-  /// Inter-button gap (Figma `10`).
-  static const double _gap = 10;
+  /// Inter-button gap, vertical pair — Figma `12`(09-26 디자이너 대조 · 바텀시트 전수 규칙표
+  /// 「버튼 쌍 간격 12(세로)」). 10 은 옛 가로 쌍(two-button-row) 값이 남은 것이었다.
+  static const double _gap = 12;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      constraints: const BoxConstraints(maxWidth: maxWidth),
       decoration: BoxDecoration(
         color: context.c.backgroundElevatedAlternative,
         borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.lg)),
@@ -120,12 +118,14 @@ class BottomSheet extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           if (child != null)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(_footerH, 20, _footerH, 0),
-              child: child,
+            ContentColumn(
+              gutter: _footerH,
+              padding: const EdgeInsets.only(top: 20),
+              child: child!,
             ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(_footerH, _footerTop, _footerH, 0),
+          ContentColumn(
+            gutter: _footerH,
+            padding: const EdgeInsets.only(top: _footerTop),
             child: _footer(context),
           ),
           // Bottom safe-area inset — clears the real OS gesture bar (replaces
@@ -167,25 +167,6 @@ class BottomSheet extends StatelessWidget {
             _fullButton(context, 
               BtnType.primaryFill,
               primaryAction ?? SheetAction(label: l10n.confirm),
-            ),
-          ],
-        );
-      case BottomSheetLayout.twoButtonRow:
-        return Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Expanded(
-              child: _button(context, 
-                BtnType.secondaryOutline,
-                secondaryAction ?? SheetAction(label: l10n.cancel),
-              ),
-            ),
-            const SizedBox(width: _gap),
-            Expanded(
-              child: _button(context, 
-                BtnType.primaryFill,
-                primaryAction ?? SheetAction(label: l10n.confirm),
-              ),
             ),
           ],
         );
@@ -239,7 +220,6 @@ class BottomSheetDemo extends StatelessWidget {
     ('single-button', BottomSheetLayout.singleButton),
     ('single-button-sub', BottomSheetLayout.singleButtonSub),
     ('two-button-col', BottomSheetLayout.twoButtonCol),
-    ('two-button-row', BottomSheetLayout.twoButtonRow),
   ];
 
   @override

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../theme/app_color_tokens.dart';
+import '../../theme/app_motion.dart';
 import '../../theme/app_typography.dart';
 
 /// AppIconButton — a 40×40 circular, selectable atom.
@@ -46,6 +47,8 @@ class AppIconButton extends StatelessWidget {
     final Color fg =
         selected ? context.c.primaryNormal : context.c.labelNormal;
 
+    // 선택은 **글자색으로만** 드러난다(원 채움은 두 상태가 같다). 그 한 가지가
+    // 한 프레임에 갈리면 눌렀는지 눈이 못 따라간다.
     final Widget circle = Container(
       width: _size,
       height: _size,
@@ -54,13 +57,17 @@ class AppIconButton extends StatelessWidget {
         color: context.c.backgroundNormalAlternative,
         shape: BoxShape.circle,
       ),
-      child: Text(
-        label,
-        textAlign: TextAlign.center,
+      child: AnimatedDefaultTextStyle(
+        duration: AppMotion.medium,
+        curve: AppMotion.toggle,
         style: AppType.label1.r.copyWith(color: fg),
-        maxLines: 1,
-        softWrap: false,
-        overflow: TextOverflow.ellipsis,
+        child: Text(
+          label,
+          textAlign: TextAlign.center,
+          maxLines: 1,
+          softWrap: false,
+          overflow: TextOverflow.ellipsis,
+        ),
       ),
     );
 

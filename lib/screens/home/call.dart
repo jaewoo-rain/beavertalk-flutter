@@ -1,8 +1,15 @@
+import 'dart:async';
+import 'dart:math' as math;
+
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
+import '../../components/atoms/button.dart';
 import '../../components/atoms/call_toggle_button.dart';
 import '../../components/atoms/skeleton.dart';
 import '../../components/atoms/speaking_equalizer.dart';
@@ -10,15 +17,31 @@ import '../../components/icons/app_icons.dart';
 import '../../components/chrome/home_indicator.dart';
 import '../../components/chrome/status_bar.dart';
 import '../../components/molecules/hint_card.dart';
+import '../../components/molecules/tooltip_bubble.dart';
 import '../../components/organisms/dialog_basic.dart';
 import '../../features/auth/presentation/providers/my_profile_provider.dart';
+import '../../features/bookmark/presentation/providers/bookmark_providers.dart';
+import '../../features/bookmark/presentation/providers/bookmark_toggle_controller.dart';
 import '../../features/character/presentation/providers/character_providers.dart';
 import '../../features/incoming_call/services/lockscreen_call_service.dart';
-import '../../features/normalcall/presentation/avatar_view.dart';
+import '../../features/normalcall/domain/entities/call_allowance.dart';
+import '../../features/normalcall/domain/entities/call_course.dart';
+import '../../features/normalcall/domain/entities/call_hint.dart';
+import '../../features/normalcall/presentation/avatar_assets.dart';
+import '../../features/normalcall/presentation/cascade_experiment.dart';
 import '../../features/normalcall/presentation/normalcall_controller.dart';
+import '../../features/normalcall/presentation/normalcall_providers.dart';
 import '../../features/normalcall/presentation/sync_avatar.dart';
+import '../../features/review/data/audio_player.dart';
+import '../../features/review/data/speech_cache.dart';
+import '../../features/review/presentation/review_providers.dart';
+import '../../features/subscription/domain/entities/subscription_state.dart';
+import '../../features/subscription/presentation/providers/subscription_state_providers.dart';
 import '../../l10n/app_localizations.dart';
+import '../../mock/mock_data.dart';
+import '../overlays/subscription_overlays.dart';
 import '../../theme/app_color_tokens.dart';
+import '../../theme/app_motion.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 
@@ -41,6 +64,9 @@ class CallScreen extends ConsumerStatefulWidget {
   ConsumerState<CallScreen> createState() => _CallScreenState();
 }
 
+/// Free·Pro 의 원형 스틸 아바타 지름(Figma 120).
+const double _stillAvatarSize = 120;
+
 class _CallScreenState extends ConsumerState<CallScreen> {
   /// Max width of the 16:9 avatar feed — full mobile width, capped on large
   /// screens so the video doesn't stretch edge-to-edge on tablets.
@@ -53,7 +79,16 @@ class _CallScreenState extends ConsumerState<CallScreen> {
   /// the equalizer. Not an [AppSpacing] step — the design uses the gap to park
   /// the feed at a fixed distance above the caption, so rounding it to s60/s72
   /// visibly moves the feed.
-  static const double _feedToCaptionGap = 70;
+  /// 영상 하단 → 자막 상단 간격.
+  ///
+  /// 정본(Figma Body `itemSpacing`)은 16이고 22장 전건이 그렇다. **그런데 실기기
+  /// 에서는 붙어 보인다** — 정본은 영상이 375 폭에 211 높이인 프레임이고, 실제
+  /// 기기에서는 밴드가 더 크게 자라 자막을 밀어 올리기 때문이다. 사장님이
+  /// 2026-09-13 에 32 로 정했다.
+  ///
+  /// ⚠ 이 값을 **정본 16 으로 되돌리지 마라.** 정본과 어긋난 것은 알고 한
+  ///   선택이다(문서 `2026-09-12_0105` §4.3 의 16 을 대체한다).
+  static const double _feedToCaptionGap = AppSpacing.s32;
 
   // DEBUG(audio-glitch): true면 아바타 비디오(SyncAvatar/ExoPlayer)를 끄고 정적 이미지만.
   //   기본은 false(아바타 ON) — 제품 그대로의 부하에서 재생이 버티는지가 판정 기준이다.
@@ -63,6 +98,12 @@ class _CallScreenState extends ConsumerState<CallScreen> {
 
   bool _navigated = false;
 
+  /// 구간 시트가 떠 있는가 — 중복 표시 방어.
+  ///
+  /// `ref.listen` 은 빌드마다 다시 걸리고 상태도 여러 번 흐르므로, 이게 없으면
+  /// [CallPhase.awaitingContinue] 하나에 시트가 여러 장 쌓인다.
+  bool _segmentSheetOpen = false;
+
   /// turn_id of the hint the learner has revealed (peek → full). Ephemeral: a
   /// new hint carries a new turn_id, so the card auto-collapses.
   String? _revealedTurnId;
@@ -70,9 +111,230 @@ class _CallScreenState extends ConsumerState<CallScreen> {
   /// Currently shown suggestion index in the revealed hint; reset per new hint.
   int _suggestionIndex = 0;
 
+  /// 담아 본 힌트 → 서버 문장 id. 키는 [_hintKey].
+  ///
+  /// 힌트에는 문장 id 가 없다 — 서버가 힌트 시점에 DB 를 안 건드리기 때문이다
+  /// ([HintExample] 참고). 🔖 를 **처음** 누를 때 `POST /sentences/from-hint` 가 문장을
+  /// 만들어 주고, 그 뒤로는 기존 즐겨찾기와 **완전히 같은 행**이라 토글도 같은 길
+  /// (`PATCH /sentences/{id}/bookmark`)로 간다.
+  final Map<String, int> _hintSentenceIds = <String, int>{};
+
+  /// 담기·토글이 나가 있는 힌트(키). 연타 방어이자, 아직 id 가 없는 **첫 담기 동안의
+  /// 낙관적 채움** 근거다 — 그 순간엔 채움을 판단할 id 자체가 없다.
+  final Set<String> _hintBookmarkInFlight = <String>{};
+
+  /// 힌트 담기의 신원 — 서버의 중복 판정과 같은 기준(통화 + 한국어 문장)으로 맞춘다.
+  /// 어긋나면 앱은 새 문장으로 알고 서버는 재사용해서, 글리프와 서버가 갈린다.
+  static String _hintKey(int callId, String korean) => '$callId|${korean.trim()}';
+
+  /// Standard-pronunciation player for hint examples.
+  ///
+  /// ⚠ 통화 중 오디오 클라이언트가 **셋**이 된다 — 마이크(FlutterSoundRecorder),
+  /// 바바 재생(flutter_pcm_sound), 그리고 이것. 에코 되먹임(열린 마이크가 이 재생을
+  /// 사용자 발화로 듣는 것)과 안드로이드 오디오 세션 충돌은 **실기기 통화에서만
+  /// 갈린다.** 지금은 마이크 뮤트 같은 방어를 넣지 않았다 — 통화 흐름을 건드리는
+  /// 일이라 증상을 보고 정한다.
+  final ReviewAudioPlayer _hintPlayer = ReviewAudioPlayer();
+
+  /// 합성 요청이 나가 있는 문장(캐시 키) — 두 번째 탭이 왕복을 중복시키는 것을 막는다.
+  /// 합성은 요금이 나가므로 중복 요청은 그냥 돈이 새는 것이다.
+  final Set<String> _hintSpeechInFlight = <String>{};
+
+  /// 표현학습에서 힌트 버튼을 눌렀을 때 뜨는 말풍선(Figma `tooltip/hint_locked`
+  /// `5986:9297`)이 떠 있는가.
+  ///
+  /// 사장님 결정(2026-09-15): 표현학습에서도 힌트 버튼을 **숨기지 않는다.** 서버가
+  /// 그 코스엔 힌트를 안 보내므로 버튼은 토글이 아니라 이 안내를 띄운다.
+  bool _hintLockedVisible = false;
+
+  /// 말풍선 자동 닫힘 타이머. 떠 있는 동안 다시 누르면 새로 건다(중복 노출 없음).
+  Timer? _hintLockedTimer;
+
+  /// 말풍선 유지 시간.
+  ///
+  /// 처음엔 `SnackBar` 기본값(4초)이었는데 사장님이 「더 빨리 사라졌으면」
+  /// (2026-09-15)이라 2.5초로 줄였다. 가장 긴 문구(fr 49자)도 이 안에 읽힌다.
+  static const Duration _hintLockedDwell = Duration(milliseconds: 2500);
+
+  /// 말풍선이 힌트 버튼보다 앞서 시작하는 거리(시안: 말풍선 x20 · 버튼 x32).
+  static const double _hintBubbleInset = 12;
+
+  void _showHintLocked() {
+    _hintLockedTimer?.cancel();
+    _hintLockedTimer = Timer(_hintLockedDwell, _hideHintLocked);
+    if (!_hintLockedVisible) setState(() => _hintLockedVisible = true);
+  }
+
+  void _hideHintLocked() {
+    _hintLockedTimer?.cancel();
+    _hintLockedTimer = null;
+    if (_hintLockedVisible && mounted) {
+      setState(() => _hintLockedVisible = false);
+    }
+  }
+
+  /// 힌트 버튼 칸 — 전역 탭이 버튼 위였는지 가리는 데 쓴다.
+  final GlobalKey _hintButtonKey = GlobalKey();
+
+  /// 화면 **어디든** 누르면 말풍선을 닫는다(푸터의 다른 버튼 포함).
+  ///
+  /// 스캐폴드를 [Listener] 로 감싸는 대신 전역 포인터 경로를 쓴다 — 감싸면 빌드
+  /// 트리 전체가 한 단계 들여쓰기되어 변경이 수백 줄로 번진다.
+  ///
+  /// ⚠ **힌트 버튼 위의 탭은 건너뛴다.** 여기서 닫으면 손가락이 닿아 있는 동안
+  ///   퇴장 모션이 돌고, 손을 뗄 때 다시 등장해 말풍선이 한 번 깜빡인다. 버튼
+  ///   탭은 [_showHintLocked] 가 타이머만 새로 건다.
+  void _onGlobalPointer(PointerEvent event) {
+    if (event is! PointerDownEvent || !_hintLockedVisible) return;
+    final box = _hintButtonKey.currentContext?.findRenderObject();
+    if (box is RenderBox &&
+        box.hasSize &&
+        (box.localToGlobal(Offset.zero) & box.size).contains(event.position)) {
+      return;
+    }
+    _hideHintLocked();
+  }
+
+  @override
+  void dispose() {
+    GestureBinding.instance.pointerRouter.removeGlobalRoute(_onGlobalPointer);
+    _hintLockedTimer?.cancel();
+    // 통화가 끝나도 플레이어가 열려 있으면 오디오 세션을 계속 붙들고 있다.
+    _hintPlayer.dispose();
+    super.dispose();
+  }
+
+  /// 힌트 예시를 **캐릭터 목소리로** 읽어준다 — `POST /tts/speech` (백엔드 규약
+  /// 2026-09-04). 힌트 예시는 서버 DB 에 행이 없어 `sentence_id` 가 없으므로,
+  /// 분석 화면이 쓰는 `POST /sentences/{id}/tts` 는 여기서 쓸 수 없다.
+  ///
+  /// 응답은 **mp3 바이트 그 자체**다(URL 이 아니다). 받은 바이트는 캐시에 넣는다 —
+  /// 합성은 부를 때마다 요금이 나가고, 같은 예시를 다시 누르는 일이 잦다.
+  ///
+  /// [characterId] 는 **요청에 싣지 않는다** — 목소리는 서버가 회원 정보로 정한다.
+  /// 그런데도 받아 두는 이유는 **캐시 키**로 쓰기 위해서다: 캐릭터를 바꾸면 같은 문장도
+  /// 다른 목소리로 와야 하는데, 텍스트만 키로 쓰면 예전 목소리가 계속 재생된다.
+  ///
+  /// 실패는 전부 안내로 폴백한다. 특히 **503 은 백엔드의 외부 TTS 가 안 되는 상태**이며
+  /// (레포지토리가 null 로 내린다) 앱 잘못이 아니다 — 통화는 그대로 간다.
+  Future<void> _playHintExample(HintExample ex, int? characterId) async {
+    final l10n = AppLocalizations.of(context);
+    final text = ex.korean.trim();
+    if (text.isEmpty) return;
+
+    final cache = ref.read(speechCacheProvider);
+    final key = SpeechCache.keyFor(text, characterId);
+    final cached = cache.get(key);
+    if (cached != null) {
+      await _playHintBytes(cached, l10n);
+      return;
+    }
+
+    if (!_hintSpeechInFlight.add(key)) return;
+    Uint8List? bytes;
+    try {
+      bytes = await ref.read(reviewRepositoryProvider).speech(text);
+    } catch (_) {
+      bytes = null; // 전송 실패·기타 오류 — "아직 준비 안 됨"으로 보고한다.
+    } finally {
+      _hintSpeechInFlight.remove(key);
+    }
+    if (!mounted) return;
+    if (bytes == null || bytes.isEmpty) {
+      _snack(l10n.standardAudioNotReady);
+      return;
+    }
+    cache.put(key, bytes);
+    await _playHintBytes(bytes, l10n);
+  }
+
+  Future<void> _playHintBytes(Uint8List bytes, AppLocalizations l10n) async {
+    try {
+      await _hintPlayer.playMp3Bytes(bytes);
+    } catch (_) {
+      if (mounted) _snack(l10n.standardAudioPlayError);
+    }
+  }
+
+  void _snack(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context)
+      ..clearSnackBars()
+      ..showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  /// 힌트 예시를 즐겨찾기에 담거나 뺀다 — **두 단계**다.
+  ///
+  /// 1. **처음 담을 때**: 힌트에는 문장 id 가 없으므로 `POST /sentences/from-hint` 가
+  ///    이 순간 문장을 만든다. 응답 문장은 이미 담긴 상태(`is_bookmarked=true`)다.
+  ///    ⛔ **같은 힌트를 다시 담아도 에러가 아니다** — 서버가 같은 행을 재사용해 200 에
+  ///      같은 id 를 준다. 그래서 실패 처리하지 않는다.
+  /// 2. **그 뒤**: 만들어진 문장은 기존 즐겨찾기와 **완전히 같은 행**이라
+  ///    `analysis.dart:_toggleBookmark` 와 같은 길로 토글한다(낙관적 반영 + 실패 복구).
+  ///
+  /// [callId] 는 이 통화의 서버 id. 없으면(연결 전·구버전 서버) 담을 수 없다 —
+  /// 버튼을 숨기는 대신 **이유를 말한다**([_playHintExample] 과 같은 원칙).
+  Future<void> _toggleHintBookmark(HintExample ex, int? callId) async {
+    final l10n = AppLocalizations.of(context);
+    final korean = ex.korean.trim();
+    if (callId == null || korean.isEmpty) {
+      _snack(l10n.saveSentenceFailed);
+      return;
+    }
+    final key = _hintKey(callId, korean);
+    if (!_hintBookmarkInFlight.add(key)) return;
+    setState(() {}); // 첫 담기 동안 글리프를 미리 채운다(아직 id 가 없다).
+
+    try {
+      final known = _hintSentenceIds[key];
+      if (known != null) {
+        // ── 이미 담아 본 문장 — 평범한 즐겨찾기 토글 ──
+        final willSave = !bookmarkedSentenceIds.value.contains(known);
+        toggleBookmark(known); // optimistic local flip
+        try {
+          await ref
+              .read(bookmarkToggleControllerProvider.notifier)
+              .toggleBookmark(known, willSave);
+        } catch (_) {
+          toggleBookmark(known); // revert
+          if (mounted) _snack(l10n.saveSentenceFailed);
+        }
+        return;
+      }
+
+      // ── 처음 담는다 — 이 순간 서버가 문장을 만든다 ──
+      // ⭐ `native`(뜻)는 **선택이다.** 서버가 2026-09-06 에 완화했다
+      //   (`schemas/sentence.py:44` `native: str | None = Field(default=None, …)`,
+      //    회귀 `tests/test_sentence_from_hint.py:239`).
+      //   ⛔ 예전 주석은 「1자 이상 필수」라며 여기서 막았는데, 그 전제가 이제 거짓이다.
+      //     사이드카가 뜻을 빼먹은 예시는 그 가드 때문에 **영영 못 담겼다** — 힌트 3개 중
+      //     1개만 뜻이 없어도 그 1개는 🔖 가 "저장 실패"만 냈다. 담을 값(한국어 문장)은
+      //     있는데도 그랬다.
+      //   ⇒ 비어 있으면 **필드를 안 보낸다**. 서버가 `native_sentence=None` 으로 담고
+      //     화면은 뜻 없이 한국어만 보여준다.
+      final nativeRaw = ex.native.trim();
+      final native = nativeRaw.isEmpty ? null : nativeRaw;
+      final saved = await ref.read(bookmarkRepositoryProvider).saveHintSentence(
+            callId: callId,
+            korean: korean,
+            native: native,
+          );
+      _hintSentenceIds[key] = saved.sentenceId;
+      setBookmark(saved.sentenceId, saved.isBookmarked);
+      // 보관함은 서버 목록을 다시 읽어야 이 문장이 보인다.
+      ref.invalidate(bookmarkListProvider);
+    } catch (_) {
+      if (mounted) _snack(l10n.saveSentenceFailed);
+    } finally {
+      _hintBookmarkInFlight.remove(key);
+      if (mounted) setState(() {});
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+    GestureBinding.instance.pointerRouter.addGlobalRoute(_onGlobalPointer);
     // Catch up on a transition that landed before this screen mounted. `ref.listen`
     // only fires on *change*, so a call that ended during the route push would
     // otherwise strand the user on a frozen live-call screen.
@@ -102,30 +364,38 @@ class _CallScreenState extends ConsumerState<CallScreen> {
     return '$h:$m:$s';
   }
 
-  /// Opens the "free call ending" dialog with subscribe / end actions.
+  /// 종료 확인 다이얼로그 — 「통화를 끝낼까요?」.
+  ///
+  /// ## 2026-08-18 — 구독 유도가 여기서 빠졌다
+  ///
+  /// 예전엔 이 자리에 `freeCallEndingTitle` + 구독 버튼이 떴다. 즉 **끊으려는 사람에게
+  /// 결제를 권하는** 화면이었다. 구독 유도는 5분 한도에 걸렸을 때의 시트가 맡고, 여기는
+  /// 「정말 끊을 거냐」만 묻는다.
+  ///
+  /// 본문이 하루 1회 차감을 알린다 — 무료 한도가 **1일 1통화**라 지금 끊으면 오늘은
+  /// 다시 못 건다. 그 사실을 끊기 전에 보여 주는 것이 이 다이얼로그의 존재 이유다.
   Future<void> _confirmEnd() async {
     final l10n = AppLocalizations.of(context);
     await showDialogBasic<void>(
       context,
-      title: l10n.freeCallEndingTitle,
-      description: l10n.freeCallEndingBody,
-      variant: DialogBasicVariant.twoVertical,
-      primary: DialogAction(
-        label: l10n.subscribe,
-        onPressed: () {
-          Navigator.of(context).pop();
-          // v2 §2-3 ④: the in-house checkout is gone — selling happens on
-          // the paywall, buying on the OS payment sheet.
-          Navigator.pushNamed(context, Routes.paywallPro);
-        },
-      ),
-      secondary: DialogAction(
-        label: l10n.endCall,
-        onPressed: () {
-          Navigator.of(context).pop();
-          ref.read(normalCallControllerProvider.notifier).hangUp();
-        },
-      ),
+      title: l10n.callExitTitle,
+      description: l10n.callExitSubtitle,
+      // 「End call」 위 · 「Keep talking」(primary_fill) 아래 — 사장님이 Dialog-Basic variant2 를
+      // 직접 고친 순서(09-24). 예전엔 「Keep talking」 이 위였다.
+      actions: [
+        DialogAction(
+          label: l10n.callExitConfirm,
+          onPressed: () {
+            Navigator.of(context).pop();
+            ref.read(normalCallControllerProvider.notifier).hangUp();
+          },
+        ),
+        DialogAction(
+          label: l10n.callExitKeep,
+          type: BtnType.primaryFill,
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+      ],
     );
   }
 
@@ -173,6 +443,149 @@ class _CallScreenState extends ConsumerState<CallScreen> {
     );
   }
 
+  /// 유료 통화가 15분 상한을 다 써서 끝났을 때 — 종료 화면 **전에** 「통화를 마칠게요」
+  /// 시트를 한 번 보여 준다(P19, 사용자 결정 2026-09-22). 버튼은 「End Call」 하나다.
+  ///
+  /// 문구는 오늘 마지막 통화인지로 갈린다([_isLastCallToday]). 하루 합산 15분 정책에서는
+  /// 상한 도달이 곧 오늘 예산 소진이라 거의 항상 「내일 또」 문구다. 「통화가 더 남음」
+  /// 문구는 한도 면제(admin) 통화처럼 서버가 예산을 남겼다고 답할 때만 나온다.
+  bool _capSheetOpen = false;
+
+  Future<void> _showCapSheet(
+    CallState s, {
+    required String characterName,
+    required ImageProvider? avatarImage,
+  }) async {
+    if (_navigated || _capSheetOpen) return;
+    _capSheetOpen = true;
+    final last = await _isLastCallToday();
+    if (!mounted) return;
+    final limit = CallAllowance.limitFor(paidAccess: true);
+    await showSubscriptionOverlay(
+      context,
+      SubscriptionOverlay.premiumCallEnded,
+      characterName: characterName,
+      avatar: avatarImage == null
+          ? null
+          : Image(image: avatarImage, fit: BoxFit.cover),
+      usage: (used: _clock(limit.inSeconds), limit: _clock(limit.inSeconds)),
+      lastCallToday: last,
+    );
+    if (!mounted) return;
+    _goFinish(s.callId, s.elapsedSec, s.baselineCallId);
+  }
+
+  /// 오늘 남은 예산이 이보다 적으면 「오늘 마지막」 으로 본다 — 1분 미만으로는 통화가
+  /// 성립하지 않는다(인사만 하고 끝난다).
+  static const _minUsefulCallSec = 60;
+
+  /// 이번 통화가 오늘 마지막인가.
+  ///
+  /// 정책(09-23 사용자 확정): Premium 은 **하루 합산 15분** · 그 안에서는 횟수 제한 없음.
+  /// 신서버는 `GET /calls/daily-status` 의 오늘 남은 초로 판정한다. 모르면(구서버·admin
+  /// 면제·실패) **마지막으로 본다** — 이 시트는 15분 상한에 닿았을 때만 뜨고, 통화 한
+  /// 번의 상한이 하루 총량과 같으므로 상한 도달은 곧 오늘 예산 소진이다.
+  Future<bool> _isLastCallToday() async {
+    try {
+      final daily = await ref
+          .read(normalcallRepositoryProvider)
+          .getDailyStatus()
+          .timeout(const Duration(seconds: 3));
+      final remaining = daily?.remainingSec;
+      if (remaining != null) return remaining < _minUsefulCallSec;
+    } catch (_) {}
+    return true;
+  }
+
+  /// 5분 구간이 끝났을 때 뜨는 시트 — 무료는 구독 유도, 유료는 「Keep going?」.
+  ///
+  /// 어느 시트인지는 [CallState.paidCallTime] 이 가른다. **화면이 구독 상태를 따로
+  /// 읽지 않는 이유**는, 그러면 판정이 두 벌이 되어 컨트롤러가 계산한 상한
+  /// (5분/15분)과 화면이 그리는 시트가 어긋날 수 있기 때문이다. 판정은 통화 시작
+  /// 시점에 컨트롤러가 한 번 하고, 화면은 그 결과를 그린다.
+  Future<void> _showSegmentSheet(
+    CallState s, {
+    required String characterName,
+    required ImageProvider? avatarImage,
+  }) async {
+    if (_navigated || _segmentSheetOpen) return;
+    _segmentSheetOpen = true;
+    final notifier = ref.read(normalCallControllerProvider.notifier);
+
+    // 시트가 닫혔는데 아무 것도 안 골랐다면(시스템 뒤로가기 등) 통화를 끝낸다.
+    // 안 그러면 소리도 없고 화면도 안 바뀌는 상태에 갇힌다.
+    var decided = false;
+    final used = s.segmentsUsed;
+    final limit = CallAllowance.limitFor(paidAccess: s.paidCallTime);
+
+    try {
+      await showSubscriptionOverlay(
+        context,
+        s.paidCallTime
+            ? SubscriptionOverlay.keepGoing
+            : SubscriptionOverlay.freeCallEnded,
+        characterName: characterName,
+        avatar: avatarImage == null
+            ? null
+            : Image(image: avatarImage, fit: BoxFit.cover),
+        // 「5:00 of 5:00 used」 — 무료 시트에만 쓰인다.
+        usage: (
+          used: _clock(CallAllowance.segment.inSeconds * used),
+          limit: _clock(limit.inSeconds),
+        ),
+        onContinue: () {
+          decided = true;
+          notifier.continueCall();
+        },
+        onEndCall: () {
+          decided = true;
+          notifier.hangUp();
+        },
+        // 결제 퍼널을 **이 화면 위에 얹는다.** 통화를 끊지도, 화면을 떠나지도 않는다.
+        //
+        // 시트 카피가 「Subscribe and keep talking」이라 결제가 끝나면 **대화가
+        // 이어져야 한다.** 그러려면 두 가지가 살아 있어야 한다:
+        //   1. [CallPhase.awaitingContinue] — [NormalCallController.continueCall] 의 입장권
+        //   2. [CallState.callId] — 다음 구간의 `continues_call_id`. 서버가 이 id 로
+        //      앞 구간을 요약해 주입하므로, 끊어 버리면 **비버가 방금 한 얘기를 잊는다**
+        // 예전처럼 `hangUp()` 을 먼저 부르면 둘 다 사라진다.
+        //
+        // ⛔ `pushReplacement` 를 쓰지 마라 — 통화 화면이 스택에서 빠지면 결제 뒤
+        //   돌아올 자리가 없어 홈으로 떨어진다(사장님 리포트의 그 증상).
+        //
+        // ⛔ `_navigated` 를 올리지 않는다. 이 화면은 **떠나지 않으므로** 요약 이동
+        //   리스너를 재울 이유가 없고, 재우면 이어서 진짜로 끊었을 때 요약으로 못 간다.
+        //
+        // 결제 성공이면 `purchase_flow` 가 성공 화면 대신 이 화면까지 팝해 주고,
+        // 취소·실패면 페이월이 그냥 pop 된다 — **두 경로 모두 이 await 로 돌아온다.**
+        // 어느 쪽이었는지는 [NormalCallController.resumeAfterPaywall] 이 구독 상태를
+        // 다시 읽어 판정한다(이어가기 / 통화 종료).
+        onSubscribe: () async {
+          decided = true;
+          await Navigator.of(context, rootNavigator: true)
+              .pushNamed(Routes.paywallProLimit, arguments: 'call');
+          if (!mounted) return;
+          final resumed = await notifier.resumeAfterPaywall();
+          if (!mounted || !resumed) return;
+          // 결제 성공 화면을 건너뛰었으므로(그 시안의 CTA 는 「Start a call」이라 통화
+          // 중엔 성립하지 않는다) **결제됐다는 사실만** 통화 위에 얹어 알린다.
+          // 기존 키를 재사용한다 — 새 문구를 만들면 30개 로케일이 따라와야 한다.
+          ScaffoldMessenger.of(context)
+            ..clearSnackBars()
+            ..showSnackBar(SnackBar(
+                content: Text(AppLocalizations.of(context).successProTitle)));
+        },
+      );
+      if (!decided) await notifier.hangUp();
+    } finally {
+      _segmentSheetOpen = false;
+    }
+  }
+
+  /// `초 → m:ss` — 시트의 사용량 줄(`5:00 of 5:00 used`)에 쓴다.
+  static String _clock(int seconds) =>
+      '${seconds ~/ 60}:${(seconds % 60).toString().padLeft(2, '0')}';
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -189,6 +602,9 @@ class _CallScreenState extends ConsumerState<CallScreen> {
     final hintOn = ref.watch(
       normalCallControllerProvider.select((s) => s.hintOn),
     );
+    final micMuted = ref.watch(
+      normalCallControllerProvider.select((s) => s.micMuted),
+    );
     // 이 통화의 상대는 **서버가 정한다**(`call_started`). 예약전화는 알람마다
     // 캐릭터가 달라서, 대표 캐릭터로 그리면 대화 상대와 화면 얼굴이 어긋난다.
     // 도착 전(연결 중)·구버전 서버에서는 null 이라 대표 캐릭터로 폴백한다.
@@ -197,6 +613,12 @@ class _CallScreenState extends ConsumerState<CallScreen> {
     );
     final characterId = serverCharacterId ??
         ref.watch(myProfileProvider).valueOrNull?.characterId;
+    // 힌트를 담으려면 이 통화의 서버 id 가 필요하다(`POST /sentences/from-hint`).
+    // 상태는 문자열로 들고 있고 서버는 int 를 받는다 — 다른 자리와 같은 방식으로 판다.
+    // 연결 전에는 null 이고, 그때는 담기가 "저장하지 못했어요"로 폴백한다.
+    final hintCallId = int.tryParse(
+      ref.watch(normalCallControllerProvider.select((s) => s.callId)) ?? '',
+    );
     final selectedChar = ref.watch(characterByIdProvider(characterId));
     final selectedCharUrl = selectedChar?.imageUrl;
     // Null until the catalog resolves. Deliberately NOT defaulted to
@@ -218,8 +640,30 @@ class _CallScreenState extends ConsumerState<CallScreen> {
       if (prev?.hint?.turnId != next.hint?.turnId && _suggestionIndex != 0) {
         setState(() => _suggestionIndex = 0);
       }
-      if (next.phase == CallPhase.ended) {
-        _goFinish(next.callId, next.elapsedSec, next.baselineCallId);
+      // ⛔ **그 상태로 진입할 때만** 띄운다. `next.phase == awaitingContinue` 만 보면
+      //   결정을 기다리는 **동안의 다른 상태 변화**에도 시트가 다시 열린다 —
+      //   [NormalCallController.resumeAfterPaywall] 이 결제 확인 후 `paidCallTime` 을
+      //   굳히는 순간이 정확히 그렇다(phase 는 아직 `awaitingContinue`). 그러면
+      //   결제하고 돌아온 사람 앞에 시트가 **다시** 뜬다 — 그것도 `paidCallTime` 이
+      //   이제 true 라 무료 시트가 아니라 「Keep going?」 이, 방금 재개한 통화 위로.
+      //   `_segmentSheetOpen` 은 이걸 못 막는다 — 그 시점엔 이미 false 로 풀려 있다.
+      if (next.phase == CallPhase.awaitingContinue &&
+          prev?.phase != CallPhase.awaitingContinue) {
+        _showSegmentSheet(
+          next,
+          characterName: selectedChar?.name ?? '',
+          avatarImage: partnerImage,
+        );
+      } else if (next.phase == CallPhase.ended) {
+        if (next.endedAtCap) {
+          _showCapSheet(
+            next,
+            characterName: selectedChar?.name ?? '',
+            avatarImage: partnerImage,
+          );
+        } else {
+          _goFinish(next.callId, next.elapsedSec, next.baselineCallId);
+        }
       } else if (next.phase == CallPhase.error) {
         if (_navigated) return;
         _navigated = true;
@@ -236,7 +680,74 @@ class _CallScreenState extends ConsumerState<CallScreen> {
     });
 
     final showSubtitle = subtitleOn && beaverSubtitle.isNotEmpty;
-    final showHint = hintOn && hint != null;
+    // 격리 실험: 캐스케이드는 **순정으로 벗겨서** 먼저 돌린다(라이브는 제품 그대로).
+    // 판정은 CascadeExperiment.enabledFor 한 곳에서만 — 릴리즈에서는 항상 켬이다.
+    final channel =
+        ref.watch(normalCallControllerProvider.select((s) => s.channel));
+    // ⭐ **표현학습만** 힌트가 없다 — 서버가 그 코스에는 `hint` 프레임을 안 보낸다.
+    //   버튼은 **그대로 두고**, 누르면 「표현 학습에서는 힌트를 쓸 수 없어요」 말풍선을
+    //   띄운다(사장님 결정 2026-09-15). 종전엔 UI 자체를 뺐는데, 그러면 왜 힌트가
+    //   없는지 설명할 길이 없었다.
+    //   프리토킹은 일반 통화와 **같은** 힌트 상자다(ServerHint → 접힌 카드 → 열람 시
+    //   hint_used) — `auto` 로 시작해 `call_started.course` 가 freetalk 으로 온 경우도
+    //   같다(사장님 결정 2026-09-12: 프리토킹엔 힌트가 보여야 한다. 처음엔 두 코스 다
+    //   가렸었다). 카드와 토글이 **같은 한 판정**을 본다. 일반 통화·레벨테스트
+    //   (course == null)는 한 글자도 안 바뀐다.
+    // ⚠ `auto` 는 `call_started` 전까지 잠깐 그대로 남는데, 그 사이 힌트는 오지 않으니
+    //   보이는 차이가 없다. 판정을 «expression 이 아니면» 으로 두는 이유다 — 「null 이거나
+    //   freetalk 이면」 으로 쓰면 auto 순간에 토글이 깜빡 사라졌다 돌아온다.
+    final course =
+        ref.watch(normalCallControllerProvider.select((s) => s.course));
+    final hintsAvailable = course != CallCourse.expression;
+    // 표현학습 말풍선의 폭 상한 — 화면 끝을 넘지 않게 화면폭에서 역산한다.
+    // 푸터는 `ContentColumn(gutter: s32)` 이고 폭 상한이 [AppLayout.content] 라,
+    // 힌트 버튼 시작이 max(32, (w − content)/2) 이다. 말풍선은 거기서
+    // [_hintBubbleInset] 만큼 앞서 시작한다(폰 x20).
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final hintBubbleMaxWidth = TooltipBubble.maxWidthFor(
+      available: screenWidth,
+      start: math.max(
+            AppSpacing.s32,
+            (screenWidth - AppLayout.content) / 2,
+          ) -
+          _hintBubbleInset,
+    );
+    final showHint = hintsAvailable &&
+        hintOn &&
+        hint != null &&
+        CascadeExperiment.enabledFor(channel, CascadeExperiment.hints);
+    final showAvatarVideo = !kDisableAvatarVideo &&
+        CascadeExperiment.enabledFor(channel, CascadeExperiment.avatarVideo);
+    // Max 만 영상 아바타를 받는다. 상태 조회가 아직 안 왔거나 실패하면 무료로
+    // 떨어져 원형 스틸이 된다 — 제한 쪽으로 기우는 폴백이라 유료 기능이 새지 않는다.
+    //
+    // ⚠ [SubscriptionStatus.isPlanInferred] 를 같이 보지 않는 이유:
+    //   그 플래그는 「tier 를 읽은 게 아니라 **가정**했다」는 뜻이고, 리졸버의 가정은
+    //   언제나 **Pro** 다(서버 와이어에 plan 필드가 없어서다). 즉 가정으로 max 가 되는
+    //   경로가 없다 — 가정은 늘 제한 쪽으로 떨어진다. 여기서 `!isPlanInferred` 를
+    //   덧붙이면 **서버가 확인해 준 Max 사용자까지** 스틸로 내려가 없던 손해가 생긴다.
+    //   Max 를 **부여**하는 판단이 아니라 **표현**을 고르는 자리라 tier 로 충분하다.
+    //
+    // ⭐ **플랜 흉내(QA)가 있으면 그것이 이긴다**(사장님 지시 2026-09-13). 서버는 이미
+    //   `plan_override` 대로 엔진을 골랐다 — Max 는 영상·3.1, Free/Pro 는 음성·2.5.
+    //   화면이 구독 티어만 보면 Free 계정의 «Max 로 통화» 가 **원형 스틸에 Max 목소리**
+    //   가 되고, Max 계정의 «Free 로 통화» 는 **영상 밴드에 Free 목소리** 가 된다.
+    //   override 는 [CallState.planOverride] 로 통화 시작 때 확정되므로 「모르는 동안」
+    //   이 없다 — 아래 [avatarUnknown] 도 그때는 false 다.
+    final planOverride =
+        ref.watch(normalCallControllerProvider.select((s) => s.planOverride));
+    final avatarIsVideo = planOverride != null
+        ? planOverride == PlanOverride.premium
+        : ref.watch(subscriptionStatusProvider).tier == SubscriptionTier.max;
+    // 티어가 아직 안 왔으면 **둘 중 아무것도 그리지 않는다.**
+    //
+    // `subscriptionStatusProvider` 는 모르는 동안 `none`(=Free)으로 떨어진다.
+    // 허용을 정할 때는 그게 옳지만(제한 쪽이 안전하다) 표현을 고를 때는 틀린
+    // 모습을 단언하는 것이다 — Max 사용자가 원형 아바타를 보다가 16:9 영상
+    // 밴드로 화면이 뒤바뀌었다(2026-09-12 실기기 확인).
+    // override 통화는 플랜을 이미 아니 「모름」이 아니다.
+    final avatarUnknown =
+        planOverride == null && ref.watch(subscriptionTierUnknownProvider);
 
     return PopScope(
       canPop: false,
@@ -251,11 +762,9 @@ class _CallScreenState extends ConsumerState<CallScreen> {
         body: Column(
           children: [
             // Header — connected dot + name + live timer.
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 10,
-                vertical: AppSpacing.s12,
-              ),
+            ContentColumn(
+              gutter: 10,
+              padding: const EdgeInsets.symmetric(vertical: AppSpacing.s12),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -272,7 +781,7 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                       ),
                       const SizedBox(width: AppSpacing.s12),
                       Text(
-                        'Connected',
+                        l10n.connected,
                         style: AppType.label1.r.copyWith(
                           color: context.c.labelNormal,
                         ),
@@ -300,26 +809,100 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                 ],
               ),
             ),
-            // Body — the feed, the caption slot and the hint card are ONE
-            // bottom-anchored block, not a feed pinned to the top with the rest
-            // hanging below it.
+            // Body — **영상은 고정, 자막·힌트만 스크롤한다.**
             //
-            // That is what the four Figma variants encode: the feed starts at
-            // y=279 with hints off and y=140 with them on, i.e. the hint card
-            // pushes the feed *up* by its own height rather than opening a gap
-            // under a fixed feed. Scrollable so a long subtitle plus a card can
-            // never overflow on a short screen.
+            // 종전엔 셋이 한 덩어리로 스크롤 뷰 안에 있었다. 그래서 스크롤하면
+            // 영상까지 따라 움직였고, 내용이 뷰포트를 넘으면(긴 자막 + 펼친 힌트
+            // 카드) 스크롤 뷰가 **위에서부터** 보여 줘 카드 아래가 잘렸다 —
+            // 실기기에서 재현된 증상이다(2026-09-12, 자막 4줄).
+            //
+            // 이제 영상은 스크롤 뷰 밖에 서고, 자막·힌트만 제 칸에서 스크롤한다.
+            //
+            // **영상은 남는 칸의 가운데**다. 자막·힌트가 작으면(둘 다 꺼진 통화)
+            // 남는 칸이 커져 영상이 화면 한가운데로 온다 — 종전 하단 정렬과 같은
+            // 그림이다. 자막이 길어지면 그 칸이 줄어 영상이 위로 올라가되,
+            // **스크롤에는 딸려가지 않는다.**
+            //
+            // ⚠ 2026-09-12 0105 작업지시 §3.1 은 A(하단 정렬 유지)였고
+            //   `call_screen_layout_test` 의 「the hint card pushes the feed up」
+            //   이 그 결정을 지키고 있었다. 사용자가 고정으로 번복했다.
             Expanded(
-              child: Align(
-                alignment: Alignment.bottomCenter,
-                child: SingleChildScrollView(
-                  // No horizontal padding here — the feed is full-bleed; only
-                  // the caption block below is inset.
-                  padding: const EdgeInsets.only(bottom: AppSpacing.s24),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  // 자막·힌트 칸의 상한 — **남는 높이에서 영상 몫을 뺀 값**이다.
+                  //
+                  // 비율(예: 60%)을 쓰면 기기마다 영상이 잘리거나 자막이 일찍
+                  // 스크롤된다. 영상이 실제로 요구하는 높이를 빼면 둘 다 사라진다 —
+                  // 자막이 짧으면 상한에 안 닿아 영상이 가운데 남고, 길면 상한에서
+                  // 멈춰 스크롤로 넘어간다.
+                  // 로딩 자리는 16:9 로 잡는다 — Max 면 영상이 그대로 채워
+                  // 변화가 없고, Free 면 원형으로 줄며 아래가 26px 올라온다.
+                  // 지금처럼 모양이 통째로 뒤바뀌는 것보다 훨씬 작다.
+                  final feedHeight = (avatarIsVideo || avatarUnknown)
+                      ? math.min(constraints.maxWidth, _avatarMaxWidth) * 9 / 16
+                      // 원형은 이제 헤일로를 **레이아웃에 안 넣는다**
+                      // ([_CircularStill.maxHalo] 주석) — 점유 높이는 지름뿐이다.
+                      : _stillAvatarSize;
+                  final captionMax = math.max(
+                    0.0,
+                    constraints.maxHeight - feedHeight - _feedToCaptionGap,
+                  );
+                  return Column(
+                    // **덩어리째 가운데 놓는다.**
+                    //
+                    // 종전엔 영상만 `Expanded(Center(...))` 로 가운데 두고 그
+                    // 아래에 16 을 붙였다. 그러면 영상 **밑에 남는 여백**이 그
+                    // 16 에 더해져, 실제로는 16 보다 훨씬 멀어 보였다
+                    // (2026-09-13 지적). 영상·간격·자막을 한 덩어리로 묶어
+                    // 가운데 놓으면 간격이 정확히 16 이고, 자막·힌트가 꺼져
+                    // 덩어리가 작을 때는 그 덩어리가 화면 가운데에 온다.
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      // 16:9 avatar feed — full width, capped at [_avatarMaxWidth].
+                      // ── 영상 — 스크롤 밖 ──────────────────────
+                      Center(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                      // 아바타 — **플랜이 표현을 가른다**(Figma 04_통화).
+                      //
+                      //   Max      전폭 16:9 영상 밴드
+                      //   Free/Pro 원형 스틸 120
+                      //
+                      // 영상 아바타는 Max 의 값어치다. 예전엔 이 분기가 없어서
+                      // 무료 사용자도 전폭 영상을 봤다 — 설계와 달랐다.
+                      //
+                      // ⚠ [showAvatarVideo] 와 혼동하지 마라. 그건 안드로이드
+                      //   오디오 끊김 격리 실험용 디버그 플래그이지 플랜이 아니다.
+                      //   둘 다 참이어야 영상이 나간다.
+                      // ── 티어 미상 — 셔머로 자리를 잡아 둔다 ─────
+                      //
+                      // 새 시각 언어를 만들지 않았다. 이 파일은 **이미**
+                      // 「아바타를 아직 모를 때」를 16:9 셔머로 답한다
+                      // ([_partnerStill] 의 null 경로). 티어를 모를 때도 같은
+                      // 것을 쓰면 관용이 하나로 남는다.
+                      //
+                      // 셔머는 콘텐츠가 아니라 **로딩**으로 읽힌다. 종전이
+                      // 나빴던 이유는 진짜 아바타 사진을 Free 모양으로 깔아
+                      // 진짜 Free 상태와 구분이 안 됐던 것이다.
+                      if (avatarUnknown)
+                        Center(
+                          child: ConstrainedBox(
+                            constraints: const BoxConstraints(
+                              maxWidth: _avatarMaxWidth,
+                            ),
+                            child: AspectRatio(
+                              aspectRatio: 16 / 9,
+                              child: ClipRect(child: _partnerStill(null)),
+                            ),
+                          ),
+                        )
+                      else if (!avatarIsVideo)
+                        _CircularStill(
+                          size: _stillAvatarSize,
+                          level: callNotifier.avatarLevel,
+                          child: _partnerStill(partnerImage),
+                        )
+                      else
                       Center(
                         child: ConstrainedBox(
                           constraints: const BoxConstraints(
@@ -328,26 +911,52 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                           child: AspectRatio(
                             aspectRatio: 16 / 9,
                             child: ClipRect(
-                              child: avatarDir != null && !kDisableAvatarVideo
+                              child: avatarDir != null && showAvatarVideo
                                   ? SyncAvatar(
                                       assetDir: avatarDir,
                                       level: callNotifier.avatarLevel,
                                       speaking: callNotifier.avatarSpeaking,
                                       emotion: callNotifier.avatarEmotion,
                                       idleKind: callNotifier.avatarIdleKind,
-                                      // A still image, NOT [BeaverAvatar].
+                                      // [계측] 화면은 그대로다 — 영상 쪽에서 일어난
+                                      // 일을 통화 계측 스트림에 얹기만 한다.
+                                      onDiag: callNotifier.onAvatarDiag,
+                                      // **여는 동안에는 은은한 면만 깐다.**
                                       //
-                                      // SyncAvatar shows this while its idle/talk
-                                      // clips initialize (~100–300ms on Android),
-                                      // and BeaverAvatar is the sprite lip-sync
-                                      // renderer that the video approach replaced.
-                                      // Handing it back as the fallback meant every
-                                      // call opened with a few hundred ms of the
-                                      // retired renderer before the video took
-                                      // over — visibly a different avatar.
+                                      // 정지컷은 안 쓴다 — 100~300ms 동안 얼굴을
+                                      // 깔면 통화를 열 때마다 확대된 채 깜빡인다
+                                      // (2026-09-12 실기기 확인).
                                       //
-                                      // Same still the kDisableAvatarVideo path
-                                      // below uses, so the two agree.
+                                      // 그렇다고 완전히 비우면 밴드가 페이지
+                                      // 배경과 같은 색이라 **자리가 있는지조차
+                                      // 안 보이고**, 그러다 밝은 영상이 툭
+                                      // 나타난다. 「늦다」보다 「튄다」로 읽히는
+                                      // 이유가 그것이다. 그릇을 먼저 세워 두면
+                                      // 눈이 「차오른다」로 읽는다
+                                      // (등장 페이드는 `SyncAvatar._appear`).
+                                      //
+                                      // 이 `fallback` 은 이제 **못 열었을 때만**
+                                      // 쓴다. 지우면 영상이 안 열리는 기기에서
+                                      // Max 사용자가 검은 칸만 보게 된다 —
+                                      // 대체 영상으로 때울 수도 없다. 자산이
+                                      // 없거나(이름이 5종 밖) 디코더가 모자란
+                                      // 상황이라 다른 클립도 같이 실패한다.
+                                      // 남의 캐릭터 영상을 대신 트는 것은
+                                      // `avatarAssetDirFor` 가 막으려던 바로
+                                      // 그 사고다(틀린 얼굴).
+                                      //
+                                      // 예전엔 여기에 스프라이트 렌더러를 물려
+                                      // 놓아, 통화를 열 때마다 **은퇴한 렌더러의
+                                      // 얼굴**이 몇백 ms 스쳤다 — 다른 아바타로
+                                      // 보였다. 그 렌더러는 2026-08-31 에 자산째
+                                      // 지웠다(53.2MB).
+                                      //
+                                      // 아래 kDisableAvatarVideo 경로도 같은 정적
+                                      // 이미지를 쓰므로 둘이 어긋나지 않는다.
+                                      loading: ColoredBox(
+                                        color: context
+                                            .c.backgroundElevatedAlternative,
+                                      ),
                                       fallback: _partnerStill(partnerImage),
                                     )
                                   : _partnerStill(partnerImage),
@@ -355,12 +964,39 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: _feedToCaptionGap),
-                      // Caption slot + hint card.
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: AppSpacing.s32,
+                            ],
+                          ),
                         ),
+                      const SizedBox(height: _feedToCaptionGap),
+                      // ── 자막 + 힌트 — **이 칸만 스크롤한다** ──────
+                      //
+                      // `reverse: true` 라 내용이 칸을 넘으면 **아래쪽부터**
+                      // 보인다. 힌트 카드가 맨 아래라, 넘칠 때 잘리는 쪽은
+                      // 카드가 아니라 자막 윗줄이어야 한다 — 종전은 반대였다.
+                      ConstrainedBox(
+                        constraints: BoxConstraints(maxHeight: captionMax),
+                        child: SingleChildScrollView(
+                          reverse: true,
+                          // 힌트 on 이면 0 — 카드 바닥이 푸터 상단에 밀착해야
+                          // 한다(정본: 카드 바닥 = 푸터 상단).
+                          // off 면 s24 — 자막이 푸터에 붙지 않게 한다.
+                          padding: EdgeInsets.only(
+                            bottom: showHint ? 0 : AppSpacing.s24,
+                          ),
+                          child:
+                      //
+                      // 자막과 힌트 카드는 **같은 컬럼을 공유한다** — 좌우
+                      // 경계가 어긋나면 카드가 자막 밖으로 튀어나와 보인다.
+                      // `Padding(horizontal: s32)` 은 폰 375 에서 311(정본값)
+                      // 을 주지만 태블릿 810 에서 746 이 되어 본문 폭 규약을
+                      // 벗어났다. `ContentColumn` 은 같은 폰 값을 유지하면서
+                      // 넓은 폭에서 캡 600 에 멈춘다.
+                      //
+                      // 정본 태블릿 값은 536 이나, 캡을 새로 열지 않기로 했다
+                      // (작업지시 §3.2-A) — `tablet_band_test` 가 막는 「폭
+                      // 발명」이고 폰에서는 두 선택지가 같은 311 이다.
+                      ContentColumn(
+                        gutter: AppSpacing.s32,
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -381,73 +1017,178 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                             else
                               const SpeakingEqualizer(),
                             if (showHint) ...[
-                              const SizedBox(height: AppSpacing.s24),
-                              HintCard(
-                                examples: hint.examples,
-                                revealed: _revealedTurnId == hint.turnId,
-                                index: _suggestionIndex,
-                                onReveal: () {
-                                  setState(() => _revealedTurnId = hint.turnId);
-                                  ref
-                                      .read(
-                                        normalCallControllerProvider.notifier,
-                                      )
-                                      .sendHintUsed(hint.turnId);
+                              // 정본 카드 상단 432 · 자막 하단 414.94 → 16.
+                              const SizedBox(height: AppSpacing.s16),
+                              // The bookmark glyph fills/empties from the shared
+                              // store, so it also reflects a save made elsewhere
+                              // for the same sentence.
+                              ValueListenableBuilder<Set<int>>(
+                                valueListenable: bookmarkedSentenceIds,
+                                builder: (context, saved, _) {
+                                  // Same clamp HintCard applies internally, so
+                                  // the glyph always belongs to the example on
+                                  // screen.
+                                  final ex = hint.examples[_suggestionIndex
+                                      .clamp(0, hint.examples.length - 1)];
+                                  // 힌트에는 문장 id 가 없다 — 담은 뒤에야 생긴다.
+                                  // 그래서 채움은 두 근거를 본다: 이미 담아 본
+                                  // 문장의 서버 id, 그리고 **첫 담기가 나가 있는
+                                  // 동안**의 낙관적 채움(그땐 id 자체가 없다).
+                                  final key = hintCallId == null
+                                      ? null
+                                      : _hintKey(hintCallId, ex.korean);
+                                  final savedId =
+                                      key == null ? null : _hintSentenceIds[key];
+                                  final isSaved = savedId != null
+                                      ? saved.contains(savedId)
+                                      : key != null &&
+                                          _hintBookmarkInFlight.contains(key);
+                                  return HintCard(
+                                    examples: hint.examples,
+                                    revealed: _revealedTurnId == hint.turnId,
+                                    index: _suggestionIndex,
+                                    bookmarked: isSaved,
+                                    // 둘 다 **항상** 넘긴다. 부를 수 없는 상태면
+                                    // 버튼을 없애는 게 아니라 이유를 말한다.
+                                    onSpeak: () =>
+                                        _playHintExample(ex, characterId),
+                                    onBookmarkTap: () =>
+                                        _toggleHintBookmark(ex, hintCallId),
+                                    onReveal: () {
+                                      setState(
+                                          () => _revealedTurnId = hint.turnId);
+                                      ref
+                                          .read(
+                                            normalCallControllerProvider
+                                                .notifier,
+                                          )
+                                          .sendHintUsed(hint.turnId);
+                                    },
+                                    onCycle: () => setState(
+                                      () => _suggestionIndex =
+                                          (_suggestionIndex + 1) %
+                                          hint.examples.length,
+                                    ),
+                                  );
                                 },
-                                onCycle: () => setState(
-                                  () => _suggestionIndex =
-                                      (_suggestionIndex + 1) %
-                                      hint.examples.length,
-                                ),
                               ),
                             ],
                           ],
                         ),
                       ),
+                        ),
+                      ),
                     ],
-                  ),
-                ),
+                  );
+                },
               ),
             ),
-            // Footer — hint/subtitle toggles + hang-up.
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.s32,
-                vertical: AppSpacing.s12,
-              ),
-              child: Column(
+            // Footer — Figma `footer/main_call`(`5958:17701`). 실측 2026-09-13.
+            //
+            // **한 줄이다.** 종전엔 토글 3개를 오른쪽에 몰고 종료 버튼을 32 아래
+            // 가운데 따로 뒀다(2행). 정본은 힌트·자막·마이크·종료를 한 줄에
+            // 고르게 펴고, 넷 다 **56** 원형이다(종료도 60 → 56).
+            //
+            // 가로는 `justify-between` 이라 `spaceBetween` 으로 옮긴다. 정본
+            // 좌우 여백이 32 라 `ContentColumn(gutter: s32)` 이 그대로 맞고,
+            // 세로 여백은 16 이다(종전 12).
+            ContentColumn(
+              gutter: AppSpacing.s32,
+              padding: const EdgeInsets.symmetric(vertical: AppSpacing.s16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
+                  // 힌트 버튼은 코스와 무관하게 **항상** 있다(2026-09-15).
+                  // 표현학습([hintsAvailable] false)에서는 토글이 아니라 안내다 —
+                  // 글리프만 `Label/Disabled` 로 내리고, 누르면 말풍선을 띄운다.
+                  //
+                  // 말풍선은 버튼 칸의 [Stack] 에 **넘치게** 붙인다(Clip.none).
+                  // 레이아웃을 먹지 않으니 네 버튼의 간격은 그대로다. 위치는 시안
+                  // 실측: 말풍선 x20 · 버튼 x32 → 시작 −12, 버튼 위 6 → 아래 56+6.
+                  // 방향성([PositionedDirectional])이라 RTL 에서도 버튼을 가리킨다.
+                  Stack(
+                    key: _hintButtonKey,
+                    clipBehavior: Clip.none,
                     children: [
                       CallToggleButton(
                         icon: AppIcons.lightbulb,
-                        active: hintOn,
+                        active: hintsAvailable && hintOn,
+                        // `Accent/Active` — Light #FF9200 · Dark #D17600.
                         activeFill: context.c.accentActive,
+                        // 실측은 `Static/White` 다.
+                        //
+                        // ⚠ 컴포넌트 **설명문**에는 「Static/Black 아이콘」이라고
+                        //   적혀 있는데 실제 변형(`4953:19282`)은 흰색이다. 설명이
+                        //   낡았다 — 값은 변형에서 읽는다.
+                        activeGlyph: context.c.staticWhite,
+                        inactiveGlyph:
+                            hintsAvailable ? null : context.c.labelDisabled,
                         semanticLabel: 'Hint',
-                        onChanged: (v) => ref
-                            .read(normalCallControllerProvider.notifier)
-                            .setHintOn(v),
+                        onChanged: hintsAvailable
+                            ? (v) => ref
+                                .read(normalCallControllerProvider.notifier)
+                                .setHintOn(v)
+                            : (_) => _showHintLocked(),
                       ),
-                      const SizedBox(width: AppSpacing.s8),
-                      CallToggleButton(
-                        icon: AppIcons.cc,
-                        active: subtitleOn,
-                        activeFill: context.c.backgroundNormalAlternative,
-                        // The subtitle fill flips with the theme, so its glyph
-                        // must too (a white glyph vanishes on Light).
-                        activeGlyph: context.c.labelStrong,
-                        semanticLabel: 'Subtitle',
-                        onChanged: (v) => ref
-                            .read(normalCallControllerProvider.notifier)
-                            .setSubtitleOn(v),
+                      PositionedDirectional(
+                        start: -_hintBubbleInset,
+                        bottom: 56 + 6,
+                        child: IgnorePointer(
+                          child: AnimatedSwitcher(
+                            // 등장은 짧게(medium · enter), 퇴장은 길고 부드럽게
+                            // (page · toggle) — 「사라질 때 자연스럽게」(09-15).
+                            duration: AppMotion.medium,
+                            reverseDuration: AppMotion.page,
+                            switchInCurve: AppMotion.enter,
+                            switchOutCurve: AppMotion.toggle,
+                            transitionBuilder: TooltipBubble.transition,
+                            // 기본 배치는 가운데 정렬이다. 줄 수가 달라 높이가 다른
+                            // 말풍선이 겹칠 때도 꼬리 자리가 흔들리지 않게 시작·아래에
+                            // 붙인다.
+                            layoutBuilder: (current, previous) => Stack(
+                              clipBehavior: Clip.none,
+                              alignment: AlignmentDirectional.bottomStart,
+                              children: [...previous, ?current],
+                            ),
+                            child: !hintsAvailable && _hintLockedVisible
+                                ? TooltipBubble(
+                                    key: const ValueKey('hint-locked'),
+                                    message: l10n.callHintLockedTitle,
+                                    maxWidth: hintBubbleMaxWidth,
+                                  )
+                                : const SizedBox.shrink(),
+                          ),
+                        ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: AppSpacing.s32),
+                  CallToggleButton(
+                    icon: AppIcons.cc,
+                    active: subtitleOn,
+                    // 실측(`4986:19722`)은 **`Label/Neutral`** 면 + 흰 글리프다
+                    // (Light #505050 · Dark #777C89). 민트가 아니다 — 자막은
+                    // 힌트처럼 강조할 기능이 아니라 **켜짐만 보이면 되는** 토글
+                    // 이라, 무채색 면으로 한 단계 눌러 둔 것이다.
+                    //
+                    // ⚠ 설명문의 「Primary/Normal 면 + On-Primary」는 낡았다.
+                    activeFill: context.c.labelNeutral,
+                    activeGlyph: context.c.staticWhite,
+                    semanticLabel: 'Subtitle',
+                    onChanged: (v) => ref
+                        .read(normalCallControllerProvider.notifier)
+                        .setSubtitleOn(v),
+                  ),
+                  _MicToggleButton(
+                    muted: micMuted,
+                    semanticLabel:
+                        micMuted ? l10n.callMicUnmute : l10n.callMicMute,
+                    onChanged: (m) => ref
+                        .read(normalCallControllerProvider.notifier)
+                        .setMicMuted(m),
+                  ),
                   Semantics(
                     button: true,
-                    label: l10n.endCall,
+                    label: l10n.callExitConfirm,
                     child: Material(
                       color: context.c.accentBackgroundRed,
                       shape: const CircleBorder(),
@@ -456,11 +1197,11 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                         customBorder: const CircleBorder(),
                         onTap: _confirmEnd,
                         child: SizedBox(
-                          width: AppSpacing.s60,
-                          height: AppSpacing.s60,
+                          width: 56,
+                          height: 56,
                           child: Center(
                             child: AppIcons.callEnd(
-                              size: 32,
+                              size: 28,
                               color: context.c.staticWhite,
                             ),
                           ),
@@ -476,4 +1217,247 @@ class _CallScreenState extends ConsumerState<CallScreen> {
       ),
     );
   }
+}
+
+/// 원형 스틸 아바타 — Free·Pro 의 아바타 표현.
+///
+/// Max 의 전폭 16:9 영상 밴드와 **같은 자리**에 놓이지만 모양이 다르다. 링은
+/// 배경과 대비를 만들어 원이 어두운 화면에 묻히지 않게 한다(Figma).
+///
+/// ## 웅웅 퍼지는 헤일로
+///
+/// [level] 은 **비버 음성의 RMS** 다(`avatarLevel`). 비버가 말하는 동안 원 바깥으로
+/// 두 겹의 파문이 퍼진다 — 정지 이미지라 「지금 말하는 중」을 알릴 다른 수단이 없다.
+///
+/// ⚠ 이 신호는 **재생 오디오**에서 온다. 그래서 음소거를 눌러도 계속 움직인다 —
+/// 그게 맞다. 음소거는 내 목소리를 막는 것이지 비버를 멈추는 것이 아니다.
+///
+/// ⛔ [ValueListenableBuilder] 로 **헤일로만** 다시 그린다. 아바타 이미지까지 리빌드에
+///   넣으면 초당 수십 번 디코딩이 돈다.
+class _CircularStill extends StatelessWidget {
+  const _CircularStill({
+    required this.size,
+    required this.child,
+    this.level,
+  });
+
+  final double size;
+  final Widget child;
+
+  /// 비버 음성 레벨(0~1). null 이면 헤일로 없이 정지 상태로 그린다.
+  final ValueListenable<double>? level;
+
+  /// 헤일로가 최대로 퍼지는 폭.
+  ///
+  /// ⛔ **레이아웃을 먹지 않는다.** 종전엔 `크기 + 이 값 * 2` 짜리 상자를 잡아
+  ///   미리 비워 뒀는데, 그 여백이 아래 자막과의 간격에 **그대로 더해졌다** —
+  ///   16 을 줬는데 28 이 붙어 44 로 보였다(2026-09-13 지적). 파문은 칠하는
+  ///   것이지 자리를 차지하는 것이 아니므로 [OverflowBox] 로 상자 밖에 그린다.
+  ///   퍼져도 레이아웃이 안 밀리는 것은 그대로다.
+  static const double maxHalo = 28;
+
+  /// 링 불투명도.
+  ///
+  /// `primaryHeavy` 를 꽉 칠하면 민트 테두리가 사진보다 세게 읽혀 아바타가
+  /// 아니라 링이 주인공이 된다(2026-09-13 지적). 얼굴을 감싸는 윤곽으로만
+  /// 남도록 낮춘다 — 색은 그대로 두고 짙기만 내린다.
+  static const double _ringOpacity = 0.55;
+
+  @override
+  Widget build(BuildContext context) {
+    final ring = Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(
+          color: context.c.primaryHeavy.withValues(alpha: _ringOpacity),
+          width: 3,
+        ),
+      ),
+      child: ClipOval(child: child),
+    );
+
+    final lv = level;
+    if (lv == null) return Center(child: ring);
+
+    return Center(
+      // 상자는 아바타 크기 그대로다. 파문만 밖으로 나간다.
+      child: SizedBox(
+        width: size,
+        height: size,
+        child: ValueListenableBuilder<double>(
+          valueListenable: lv,
+          builder: (context, raw, _) {
+            final v = raw.clamp(0.0, 1.0);
+            final c = context.c;
+            return Stack(
+              alignment: Alignment.center,
+              // 파문이 상자를 넘어 그려져야 한다 — 자르면 사각으로 잘린다.
+              clipBehavior: Clip.none,
+              children: [
+                OverflowBox(
+                  maxWidth: size + maxHalo * 2,
+                  maxHeight: size + maxHalo * 2,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      // 바깥 파문 — 크게 퍼지고 옅다.
+                      _halo(size + maxHalo * 2 * v, c.primaryHeavy, 0.10 * v),
+                      // 안쪽 파문 — 링에 붙어 따라다닌다.
+                      _halo(size + maxHalo * 1.1 * v, c.primaryHeavy, 0.18 * v),
+                    ],
+                  ),
+                ),
+                ring,
+              ],
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _halo(double d, Color color, double alpha) => AnimatedContainer(
+        duration: const Duration(milliseconds: 90),
+        curve: Curves.easeOut,
+        width: d,
+        height: d,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: color.withValues(alpha: alpha),
+        ),
+      );
+}
+
+/// 마이크 음소거 토글 — **꺼진 상태를 표시하는** 버튼이다.
+///
+/// ## 왜 [CallToggleButton] 을 안 쓰나
+///
+/// 저 위젯은 「기능이 켜졌다」를 칠하는 물건이다. 힌트·자막은 꺼진 게 기본이라 그게 맞다.
+/// 그런데 마이크는 **열린 게 기본**이다. 같은 규칙을 적용하면 평상시에 혼자 칠해져 있고,
+/// 정작 알려야 할 음소거 상태가 「칠이 빠진」 모습이 된다 — 사용자는 그걸 못 읽는다.
+///
+/// 실기기에서 실제로 그렇게 나왔다(2026-08-18). 로그상 업링크는 정확히 끊겼는데
+/// **사장님이 「음소거가 안 되는 것 같다」고 판단**했다. 기능이 아니라 표시의 문제였다.
+///
+/// ⇒ 뒤집는다. 평상시엔 힌트·자막과 **같은 빈 칩**이고, 음소거일 때만 칠하고 **사선을
+///   긋는다.** 색만으로는 부족하다 — 비버가 계속 말하고 있어서 「소리가 나니까 안 꺼진
+///   건가」로 읽히기 때문이다. 사선은 그 오독을 막는 유일한 신호다.
+class _MicToggleButton extends StatelessWidget {
+  const _MicToggleButton({
+    required this.muted,
+    required this.semanticLabel,
+    required this.onChanged,
+  });
+
+  final bool muted;
+  final String semanticLabel;
+
+  /// 새 음소거 값으로 호출된다(누르면 반전).
+  final ValueChanged<bool> onChanged;
+
+  static const double _size = 56;
+  static const double _iconSize = 28;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.c;
+    // 정본 실측(`4986:19703` on · `4986:19707` off) — **면은 두 상태가 같다.**
+    //
+    //   on (송출 중) : `Fill/Alternative` 면 + `Icon/Normal` 마이크
+    //   off(음소거)  : 같은 면 + `Icon/Assistive` 로 **흐려진** 마이크
+    //                 + `Status/Negative` 빨간 사선
+    //
+    // 면을 안 바꾼다는 것이 핵심이다. 음소거는 「버튼이 바뀐 상태」가 아니라
+    // 「마이크가 꺼진 상태」라, 말하는 쪽(글리프)만 달라진다. 빨강은 사선에만
+    // 쓴다 — 면에 칠하면 옆 종료 버튼과 같은 색이 되어 「끊김」으로 읽힌다.
+    //
+    // `Icon/Assistive` 는 앱에 그 이름이 없다. `labelAssistive` 가 Light
+    // #808080 로 같은 값이다(`Icon/Normal`→`labelNormal` 과 같은 매핑).
+
+    // 음소거는 통화 중에 **잘못 읽히면 안 되는** 상태다. 채움·테두리·글리프가
+    // 한 프레임에 갈리면 눌린 건지 화면이 튄 건지 구별이 안 된다. 사선은
+    // 좌하 → 우상으로 **그어지듯** 들어와, 무엇이 방금 켜졌는지 눈이 따라간다.
+    //
+    // ⚠ 채움을 `muted ? red : transparent` 로 미리 접지 마라 — 끌 때 목표색이
+    //   투명이 되어 보간이 투명→투명이 되고 채움만 한 프레임에 사라진다.
+    //   테두리도 폭을 1 로 고정하고 색만 섞는다(`BorderSide.none` 은 폭 0 이다).
+    return Semantics(
+      button: true,
+      toggled: muted,
+      label: semanticLabel,
+      child: TweenAnimationBuilder<double>(
+        tween: Tween<double>(end: muted ? 1 : 0),
+        duration: AppMotion.medium,
+        curve: AppMotion.toggle,
+        builder: (context, t, _) => Material(
+          // 면은 두 상태가 같다(정본) — 보간할 것이 없다.
+          color: c.fillAlternative,
+          shape: const CircleBorder(),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            customBorder: const CircleBorder(),
+            onTap: () => onChanged(!muted),
+            child: SizedBox(
+              width: _size,
+              height: _size,
+              child: Center(
+                child: SizedBox(
+                  width: _iconSize,
+                  height: _iconSize,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      AppIcons.mic(
+                        size: _iconSize,
+                        // 음소거로 갈수록 흐려진다.
+                        color: Color.lerp(c.labelNormal, c.labelAssistive, t)!,
+                      ),
+                      if (t > 0)
+                        CustomPaint(
+                          size: const Size.square(_iconSize),
+                          // 사선만 빨강이다 — 정본 `Status/Negative`.
+                          painter: _SlashPainter(
+                            color: c.statusNegative,
+                            progress: t,
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// 음소거 사선. 아이콘 자산에 `mic-off` 가 없어 위에 긋는다.
+class _SlashPainter extends CustomPainter {
+  const _SlashPainter({required this.color, this.progress = 1});
+
+  final Color color;
+
+  /// 사선을 어디까지 그었는지(0..1). 켤 때 좌하에서 우상으로 그어진다.
+  final double progress;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (progress <= 0) return;
+    final p = Paint()
+      ..color = color
+      ..strokeWidth = 2
+      ..strokeCap = StrokeCap.round;
+    // 좌하 → 우상. 마이크 글리프를 가로지른다.
+    final start = Offset(size.width * 0.18, size.height * 0.82);
+    final end = Offset(size.width * 0.82, size.height * 0.18);
+    canvas.drawLine(start, Offset.lerp(start, end, progress)!, p);
+  }
+
+  @override
+  bool shouldRepaint(_SlashPainter old) =>
+      old.color != color || old.progress != progress;
 }

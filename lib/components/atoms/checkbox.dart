@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../theme/app_color_tokens.dart';
+import '../../theme/app_motion.dart';
 import '../../theme/app_typography.dart';
 
 /// Available render sizes for [AppCheckbox] (the circular box diameter in px).
@@ -79,33 +80,42 @@ class AppCheckbox extends StatelessWidget {
   Widget build(BuildContext context) {
     final double d = size.diameter;
 
-    // Resolve box styling per state.
-    final Color fill;
-    final Color? borderColor;
-    final Color? checkColor;
+    // ⚠ 상태별로 색을 **미리 접지 마라.** `value` 로 한 벌만 고르면 끌 때 목표색이
+    //   그 순간 사라져 보간이 성립하지 않고 체크가 한 프레임에 튄다. 켠 팔레트와
+    //   끈 팔레트를 둘 다 구해 두고 t 로만 섞는다.
+    final Color fillOn;
+    final Color fillOff;
+    final Color? borderOn;
+    final Color? borderOff;
+    final Color? checkOn;
     if (disabled) {
-      fill = context.c.fillDisabled;
-      borderColor = value ? null : context.c.lineDisabled;
-      checkColor = value ? context.c.lineDisabled : null;
-    } else if (value) {
-      fill = context.c.primaryNormal10;
-      borderColor = null;
-      checkColor = context.c.primaryNormal;
+      fillOn = fillOff = context.c.fillDisabled;
+      borderOn = null;
+      borderOff = context.c.lineDisabled;
+      checkOn = context.c.lineDisabled;
     } else {
-      fill = context.c.backgroundNormalAlternative;
-      borderColor = context.c.fillNormal;
-      checkColor = null;
+      fillOn = context.c.primaryNormal10;
+      fillOff = context.c.backgroundNormalAlternative;
+      borderOn = null;
+      borderOff = context.c.fillNormal;
+      checkOn = context.c.primaryNormal;
     }
 
     final Widget box = SizedBox(
       width: d,
       height: d,
-      child: CustomPaint(
-        painter: _CheckboxPainter(
-          diameter: d,
-          fill: fill,
-          borderColor: borderColor,
-          checkColor: checkColor,
+      child: TweenAnimationBuilder<double>(
+        tween: Tween<double>(end: value ? 1 : 0),
+        duration: AppMotion.medium,
+        curve: AppMotion.toggle,
+        builder: (context, t, _) => CustomPaint(
+          painter: _CheckboxPainter(
+            diameter: d,
+            fill: Color.lerp(fillOff, fillOn, t)!,
+            borderColor: _lerpOrNull(borderOff, borderOn, t),
+            checkColor: checkOn,
+            checkProgress: t,
+          ),
         ),
       ),
     );
@@ -142,6 +152,19 @@ class AppCheckbox extends StatelessWidget {
   }
 }
 
+/// 두 색을 섞되, 결과가 완전 투명이면 null 로 접는다.
+///
+/// 테두리는 「없음」이 곧 null 이라, 켜짐↔꺼짐 사이에 한쪽이 null 이면 그 자리를
+/// **투명 같은 색**으로 채워야 보간이 성립한다. 다 섞고 나서 알파가 0 이면
+/// 다시 null 로 돌려 painter 가 아예 안 그리게 한다.
+Color? _lerpOrNull(Color? a, Color? b, double t) {
+  final Color fallback =
+      (a ?? b ?? const Color(0xFF000000)).withValues(alpha: 0);
+  final Color? c = Color.lerp(a ?? fallback, b ?? fallback, t);
+  if (c == null || c.a == 0) return null;
+  return c;
+}
+
 /// Paints the circular box and (optionally) the check mark for [AppCheckbox].
 class _CheckboxPainter extends CustomPainter {
   _CheckboxPainter({
@@ -149,12 +172,16 @@ class _CheckboxPainter extends CustomPainter {
     required this.fill,
     required this.borderColor,
     required this.checkColor,
+    this.checkProgress = 1,
   });
 
   final double diameter;
   final Color fill;
   final Color? borderColor;
   final Color? checkColor;
+
+  /// 체크 획을 어디까지 그렸는지(0..1). 켜질 때 획이 그어지듯 들어온다.
+  final double checkProgress;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -177,15 +204,26 @@ class _CheckboxPainter extends CustomPainter {
       );
     }
 
-    if (checkColor != null) {
+    if (checkColor != null && checkProgress > 0) {
       // Check path defined on the 22px artboard: M7 11 L10 14 L15 8.
       final double s = diameter / 22.0;
       final Path path = Path()
         ..moveTo(7 * s, 11 * s)
         ..lineTo(10 * s, 14 * s)
         ..lineTo(15 * s, 8 * s);
+      // 켜지는 동안에는 획을 앞에서부터 잘라 그린다 — 체크가 그어지듯 들어온다.
+      Path drawn = path;
+      if (checkProgress < 1) {
+        drawn = Path();
+        for (final metric in path.computeMetrics()) {
+          drawn.addPath(
+            metric.extractPath(0, metric.length * checkProgress),
+            Offset.zero,
+          );
+        }
+      }
       canvas.drawPath(
-        path,
+        drawn,
         Paint()
           ..color = checkColor!
           ..style = PaintingStyle.stroke
@@ -201,7 +239,8 @@ class _CheckboxPainter extends CustomPainter {
       old.diameter != diameter ||
       old.fill != fill ||
       old.borderColor != borderColor ||
-      old.checkColor != checkColor;
+      old.checkColor != checkColor ||
+      old.checkProgress != checkProgress;
 }
 
 /// Gallery demo exposing every [AppCheckbox] state and size.

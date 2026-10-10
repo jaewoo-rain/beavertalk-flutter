@@ -21,6 +21,12 @@ class AppLocalizationsJa extends AppLocalizations {
   String get callErrorGeneric => '通話中にエラーが発生しました。';
 
   @override
+  String get callDailyLimit => '今日の学習時間を使い切りました。';
+
+  @override
+  String get callAlreadyInCall => 'すでに通話中です。';
+
+  @override
   String get callNetworkError => 'ネットワークエラーが発生しました。';
 
   @override
@@ -51,6 +57,15 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get callRatingPrompt => '通話はいかがでしたか？';
+
+  @override
+  String get callRatingBody => '評価いただくと、次の通話がもっと良くなります。';
+
+  @override
+  String get callRatingSubmit => '送信';
+
+  @override
+  String get callRatingSkip => 'スキップ';
 
   @override
   String get ratingBad => 'いまいち';
@@ -120,6 +135,24 @@ class AppLocalizationsJa extends AppLocalizations {
   String get alarms => 'アラーム';
 
   @override
+  String get alarmAdd => 'アラームを追加';
+
+  @override
+  String get alarmEdit => 'アラームを編集';
+
+  @override
+  String get alarmEveryDay => '毎日';
+
+  @override
+  String get alarmWeekdays => '平日';
+
+  @override
+  String get alarmWeekend => '週末';
+
+  @override
+  String get alarmNoRepeat => '繰り返さない';
+
+  @override
   String get addSchedule => 'スケジュールを追加';
 
   @override
@@ -145,6 +178,12 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get callPartner => 'キャラクター';
+
+  @override
+  String get alarmModeLearnSub => 'カリキュラムの表現を練習';
+
+  @override
+  String get alarmModeChatSub => 'テーマなしで会話';
 
   @override
   String get quickStart => 'クイックスタート';
@@ -194,13 +233,51 @@ class AppLocalizationsJa extends AppLocalizations {
   String get conversation => '会話';
 
   @override
-  String get review => '復習';
-
-  @override
-  String get pronunciationChallenge => '発音チャレンジ';
-
-  @override
   String get newExpressions => '新しい表現';
+
+  @override
+  String get analysisPrepNote => '今日の通話を振り返っています。';
+
+  @override
+  String get analysisPrepNoteHint => 'まもなくここにひとことが届きます';
+
+  @override
+  String get analysisPrepTitle => 'ビーバーが今日の表現をカードにしています';
+
+  @override
+  String get analysisPrepSub => 'できあがったらすぐここに表示されます。';
+
+  @override
+  String get analysisPrepStepSave => '会話の保存';
+
+  @override
+  String get analysisPrepStepCards => '表現カードの作成';
+
+  @override
+  String get analysisPrepStateDone => '完了';
+
+  @override
+  String get analysisPrepStateWorking => '作成中';
+
+  @override
+  String get analysisPrepStateWaiting => '待機中';
+
+  @override
+  String get usedExpressions => '今回の通話で使った表現';
+
+  @override
+  String quizExpressionsCount(int count) {
+    return '今回学んだ表現 $count';
+  }
+
+  @override
+  String get quizPassed => '正解';
+
+  @override
+  String get quizFailed => 'もう一度確認';
+
+  @override
+  String get quizPending => '次回に続きから';
 
   @override
   String get analysisResult => '分析結果';
@@ -210,6 +287,9 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get practice => '練習';
+
+  @override
+  String get analysisNativeLabel => 'ネイティブ';
 
   @override
   String recentScore(int score) {
@@ -256,30 +336,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get cancel => 'キャンセル';
-
-  @override
-  String get selectTime => '時間を選択';
-
-  @override
-  String get getStarted => 'はじめる';
-
-  @override
-  String get permissionTitle => '快適にご利用いただくため\n権限を許可してください';
-
-  @override
-  String get permissionSubtitle => '必要な権限はサービスの利用に不可欠です。';
-
-  @override
-  String get permissionMicTitle => 'マイク（必須）';
-
-  @override
-  String get permissionMicDesc => 'AIと会話するために必要です。';
-
-  @override
-  String get permissionNotifTitle => '通知（任意）';
-
-  @override
-  String get permissionNotifDesc => '学習リマインダーや通話スケジュールをお送りします。';
 
   @override
   String get micPermissionNeededTitle => 'マイクへのアクセスが必要です';
@@ -427,13 +483,117 @@ class AppLocalizationsJa extends AppLocalizations {
   String get endLearning => 'セッションを終了';
 
   @override
-  String get navCalendar => 'カレンダー';
-
-  @override
   String get navCall => '通話';
 
   @override
-  String get navStats => '統計';
+  String get homeCourseExpression => '表現学習';
+
+  @override
+  String get homeCourseFreetalk => '会話';
+
+  @override
+  String homeExpressionsLeft(int count) {
+    return '会話まで表現あと$count個';
+  }
+
+  @override
+  String get homeFreetalkNote => '学んだ表現を使って自由に話してみましょう';
+
+  @override
+  String get homeTalkTitle => '今日はどんなことがありましたか？';
+
+  @override
+  String get homeTalkNote => '自由に話しながら学びましょう。';
+
+  @override
+  String get homeModeLearn => '学習';
+
+  @override
+  String get homeModeTalk => '会話';
+
+  @override
+  String homeStreakDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count日連続',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakCalendarTitle => '学習カレンダー';
+
+  @override
+  String streakDaysUnit(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '日連続',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String streakBest(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '最高記録 $count日',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakMetricCallTime => '通話時間';
+
+  @override
+  String get streakMetricLearned => '学んだ表現';
+
+  @override
+  String get streakMetricWords => '話した単語';
+
+  @override
+  String streakCountValue(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString個';
+  }
+
+  @override
+  String streakMinutes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count分',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakNoCallsThatDay => 'この日は通話がありません。';
+
+  @override
+  String get homeLevelPending => 'レベル未定';
+
+  @override
+  String get homeNoLevelTitle => 'まだレベルがありません';
+
+  @override
+  String get homeNoLevelNote => '最初の通話を終えるとレベルが出ます';
+
+  @override
+  String get homeCurriculumPendingBadge => '準備中';
+
+  @override
+  String homeCurriculumPendingTitle(String language) {
+    return '$languageのカリキュラムは準備中です';
+  }
+
+  @override
+  String get homeCurriculumPendingNote => '通話では一般的な表現を練習します';
 
   @override
   String get myPage => 'マイページ';
@@ -446,6 +606,27 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get changeAvatar => 'アバターを変更';
+
+  @override
+  String get avatarUseNow => '今すぐ使う';
+
+  @override
+  String get avatarPurchaseFailed => '購入が完了しませんでした';
+
+  @override
+  String avatarPromoTitle(int percent) {
+    return '本日限定 · $percent%オフ';
+  }
+
+  @override
+  String avatarPromoLeft(String time) {
+    return '残り $time';
+  }
+
+  @override
+  String avatarPromoLeftDays(int days, String time) {
+    return '残り $days日 $time';
+  }
 
   @override
   String get avatarIntro => '通話相手によって声や難易度が異なります。\n一部の相手は購入が必要な場合があります。';
@@ -486,9 +667,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get subscriptionManage => '定期購入の管理';
 
   @override
-  String get changePlan => 'プランを変更';
-
-  @override
   String get cancelSubscription => '定期購入を解約';
 
   @override
@@ -507,18 +685,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get viewBillingHistory => '請求履歴を見る';
 
   @override
-  String get keepUsingPro => 'Proを続ける';
-
-  @override
-  String get proMembership => 'Pro メンバーシップ';
-
-  @override
   String pricePerMonth(String price) {
     return '$price / 月';
   }
-
-  @override
-  String get benefitUnlimitedCalls => '無制限の通話';
 
   @override
   String get benefitDetailedAnalysis => '詳細な発音・文法分析';
@@ -552,8 +721,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get challengeLoadingTitle => '読み込み中…';
 
   @override
-  String get challengeLoadingNote =>
-      '初回は韓国語の音声モデル（約82MB）をダウンロードします。\n少々お待ちください。';
+  String get challengeLoadingNote => 'カメラとマイクを準備しています。';
 
   @override
   String get challengeSttFallback => '音声認識が利用できなかったため、タップ入力でプレイしました。';
@@ -658,6 +826,11 @@ class AppLocalizationsJa extends AppLocalizations {
   String get accentSoundsLike => 'あなたの韓国語アクセントは';
 
   @override
+  String accentShareText(String country) {
+    return 'BeaverTalkで韓国語を勉強中 — 私の韓国語の発音は$countryっぽいらしい！🦫 あなたの発音もチェックして一緒に学ぼう：https://beavertalk.im';
+  }
+
+  @override
   String get hintLabel => 'ヒント';
 
   @override
@@ -703,7 +876,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get home => 'ホーム';
 
   @override
-  String get callNow => '今すぐ通話';
+  String get onboardingLevelTestCta => 'レベルテストを受ける';
 
   @override
   String get pronunciation => '発音';
@@ -713,9 +886,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get rhythm => 'リズム';
-
-  @override
-  String get analysisTimeout => '予想より時間がかかっています。しばらくしてからもう一度お試しください。';
 
   @override
   String get analysisFailed => '会話を分析できませんでした。もう一度お試しください。';
@@ -760,6 +930,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get loginAppleSignInFailed => 'Appleサインインに失敗しました。';
 
   @override
+  String get loginFacebookSignInFailed => 'Facebookサインインに失敗しました。';
+
+  @override
   String get loginKakaoSignInFailed => 'Kakaoサインインに失敗しました。';
 
   @override
@@ -767,6 +940,9 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get loginContinueWithGoogle => 'Googleで続ける';
+
+  @override
+  String get loginContinueWithFacebook => 'Facebookで続ける';
 
   @override
   String get loginContinueWithApple => 'Appleで続ける';
@@ -948,12 +1124,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get lastPayment => '最近の決済';
 
   @override
-  String subscriptionSwitchNote(String date) {
-    return '$dateまでPro特典を引き続きご利用いただけます。その後は自動的に無料プランに切り替わります。';
-  }
-
-  @override
-  String get freePlanCallLimit => '1日1通話 · 5分制限';
+  String get freePlanCallLimit => '1日の通話5分';
 
   @override
   String get freePlanBasicCharacters => '基本キャラクター利用可';
@@ -966,9 +1137,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get noPayments => 'まだ決済履歴がありません';
-
-  @override
-  String get morePaymentsExist => '以前の決済履歴はまだ表示されません';
 
   @override
   String get undatedPayments => '日付なし';
@@ -1091,15 +1259,35 @@ class AppLocalizationsJa extends AppLocalizations {
   String get retakeLevelTest => 'レベルテストを再受験';
 
   @override
+  String get levelTestOncePerDay => 'レベルテストは1日1回まで受けられます。明日もう一度お試しください。';
+
+  @override
+  String get levelRetakeTitle => 'レベルを測り直しますか？';
+
+  @override
+  String get levelRetakeBody =>
+      '測り直すと、進度はそのレベルの最初のレッスンに戻ります。同じレベルになっても同じです。覚えた表現と通話記録はそのまま残ります。';
+
+  @override
+  String get levelRetakeKeep => '進度をそのままにする';
+
+  @override
+  String get levelRetakeConfirm => '測り直す';
+
+  @override
   String get practicePronunciation => '発音を学習する';
 
   @override
-  String get priceChangedTitle => '価格が変更されました';
+  String get learnResultView => '学習結果を見る';
 
   @override
-  String priceChangedBody(String price) {
-    return 'この商品は現在$priceです。続けますか?';
-  }
+  String get learnAgain => 'もう一度学習する';
+
+  @override
+  String get analysisNoScoreReview => '復習すると発音スコアが出ます';
+
+  @override
+  String get analysisNoScoreEmpty => '採点する文がありません';
 
   @override
   String get billingGroupPlanPurchases => 'プランと購入';
@@ -1108,16 +1296,16 @@ class AppLocalizationsJa extends AppLocalizations {
   String get billingGroupInTheStore => 'ストアで';
 
   @override
-  String get billingChangePlan => 'プランを変更';
-
-  @override
-  String get billingCompareAllPlans => '全プランを比較';
+  String get billingCompareAllPlans => 'プランを比較';
 
   @override
   String get billingBuyACharacter => 'キャラクターを購入';
 
   @override
   String get billingRestorePurchases => '購入を復元';
+
+  @override
+  String get billingRedeemCode => 'コードを使う';
 
   @override
   String get billingPaymentHistory => '支払い履歴';
@@ -1165,13 +1353,28 @@ class AppLocalizationsJa extends AppLocalizations {
   String get planPro => 'Pro';
 
   @override
-  String get planMax => 'Max';
+  String get planMax => 'Premium';
 
   @override
-  String get planMaxTrial => 'Max体験';
+  String get premiumBulletVideo => '1日15分のビデオ通話';
 
   @override
-  String get freePlanPriceLine => '\$0.00 — 1日1回の通話';
+  String get premiumBulletAnalysis => '復習の発音評価が無制限';
+
+  @override
+  String get premiumBulletWeakSounds => 'あなたの言語に合わせた苦手な発音の練習';
+
+  @override
+  String get noteCharactersSeparate => 'キャラクターは別売りです。購入したキャラクターはずっとあなたのものです。';
+
+  @override
+  String get ctaGetPremium => 'Premiumを始める';
+
+  @override
+  String get planMaxTrial => 'Premium体験';
+
+  @override
+  String get freePlanPriceLine => '無料 — 1日5分の通話';
 
   @override
   String pricePerMonthLine(String amount) {
@@ -1184,11 +1387,11 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get todaysCalls => '今日の通話';
+  String get todaysCalls => '今日の通話時間';
 
   @override
   String callsUsedOfLimit(int used, int limit) {
-    return '$limit回中$used回使用';
+    return '$limit分中$used分使用';
   }
 
   @override
@@ -1209,34 +1412,21 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get bannerGoUnlimitedTitle => 'Proで無制限に';
-
-  @override
-  String bannerGoUnlimitedSub(String price) {
-    return '通話無制限 · 1回15分 · 月額$price';
-  }
-
-  @override
-  String get bannerMaxUpsellTitle => 'Maxでビデオ通話を';
+  String get bannerMaxUpsellTitle => 'Premiumで顔を見ながら話そう';
 
   @override
   String bannerMaxUpsellSub(String price) {
-    return '顔を見ながら通話 · 月額$price';
+    return 'ビデオ通話 · 1日15分 · 月$price';
   }
 
   @override
   String get bannerAnnualSwitchTitle => '年間プランに切り替え';
 
   @override
-  String bannerAnnualSwitchSub(String yearly, String perMonth) {
-    return '年額$yearly · 月あたり$perMonth';
-  }
-
-  @override
   String get bannerPaymentFailedTitle => 'お支払いができませんでした';
 
   @override
-  String get bannerPaymentFailedSub => 'ストアで支払い方法を更新するとProを継続できます';
+  String get bannerPaymentFailedSub => 'ストアで支払い方法を更新するとPremiumを継続できます';
 
   @override
   String get bannerPausedTitle => 'プランが一時停止中です';
@@ -1251,9 +1441,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get noteStoreHandled => '支払い方法・プラン変更・解約はストアで行われます。';
 
   @override
-  String get noteFairUse => '無制限のご利用にはフェアユースポリシーが適用されます。';
-
-  @override
   String noteTrialEnds(String date) {
     return '体験は$dateに終了します。それまでにストアで解約すれば料金はかかりません。';
   }
@@ -1262,7 +1449,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get noteGrace => '猶予期間中も特典は継続します。解約をアプリが妨げることはありません。';
 
   @override
-  String get noteHold => 'お支払いが完了するまでProは一時停止されます。キャラクターと学習記録は安全に保管されます。';
+  String get noteHold => 'お支払いが完了するまでPremiumは一時停止されます。キャラクターと学習記録は安全に保管されます。';
 
   @override
   String noteEnding(String date) {
@@ -1270,7 +1457,7 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get trialExpiredTitle => 'Max体験が終了しました';
+  String get trialExpiredTitle => 'Premium体験が終了しました';
 
   @override
   String get trialExpiredSub => '現在は無料プランです';
@@ -1282,70 +1469,25 @@ class AppLocalizationsJa extends AppLocalizations {
   String get currentPlanTitle => '現在のプラン';
 
   @override
-  String get badgeRecommended => 'おすすめ';
-
-  @override
   String get perMonthUnit => '/月';
 
   @override
-  String get planTaglinePro => '通話無制限。1回15分。';
+  String get planTaglineFree => '1日5分、無料で通話。';
 
   @override
-  String get planTaglineMax => '顔を見ながら話せます。';
+  String get bulletProCorrections => '母語に合わせた矯正';
 
   @override
-  String get planTaglineFree => '1日1回、無料で通話。';
+  String get bulletFreeCall => '1日5分の音声通話';
 
   @override
-  String get bulletProCalls => '音声通話が使い放題';
-
-  @override
-  String get bulletProLength => '1回の通話は15分';
-
-  @override
-  String get bulletProScoring => '一文字ずつ発音を採点';
-
-  @override
-  String get bulletProCorrections => '母語に合わせた添削';
-
-  @override
-  String get bulletProBeaverCalls => 'ビーバーから電話がかかってくる';
-
-  @override
-  String get bulletMaxVideo => '顔を見ながらビデオ通話';
-
-  @override
-  String get bulletMaxEverything => 'Proの全機能を含む';
-
-  @override
-  String get bulletMaxCharacters => '全キャラクター使い放題';
-
-  @override
-  String get bulletMaxStudyBook => 'レベルに合わせたスタディブック';
-
-  @override
-  String get bulletMaxWeeklyReport => '発音の変化がわかる週間レポート';
-
-  @override
-  String get bulletFreeCall => '1日1回、5分の音声通話';
-
-  @override
-  String get bulletFreeCheck => '1日1回の発音チェック';
-
-  @override
-  String get bulletFreeAccent => 'アクセントチェック無制限';
-
-  @override
-  String get bulletFreeCharacter => 'スタートキャラクター1体';
-
-  @override
-  String get ctaGoUnlimited => '無制限にする';
+  String get bulletFreeCharacter => '最初のキャラクター2人';
 
   @override
   String get ctaTurnOnVideo => 'ビデオ通話を始める';
 
   @override
-  String get noteCallLength => '通話は1回15分です。';
+  String get noteCallLength => 'Premium：1日15分 — その中なら何回でも通話できます。';
 
   @override
   String get paywallProTitle1 => '深夜3時でも起きている';
@@ -1354,22 +1496,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get paywallProTitle2 => 'あなたの韓国人の友だち';
 
   @override
-  String get paywallProSub => '通話無制限。1回15分。一年中いつでも。';
+  String get paywallLimitHeadline => 'Premiumなら1日15分通話できます。';
 
   @override
-  String get paywallLimitHeadline => 'Proなら制限がなくなります。';
+  String get limitBannerCallTitle => '今日の通話時間を使い切りました';
 
   @override
-  String get limitBannerCallTitle => '今日の通話は終わりました';
-
-  @override
-  String get limitBannerCallSub => '無料プランは1日1回の通話です';
-
-  @override
-  String get limitBannerCheckTitle => '今日のチェックは終わりました';
-
-  @override
-  String get limitBannerCheckSub => '無料プランは1日1回のチェックです';
+  String get limitBannerCallSub => '無料プランは1日5分通話できます';
 
   @override
   String get bulletProCharactersForever => '購入したキャラクターはずっとあなたのもの';
@@ -1378,7 +1511,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get paywallMaxTitle => '顔を見ながら話せます。';
 
   @override
-  String get paywallMaxSub => 'ビデオ通話、全キャラクター、そしてレベルに合わせたスタディブックまで。';
+  String paywallTutorCompare(String price) {
+    return 'チューターとのレッスンは1時間\$25。Premiumは1か月$priceです。';
+  }
 
   @override
   String get planMonthly => '月間';
@@ -1417,8 +1552,31 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
+  String ctaCaptionMaxYearly(String price) {
+    return '年額$price · ストアでいつでも解約できます';
+  }
+
+  @override
   String ctaCaptionMaxTrial(String price) {
-    return '7日間無料、その後 月額$price · ストアでいつでも解約できます';
+    return '7日間無料、その後は月額$price · ストアでいつでも解約できます';
+  }
+
+  @override
+  String ctaCaptionMaxYearlyTrial(String price) {
+    return '7日間無料、その後は年額$price · ストアでいつでも解約できます';
+  }
+
+  @override
+  String get bundleTitle => '3人まとめて';
+
+  @override
+  String bundleOffBadge(int percent) {
+    return '$percent%オフ';
+  }
+
+  @override
+  String bundleLinkLabel(String price) {
+    return '3人まとめて$price';
   }
 
   @override
@@ -1431,29 +1589,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get footerPrivacy => 'プライバシー';
 
   @override
-  String get noteMaxCharacters =>
-      'Maxで解放されたキャラクターはサブスクリプション中に利用できます。購入したキャラクターはずっとあなたのものです。';
-
-  @override
   String get processingTitle => '購入を確認しています';
 
   @override
   String get processingSub => '通常は数秒で完了します。';
 
   @override
-  String get successProTitle => 'Proが始まりました。';
-
-  @override
-  String get successProSub => '今から通話が無制限です。';
-
-  @override
-  String get successProBenefit1 => '好きなだけ通話 — 1回15分';
-
-  @override
-  String get successProBenefit2 => '発音チェック無制限';
-
-  @override
-  String get successProBenefit3 => '全キャラクターと単品購入';
+  String get successProTitle => 'Premiumが始まりました。';
 
   @override
   String get successMaxTitle => '顔が見えるようになりました。';
@@ -1462,27 +1604,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get successMaxSub => 'ビデオ通話が有効になりました。通話中にビデオボタンをタップしてください。';
 
   @override
-  String get successMaxBenefit1 => '顔を見ながらビデオ通話';
-
-  @override
-  String get successMaxBenefit2 => '全キャラクター無制限、新キャラクターは先行提供';
-
-  @override
-  String get successMaxBenefit3 => 'レベルに合わせたスタディブック';
-
-  @override
-  String get ctaStartACall => '通話を始める';
-
-  @override
   String get ctaStartAVideoCall => 'ビデオ通話を始める';
 
   @override
   String get ctaSeeYourSubscription => 'サブスクリプションを見る';
-
-  @override
-  String successProCaption(String price) {
-    return '解約するまで毎月$priceが請求されます。管理・解約はいつでもストアで行えます。';
-  }
 
   @override
   String successMaxCaption(String price) {
@@ -1502,90 +1627,16 @@ class AppLocalizationsJa extends AppLocalizations {
   String get plansErrorCaption => '料金は請求されていません。';
 
   @override
-  String get changePlanTitle => 'プラン変更';
-
-  @override
-  String get moveToMaxTitle => 'Maxへ移行';
-
-  @override
-  String maxPriceShort(String price) {
-    return '月額$price';
-  }
-
-  @override
-  String get moveToMaxCardSub => '顔を見ながらビデオ通話 · 全キャラクター · あなた専用のスタディブック';
-
-  @override
-  String get whatHappensNow => 'この後の流れ';
-
-  @override
-  String get maxStartsLabel => 'Max開始';
-
-  @override
-  String get immediately => 'すぐに';
-
-  @override
-  String get unusedProTime => '未使用のPro期間';
-
-  @override
-  String get creditedTowardMax => 'Max料金に充当';
-
-  @override
-  String nextPaymentMaxValue(String price, String date) {
-    return '$price · $date';
-  }
-
-  @override
-  String nextPaymentProValue(String price, String date) {
-    return '$price · $date';
-  }
-
-  @override
-  String get ctaSwitchToMax => 'Maxに切り替える';
-
-  @override
-  String get upgradeCaption => '新しいプランはすぐに始まります。未使用のPro期間は充当され、二重請求はありません。';
-
-  @override
-  String get moveToProTitle => 'Proへ移行';
-
-  @override
-  String get moveToProSub => '今日は何も変わりません。お支払い済みの月末までMaxが継続します。';
-
-  @override
-  String get maxRunsUntil => 'Maxの有効期限';
-
-  @override
-  String get proStarts => 'Pro開始';
-
-  @override
-  String get whatYouKeep => '引き続き使えるもの';
-
-  @override
-  String get keepBenefitCalls => '音声通話無制限、1回15分';
-
-  @override
-  String get keepBenefitCharacters => '購入したキャラクターはずっとあなたのもの';
-
-  @override
-  String downgradeWarning(String date) {
-    return 'ビデオ通話とMax限定キャラクターは$dateに無効になります。';
-  }
-
-  @override
-  String get ctaSwitchToPro => 'Proに切り替える';
-
-  @override
-  String get ctaKeepMax => 'Maxを続ける';
+  String get ctaKeepMax => 'Premiumを続ける';
 
   @override
   String get winbackSkip => 'スキップ';
 
   @override
-  String get winbackTitle => 'Proプランが終了しました';
+  String get winbackTitle => 'Premiumプランが終了しました';
 
   @override
-  String get winbackSub => '現在は無料プラン — 1日1回の通話です。';
+  String get winbackSub => '現在は無料プラン — 1日5分通話できます。';
 
   @override
   String get winbackQuestion => 'よろしければ、やめた理由を教えてください。';
@@ -1621,7 +1672,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get ctaClose => '閉じる';
 
   @override
-  String get ovRestoreSuccessTitle => 'Proが戻りました';
+  String get ovRestoreSuccessTitle => 'Premiumが戻りました';
 
   @override
   String get ovRestoreSuccessBody => 'サブスクリプションが見つかり、この端末で再び有効にしました。';
@@ -1639,13 +1690,26 @@ class AppLocalizationsJa extends AppLocalizations {
   String get ovRestoreOtherBody => 'このサブスクリプションは別のBeaverTalkアカウントで有効になっています。';
 
   @override
+  String ovRestoreCharactersTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'キャラクターが戻りました',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get ovRestoreCharacterOtherTitle => 'このキャラクターは別のアカウントで購入されています';
+
+  @override
   String get ctaSignInThatAccount => 'そのアカウントでログイン';
 
   @override
   String get ctaGetHelp => 'ヘルプを見る';
 
   @override
-  String get ovCharacterOfferTitle => 'Proはまだ迷っていますか？';
+  String get ovCharacterOfferTitle => 'Premiumはまだ迷っていますか？';
 
   @override
   String get ovCharacterOfferBody =>
@@ -1656,7 +1720,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String rowFromPrice(String price) {
-    return '$priceから';
+    return '各$price';
   }
 
   @override
@@ -1698,7 +1762,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get rowCharactersYouBought => '購入したキャラクター';
 
   @override
-  String get rowProRunsUntil => 'Proの有効期限';
+  String get rowProRunsUntil => 'Premiumの有効期限';
 
   @override
   String get ctaSwitchToYearly => '年払いに切り替える';
@@ -1712,7 +1776,7 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get ovAnnualSwitchBody => 'Proを2か月ご利用中ですね。年間プランのほうが割安です。';
+  String get ovAnnualSwitchBody => '年額プランは毎月払うよりお得です。';
 
   @override
   String get rowYouSave => '節約額';
@@ -1771,7 +1835,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get ovTrialEndingTitle => '体験は明日終了します';
 
   @override
-  String get ovTrialEndingBody => '解約しない限りMaxは継続します。この後の流れです。';
+  String get ovTrialEndingBody => '解約しない限りPremiumは継続します。この後の流れです。';
 
   @override
   String get rowTrialEnds => '体験終了';
@@ -1786,7 +1850,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get ctaCancelInStore => 'ストアで解約';
 
   @override
-  String get ovTrialStartTitle => 'Maxを7日間無料で';
+  String get ovTrialStartTitle => 'Premiumを7日間無料で';
 
   @override
   String ovTrialStartBody(String price, String date) {
@@ -1800,7 +1864,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get ovOtoTitle => '始める前にもうひとつ';
 
   @override
-  String get ovOtoBody => 'いい選択です — 通話無制限が今有効になりました。同じProでも年払いのほうが割安です。';
+  String get ovOtoBody => 'いい選択です。同じPremiumでも年額払いならもっとお得です。';
 
   @override
   String get ovFailedDeclinedTitle => 'カードが拒否されました';
@@ -1824,7 +1888,28 @@ class AppLocalizationsJa extends AppLocalizations {
   String get ovFailedStoreBody => 'ストアに接続できませんでした。料金は請求されていません。';
 
   @override
-  String get ovAlreadyTitle => 'すでにProをご利用中です';
+  String get ovVerifyingTitle => 'お支払いを受け付けました';
+
+  @override
+  String get ovVerifyingBody =>
+      'ストアでの確認に時間がかかっています。まもなく反映されます。反映されない場合は「購入を復元」をタップしてください。';
+
+  @override
+  String get ovPendingTitle => 'お支払いを処理中です';
+
+  @override
+  String get ovPendingBody =>
+      'ストアでのお支払いがまだ完了していません。完了するとすぐに反映されます。この画面を離れても大丈夫です。';
+
+  @override
+  String get ovRejectedTitle => 'この購入を確認できませんでした';
+
+  @override
+  String get ovRejectedBody =>
+      'ストアがこのお支払いを確認しなかったため、反映していません。請求された場合はお問い合わせください。';
+
+  @override
+  String get ovAlreadyTitle => 'すでにPremiumをご利用中です';
 
   @override
   String get ovAlreadyBody => 'このストアアカウントには有効なプランがあります。新たに購入するものはありません。';
@@ -1837,29 +1922,23 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String subCancelBody(String date) {
-    return 'Proは$dateまで有効です。その後は無料プランに移行します。';
+    return 'Premiumは$dateまで有効です。その後は無料プランに移行します。';
   }
 
   @override
   String get subWhatYouLose => '失うもの';
 
   @override
-  String get benefitCalls15 => '通話無制限、1回15分';
-
-  @override
   String get benefitScoring => '一文字ずつ発音を採点';
 
   @override
-  String get benefitEveryCharacter => '全キャラクター使い放題';
-
-  @override
-  String get ctaKeepPro => 'Proを続ける';
+  String get benefitEveryMetric => 'すべての指標、すべての文';
 
   @override
   String get subPaymentTitle => '支払いを更新';
 
   @override
-  String get subPaymentBody => 'お支払いができませんでした。猶予期間中はProが継続します。';
+  String get subPaymentBody => 'お支払いができませんでした。猶予期間中はPremiumが継続します。';
 
   @override
   String get subHowToFix => '解決方法';
@@ -1878,7 +1957,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String subResubBody(String date) {
-    return 'Proは$dateに終了します。自動更新を再びオンにすれば、そのまま続きます。';
+    return 'Premiumは$dateに終了します。自動更新を再びオンにすれば、そのまま続きます。';
   }
 
   @override
@@ -1888,22 +1967,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get ctaTurnItBackOn => '再びオンにする';
 
   @override
-  String get flTodayTitle => '今日の通話は終わりました';
+  String get flTodayTitle => '今日の通話時間を使い切りました';
 
   @override
   String get flTodayBody => '続きから、今すぐ再開しましょう。';
-
-  @override
-  String get flCheckTitle => '今日のチェックは終わりました';
-
-  @override
-  String get flCheckBody => '無料プランは1日1回のチェックです。Proなら無制限です。';
-
-  @override
-  String get flBenefitCalls => 'Proで通話無制限 · 1回15分';
-
-  @override
-  String get flBenefitChecks => 'Proで発音チェック無制限';
 
   @override
   String flCaption(String price) {
@@ -1925,7 +1992,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get nicknameLabel => 'ニックネーム';
 
   @override
-  String get emailLabel => 'Email';
+  String get emailLabel => 'メール';
 
   @override
   String get loginMethodLabel => 'ログイン方法';
@@ -1943,39 +2010,45 @@ class AppLocalizationsJa extends AppLocalizations {
   String get ctaSave => '保存';
 
   @override
-  String get subscriptionRow => 'Subscription';
+  String get subscriptionRow => 'サブスクリプション';
 
   @override
-  String get iapSuccessTitle => 'Purchase complete';
+  String get iapSuccessTitle => '購入完了';
 
   @override
   String iapSuccessBody(String name) {
-    return 'The $name avatar is yours forever.\nApplied as soon as the receipt clears.';
+    return '$name アバターがずっとあなたのものになります。\n領収の確認ができ次第、適用されます。';
   }
 
   @override
-  String get ctaGoHome => 'Home';
+  String get ctaGoHome => 'ホームへ';
 
   @override
-  String get ctaUseNow => 'Use it now';
+  String get ctaUseNow => '今すぐ使う';
 
   @override
-  String get iapFailTitle => 'The payment didn\'t go through';
+  String get iapFailTitle => '決済が完了しませんでした';
 
   @override
-  String get iapFailBody => 'You can try again';
+  String get iapFailBody => 'もう一度お試しいただけます';
 
   @override
-  String get paywallLeaveTitle => '今離れると、購読は開始されません';
+  String get paywallGuardTitle => '無料のまま使い続けられます';
 
   @override
-  String get paywallLeaveBody => '特典は決済直後に利用できます。マイページからいつでも戻れます。';
+  String get paywallGuardBody => '1日5分の通話はそのまま使えます。';
 
   @override
-  String get ctaKeepLooking => '続けて見る';
+  String get ctaMaybeLater => 'また今度';
 
   @override
-  String get ctaLeaveAnyway => 'それでも離れる';
+  String get winbackOfferBadge => '初月50%オフ';
+
+  @override
+  String get winbackOfferTitle => 'おかえりなさい';
+
+  @override
+  String get ctaGetHalfOff => '50%オフで再開';
 
   @override
   String get iapCharacterSuccessTitle => '新しい友だちが仲間入り!';
@@ -2018,9 +2091,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get takeLevelTest => 'レベルテストを受ける';
 
   @override
-  String get reviewToSeeScore => '復習すると発音スコアが出ます';
-
-  @override
   String get playAgain => 'もう一度';
 
   @override
@@ -2034,4 +2104,777 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get difficultyLabel => '難易度';
+
+  @override
+  String get connected => '接続済み';
+
+  @override
+  String get unlockedWithMax => 'ご利用中のプランに含まれます';
+
+  @override
+  String get fcEndedTitle => '無料通話が終了しました';
+
+  @override
+  String get fcEndedBody => '無料通話は5分までです\n購読すればもっと長く話せます';
+
+  @override
+  String get ctaSubscribeKeepTalking => '購読して会話を続ける';
+
+  @override
+  String get kgTitle => '続けますか？';
+
+  @override
+  String get kgBody => '通話は少しずつ続きます。\n続くたびに確認します。';
+
+  @override
+  String get pcEndedTitleToday => '今日の通話はここまでにしますね。';
+
+  @override
+  String get pcEndedBodyToday => '復習して、また明日電話してくださいね！';
+
+  @override
+  String get pcEndedTitle => 'この通話はここまでにしますね。';
+
+  @override
+  String get pcEndedBody => '復習して、また電話してくださいね！';
+
+  @override
+  String get ctaKeepTalking => '会話を続ける';
+
+  @override
+  String get callModeSheetTitle => 'どのように話しますか？';
+
+  @override
+  String get callModeSheetSubtitle => 'この通話にすぐ反映されます';
+
+  @override
+  String get callModeFreeTalk => 'フリートーク';
+
+  @override
+  String get callModeFreeTalkDesc => '訂正なしで気軽に話す';
+
+  @override
+  String get callModeChange => '話し方を変える';
+
+  @override
+  String get callModeKeep => '閉じる';
+
+  @override
+  String get callExitTitle => '通話を終了しますか？';
+
+  @override
+  String get callExitSubtitle => '今終えても、話した時間は今日の利用分に含まれます';
+
+  @override
+  String get callExitKeep => '通話を続ける';
+
+  @override
+  String get callExitConfirm => '通話終了';
+
+  @override
+  String get callMicMute => 'ミュート';
+
+  @override
+  String get callMicUnmute => 'ミュート解除';
+
+  @override
+  String get callPushToTalk => '押しながら話す';
+
+  @override
+  String get callFreeEndedTitle => '無料通話が終了しました';
+
+  @override
+  String get callFreeEndedCta => '登録して会話を続ける';
+
+  @override
+  String get callKeepGoingTitle => '続けますか？';
+
+  @override
+  String get callKeepGoingSubtitle => '通話は5分ごとに続きます。そのたびにお伺いします。';
+
+  @override
+  String get articulationSelectedWord => '選んだ単語';
+
+  @override
+  String get articulationYouSaid => 'あなたの発音';
+
+  @override
+  String get articulationTargetSound => 'お手本';
+
+  @override
+  String get reportEntry => '報告する';
+
+  @override
+  String get reportTitle => '報告';
+
+  @override
+  String get reportPrompt => 'どんな問題がありましたか？';
+
+  @override
+  String get reportGuide => 'AIキャラクターとの会話で不快に感じた内容をお知らせください。すべての報告を確認します。';
+
+  @override
+  String get reportReasonSexual => '性的な内容';
+
+  @override
+  String get reportReasonHate => '差別・ヘイト表現';
+
+  @override
+  String get reportReasonViolence => '暴力的・脅迫的な内容';
+
+  @override
+  String get reportReasonSelfHarm => '自傷を助長する内容';
+
+  @override
+  String get reportReasonMisinfo => '誤った情報';
+
+  @override
+  String get reportReasonOther => 'その他の問題';
+
+  @override
+  String get reportDetailHint => '何があったか記入してください（任意）';
+
+  @override
+  String get reportSubmit => '報告を送信';
+
+  @override
+  String get reportDoneTitle => '報告を受け付けました';
+
+  @override
+  String get reportDoneBody =>
+      '確認のうえ、必要な対応を行います。BeaverTalkの安全にご協力いただきありがとうございます。';
+
+  @override
+  String get reportFailed => '報告を送信できませんでした。もう一度お試しください。';
+
+  @override
+  String get hwTitle => '宿題';
+
+  @override
+  String get hwJoinCodeTitle => 'クラスコードを入力してください';
+
+  @override
+  String get hwJoinCodeSubtitle => '先生からもらった6文字のコードです';
+
+  @override
+  String get hwJoinCodeLabel => 'クラスコード';
+
+  @override
+  String get hwJoinCodeHelp => '大文字と小文字は区別しません';
+
+  @override
+  String get hwJoinConfirmTitle => 'このクラスで合っていますか？';
+
+  @override
+  String get hwJoinConfirmSubtitle => '違う場合はコードをもう一度確認してください';
+
+  @override
+  String get hwJoinFieldInstitution => '機関';
+
+  @override
+  String get hwJoinFieldTeacher => '先生';
+
+  @override
+  String get hwJoinFieldLearners => '学習者';
+
+  @override
+  String get hwJoinFieldTerm => '期間';
+
+  @override
+  String get hwJoinConfirmNote => 'クラス名は先生が書いたとおりに表示します。翻訳はしません。';
+
+  @override
+  String get hwJoinConfirmYes => 'はい、これです';
+
+  @override
+  String get hwJoinConfirmRetry => 'コードを入力し直す';
+
+  @override
+  String get hwJoinProfileTitle => 'クラスで使う名前は何ですか？';
+
+  @override
+  String get hwJoinProfileSubtitle => '先生が名簿と照らし合わせます';
+
+  @override
+  String get hwJoinNameLabel => '名前';
+
+  @override
+  String get hwJoinNameHelp => 'アプリの名前と違っていても大丈夫です';
+
+  @override
+  String get hwJoinStudentNoLabel => '学籍番号（任意）';
+
+  @override
+  String get hwJoinStudentNoHelp => '先生が名簿と照合するために使います';
+
+  @override
+  String get hwJoinConsentTitle => '先生に見える情報';
+
+  @override
+  String get hwJoinConsentSubtitle => 'クラスに参加するには同意が必要です';
+
+  @override
+  String get hwJoinConsentSharedHeading => '先生に共有されます';
+
+  @override
+  String get hwJoinConsentShared1 => 'クラス名と学籍番号';
+
+  @override
+  String get hwJoinConsentShared2 => '宿題をしたかどうか';
+
+  @override
+  String get hwJoinConsentShared3 => '合格した文と外した文';
+
+  @override
+  String get hwJoinConsentShared4 => '課題通話の長さと要約';
+
+  @override
+  String get hwJoinConsentNotSharedHeading => '共有されません';
+
+  @override
+  String get hwJoinConsentNotShared1 => 'メールアドレスと電話番号';
+
+  @override
+  String get hwJoinConsentNotShared2 => 'アプリの名前・プロフィール・キャラクター';
+
+  @override
+  String get hwJoinConsentNotShared3 => '国籍と母語';
+
+  @override
+  String get hwJoinConsentNotShared4 => 'クラス外の通話と学習';
+
+  @override
+  String get hwJoinConsentNotShared5 => 'サブスクリプションと支払い情報';
+
+  @override
+  String get hwJoinConsentAgree => '上記に同意します';
+
+  @override
+  String get hwJoinConsentCta => '同意して参加';
+
+  @override
+  String hwJoinDoneTitle(String className) {
+    return '$className に参加しました';
+  }
+
+  @override
+  String hwJoinDoneSubtitle(int count) {
+    return '課題が $count 件あります';
+  }
+
+  @override
+  String get hwJoinDoneNoAssignment => 'まだ課題はありません';
+
+  @override
+  String get hwJoinDoneNextDue => '次の締め切り';
+
+  @override
+  String get hwJoinDoneRosterName => 'クラスでの名前';
+
+  @override
+  String get hwJoinDoneCta => '宿題を見る';
+
+  @override
+  String get hwJoinErrorNotFound => 'そのコードが見つかりません';
+
+  @override
+  String get hwJoinErrorNotFoundBody => '6桁をもう一度ご確認ください。';
+
+  @override
+  String get hwJoinErrorExpired => 'そのコードは期限切れです';
+
+  @override
+  String get hwJoinErrorExpiredBody => '先生に新しいコードをもらってください。';
+
+  @override
+  String get hwJoinErrorFull => 'クラスが満員です';
+
+  @override
+  String get hwJoinErrorFullBody => '先生にお知らせください。';
+
+  @override
+  String get hwJoinFailed => '参加できませんでした。しばらくしてからもう一度お試しください。';
+
+  @override
+  String get hwSectionInProgress => '進行中';
+
+  @override
+  String get hwSectionUpcoming => 'これから';
+
+  @override
+  String get hwSectionDone => '完了';
+
+  @override
+  String get hwLeaveClassLink => 'クラスを抜ける';
+
+  @override
+  String get hwListEmptyTitle => 'まだ宿題はありません';
+
+  @override
+  String get hwListEmptyBody => '先生が出したらここに表示されます。';
+
+  @override
+  String get hwListFailed => '宿題を読み込めませんでした。';
+
+  @override
+  String get hwRetry => '再試行';
+
+  @override
+  String get hwBadgeDone => '完了';
+
+  @override
+  String get hwBadgeOverdue => '未提出';
+
+  @override
+  String hwBadgeOverdueDays(int days) {
+    return '未提出・$days日遅れ';
+  }
+
+  @override
+  String hwBadgeDday(int days) {
+    return 'D-$days';
+  }
+
+  @override
+  String get hwBadgeDueToday => '今日まで';
+
+  @override
+  String get hwActivitySpeaking => '発音';
+
+  @override
+  String get hwActivityConversation => '会話';
+
+  @override
+  String get hwActivityWorkbook => 'ワークブック';
+
+  @override
+  String hwChapterLabel(String chapter) {
+    return '第$chapter課';
+  }
+
+  @override
+  String get hwTaskSpeakingDesc => '発音スコアを確認しましょう';
+
+  @override
+  String get hwTaskConversationDesc => '学んだ表現を実際の会話で使ってみましょう';
+
+  @override
+  String get hwConversationOnce => '会話は宿題ごとに1回だけできます。';
+
+  @override
+  String get hwTaskWorkbookDesc => 'ワークブックに書いて練習しましょう';
+
+  @override
+  String get hwCtaStudy => 'はじめる';
+
+  @override
+  String get hwCtaResult => '結果を見る';
+
+  @override
+  String get hwCtaDownload => 'ダウンロード';
+
+  @override
+  String get hwSpeakingNoScore => 'スピーキング課題はまだ行っていません';
+
+  @override
+  String get hwWorkbookUnavailable => 'ワークブックのファイルはまだ利用できません。';
+
+  @override
+  String get hwDetailClosed => 'この課題は締め切られました。これ以上提出できません。';
+
+  @override
+  String get hwLeaveTitle => 'クラスを抜けますか？';
+
+  @override
+  String get hwLeaveBody => '先生はあなたの宿題の結果を見られなくなります。';
+
+  @override
+  String get hwLeaveConfirm => '抜ける';
+
+  @override
+  String get hwLeaveCancel => '残る';
+
+  @override
+  String get hwLeaveFailed => 'クラスを抜けられませんでした。';
+
+  @override
+  String get hwMyClass => 'マイクラス';
+
+  @override
+  String get hwClassEmptyTitle => 'まだクラスに参加していません';
+
+  @override
+  String get hwClassEmptySubtitle => '先生からもらったコードを入力してください';
+
+  @override
+  String get hwClassEmptyCta => 'クラスコードを入力';
+
+  @override
+  String get hwClassContinueCta => '続ける';
+
+  @override
+  String hwHomeBannerDueTomorrow(int count) {
+    return '明日締め切りの課題が $count 件あります';
+  }
+
+  @override
+  String hwHomeBannerOverdue(int count) {
+    return '未提出の課題が $count 件あります';
+  }
+
+  @override
+  String get hwSpeakingUnavailable => 'この課題の文はまだ利用できません。';
+
+  @override
+  String get hwBadgeClosed => '締め切り';
+
+  @override
+  String hwSpeakingProgress(int passed, int total) {
+    return '$total 文中 $passed 文 合格';
+  }
+
+  @override
+  String get challengeFirstWord => '最初の単語';
+
+  @override
+  String get challengeSeeAnalysis => '結果を見る';
+
+  @override
+  String get challengePaused => '一時停止';
+
+  @override
+  String get challengePausedNote => 'タイマーと録画が一緒に止まりました';
+
+  @override
+  String get challengeTimeLeft => '残り時間';
+
+  @override
+  String get challengeScoreLabel => 'スコア';
+
+  @override
+  String get challengeResume => '続ける';
+
+  @override
+  String get challengeBlockedTitle => 'カメラを使えません';
+
+  @override
+  String get challengeBlockedNote => '設定でカメラとマイクへのアクセスをオンにしてください';
+
+  @override
+  String get challengeGoBack => '戻る';
+
+  @override
+  String get challengeOpenSettings => '設定を開く';
+
+  @override
+  String get saveDone => 'ギャラリーに保存しました';
+
+  @override
+  String get saveFailed => '保存できませんでした';
+
+  @override
+  String get saveDeniedNote => '写真へのアクセス許可が必要です';
+
+  @override
+  String get callIncomingCallerFallback => 'ビーバー先生';
+
+  @override
+  String get callIncomingHandle => '韓国語通話';
+
+  @override
+  String get callMissedTitle => '不在着信';
+
+  @override
+  String get callMissedChannelDescription => 'ビーバーからの不在着信をお知らせします。';
+
+  @override
+  String callMissedBody(String name) {
+    return '$nameから電話がありました';
+  }
+
+  @override
+  String get callBeaverFallbackName => 'ビーバー';
+
+  @override
+  String get callNotifPermissionRationale => '着信を受け取るには通知の許可が必要です。';
+
+  @override
+  String get callNotifPermissionRequired => '設定で通知を許可してください。';
+
+  @override
+  String get callHintLockedTitle => '表現学習ではヒントを使えません';
+
+  @override
+  String get wsTitle => '苦手な発音';
+
+  @override
+  String get wsToList => '一覧に戻る';
+
+  @override
+  String get wsNext => '次へ';
+
+  @override
+  String get wsRetry => 'もう一度';
+
+  @override
+  String get wsDone => '完了';
+
+  @override
+  String get wsContinue => '続ける';
+
+  @override
+  String get wsQuit => 'やめる';
+
+  @override
+  String get wsRetryLater => '少し時間をおいてお試しください。';
+
+  @override
+  String get wsMissingTitle => '学習する音が見つかりません';
+
+  @override
+  String get wsMissingBody => '一覧からもう一度選んでください。';
+
+  @override
+  String get wsListLoadFailed => '一覧を読み込めませんでした';
+
+  @override
+  String get wsLessonLoadFailed => '学習を読み込めませんでした';
+
+  @override
+  String get wsNationalTitle => 'アクセント別の苦手な発音';
+
+  @override
+  String get wsNationalPending => 'アクセント分析が終わると表示されます';
+
+  @override
+  String get wsNationalPicked => 'アクセント分析の結果から選びました';
+
+  @override
+  String get wsNationalEmptyBody => '通話をもう少し重ねると、アクセントを分析します。';
+
+  @override
+  String get wsMineTitle => 'わたしの苦手な発音';
+
+  @override
+  String get wsMineSubtitle => '最近の通話で測定した音です';
+
+  @override
+  String get wsMineEmptyBody => '通話して復習すると、苦手な発音がたまります。';
+
+  @override
+  String get wsNoDataYet => 'まだデータがありません';
+
+  @override
+  String get wsGoToCall => '通話を始める';
+
+  @override
+  String get wsRule => 'ルール';
+
+  @override
+  String get wsRecommended => 'おすすめ';
+
+  @override
+  String get wsNotMeasured => '測定前';
+
+  @override
+  String get wsStepUnderstand => '理解';
+
+  @override
+  String get wsStepWords => '単語';
+
+  @override
+  String get wsStepSentence => '文';
+
+  @override
+  String get wsStepTest => '評価';
+
+  @override
+  String get wsQuitTitle => '学習をやめますか？';
+
+  @override
+  String get wsQuitBody => 'いま出ると、今回の練習は保存されません。';
+
+  @override
+  String get wsHowToSound => '音の出し方';
+
+  @override
+  String get wsPracticeWords => '単語を練習する';
+
+  @override
+  String get wsPracticeSentence => '文を練習する';
+
+  @override
+  String get wsPracticeAgain => 'もう一度';
+
+  @override
+  String get wsStartTest => '最終評価を受ける';
+
+  @override
+  String get wsThisSentence => '今回の文';
+
+  @override
+  String get wsNoScoreNote => 'この段階は採点しません。気楽に続けて言ってみましょう。';
+
+  @override
+  String get wsListen => 'よく聞いてみましょう';
+
+  @override
+  String get wsSayNow => '今、声に出してみましょう';
+
+  @override
+  String get wsPracticeDone => '練習が終わりました';
+
+  @override
+  String get wsPaused => '一時停止しました';
+
+  @override
+  String get wsAudioFailed => '音声を読み込めませんでした。文字を見て声に出してみましょう。';
+
+  @override
+  String get wsReadAloud => '下の文を声に出して読んでください';
+
+  @override
+  String get wsTapToStart => 'タップして始めます';
+
+  @override
+  String get wsTapWhenDone => '読み終えたらタップしてください';
+
+  @override
+  String get wsScoring => '採点しています';
+
+  @override
+  String get wsMicFailed => 'マイクを開けませんでした。';
+
+  @override
+  String get wsMicPermissionBody =>
+      'このテストは声に出して読むので、マイクが必要です。設定でマイクへのアクセスをオンにしてください。';
+
+  @override
+  String get wsNoSound => '音声が届きませんでした。もう一度言ってみましょうか？';
+
+  @override
+  String get wsScoreFailed => '採点に失敗しました。もう一度お試しください。';
+
+  @override
+  String get wsSomethingWrong => '問題が発生しました。';
+
+  @override
+  String get wsLearnDone => '学習が終わりました';
+
+  @override
+  String get wsRetest => 'もう一度評価する';
+
+  @override
+  String get wsFirstMeasure => '初めての測定です';
+
+  @override
+  String get wsFinalTest => '最終評価';
+
+  @override
+  String wsPoints(int score) {
+    return '$score点';
+  }
+
+  @override
+  String wsBeforePoints(int score) {
+    return '学習前 $score点';
+  }
+
+  @override
+  String wsGoalPoints(int score) {
+    return '目標 $score点';
+  }
+
+  @override
+  String wsGoalPrefix(String desc) {
+    return '目標 · $desc';
+  }
+
+  @override
+  String wsAccentOf(String country) {
+    return '$countryアクセント';
+  }
+
+  @override
+  String wsWordsRepeated(int count) {
+    return '単語$count個をリピート';
+  }
+
+  @override
+  String wsChunksRepeated(int count) {
+    return 'フレーズ$count個をリピート';
+  }
+
+  @override
+  String get wsStartRecommended => 'おすすめの音から学習';
+
+  @override
+  String wsStartRecommendedWith(String label) {
+    return '$labelから学習';
+  }
+
+  @override
+  String get wsPointsUnit => '点';
+
+  @override
+  String get wsEnterFromMypage => '苦手な発音を練習する';
+
+  @override
+  String wsGoalOnly(int score) {
+    return '目標 $score';
+  }
+
+  @override
+  String wsSoundOf(String label) {
+    return '$label の音';
+  }
+
+  @override
+  String wsResultTip(String desc) {
+    return '$desc。通話で出てきたら、この形を思い出してください。';
+  }
+
+  @override
+  String wsNationalSubtitle(String country) {
+    return '$country の話者がよく間違える音';
+  }
+
+  @override
+  String get wsRetryPackLabel => 'よく間違えた音の練習';
+
+  @override
+  String wsRetryPackTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '今回の学習でよく間違えた音 $count個',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get wsRetryPackBody => '2回以上間違えた音だけを集めました。音ごとに4ステップで練習します。';
+
+  @override
+  String get wsRetryPackCta => 'まとめて練習する';
+
+  @override
+  String get wsRetryListTitle => 'よく間違えた音';
+
+  @override
+  String get wsRetryListSection => '今回の学習で集めた音';
+
+  @override
+  String get wsRetryListSub => '今回の学習で2回以上間違えた音です';
+
+  @override
+  String wsRetryListSubWithCall(String title) {
+    return '「$title」の通話で2回以上間違えた音です';
+  }
+
+  @override
+  String get wsRetryListAllDone => '集めた音をすべて練習しました';
+
+  @override
+  String get wsRetryBackToReport => 'レポートに戻る';
 }

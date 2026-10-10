@@ -1,3 +1,5 @@
+import 'package:beavertalk/features/normalcall/domain/entities/daily_status.dart';
+import 'package:beavertalk/features/normalcall/presentation/normalcall_providers.dart';
 import 'package:beavertalk/features/subscription/domain/entities/subscription_state.dart';
 import 'package:beavertalk/features/subscription/domain/subscription_status_resolver.dart';
 import 'package:beavertalk/features/subscription/presentation/providers/subscription_state_providers.dart';
@@ -29,12 +31,26 @@ void main() {
         pausedSince: DateTime(2026, 6, 26),
       );
 
-  Future<void> pump(WidgetTester tester, SubscriptionStatus s) async {
+  Future<void> pump(
+    WidgetTester tester,
+    SubscriptionStatus s, {
+    DailyStatus? daily,
+  }) async {
     await tester.binding.setSurfaceSize(const Size(375, 1800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [subscriptionStatusProvider.overrideWithValue(s)],
+        // 매 호출 새 스코프 — 같은 스코프에 override 만 바꾸면 이미 풀린 값이 남는다.
+        key: UniqueKey(),
+        overrides: [
+          subscriptionStatusProvider.overrideWithValue(s),
+          subscriptionStatusAvailabilityProvider
+              .overrideWithValue(SubscriptionStatusAvailability.known),
+          // 서버 없이 돈다 — 기본은 「모른다」(null). 오늘 사용량 행은 값을 줄 때만 그린다.
+          dailyStatusProvider.overrideWith((ref) async => daily),
+          // 스토어가 「지금 월간」 이라고 답한 회원 — 연간 전환 행이 보이는 경우(F071).
+          annualSwitchAvailableProvider.overrideWith((ref) async => true),
+        ],
         child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
@@ -43,6 +59,7 @@ void main() {
         ),
       ),
     );
+    await tester.pump(); // dailyStatusProvider 의 future 가 풀리게 한 틱
   }
 
   const manageStates = [
@@ -59,9 +76,10 @@ void main() {
     testWidgets('plan-card identity per state', (tester) async {
       const expectations = {
         SubscriptionState.free: ('Free', 'Current'),
-        SubscriptionState.trial: ('Max trial', 'Trial'),
+        SubscriptionState.trial: ('Premium trial', 'Trial'),
         SubscriptionState.activePro: ('Pro', 'Renewing'),
-        SubscriptionState.activeMax: ('Max', 'Renewing'),
+        // 단일 티어(09-22): 서버 플랜 코드 max 의 표시 이름은 Premium.
+        SubscriptionState.activeMax: ('Premium', 'Renewing'),
         SubscriptionState.grace: ('Pro', 'Past due'),
         SubscriptionState.onHold: ('Pro', 'Paused'),
         SubscriptionState.ending: ('Pro', 'Canceling'),
@@ -77,7 +95,7 @@ void main() {
     testWidgets('expired renders the trial_expired notice instead',
         (tester) async {
       await pump(tester, status(SubscriptionState.expired));
-      expect(find.text('Your Max trial ended'), findsOneWidget);
+      expect(find.text('Your Premium plan ended'), findsOneWidget);
       expect(find.text('You are on Free now'), findsOneWidget);
       expect(find.text('See plans'), findsOneWidget);
       // A notice, not a manage surface: no billing groups (spec §4-1).
@@ -104,9 +122,11 @@ void main() {
         }
 
         // Slot ①.
-        final paid = state == SubscriptionState.activePro ||
-            state == SubscriptionState.activeMax;
-        expect(find.text(paid ? 'Change plan' : 'Compare all plans'),
+        // Pro↔Premium 전환이 없어져 ①은 Premium 이면 연간 전환, 그 밖엔 비교다.
+        expect(
+            find.text(state == SubscriptionState.activeMax
+                ? 'Switch to annual'
+                : 'Compare plans'),
             findsOneWidget,
             reason: '$state slot ①');
 
@@ -127,7 +147,12 @@ void main() {
   });
 
   group('criterion 3 — the last row of every card draws no divider', () {
-    testWidgets('4-row and 3-row cards carry 3 + 2 hairlines', (tester) async {
+    // Both cards hold four rows now. The store group gained `Redeem a code`
+    // when the real IAP rail landed: a console-issued discount is only
+    // spendable if the binary already ships somewhere to spend it, so the row
+    // has to exist before submission rather than after the first campaign.
+    // ☞ Figma still draws three store rows — the canvas trails the code here.
+    testWidgets('two 4-row cards carry 3 + 3 hairlines', (tester) async {
       for (final state in manageStates) {
         await pump(tester, status(state));
         final hairlines = tester
@@ -137,9 +162,9 @@ void main() {
             .where((d) =>
                 d.border is Border && (d.border as Border).bottom.width == 0.5)
             .length;
-        expect(hairlines, 5,
+        expect(hairlines, 6,
             reason:
-                '$state: 4-row card → 3 dividers, 3-row card → 2 (spec §5-6)');
+                '$state: each 4-row card → 3 dividers (spec §5-6)');
       }
     });
   });
@@ -167,25 +192,11 @@ void main() {
         (tester) async {
       for (final state in manageStates) {
         await pump(tester, status(state));
-        final pro = find.text('Go unlimited with Pro');
-        final max = find.text('Turn on video with Max');
-        final annual = find.text('Switch to annual');
-        switch (state) {
-          case SubscriptionState.free:
-            expect(pro, findsOneWidget, reason: '$state');
-          case SubscriptionState.activePro:
-          case SubscriptionState.grace:
-          case SubscriptionState.ending:
-            expect(max, findsOneWidget, reason: '$state');
-          case SubscriptionState.activeMax:
-            expect(annual, findsOneWidget, reason: '$state');
-          default:
-            // Trial (measured: none, despite spec §6-1's table — flagged) and
-            // hold (payment recovery first).
-            expect(pro, findsNothing, reason: '$state');
-            expect(max, findsNothing, reason: '$state');
-            expect(annual, findsNothing, reason: '$state');
-        }
+        // 단일 티어: 올려 팔 곳은 무료 회원의 Premium 하나뿐이다.
+        final premium = find.text('Get face to face with Premium');
+        expect(premium,
+            state == SubscriptionState.free ? findsOneWidget : findsNothing,
+            reason: '$state');
       }
     });
   });
@@ -213,9 +224,22 @@ void main() {
       expect(find.text('First payment'), findsOneWidget);
       expect(find.text('Free until Jun 20, 2026'), findsOneWidget);
 
+      // Free 의 「오늘 통화 시간」 은 서버 daily-status 값이다(09-23 하루 합산). 이 시험은 서버가
+      // 없어 값을 모른다 — 지어낸 「0 of 1 used」 대신 행을 숨긴다.
       await pump(tester, status(SubscriptionState.free));
-      expect(find.text("Today's calls"), findsOneWidget);
-      expect(find.text('0 of 1 used'), findsOneWidget);
+      expect(find.text("Today's call time"), findsNothing);
+      expect(find.textContaining('min used'), findsNothing);
+
+      // 서버가 오늘 120초 사용 · 예산 300초를 주면 분으로 그린다(올림).
+      await pump(tester, status(SubscriptionState.free),
+          daily: const DailyStatus(budgetSec: 300, usedSec: 120, remainingSec: 180));
+      expect(find.text("Today's call time"), findsOneWidget);
+      expect(find.text('2 of 5 min used'), findsOneWidget);
+
+      await pump(tester, status(SubscriptionState.free),
+          daily: const DailyStatus(budgetSec: 300, usedSec: 10, remainingSec: 290));
+      expect(find.text('1 of 5 min used'), findsOneWidget,
+          reason: '10초를 써도 0분이라고 하지 않는다 — 올림');
     });
   });
 
@@ -239,14 +263,18 @@ void main() {
               'Your plan is set to end. Benefits run until Jun 20, then you move to Free. You can resubscribe any time.'),
           findsOneWidget);
 
-      // Max carries the store-handled line but not the fair-use line.
-      await pump(tester, status(SubscriptionState.activeMax));
-      expect(
-          find.text(
-              'Payment method, plan changes, and cancellation are handled by the store.'),
-          findsOneWidget);
-      expect(find.text('Unlimited use is subject to our fair use policy.'),
-          findsNothing);
+      // 공정 사용 문구는 없어졌다 — 유료 상태는 스토어 안내 한 줄만 싣는다.
+      for (final state in [
+        SubscriptionState.activeMax,
+        SubscriptionState.activePro,
+      ]) {
+        await pump(tester, status(state));
+        expect(
+            find.text(
+                'Payment method, plan changes, and cancellation are handled by the store.'),
+            findsOneWidget,
+            reason: '$state');
+      }
     });
   });
 }

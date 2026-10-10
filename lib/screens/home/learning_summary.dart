@@ -15,6 +15,12 @@ library;
 /// Lenient JSON int — accepts num or numeric string, else 0.
 int _asInt(Object? v) => v is num ? v.toInt() : int.tryParse('$v') ?? 0;
 
+/// Lenient score — **null stays null**. The server sends null when it could not
+/// score (vendor gave nothing); turning that into 0 drew "0%" for a sentence
+/// nobody failed (F101). Counts keep [_asInt].
+int? _asScore(Object? v) =>
+    v == null ? null : (v is num ? v.toInt() : int.tryParse('$v'));
+
 /// One row of `Section/Phonemes` — how a single sound went this session.
 class PhonemeStat {
   /// Creates a phoneme accuracy row.
@@ -53,21 +59,33 @@ class SentenceScore {
     required this.pronunciation,
     required this.fluency,
     required this.rhythm,
+    this.kind,
+    this.sentenceId,
+    this.totalScore,
   });
 
-  /// From `{sentence, pronunciation, fluency, rhythm}`.
+  /// From `{sentence, pronunciation, fluency, rhythm, kind?}`.
   factory SentenceScore.fromJson(Map<String, dynamic> j) => SentenceScore(
         sentence: j['sentence'] as String? ?? '',
-        pronunciation: _asInt(j['pronunciation']),
-        fluency: _asInt(j['fluency']),
-        rhythm: _asInt(j['rhythm']),
+        pronunciation: _asScore(j['pronunciation']),
+        fluency: _asScore(j['fluency']),
+        rhythm: _asScore(j['rhythm']),
+        kind: j['kind'] as String?,
+        sentenceId: j['sentence_id'] == null ? null : _asInt(j['sentence_id']),
+        totalScore: _asScore(j['total_score']),
       );
+
+  /// `null` = 기본 문장 · `'native'` = 현지인 표현 짝(서버 `SentenceScoreOut.kind`).
+  final String? kind;
+
+  /// 전체 항목 계약의 실제 ID·총점. 구형 서버에서 부재하면 null을 유지한다.
+  final int? sentenceId, totalScore;
 
   /// The Korean sentence practiced.
   final String sentence;
 
-  /// 0–100 sub-scores.
-  final int pronunciation, fluency, rhythm;
+  /// 0–100 sub-scores. null = not scored (drawn as 「—」).
+  final int? pronunciation, fluency, rhythm;
 }
 
 /// One session in `Section/Trend` — a bar in the chart and a row in the table.
@@ -79,16 +97,24 @@ class SessionPoint {
     required this.sentences,
     required this.score,
     this.delta,
+    this.callDate,
+    this.callId,
   });
 
-  /// From `{label, date, sentences, score, delta}` — label/date are
+  /// From `{label, date, sentences, score, delta, call_date?}` — label/date are
   /// server-formatted strings; delta is null for the earliest session.
   factory SessionPoint.fromJson(Map<String, dynamic> j) => SessionPoint(
         label: j['label'] as String? ?? '',
         date: j['date'] as String? ?? '',
         sentences: _asInt(j['sentences']),
-        score: _asInt(j['score']),
+        // null = 그 통화에서 발음 챌린지를 안 했다(점수 없음) · 0 = 진짜 0점. 예전 서버는 없음을
+        // 0 으로 뭉개 보내 「96점 하락」 같은 가짜 하락이 생겼다(서버 1c83fd9 프론트 조치 🔴2).
+        score: j['score'] == null ? null : _asInt(j['score']),
         delta: j['delta'] == null ? null : _asInt(j['delta']),
+        // 서버 요청(09-24 `_shared/비버톡_서버추가요청_앱_2026-09-24.md` §1) — 오기 전에는 null.
+        callDate: DateTime.tryParse(j['call_date'] as String? ?? '')?.toLocal(),
+        // 서버 1c83fd9 — 지금 리포트의 통화 줄을 가리는 데 쓴다. 구서버는 없다(null).
+        callId: (j['call_id'] as num?)?.toInt(),
       );
 
   /// The chart's x-axis tick, e.g. `12/21` — or `오늘` for the latest.
@@ -100,12 +126,68 @@ class SessionPoint {
   /// How many sentences that session covered.
   final int sentences;
 
-  /// 0–100 session score.
-  final int score;
+  /// 0–100 session score — **null 이면 점수 없음**(발음 챌린지를 안 한 통화). 표에 「—」,
+  /// 차트에 막대 없음, 평균·눈금 판정에서 뺀다. [delta] 와 같은 규칙이다.
+  final int? score;
 
   /// Change from the session before, or null for the earliest one on record —
   /// which renders as `—`, not `0`: "no previous session" is not "no change".
   final int? delta;
+
+  /// 세션 시각(현지). 있으면 앱이 「오늘」 판정과 날짜 표기를 한다.
+  ///
+  /// [label]·[date] 는 서버가 **UTC 날짜**로 만든 문자열이라 한국 시각 00~09시 세션이
+  /// 전날로 찍히고, 「오늘」 은 한국어로 고정이다(09-24 실기기 「9/23 (오늘)」).
+  final DateTime? callDate;
+
+  /// 그 세션의 통화 id — 「이 통화」 줄을 가린다(Figma `__past_call` `6404:24650`). 구서버는 null.
+  final int? callId;
+
+  /// 서버가 이 세션을 「오늘」로 판정했나 — [callDate] 가 없을 때만 쓰는 대체 신호.
+  /// 서버 `_sessions_from_history` 가 오늘이면 [label] 을 한국어 「오늘」로 보낸다(UTC 기준).
+  bool get serverSaysToday => label == '오늘';
+}
+
+/// 「자주 틀린 소리」 한 장 — 이 통화 학습에서 여러 번 틀린 소리(A5 · PM-DEC-333/337/341).
+///
+/// 서버 `retry_sounds[]`(`RetrySoundOut`)다. 고르는 규칙(과가 있는 소리 · 2번 이상 틀림 ·
+/// 최대 3개 · 많이 틀린 순)은 **서버가 이미 걸렀다** — 앱은 비었는지만 본다.
+class RetrySound {
+  /// Creates a retry sound.
+  const RetrySound({
+    required this.soundKey,
+    required this.label,
+    required this.cardDesc,
+    required this.attempts,
+    required this.misses,
+    this.score,
+  });
+
+  /// Parses one `retry_sounds[]` item.
+  factory RetrySound.fromJson(Map<String, dynamic> j) => RetrySound(
+        soundKey: j['sound_key'] as String? ?? '',
+        label: j['label'] as String? ?? '',
+        cardDesc: j['card_desc'] as String? ?? '',
+        attempts: _asInt(j['attempts']),
+        misses: _asInt(j['misses']),
+        score: j['score'] == null ? null : _asInt(j['score']),
+      );
+
+  /// 학습 진입·평가 API 의 식별자(`coda_ㄹ`·`onset_ㅊ`).
+  final String soundKey;
+
+  /// 표시 라벨(받침 ㄹ) — 회원 표시 언어로 번역돼 온다.
+  final String label;
+
+  /// 카드 한 줄 설명(소리 내는 법).
+  final String cardDesc;
+
+  /// ⚠ **이 통화**에서 그 소리가 나온 횟수 · 그중 틀린 횟수. 취약 발음 목록의
+  /// `attempts`(평가 제출 횟수)와 뜻이 다르다.
+  final int attempts, misses;
+
+  /// 카드 점수 0~100 — 취약 발음 목록의 그 소리 점수와 같은 값. null = 측정 전.
+  final int? score;
 }
 
 /// Everything `screen/learning_main` (`3569:15065`) draws.
@@ -125,6 +207,7 @@ class LearningSummary {
     required this.phonemes,
     required this.sentences,
     required this.sessions,
+    this.retrySounds = const [],
   });
 
   /// Builds a summary from the `GET /calls/{id}/pronunciation-report` body.
@@ -133,11 +216,12 @@ class LearningSummary {
   factory LearningSummary.fromJson(Map<String, dynamic> j) => LearningSummary(
         passed: _asInt(j['passed']),
         total: _asInt(j['total']),
-        date: DateTime.tryParse(j['date'] as String? ?? '') ?? DateTime.now(),
-        overall: _asInt(j['overall']),
-        pronunciation: _asInt(j['pronunciation']),
-        fluency: _asInt(j['fluency']),
-        rhythm: _asInt(j['rhythm']),
+        // 서버 시각(UTC) → 현지 날짜. 안 바꾸면 자정 근처 리포트가 전날로 찍힌다.
+        date: DateTime.tryParse(j['date'] as String? ?? '')?.toLocal() ?? DateTime.now(),
+        overall: _asScore(j['overall']),
+        pronunciation: _asScore(j['pronunciation']),
+        fluency: _asScore(j['fluency']),
+        rhythm: _asScore(j['rhythm']),
         hardestSound: j['hardest_sound'] as String? ?? '',
         hardestEvidence: j['hardest_evidence'] as String? ?? '',
         l1Interference: j['l1_interference'] as String? ?? '',
@@ -150,10 +234,26 @@ class LearningSummary {
         sessions: ((j['sessions'] as List?) ?? const [])
             .map((e) => SessionPoint.fromJson(e as Map<String, dynamic>))
             .toList(),
+        // 서버 3f54ec5(10-03) — 구서버는 키가 없다 → 빈 목록 → 카드 숨김.
+        retrySounds: ((j['retry_sounds'] as List?) ?? const [])
+            .map((e) => RetrySound.fromJson(e as Map<String, dynamic>))
+            .where((r) => r.soundKey.isNotEmpty)
+            .toList(),
       );
 
   /// Sentences passed, out of [total].
   final int passed, total;
+
+  /// 이 통화 학습을 끝까지 마쳤나 — 현지인 표현을 포함한 모든 항목에 점수가 있다.
+  ///
+  /// 점수는 서버가 문장별 평가를 그대로 읽어 준다. 복습하지 않은 문장은 null 이다. 학습 흐름은
+  /// 채점이 끝나야 다음 문장으로 넘어가므로(건너뛰기 없음), 중간에 나가면 뒤 문장이 null 로 남는다.
+  /// 서버 값이라 재설치·기기 변경에도 같다.
+  bool get learningFinished {
+    return sentences.isNotEmpty &&
+        sentences.every((s) => s.pronunciation != null &&
+            s.pronunciation! >= 0 && s.pronunciation! <= 100);
+  }
 
   /// When the session happened — the head's meta line (`3569:15082`).
   ///
@@ -163,7 +263,8 @@ class LearningSummary {
   final DateTime date;
 
   /// 0–100 gauge score and its three sub-scores.
-  final int overall, pronunciation, fluency, rhythm;
+  /// null = not scored (drawn as 「—」 / the inactive gauge, F101).
+  final int? overall, pronunciation, fluency, rhythm;
 
   /// `Section/OneFix` — the sound that went worst, an example of it going wrong,
   /// and why the learner's first language makes it hard.
@@ -178,6 +279,9 @@ class LearningSummary {
   /// Chart/table points, **oldest first** — the chart draws left→right and the
   /// table reverses it.
   final List<SessionPoint> sessions;
+
+  /// 「자주 틀린 소리」(최대 3) — 비면 리포트 카드를 숨긴다(A5 규칙 8).
+  final List<RetrySound> retrySounds;
 
   /// Total attempts across [phonemes], for the section's sub-label.
   int get phonemeAttempts => phonemes.fold(0, (sum, p) => sum + p.attempts);

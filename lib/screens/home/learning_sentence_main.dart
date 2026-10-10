@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
@@ -60,7 +61,9 @@ class _LearningSentenceMainScreenState extends State<LearningSentenceMainScreen>
     final eval = args.feedback?.evaluation;
 
     return AppScaffold(
-      background: context.c.backgroundNormalAlternative,
+      // 화면 바탕 = Background/Surface/Alternative(Light #FFF · Dark #252932) — 09-26 Light
+      // backgroundNormalAlternative 가 #DBDCE2 로 진해지며 드러난 오배정(Figma learn/* · 디자인 세션).
+      background: context.c.backgroundSurfaceAlternative,
       body: Column(
         children: [
           // No title: the frame defines none for this screen, so the GNB is a
@@ -74,8 +77,7 @@ class _LearningSentenceMainScreenState extends State<LearningSentenceMainScreen>
           Gnb.main(onBack: _finish),
           Expanded(
             child: Center(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
+              child: ContentColumn(
                 child: PronunciationResult(
                   state: eval == null
                       ? PronunciationState.inactive
@@ -85,27 +87,30 @@ class _LearningSentenceMainScreenState extends State<LearningSentenceMainScreen>
                     PronunciationMetric(
                       label: l10n.pronunciation,
                       value: eval == null ? '-%' : '${eval.pronunciation}%',
+                      score: eval?.pronunciation,
                     ),
                     PronunciationMetric(
                       label: l10n.fluency,
                       value: eval == null ? '-%' : '${eval.fluency}%',
+                      score: eval?.fluency,
                     ),
                     PronunciationMetric(
                       label: l10n.rhythm,
                       value: eval == null ? '-%' : '${eval.rhythm}%',
+                      score: eval?.rhythm,
                     ),
                   ],
                 ),
               ),
             ),
           ),
-          Padding(
+          ContentColumn(
             // Bottom is the literal home-indicator gap (34), not an
             // AppSpacing token — this screen has no trailing SafeArea /
             // BottomCtaBar (unlike its learning_intro/learning_next
             // siblings), so it would otherwise sit flush against the
             // physical bottom edge on devices with viewPadding.bottom == 0.
-            padding: const EdgeInsets.fromLTRB(AppSpacing.s20, AppSpacing.s12, AppSpacing.s20, 34),
+            padding: const EdgeInsets.only(top: AppSpacing.s12, bottom: 34),
             child: SizedBox(
               width: double.infinity,
               child: Button(

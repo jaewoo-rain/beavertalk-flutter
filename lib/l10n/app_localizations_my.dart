@@ -23,6 +23,12 @@ class AppLocalizationsMy extends AppLocalizations {
   String get callErrorGeneric => 'ခေါ်ဆိုနေစဉ် အမှားတစ်ခု ဖြစ်ပွားခဲ့သည်။';
 
   @override
+  String get callDailyLimit => 'ယနေ့ လေ့လာချိန် ကုန်သွားပါပြီ။';
+
+  @override
+  String get callAlreadyInCall => 'သင် ဖုန်းခေါ်ဆိုမှုထဲတွင် ရှိနေပြီးဖြစ်သည်။';
+
+  @override
   String get callNetworkError => 'ကွန်ရက် အမှား ဖြစ်ပွားခဲ့သည်။';
 
   @override
@@ -57,6 +63,16 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get callRatingPrompt => 'ခေါ်ဆိုမှု ဘယ်လိုရှိခဲ့လဲ။';
+
+  @override
+  String get callRatingBody =>
+      'သင့်အဆင့်သတ်မှတ်ချက်က နောက်တစ်ကြိမ် ပိုကောင်းစွာ စကားပြောနိုင်ရန် ကူညီပေးသည်။';
+
+  @override
+  String get callRatingSubmit => 'ပို့ရန်';
+
+  @override
+  String get callRatingSkip => 'ကျော်ရန်';
 
   @override
   String get ratingBad => 'သိပ်မကောင်းဘူး';
@@ -128,6 +144,24 @@ class AppLocalizationsMy extends AppLocalizations {
   String get alarms => 'နှိုးစက်များ';
 
   @override
+  String get alarmAdd => 'နှိုးစက် ထည့်ရန်';
+
+  @override
+  String get alarmEdit => 'နှိုးစက် ပြင်ရန်';
+
+  @override
+  String get alarmEveryDay => 'နေ့တိုင်း';
+
+  @override
+  String get alarmWeekdays => 'ကြားရက်များ';
+
+  @override
+  String get alarmWeekend => 'စနေ၊ တနင်္ဂနွေ';
+
+  @override
+  String get alarmNoRepeat => 'ထပ်မလုပ်ပါ';
+
+  @override
   String get addSchedule => 'အချိန်ဇယား ထည့်ရန်';
 
   @override
@@ -153,6 +187,12 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get callPartner => 'ဇာတ်ကောင်';
+
+  @override
+  String get alarmModeLearnSub => 'သင်ရိုးပါ စကားစုများ လေ့ကျင့်ရန်';
+
+  @override
+  String get alarmModeChatSub => 'ကြိုက်ရာ အကြောင်း စကားပြော';
 
   @override
   String get quickStart => 'အမြန်စတင်ရန်';
@@ -202,13 +242,52 @@ class AppLocalizationsMy extends AppLocalizations {
   String get conversation => 'စကားဝိုင်း';
 
   @override
-  String get review => 'သုံးသပ်ချက်';
-
-  @override
-  String get pronunciationChallenge => 'အသံထွက် စိန်ခေါ်မှု';
-
-  @override
   String get newExpressions => 'အသုံးအနှုန်းအသစ်များ';
+
+  @override
+  String get analysisPrepNote => 'ဒီနေ့ ဖုန်းခေါ်ဆိုမှုကို ပြန်ကြည့်နေပါတယ်။';
+
+  @override
+  String get analysisPrepNoteHint => 'ခဏနေရင် ဒီနေရာမှာ စာတိုလေး ရောက်လာပါမယ်';
+
+  @override
+  String get analysisPrepTitle =>
+      'ဘီဗာက ဒီနေ့ စကားစုတွေကို ကတ်အဖြစ် လုပ်နေပါတယ်';
+
+  @override
+  String get analysisPrepSub => 'ပြီးတာနဲ့ ဒီနေရာမှာ ချက်ချင်း ပေါ်လာပါမယ်။';
+
+  @override
+  String get analysisPrepStepSave => 'စကားပြောမှု သိမ်းဆည်းခြင်း';
+
+  @override
+  String get analysisPrepStepCards => 'စကားစုကတ် ပြုလုပ်ခြင်း';
+
+  @override
+  String get analysisPrepStateDone => 'ပြီးပြီ';
+
+  @override
+  String get analysisPrepStateWorking => 'လုပ်နေဆဲ';
+
+  @override
+  String get analysisPrepStateWaiting => 'စောင့်ဆိုင်းနေ';
+
+  @override
+  String get usedExpressions => 'သင်သုံးခဲ့သော အသုံးအနှုန်းများ';
+
+  @override
+  String quizExpressionsCount(int count) {
+    return 'သင်ယူခဲ့သော အသုံးအနှုန်း $count';
+  }
+
+  @override
+  String get quizPassed => 'မှန်ပါသည်';
+
+  @override
+  String get quizFailed => 'ထပ်ကြည့်ရန်';
+
+  @override
+  String get quizPending => 'နောက်တစ်ကြိမ် ဆက်ရန်';
 
   @override
   String get analysisResult => 'ဆန်းစစ်ချက် ရလဒ်';
@@ -218,6 +297,9 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get practice => 'လေ့ကျင့်ရန်';
+
+  @override
+  String get analysisNativeLabel => 'ဒေသခံ';
 
   @override
   String recentScore(int score) {
@@ -264,34 +346,6 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get cancel => 'မလုပ်တော့ပါ';
-
-  @override
-  String get selectTime => 'အချိန် ရွေးချယ်ပါ';
-
-  @override
-  String get getStarted => 'စတင်လိုက်ပါ';
-
-  @override
-  String get permissionTitle =>
-      'အဆင်ပြေချောမွေ့စွာ အသုံးပြုနိုင်ရန်\nခွင့်ပြုချက်များ ပေးပါ';
-
-  @override
-  String get permissionSubtitle =>
-      'ဝန်ဆောင်မှုကို အသုံးပြုရန် လိုအပ်သော ခွင့်ပြုချက်များ ဖြစ်ပါသည်။';
-
-  @override
-  String get permissionMicTitle => 'မိုက်ခရိုဖုန်း (လိုအပ်သည်)';
-
-  @override
-  String get permissionMicDesc =>
-      'AI နှင့် အင်္ဂလိပ်လို စကားပြောရန် လိုအပ်ပါသည်။';
-
-  @override
-  String get permissionNotifTitle => 'အကြောင်းကြားချက် (ရွေးချယ်နိုင်သည်)';
-
-  @override
-  String get permissionNotifDesc =>
-      'လေ့လာမှု သတိပေးချက်များနှင့် ခေါ်ဆိုမှု အချိန်ဇယားများ ပို့ပေးပါမည်။';
 
   @override
   String get micPermissionNeededTitle =>
@@ -446,13 +500,118 @@ class AppLocalizationsMy extends AppLocalizations {
   String get endLearning => 'သင်ခန်းစာ ရပ်ရန်';
 
   @override
-  String get navCalendar => 'ပြက္ခဒိန်';
-
-  @override
   String get navCall => 'ခေါ်ဆိုမှု';
 
   @override
-  String get navStats => 'စာရင်းအင်း';
+  String get homeCourseExpression => 'အသုံးအနှုန်း';
+
+  @override
+  String get homeCourseFreetalk => 'စကားဝိုင်း';
+
+  @override
+  String homeExpressionsLeft(int count) {
+    return 'စကားဝိုင်းအထိ အသုံးအနှုန်း $count ခုကျန်';
+  }
+
+  @override
+  String get homeFreetalkNote => 'သင်ယူထားသည်ကို သုံး၍ လွတ်လပ်စွာ စကားပြောပါ';
+
+  @override
+  String get homeTalkTitle => 'ဒီနေ့ ဘာတွေဖြစ်ခဲ့လဲ။';
+
+  @override
+  String get homeTalkNote => 'လွတ်လပ်စွာ စကားပြောရင်း လေ့လာပါ။';
+
+  @override
+  String get homeModeLearn => 'လေ့လာ';
+
+  @override
+  String get homeModeTalk => 'စကားပြော';
+
+  @override
+  String homeStreakDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'ဆက်တိုက် $count ရက်',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakCalendarTitle => 'လေ့လာမှု ပြက္ခဒိန်';
+
+  @override
+  String streakDaysUnit(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'ရက် ဆက်တိုက်',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String streakBest(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'အကောင်းဆုံးမှတ်တမ်း $count ရက်',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakMetricCallTime => 'ခေါ်ဆိုချိန်';
+
+  @override
+  String get streakMetricLearned => 'သင်ယူခဲ့သော စကားစု';
+
+  @override
+  String get streakMetricWords => 'ပြောခဲ့သော စကားလုံး';
+
+  @override
+  String streakCountValue(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString';
+  }
+
+  @override
+  String streakMinutes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count မိနစ်',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakNoCallsThatDay => 'ဤနေ့တွင် ခေါ်ဆိုမှု မရှိပါ။';
+
+  @override
+  String get homeLevelPending => 'အဆင့် မသတ်မှတ်ရသေး';
+
+  @override
+  String get homeNoLevelTitle => 'သင့်မှာ အဆင့် မရှိသေးပါ';
+
+  @override
+  String get homeNoLevelNote => 'ပထမဆုံးခေါ်ဆိုမှုပြီးလျှင် အဆင့်ရပါမည်';
+
+  @override
+  String get homeCurriculumPendingBadge => 'မကြာမီ';
+
+  @override
+  String homeCurriculumPendingTitle(String language) {
+    return '$language သင်ရိုးကို ပြင်ဆင်နေပါသည်';
+  }
+
+  @override
+  String get homeCurriculumPendingNote =>
+      'ခေါ်ဆိုမှုတွင် အထွေထွေ အသုံးအနှုန်းများ လေ့ကျင့်ပါမည်';
 
   @override
   String get myPage => 'ကျွန်ုပ်၏စာမျက်နှာ';
@@ -465,6 +624,27 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get changeAvatar => 'အာဗတား ပြောင်းရန်';
+
+  @override
+  String get avatarUseNow => 'ယခု သုံးမည်';
+
+  @override
+  String get avatarPurchaseFailed => 'ဝယ်ယူမှု မအောင်မြင်ပါ';
+
+  @override
+  String avatarPromoTitle(int percent) {
+    return 'ယနေ့သာ · $percent% လျှော့';
+  }
+
+  @override
+  String avatarPromoLeft(String time) {
+    return '$time ကျန်';
+  }
+
+  @override
+  String avatarPromoLeftDays(int days, String time) {
+    return '$days ရက် $time ကျန်';
+  }
 
   @override
   String get avatarIntro =>
@@ -508,9 +688,6 @@ class AppLocalizationsMy extends AppLocalizations {
   String get subscriptionManage => 'စာရင်းသွင်းမှု စီမံရန်';
 
   @override
-  String get changePlan => 'အစီအစဉ် ပြောင်းရန်';
-
-  @override
   String get cancelSubscription => 'စာရင်းသွင်းမှု ပယ်ဖျက်ရန်';
 
   @override
@@ -530,18 +707,9 @@ class AppLocalizationsMy extends AppLocalizations {
   String get viewBillingHistory => 'ငွေတောင်းခံမှတ်တမ်း ကြည့်ရန်';
 
   @override
-  String get keepUsingPro => 'Pro ကို ဆက်သုံးရန်';
-
-  @override
-  String get proMembership => 'Pro အသင်းဝင်ဖြစ်မှု';
-
-  @override
   String pricePerMonth(String price) {
     return '$price / လ';
   }
-
-  @override
-  String get benefitUnlimitedCalls => 'ကန့်သတ်မထားသော ခေါ်ဆိုမှုများ';
 
   @override
   String get benefitDetailedAnalysis =>
@@ -578,7 +746,7 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get challengeLoadingNote =>
-      'ပထမဆုံးအကြိမ် ဖွင့်ချိန်တွင် ကိုရီးယား အသံအသိအမှတ်ပြု မော်ဒယ် (~82MB) ကို ဒေါင်းလုတ်ဆွဲနေပါသည်။\nခဏစောင့်ပါ။';
+      'ကင်မရာနှင့် မိုက်ခရိုဖုန်းကို ပြင်ဆင်နေသည်။';
 
   @override
   String get challengeSttFallback =>
@@ -686,6 +854,11 @@ class AppLocalizationsMy extends AppLocalizations {
   String get accentSoundsLike => 'သင့်ကိုရီးယား အသံဟန်သည်';
 
   @override
+  String accentShareText(String country) {
+    return 'BeaverTalk နဲ့ ကိုရီးယားစကား သင်နေတယ် — ကျွန်ုပ်ရဲ့ ကိုရီးယား လေယူလေသိမ်းက $country လို ကြားရတယ်! 🦫 သင့်လေယူလေသိမ်းကို ရှာပြီး ကျွန်ုပ်နဲ့အတူ သင်ကြရအောင်: https://beavertalk.im';
+  }
+
+  @override
   String get hintLabel => 'အကြံပြုချက်';
 
   @override
@@ -732,7 +905,7 @@ class AppLocalizationsMy extends AppLocalizations {
   String get home => 'ပင်မစာမျက်နှာ';
 
   @override
-  String get callNow => 'ယခု ခေါ်ဆိုရန်';
+  String get onboardingLevelTestCta => 'အဆင့်စစ်ဆေးမှု ဖြေဆိုရန်';
 
   @override
   String get pronunciation => 'အသံထွက်';
@@ -742,10 +915,6 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get rhythm => 'စည်းချက်';
-
-  @override
-  String get analysisTimeout =>
-      'မျှော်လင့်ထားသည်ထက် အချိန်ကြာနေပါသည်။ ခဏနေ ထပ်ကြိုးစားပါ။';
 
   @override
   String get analysisFailed => 'စကားဝိုင်းကို ဆန်းစစ်၍မရပါ။ ထပ်ကြိုးစားပါ။';
@@ -791,6 +960,10 @@ class AppLocalizationsMy extends AppLocalizations {
   String get loginAppleSignInFailed => 'Apple အကောင့်ဝင်ခြင်း မအောင်မြင်ပါ။';
 
   @override
+  String get loginFacebookSignInFailed =>
+      'Facebook အကောင့်ဝင်ခြင်း မအောင်မြင်ပါ။';
+
+  @override
   String get loginKakaoSignInFailed => 'Kakao အကောင့်ဝင်ခြင်း မအောင်မြင်ပါ။';
 
   @override
@@ -798,6 +971,9 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get loginContinueWithGoogle => 'Google ဖြင့် ဆက်လုပ်ရန်';
+
+  @override
+  String get loginContinueWithFacebook => 'Facebook ဖြင့် ဆက်လုပ်ရန်';
 
   @override
   String get loginContinueWithApple => 'Apple ဖြင့် ဆက်လုပ်ရန်';
@@ -986,12 +1162,7 @@ class AppLocalizationsMy extends AppLocalizations {
   String get lastPayment => 'နောက်ဆုံး ငွေပေးချေမှု';
 
   @override
-  String subscriptionSwitchNote(String date) {
-    return '$date အထိ Pro အကျိုးခံစားခွင့်များကို ဆက်လက်သုံးနိုင်ပြီး ထို့နောက် အစီအစဉ်သည် အလိုအလျောက် အခမဲ့သို့ ပြောင်းသွားပါမည်။';
-  }
-
-  @override
-  String get freePlanCallLimit => 'တစ်ရက် ၁ ကြိမ် · ၅ မိနစ် ကန့်သတ်';
+  String get freePlanCallLimit => 'တစ်ရက် ခေါ်ဆိုချိန် 5 မိနစ်';
 
   @override
   String get freePlanBasicCharacters => 'အခြေခံ ဇာတ်ကောင်များ ပါဝင်သည်';
@@ -1004,9 +1175,6 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get noPayments => 'ငွေပေးချေမှု မရှိသေးပါ';
-
-  @override
-  String get morePaymentsExist => 'ယခင် ငွေပေးချေမှုများကို မပြသရသေးပါ';
 
   @override
   String get undatedPayments => 'ရက်စွဲမရှိ';
@@ -1129,15 +1297,36 @@ class AppLocalizationsMy extends AppLocalizations {
   String get retakeLevelTest => 'အဆင့်စစ်ဆေးမှု ပြန်ဖြေရန်';
 
   @override
+  String get levelTestOncePerDay =>
+      'အဆင့်စစ်ဆေးမှုကို တစ်ရက်လျှင် တစ်ကြိမ်သာ ဖြေဆိုနိုင်ပါသည်။ မနက်ဖြန် ထပ်ကြိုးစားပါ။';
+
+  @override
+  String get levelRetakeTitle => 'အဆင့်စစ်ဆေးမှုကို ပြန်ဖြေမလား?';
+
+  @override
+  String get levelRetakeBody =>
+      'ပြန်ဖြေပါက သင့်တိုးတက်မှုသည် ထိုအဆင့်၏ ပထမသင်ခန်းစာသို့ ပြန်သွားမည် — အဆင့်တူ ရလျှင်လည်း ထိုနည်းတူ။ သင်ယူခဲ့သော စကားစုနှင့် ခေါ်ဆိုမှုမှတ်တမ်း ကျန်ရှိမည်။';
+
+  @override
+  String get levelRetakeKeep => 'တိုးတက်မှု ထိန်းထားရန်';
+
+  @override
+  String get levelRetakeConfirm => 'ပြန်ဖြေရန်';
+
+  @override
   String get practicePronunciation => 'အသံထွက် လေ့ကျင့်ရန်';
 
   @override
-  String get priceChangedTitle => 'ဈေးနှုန်းပြောင်းသွားသည်';
+  String get learnResultView => 'သင်ယူမှု ရလဒ် ကြည့်ရန်';
 
   @override
-  String priceChangedBody(String price) {
-    return 'ဤပစ္စည်းသည် ယခု $price ဖြစ်သည်။ ဆက်လုပ်မလား။';
-  }
+  String get learnAgain => 'ထပ်မံ သင်ယူရန်';
+
+  @override
+  String get analysisNoScoreReview => 'လေ့ကျင့်ရင် အသံထွက် ရမှတ် ထွက်လာပါမယ်';
+
+  @override
+  String get analysisNoScoreEmpty => 'အမှတ်ပေးရန် ဝါကျ မရှိပါ';
 
   @override
   String get billingGroupPlanPurchases => 'အစီအစဉ်နှင့် ဝယ်ယူမှုများ';
@@ -1146,16 +1335,16 @@ class AppLocalizationsMy extends AppLocalizations {
   String get billingGroupInTheStore => 'စတိုးတွင်';
 
   @override
-  String get billingChangePlan => 'အစီအစဉ် ပြောင်းရန်';
-
-  @override
-  String get billingCompareAllPlans => 'အစီအစဉ်အားလုံး နှိုင်းယှဉ်ရန်';
+  String get billingCompareAllPlans => 'အစီအစဉ်များ နှိုင်းယှဉ်ရန်';
 
   @override
   String get billingBuyACharacter => 'ဇာတ်ကောင် ဝယ်ရန်';
 
   @override
   String get billingRestorePurchases => 'ဝယ်ယူမှုများ ပြန်လည်ရယူရန်';
+
+  @override
+  String get billingRedeemCode => 'ကုဒ်အသုံးပြုရန်';
 
   @override
   String get billingPaymentHistory => 'ငွေပေးချေမှု မှတ်တမ်း';
@@ -1203,13 +1392,31 @@ class AppLocalizationsMy extends AppLocalizations {
   String get planPro => 'Pro';
 
   @override
-  String get planMax => 'Max';
+  String get planMax => 'Premium';
 
   @override
-  String get planMaxTrial => 'Max အစမ်းသုံး';
+  String get premiumBulletVideo => 'တစ်ရက် ဗီဒီယိုခေါ်ဆိုမှု 15 မိနစ်';
 
   @override
-  String get freePlanPriceLine => '\$0.00 — တစ်နေ့ ခေါ်ဆိုမှုတစ်ကြိမ်';
+  String get premiumBulletAnalysis =>
+      'ပြန်လေ့ကျင့်ရာတွင် အသံထွက် အမှတ်ပေးခြင်း အကန့်အသတ်မရှိ';
+
+  @override
+  String get premiumBulletWeakSounds =>
+      'သင့်ဘာသာစကားအတွက် အခက်အခဲအသံ လေ့ကျင့်မှု';
+
+  @override
+  String get noteCharactersSeparate =>
+      'ဇာတ်ကောင်များကို သီးခြားရောင်းသည်။ ဝယ်ထားသော ဇာတ်ကောင်များ သင့်ပိုင်ဖြစ်သည်။';
+
+  @override
+  String get ctaGetPremium => 'Premium ရယူရန်';
+
+  @override
+  String get planMaxTrial => 'Premium အစမ်းသုံး';
+
+  @override
+  String get freePlanPriceLine => 'အခမဲ့ — တစ်နေ့ ခေါ်ဆိုချိန် 5 မိနစ်';
 
   @override
   String pricePerMonthLine(String amount) {
@@ -1222,11 +1429,11 @@ class AppLocalizationsMy extends AppLocalizations {
   }
 
   @override
-  String get todaysCalls => 'ယနေ့ ခေါ်ဆိုမှုများ';
+  String get todaysCalls => 'ယနေ့ ခေါ်ဆိုချိန်';
 
   @override
   String callsUsedOfLimit(int used, int limit) {
-    return '$limit ကြိမ်အနက် $used ကြိမ် သုံးပြီး';
+    return '$limit မိနစ်တွင် $used မိနစ် သုံးပြီး';
   }
 
   @override
@@ -1247,35 +1454,23 @@ class AppLocalizationsMy extends AppLocalizations {
   }
 
   @override
-  String get bannerGoUnlimitedTitle => 'Pro ဖြင့် အကန့်အသတ်မဲ့ သုံးပါ';
-
-  @override
-  String bannerGoUnlimitedSub(String price) {
-    return 'အကန့်အသတ်မဲ့ ခေါ်ဆိုမှု · တစ်ကြိမ် ၁၅ မိနစ် · တစ်လ $price';
-  }
-
-  @override
-  String get bannerMaxUpsellTitle => 'Max ဖြင့် ဗီဒီယို ဖွင့်ပါ';
+  String get bannerMaxUpsellTitle =>
+      'Premium ဖြင့် မျက်နှာချင်းဆိုင် စကားပြောပါ';
 
   @override
   String bannerMaxUpsellSub(String price) {
-    return 'မျက်နှာချင်းဆိုင် ခေါ်ဆိုမှု · တစ်လ $price';
+    return 'ဗီဒီယိုခေါ်ဆိုမှု · တစ်ရက် 15 မိနစ် · တစ်လ $price';
   }
 
   @override
   String get bannerAnnualSwitchTitle => 'နှစ်စဉ်အစီအစဉ်သို့ ပြောင်းရန်';
 
   @override
-  String bannerAnnualSwitchSub(String yearly, String perMonth) {
-    return 'တစ်နှစ် $yearly · တစ်လ $perMonth';
-  }
-
-  @override
   String get bannerPaymentFailedTitle => 'ငွေပေးချေမှု မအောင်မြင်ပါ';
 
   @override
   String get bannerPaymentFailedSub =>
-      'Pro ဆက်သုံးရန် စတိုးတွင် ငွေပေးချေမှု အပ်ဒိတ်လုပ်ပါ';
+      'Premium ဆက်သုံးရန် စတိုးတွင် ငွေပေးချေမှု အပ်ဒိတ်လုပ်ပါ';
 
   @override
   String get bannerPausedTitle => 'သင့်အစီအစဉ် ခေတ္တရပ်ထားသည်';
@@ -1292,10 +1487,6 @@ class AppLocalizationsMy extends AppLocalizations {
       'ငွေပေးချေနည်း၊ အစီအစဉ်ပြောင်းခြင်းနှင့် ပယ်ဖျက်ခြင်းကို စတိုးက ဆောင်ရွက်သည်။';
 
   @override
-  String get noteFairUse =>
-      'အကန့်အသတ်မဲ့ အသုံးပြုမှုသည် တရားမျှတသုံးစွဲမှု မူဝါဒအတိုင်း ဖြစ်သည်။';
-
-  @override
   String noteTrialEnds(String date) {
     return 'သင့်အစမ်းသုံးကာလ $date တွင် ကုန်ဆုံးမည်။ ၎င်းမတိုင်မီ စတိုးတွင် ပယ်ဖျက်ပါက ငွေမကောက်ခံပါ။';
   }
@@ -1306,7 +1497,7 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get noteHold =>
-      'ငွေပေးချေမှု အောင်မြင်သည်အထိ Pro ခေတ္တရပ်ထားသည်။ သင့်ဇာတ်ကောင်များနှင့် တိုးတက်မှု လုံခြုံပါသည်။';
+      'ငွေပေးချေမှု အောင်မြင်သည်အထိ Premium ခေတ္တရပ်ထားသည်။ သင့်ဇာတ်ကောင်များနှင့် တိုးတက်မှု လုံခြုံပါသည်။';
 
   @override
   String noteEnding(String date) {
@@ -1314,7 +1505,7 @@ class AppLocalizationsMy extends AppLocalizations {
   }
 
   @override
-  String get trialExpiredTitle => 'သင့် Max အစမ်းသုံးကာလ ကုန်ဆုံးပြီ';
+  String get trialExpiredTitle => 'သင့် Premium အစမ်းသုံးကာလ ကုန်ဆုံးပြီ';
 
   @override
   String get trialExpiredSub => 'ယခု Free တွင် ရှိနေသည်';
@@ -1326,71 +1517,26 @@ class AppLocalizationsMy extends AppLocalizations {
   String get currentPlanTitle => 'လက်ရှိ အစီအစဉ်';
 
   @override
-  String get badgeRecommended => 'အကြံပြုထားသည်';
-
-  @override
   String get perMonthUnit => 'တစ်လလျှင်';
 
   @override
-  String get planTaglinePro => 'အကန့်အသတ်မဲ့ ခေါ်ဆိုမှု။ တစ်ကြိမ် ၁၅ မိနစ်။';
-
-  @override
-  String get planTaglineMax => 'ယခု သူတို့ကို မြင်နိုင်ပြီ။';
-
-  @override
-  String get planTaglineFree => 'တစ်နေ့ တစ်ကြိမ်။ အခမဲ့။';
-
-  @override
-  String get bulletProCalls => 'ကြိုက်သလောက် အသံခေါ်ဆိုမှု';
-
-  @override
-  String get bulletProLength => 'တစ်ကြိမ်လျှင် ၁၅ မိနစ်';
-
-  @override
-  String get bulletProScoring => 'စာလုံးတစ်လုံးချင်း အသံထွက် အမှတ်ပေးမှု';
+  String get planTaglineFree => 'တစ်နေ့ 5 မိနစ်။ အခမဲ့။';
 
   @override
   String get bulletProCorrections => 'သင့်မိခင်ဘာသာစကားအလိုက် ပြင်ဆင်ချက်များ';
 
   @override
-  String get bulletProBeaverCalls => 'Beaver က သင့်ကို အရင်ခေါ်မည်';
+  String get bulletFreeCall => 'တစ်နေ့ 5 မိနစ် အသံခေါ်ဆိုမှု';
 
   @override
-  String get bulletMaxVideo => 'မျက်နှာချင်းဆိုင် ဗီဒီယိုခေါ်ဆိုမှု';
-
-  @override
-  String get bulletMaxEverything => 'Pro ပါ အရာအားလုံး';
-
-  @override
-  String get bulletMaxCharacters => 'ဇာတ်ကောင်အားလုံး၊ အကန့်အသတ်မဲ့';
-
-  @override
-  String get bulletMaxStudyBook => 'သင့်အဆင့်နှင့် ကိုက်ညီသော လေ့လာစာအုပ်';
-
-  @override
-  String get bulletMaxWeeklyReport =>
-      'သင့်အသံထွက် ပြောင်းလဲပုံ အပတ်စဉ် အစီရင်ခံစာ';
-
-  @override
-  String get bulletFreeCall => 'တစ်နေ့ ၅ မိနစ် အသံခေါ်ဆိုမှု တစ်ကြိမ်';
-
-  @override
-  String get bulletFreeCheck => 'တစ်နေ့ အသံထွက်စစ်ဆေးမှု တစ်ကြိမ်';
-
-  @override
-  String get bulletFreeAccent => 'အကန့်အသတ်မဲ့ လေယူလေသိမ်း စစ်ဆေးမှု';
-
-  @override
-  String get bulletFreeCharacter => 'စတင်ရန် ဇာတ်ကောင်တစ်ကောင်';
-
-  @override
-  String get ctaGoUnlimited => 'အကန့်အသတ်မဲ့ သုံးရန်';
+  String get bulletFreeCharacter => 'စတင်ရန် ဇာတ်ကောင် 2 ခု';
 
   @override
   String get ctaTurnOnVideo => 'ဗီဒီယို ဖွင့်ရန်';
 
   @override
-  String get noteCallLength => 'ခေါ်ဆိုမှုတစ်ကြိမ်လျှင် ၁၅ မိနစ်ဖြစ်သည်။';
+  String get noteCallLength =>
+      'Premium: တစ်ရက် 15 မိနစ် — ထိုအချိန်အတွင်း လိုသလောက် အကြိမ် ခေါ်ဆိုနိုင်သည်။';
 
   @override
   String get paywallProTitle1 => 'သင့်ကိုရီးယား သူငယ်ချင်း';
@@ -1399,34 +1545,27 @@ class AppLocalizationsMy extends AppLocalizations {
   String get paywallProTitle2 => 'နံနက် ၃ နာရီမှာလည်း နိုးနေတယ်';
 
   @override
-  String get paywallProSub =>
-      'အကန့်အသတ်မဲ့ ခေါ်ဆိုမှု။ တစ်ကြိမ် ၁၅ မိနစ်။ တစ်နှစ်ပတ်လုံး။';
+  String get paywallLimitHeadline =>
+      'Premium ဖြင့် တစ်ရက် 15 မိနစ် ခေါ်ဆိုနိုင်သည်။';
 
   @override
-  String get paywallLimitHeadline => 'Pro က ကန့်သတ်ချက်ကို ဖယ်ရှားပေးသည်။';
+  String get limitBannerCallTitle => 'ယနေ့ ခေါ်ဆိုချိန် ကုန်ပါပြီ';
 
   @override
-  String get limitBannerCallTitle => 'ယနေ့ ခေါ်ဆိုမှု ပြီးပါပြီ';
-
-  @override
-  String get limitBannerCallSub => 'Free တွင် တစ်နေ့ တစ်ကြိမ် ခေါ်ဆိုနိုင်သည်';
-
-  @override
-  String get limitBannerCheckTitle => 'ယနေ့ စစ်ဆေးမှု ပြီးပါပြီ';
-
-  @override
-  String get limitBannerCheckSub => 'Free တွင် တစ်နေ့ တစ်ကြိမ် စစ်ဆေးနိုင်သည်';
+  String get limitBannerCallSub => 'Free တွင် တစ်နေ့ 5 မိနစ် ခေါ်ဆိုနိုင်သည်';
 
   @override
   String get bulletProCharactersForever =>
       'ဝယ်ထားသော ဇာတ်ကောင်များ ထာဝရ သင့်ပိုင်';
 
   @override
-  String get paywallMaxTitle => 'ယခု သူတို့ကို မြင်နိုင်ပြီ။';
+  String get paywallMaxTitle =>
+      'အခု ဗီဒီယိုနဲ့ မျက်နှာချင်းဆိုင် စကားပြောနိုင်ပြီ။';
 
   @override
-  String get paywallMaxSub =>
-      'ဗီဒီယိုခေါ်ဆိုမှု၊ ဇာတ်ကောင်အားလုံးနှင့် သင့်အဆင့်အတွက် ပြုလုပ်ထားသော လေ့လာစာအုပ်။';
+  String paywallTutorCompare(String price) {
+    return 'ဆရာနှင့် တစ်နာရီ \$25 ကျသင့်သည်။ Premium တစ်လ $price ကျသင့်သည်။';
+  }
 
   @override
   String get planMonthly => 'လစဉ်';
@@ -1465,8 +1604,31 @@ class AppLocalizationsMy extends AppLocalizations {
   }
 
   @override
+  String ctaCaptionMaxYearly(String price) {
+    return 'တစ်နှစ် $price · စတိုးတွင် အချိန်မရွေး ပယ်ဖျက်နိုင်';
+  }
+
+  @override
   String ctaCaptionMaxTrial(String price) {
     return '၇ ရက် အခမဲ့၊ ထို့နောက် တစ်လ $price · စတိုးတွင် အချိန်မရွေး ပယ်ဖျက်နိုင်';
+  }
+
+  @override
+  String ctaCaptionMaxYearlyTrial(String price) {
+    return '၇ ရက် အခမဲ့၊ ထို့နောက် တစ်နှစ် $price · စတိုးတွင် အချိန်မရွေး ပယ်ဖျက်နိုင်';
+  }
+
+  @override
+  String get bundleTitle => 'သုံးကောင်လုံး တစ်ခါတည်း';
+
+  @override
+  String bundleOffBadge(int percent) {
+    return '$percent% လျှော့';
+  }
+
+  @override
+  String bundleLinkLabel(String price) {
+    return 'သုံးကောင်လုံးကို $price ဖြင့် ရယူပါ';
   }
 
   @override
@@ -1480,61 +1642,26 @@ class AppLocalizationsMy extends AppLocalizations {
   String get footerPrivacy => 'ကိုယ်ရေးလုံခြုံမှု';
 
   @override
-  String get noteMaxCharacters =>
-      'Max ဖြင့် ဖွင့်ထားသော ဇာတ်ကောင်များကို စာရင်းသွင်းမှု သက်ဝင်နေစဉ် သုံးနိုင်သည်။ ဝယ်ထားသော ဇာတ်ကောင်များ သင့်ပိုင် ဆက်ဖြစ်သည်။';
-
-  @override
   String get processingTitle => 'သင့်ဝယ်ယူမှုကို အတည်ပြုနေသည်';
 
   @override
   String get processingSub => 'ပုံမှန်အားဖြင့် စက္ကန့်အနည်းငယ် ကြာသည်။';
 
   @override
-  String get successProTitle => 'ယခု Pro ဖြစ်ပါပြီ။';
+  String get successProTitle => 'ယခု Premium ဖြစ်ပါပြီ။';
 
   @override
-  String get successProSub => 'အကန့်အသတ်မဲ့ ခေါ်ဆိုမှု၊ ယခုချက်ချင်း စတင်။';
-
-  @override
-  String get successProBenefit1 => 'ကြိုက်သလောက် ခေါ်ဆိုပါ — တစ်ကြိမ် ၁၅ မိနစ်';
-
-  @override
-  String get successProBenefit2 => 'အကန့်အသတ်မဲ့ အသံထွက်စစ်ဆေးမှု';
-
-  @override
-  String get successProBenefit3 =>
-      'ဇာတ်ကောင်အားလုံးနှင့် တစ်ကြိမ်တည်း ဝယ်ယူမှုများ';
-
-  @override
-  String get successMaxTitle => 'ယခု သူတို့ကို မြင်နိုင်ပြီ။';
+  String get successMaxTitle => 'ယခု အချင်းချင်း မျက်နှာမြင်နိုင်ပြီ။';
 
   @override
   String get successMaxSub =>
       'ဗီဒီယိုခေါ်ဆိုမှု ဖွင့်ပြီးပြီ။ မည်သည့်ခေါ်ဆိုမှုတွင်မဆို ဗီဒီယိုခလုတ်ကို နှိပ်ပါ။';
 
   @override
-  String get successMaxBenefit1 => 'မျက်နှာချင်းဆိုင် ဗီဒီယိုခေါ်ဆိုမှု';
-
-  @override
-  String get successMaxBenefit2 =>
-      'ဇာတ်ကောင်အားလုံး အကန့်အသတ်မဲ့ — အသစ်များကို အရင်ရ';
-
-  @override
-  String get successMaxBenefit3 => 'သင့်အဆင့်နှင့် ကိုက်ညီသော လေ့လာစာအုပ်';
-
-  @override
-  String get ctaStartACall => 'ခေါ်ဆိုမှု စတင်ရန်';
-
-  @override
   String get ctaStartAVideoCall => 'ဗီဒီယိုခေါ်ဆိုမှု စတင်ရန်';
 
   @override
   String get ctaSeeYourSubscription => 'သင့်စာရင်းသွင်းမှု ကြည့်ရန်';
-
-  @override
-  String successProCaption(String price) {
-    return 'မပယ်ဖျက်မချင်း တစ်လ $price ကောက်ခံသည်။ စတိုးတွင် အချိန်မရွေး စီမံ သို့မဟုတ် ပယ်ဖျက်နိုင်သည်။';
-  }
 
   @override
   String successMaxCaption(String price) {
@@ -1554,94 +1681,16 @@ class AppLocalizationsMy extends AppLocalizations {
   String get plansErrorCaption => 'ငွေမကောက်ခံခဲ့ပါ။';
 
   @override
-  String get changePlanTitle => 'အစီအစဉ် ပြောင်းရန်';
-
-  @override
-  String get moveToMaxTitle => 'Max သို့ ပြောင်းရန်';
-
-  @override
-  String maxPriceShort(String price) {
-    return '$price / လ';
-  }
-
-  @override
-  String get moveToMaxCardSub =>
-      'မျက်နှာချင်းဆိုင် ဗီဒီယိုခေါ်ဆိုမှု · ဇာတ်ကောင်အားလုံး · သင့်အတွက် လေ့လာစာအုပ်';
-
-  @override
-  String get whatHappensNow => 'ယခု ဖြစ်လာမည့်အရာ';
-
-  @override
-  String get maxStartsLabel => 'Max စတင်ချိန်';
-
-  @override
-  String get immediately => 'ချက်ချင်း';
-
-  @override
-  String get unusedProTime => 'Pro မသုံးရသေးသော ကာလ';
-
-  @override
-  String get creditedTowardMax => 'Max သို့ ခုနှိမ်ပေးမည်';
-
-  @override
-  String nextPaymentMaxValue(String price, String date) {
-    return '$price · $date';
-  }
-
-  @override
-  String nextPaymentProValue(String price, String date) {
-    return '$price · $date';
-  }
-
-  @override
-  String get ctaSwitchToMax => 'Max သို့ ပြောင်းရန်';
-
-  @override
-  String get upgradeCaption =>
-      'အစီအစဉ်အသစ် ချက်ချင်း စတင်သည်။ Pro ကျန်ကာလကို ခုနှိမ်ပေးပြီး နှစ်ကြိမ် မကောက်ခံပါ။';
-
-  @override
-  String get moveToProTitle => 'Pro သို့ ပြောင်းရန်';
-
-  @override
-  String get moveToProSub =>
-      'ယနေ့ ဘာမှ မပြောင်းပါ။ ပေးချေပြီးသော လကုန်အထိ Max ဆက်သုံးနိုင်သည်။';
-
-  @override
-  String get maxRunsUntil => 'Max သုံးနိုင်သည့်ရက်';
-
-  @override
-  String get proStarts => 'Pro စတင်ချိန်';
-
-  @override
-  String get whatYouKeep => 'ဆက်ရရှိမည့်အရာ';
-
-  @override
-  String get keepBenefitCalls =>
-      'အကန့်အသတ်မဲ့ အသံခေါ်ဆိုမှု၊ တစ်ကြိမ် ၁၅ မိနစ်';
-
-  @override
-  String get keepBenefitCharacters => 'ဝယ်ထားသော ဇာတ်ကောင်များ ထာဝရ သင့်ပိုင်';
-
-  @override
-  String downgradeWarning(String date) {
-    return '$date တွင် ဗီဒီယိုခေါ်ဆိုမှုနှင့် Max သီးသန့် ဇာတ်ကောင်များ ပိတ်သွားမည်။';
-  }
-
-  @override
-  String get ctaSwitchToPro => 'Pro သို့ ပြောင်းရန်';
-
-  @override
-  String get ctaKeepMax => 'Max ဆက်ထားရန်';
+  String get ctaKeepMax => 'Premium ဆက်ထားရန်';
 
   @override
   String get winbackSkip => 'ကျော်ရန်';
 
   @override
-  String get winbackTitle => 'သင့် Pro အစီအစဉ် ကုန်ဆုံးပြီ';
+  String get winbackTitle => 'သင့် Premium အစီအစဉ် ကုန်ဆုံးပြီ';
 
   @override
-  String get winbackSub => 'ယခု Free တွင် — တစ်နေ့ တစ်ကြိမ်။';
+  String get winbackSub => 'ယခု Free တွင် — တစ်နေ့ 5 မိနစ်။';
 
   @override
   String get winbackQuestion => 'ဘာကြောင့် ရပ်လိုက်သလဲ ပြောပြပေးမလား။';
@@ -1678,7 +1727,7 @@ class AppLocalizationsMy extends AppLocalizations {
   String get ctaClose => 'ပိတ်ရန်';
 
   @override
-  String get ovRestoreSuccessTitle => 'Pro ပြန်ရောက်ပြီ';
+  String get ovRestoreSuccessTitle => 'Premium ပြန်ရောက်ပြီ';
 
   @override
   String get ovRestoreSuccessBody =>
@@ -1699,13 +1748,27 @@ class AppLocalizationsMy extends AppLocalizations {
       'ဤစာရင်းသွင်းမှုသည် အခြား BeaverTalk အကောင့်တွင် သက်ဝင်နေပြီး ဖြစ်သည်။';
 
   @override
+  String ovRestoreCharactersTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'သင့်ဇာတ်ကောင်များ ပြန်ရောက်လာပါပြီ',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get ovRestoreCharacterOtherTitle =>
+      'ဤဇာတ်ကောင်ကို အခြားအကောင့်ဖြင့် ဝယ်ထားသည်';
+
+  @override
   String get ctaSignInThatAccount => 'ထိုအကောင့်ဖြင့် ဝင်ရန်';
 
   @override
   String get ctaGetHelp => 'အကူအညီ ရယူရန်';
 
   @override
-  String get ovCharacterOfferTitle => 'Pro အတွက် မသင့်သေးဘူးလား။';
+  String get ovCharacterOfferTitle => 'Premium အတွက် မသင့်သေးဘူးလား။';
 
   @override
   String get ovCharacterOfferBody =>
@@ -1716,7 +1779,7 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String rowFromPrice(String price) {
-    return '$price မှစ၍';
+    return 'တစ်ခုလျှင် $price';
   }
 
   @override
@@ -1760,7 +1823,7 @@ class AppLocalizationsMy extends AppLocalizations {
   String get rowCharactersYouBought => 'ဝယ်ထားသော ဇာတ်ကောင်များ';
 
   @override
-  String get rowProRunsUntil => 'Pro သုံးနိုင်သည့်ရက်';
+  String get rowProRunsUntil => 'Premium သုံးနိုင်သည့်ရက်';
 
   @override
   String get ctaSwitchToYearly => 'နှစ်စဉ်သို့ ပြောင်းရန်';
@@ -1775,7 +1838,7 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get ovAnnualSwitchBody =>
-      'Pro ကို နှစ်လ သုံးထားပြီးပြီ။ နှစ်စဉ်အစီအစဉ်က ပိုသက်သာသည်။';
+      'နှစ်စဉ်အစီအစဉ်သည် လစဉ်ပေးချေခြင်းထက် ပိုသက်သာသည်။';
 
   @override
   String get rowYouSave => 'ချွေတာနိုင်ငွေ';
@@ -1836,7 +1899,7 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get ovTrialEndingBody =>
-      'မပယ်ဖျက်ပါက Max ဆက်သွားမည်။ ဖြစ်လာမည့်အရာများမှာ —';
+      'မပယ်ဖျက်ပါက Premium ဆက်သွားမည်။ ဖြစ်လာမည့်အရာများမှာ —';
 
   @override
   String get rowTrialEnds => 'အစမ်းသုံး ကုန်ဆုံးချိန်';
@@ -1851,7 +1914,7 @@ class AppLocalizationsMy extends AppLocalizations {
   String get ctaCancelInStore => 'စတိုးတွင် ပယ်ဖျက်ရန်';
 
   @override
-  String get ovTrialStartTitle => 'Max ၇ ရက်၊ အခမဲ့';
+  String get ovTrialStartTitle => 'Premium ၇ ရက်၊ အခမဲ့';
 
   @override
   String ovTrialStartBody(String price, String date) {
@@ -1866,7 +1929,7 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get ovOtoBody =>
-      'ကောင်းသော ရွေးချယ်မှု — အကန့်အသတ်မဲ့ ခေါ်ဆိုမှု ယခုဖွင့်ပြီးပြီ။ နှစ်စဉ်ပေးချေလျှင် တူညီသော Pro ကို ပိုသက်သာစွာ ရသည်။';
+      'ရွေးချယ်မှု ကောင်းပါသည်။ နှစ်စဉ်ပေးချေလျှင် တူညီသော Premium ကို ပိုသက်သာစွာ ရနိုင်သည်။';
 
   @override
   String get ovFailedDeclinedTitle => 'သင့်ကတ် ငြင်းပယ်ခံရသည်';
@@ -1892,7 +1955,28 @@ class AppLocalizationsMy extends AppLocalizations {
       'စတိုးနှင့် ချိတ်ဆက်၍ မရပါ။ ငွေမကောက်ခံခဲ့ပါ။';
 
   @override
-  String get ovAlreadyTitle => 'Pro ကို သုံးနေပြီးသား ဖြစ်သည်';
+  String get ovVerifyingTitle => 'ငွေပေးချေမှု လက်ခံရရှိပါပြီ';
+
+  @override
+  String get ovVerifyingBody =>
+      'စတိုးနှင့် အတည်ပြုနေဆဲဖြစ်ပါသည်။ မကြာမီ ဖွင့်ပေးပါမည် — မဖွင့်ပါက «ဝယ်ယူမှုများ ပြန်လည်ရယူရန်» ကို နှိပ်ပါ။';
+
+  @override
+  String get ovPendingTitle => 'ငွေပေးချေမှု စောင့်ဆိုင်းနေသည်';
+
+  @override
+  String get ovPendingBody =>
+      'စတိုးက ငွေပေးချေမှုကို မပြီးသေးပါ။ ပြီးသည်နှင့် ဖွင့်ပေးပါမည် — ဤမျက်နှာပြင်မှ ထွက်နိုင်ပါသည်။';
+
+  @override
+  String get ovRejectedTitle => 'ဤဝယ်ယူမှုကို အတည်မပြုနိုင်ပါ';
+
+  @override
+  String get ovRejectedBody =>
+      'စတိုးက ဤငွေပေးချေမှုကို အတည်မပြုသဖြင့် ဘာမှ မဖွင့်ပေးရသေးပါ။ ငွေကောက်ခံခံရပါက ကျွန်ုပ်တို့ထံ ဆက်သွယ်ပါ။';
+
+  @override
+  String get ovAlreadyTitle => 'Premium ကို သုံးနေပြီးသား ဖြစ်သည်';
 
   @override
   String get ovAlreadyBody =>
@@ -1906,30 +1990,24 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String subCancelBody(String date) {
-    return 'Pro $date အထိ သက်ဝင်သည်။ ထို့နောက် Free သို့ ပြောင်းမည်။';
+    return 'Premium $date အထိ သက်ဝင်သည်။ ထို့နောက် Free သို့ ပြောင်းမည်။';
   }
 
   @override
   String get subWhatYouLose => 'ဆုံးရှုံးမည့်အရာ';
 
   @override
-  String get benefitCalls15 => 'အကန့်အသတ်မဲ့ ခေါ်ဆိုမှု၊ တစ်ကြိမ် ၁၅ မိနစ်';
-
-  @override
   String get benefitScoring => 'စာလုံးတစ်လုံးချင်း အသံထွက် အမှတ်ပေးမှု';
 
   @override
-  String get benefitEveryCharacter => 'ဇာတ်ကောင်အားလုံး၊ အကန့်အသတ်မဲ့';
-
-  @override
-  String get ctaKeepPro => 'Pro ဆက်ထားရန်';
+  String get benefitEveryMetric => 'မက်ထရစ်တိုင်း၊ ဝါကျတိုင်း';
 
   @override
   String get subPaymentTitle => 'ငွေပေးချေမှု အပ်ဒိတ်လုပ်ရန်';
 
   @override
   String get subPaymentBody =>
-      'ငွေပေးချေမှု မအောင်မြင်ပါ။ ဆိုင်းငံ့ကာလအတွင်း Pro ဆက်သုံးနိုင်သည်။';
+      'ငွေပေးချေမှု မအောင်မြင်ပါ။ ဆိုင်းငံ့ကာလအတွင်း Premium ဆက်သုံးနိုင်သည်။';
 
   @override
   String get subHowToFix => 'ပြင်ဆင်နည်း';
@@ -1948,7 +2026,7 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String subResubBody(String date) {
-    return 'Pro $date တွင် ကုန်ဆုံးမည်။ အလိုအလျောက် သက်တမ်းတိုးကို ပြန်ဖွင့်ပါက ဘာမှ မပြောင်းပါ။';
+    return 'Premium $date တွင် ကုန်ဆုံးမည်။ အလိုအလျောက် သက်တမ်းတိုးကို ပြန်ဖွင့်ပါက ဘာမှ မပြောင်းပါ။';
   }
 
   @override
@@ -1958,24 +2036,10 @@ class AppLocalizationsMy extends AppLocalizations {
   String get ctaTurnItBackOn => 'ပြန်ဖွင့်ရန်';
 
   @override
-  String get flTodayTitle => 'ယနေ့ ခေါ်ဆိုမှု ပြီးပါပြီ';
+  String get flTodayTitle => 'ယနေ့ ခေါ်ဆိုချိန် ကုန်ပါပြီ';
 
   @override
   String get flTodayBody => 'ရပ်ထားသည့်နေရာမှ — ယခုပဲ ဆက်လုပ်ပါ။';
-
-  @override
-  String get flCheckTitle => 'ယနေ့ စစ်ဆေးမှု ပြီးပါပြီ';
-
-  @override
-  String get flCheckBody =>
-      'Free တွင် တစ်နေ့ တစ်ကြိမ်။ Pro ဖြင့် အကန့်အသတ်မဲ့။';
-
-  @override
-  String get flBenefitCalls =>
-      'Pro ဖြင့် အကန့်အသတ်မဲ့ ခေါ်ဆိုမှု · တစ်ကြိမ် ၁၅ မိနစ်';
-
-  @override
-  String get flBenefitChecks => 'Pro ဖြင့် အကန့်အသတ်မဲ့ အသံထွက်စစ်ဆေးမှု';
 
   @override
   String flCaption(String price) {
@@ -1997,7 +2061,7 @@ class AppLocalizationsMy extends AppLocalizations {
   String get nicknameLabel => 'အမည်ပြောင်';
 
   @override
-  String get emailLabel => 'Email';
+  String get emailLabel => 'အီးမေးလ်';
 
   @override
   String get loginMethodLabel => 'လော့ဂ်အင်နည်းလမ်း';
@@ -2015,40 +2079,45 @@ class AppLocalizationsMy extends AppLocalizations {
   String get ctaSave => 'သိမ်းရန်';
 
   @override
-  String get subscriptionRow => 'Subscription';
+  String get subscriptionRow => 'အသင်းဝင်မှု';
 
   @override
-  String get iapSuccessTitle => 'Purchase complete';
+  String get iapSuccessTitle => 'ဝယ်ယူမှု ပြီးဆုံးပါပြီ';
 
   @override
   String iapSuccessBody(String name) {
-    return 'The $name avatar is yours forever.\nApplied as soon as the receipt clears.';
+    return '$name အဝတာ သည် အမြဲတမ်း သင့်ဟာ ဖြစ်ပါပြီ။\nငွေလက်ခံဖြတ်ပိုင်း အတည်ပြုသည်နှင့် ချက်ချင်း အသုံးပြုနိုင်ပါမည်။';
   }
 
   @override
-  String get ctaGoHome => 'Home';
+  String get ctaGoHome => 'ပင်မသို့';
 
   @override
-  String get ctaUseNow => 'Use it now';
+  String get ctaUseNow => 'ယခု သုံးရန်';
 
   @override
-  String get iapFailTitle => 'The payment didn\'t go through';
+  String get iapFailTitle => 'ငွေပေးချေမှု မအောင်မြင်ပါ';
 
   @override
-  String get iapFailBody => 'You can try again';
+  String get iapFailBody => 'ထပ်မံ ကြိုးစားနိုင်ပါသည်';
 
   @override
-  String get paywallLeaveTitle => 'ယခုထွက်လျှင် စာရင်းသွင်းပြီးမည်မဟုတ်ပါ';
+  String get paywallGuardTitle => 'Free ကို ဆက်သုံးနိုင်ပါတယ်';
 
   @override
-  String get paywallLeaveBody =>
-      'ငွေပေးချေပြီးလျှင် အကျိုးခံစားခွင့်များ ချက်ချင်းပွင့်သည်။ ကျွန်ုပ်၏စာမျက်နှာမှ အချိန်မရွေး ပြန်လာနိုင်သည်။';
+  String get paywallGuardBody => 'တစ်ရက် ခေါ်ဆိုချိန် 5 မိနစ် ဆက်ရပါမယ်။';
 
   @override
-  String get ctaKeepLooking => 'ဆက်ကြည့်မည်';
+  String get ctaMaybeLater => 'နောက်မှ';
 
   @override
-  String get ctaLeaveAnyway => 'ထွက်မည်';
+  String get winbackOfferBadge => 'ပထမလ 50% လျှော့';
+
+  @override
+  String get winbackOfferTitle => 'ပြန်လည်ကြိုဆိုပါတယ်';
+
+  @override
+  String get ctaGetHalfOff => '50% လျှော့စျေး ရယူရန်';
 
   @override
   String get iapCharacterSuccessTitle => 'မိတ်ဆွေအသစ်ရောက်လာပြီ!';
@@ -2094,9 +2163,6 @@ class AppLocalizationsMy extends AppLocalizations {
   String get takeLevelTest => 'အဆင့်စစ်ဆေးမှု ဖြေဆိုရန်';
 
   @override
-  String get reviewToSeeScore => 'ပြန်လေ့လာပါက အသံထွက်ရမှတ် ပေါ်လာပါမည်';
-
-  @override
   String get playAgain => 'ထပ်ကစားရန်';
 
   @override
@@ -2110,4 +2176,801 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get difficultyLabel => 'အခက်အခဲအဆင့်';
+
+  @override
+  String get connected => 'ချိတ်ဆက်ပြီး';
+
+  @override
+  String get unlockedWithMax => 'သင့်အစီအစဉ်တွင် ပါဝင်သည်';
+
+  @override
+  String get fcEndedTitle => 'သင့်အခမဲ့ခေါ်ဆိုမှု ပြီးဆုံးသွားပါပြီ';
+
+  @override
+  String get fcEndedBody =>
+      'အခမဲ့ခေါ်ဆိုမှုသည် ၅ မိနစ်အထိ ကြာပါသည်\nပိုမိုကြာရှည်စွာ စကားပြောရန် စာရင်းသွင်းပါ';
+
+  @override
+  String get ctaSubscribeKeepTalking => 'စာရင်းသွင်းပြီး ဆက်ပြောပါ';
+
+  @override
+  String get kgTitle => 'ဆက်လုပ်မလား?';
+
+  @override
+  String get kgBody =>
+      'ခေါ်ဆိုမှုသည် အပိုင်းတိုလေးများဖြင့် ဆက်သွားသည်။\nအကြိမ်တိုင်း ထပ်မေးပါမည်။';
+
+  @override
+  String get pcEndedTitleToday => 'ဒီနေ့ ခေါ်ဆိုမှုကို ဒီမှာ ရပ်ပါမယ်။';
+
+  @override
+  String get pcEndedBodyToday =>
+      'ပြောခဲ့တာတွေ ပြန်လေ့ကျင့်ပြီး မနက်ဖြန် ထပ်ခေါ်ပါ!';
+
+  @override
+  String get pcEndedTitle => 'ဒီခေါ်ဆိုမှုကို ဒီမှာ ရပ်ပါမယ်။';
+
+  @override
+  String get pcEndedBody => 'ပြောခဲ့တာတွေ ပြန်လေ့ကျင့်ပြီး ထပ်ခေါ်ပါ!';
+
+  @override
+  String get ctaKeepTalking => 'ဆက်ပြောပါ';
+
+  @override
+  String get callModeSheetTitle => 'ဘယ်လိုစကားပြောချင်ပါသလဲ။';
+
+  @override
+  String get callModeSheetSubtitle => 'ဤခေါ်ဆိုမှုတွင် ချက်ချင်းသက်ရောက်သည်';
+
+  @override
+  String get callModeFreeTalk => 'လွတ်လပ်စွာစကားပြော';
+
+  @override
+  String get callModeFreeTalkDesc => 'ပြင်ဆင်မှုမပါဘဲ စကားပြောပါ';
+
+  @override
+  String get callModeChange => 'မုဒ်ပြောင်းရန်';
+
+  @override
+  String get callModeKeep => 'ယခုမဟုတ်ပါ';
+
+  @override
+  String get callExitTitle => 'ခေါ်ဆိုမှုကို အဆုံးသတ်မလား။';
+
+  @override
+  String get callExitSubtitle =>
+      'ယခု ပြီးလိုက်လည်း ပြောခဲ့သောအချိန်ကို ယနေ့ အသုံးပြုမှုတွင် ထည့်တွက်ပါမည်';
+
+  @override
+  String get callExitKeep => 'ဆက်ပြောပါ';
+
+  @override
+  String get callExitConfirm => 'ခေါ်ဆိုမှုအဆုံးသတ်ရန်';
+
+  @override
+  String get callMicMute => 'အသံပိတ်';
+
+  @override
+  String get callMicUnmute => 'အသံဖွင့်';
+
+  @override
+  String get callPushToTalk => 'ပြောရန် ဖိထားပါ';
+
+  @override
+  String get callFreeEndedTitle => 'သင့်အခမဲ့ခေါ်ဆိုမှု ကုန်သွားပါပြီ';
+
+  @override
+  String get callFreeEndedCta => 'စာရင်းသွင်းပြီး ဆက်ပြောပါ';
+
+  @override
+  String get callKeepGoingTitle => 'ဆက်လုပ်မလား။';
+
+  @override
+  String get callKeepGoingSubtitle =>
+      'ခေါ်ဆိုမှုများသည် ၅ မိနစ်စီ ဆက်လက်ဖြစ်ပေါ်သည်။ အကြိမ်တိုင်း ထပ်မေးပါမည်။';
+
+  @override
+  String get articulationSelectedWord => 'ရွေးထားသော စကားလုံး';
+
+  @override
+  String get articulationYouSaid => 'သင့်အသံထွက်';
+
+  @override
+  String get articulationTargetSound => 'ပန်းတိုင်';
+
+  @override
+  String get reportEntry => 'သတင်းပို့ရန်';
+
+  @override
+  String get reportTitle => 'တိုင်ကြားချက်';
+
+  @override
+  String get reportPrompt => 'ဘာပြဿနာဖြစ်ခဲ့ပါသလဲ?';
+
+  @override
+  String get reportGuide =>
+      'AI ဇာတ်ကောင်၏ မည်သည့်အကြောင်းအရာက သင့်ကို အနှောင့်အယှက်ဖြစ်စေခဲ့ကြောင်း ပြောပြပါ။ တိုင်ကြားချက်တိုင်းကို စိစစ်ပါသည်။';
+
+  @override
+  String get reportReasonSexual => 'လိင်ဆိုင်ရာ အကြောင်းအရာ';
+
+  @override
+  String get reportReasonHate => 'အမုန်းတရား သို့မဟုတ် ခွဲခြားမှု';
+
+  @override
+  String get reportReasonViolence => 'အကြမ်းဖက် သို့မဟုတ် ခြိမ်းခြောက်မှု';
+
+  @override
+  String get reportReasonSelfHarm => 'မိမိကိုယ်ကို အန္တရာယ်ပြုရန် အားပေးမှု';
+
+  @override
+  String get reportReasonMisinfo => 'မှားယွင်းသော သတင်းအချက်အလက်';
+
+  @override
+  String get reportReasonOther => 'အခြားပြဿနာ';
+
+  @override
+  String get reportDetailHint => 'ဘာဖြစ်ခဲ့သည်ကို ရေးပါ (ရွေးချယ်နိုင်)';
+
+  @override
+  String get reportSubmit => 'တိုင်ကြားချက် ပို့ရန်';
+
+  @override
+  String get reportDoneTitle => 'သင့်တိုင်ကြားချက်ကို လက်ခံရရှိပါပြီ';
+
+  @override
+  String get reportDoneBody =>
+      'စိစစ်ပြီး လိုအပ်ပါက အရေးယူပါမည်။ BeaverTalk ကို ဘေးကင်းစေရန် ကူညီပေးသည့်အတွက် ကျေးဇူးတင်ပါသည်။';
+
+  @override
+  String get reportFailed => 'တိုင်ကြားချက် မပို့နိုင်ပါ။ ထပ်စမ်းကြည့်ပါ။';
+
+  @override
+  String get hwTitle => 'အိမ်စာ';
+
+  @override
+  String get hwJoinCodeTitle => 'သင့်အတန်းကုဒ်ကို ထည့်ပါ';
+
+  @override
+  String get hwJoinCodeSubtitle => 'ဆရာ/ဆရာမ ပေးထားသော ၆ လုံးကုဒ် ဖြစ်သည်';
+
+  @override
+  String get hwJoinCodeLabel => 'အတန်းကုဒ်';
+
+  @override
+  String get hwJoinCodeHelp => 'ကုဒ်တွင် စာလုံးအကြီးအသေး မခွဲပါ';
+
+  @override
+  String get hwJoinConfirmTitle => 'ဤအတန်း မှန်ပါသလား';
+
+  @override
+  String get hwJoinConfirmSubtitle => 'မမှန်ပါက ကုဒ်ကို ထပ်စစ်ပါ';
+
+  @override
+  String get hwJoinFieldInstitution => 'အဖွဲ့အစည်း';
+
+  @override
+  String get hwJoinFieldTeacher => 'ဆရာ/ဆရာမ';
+
+  @override
+  String get hwJoinFieldLearners => 'သင်ယူသူများ';
+
+  @override
+  String get hwJoinFieldTerm => 'သင်တန်းကာလ';
+
+  @override
+  String get hwJoinConfirmNote =>
+      'အတန်းအမည်ကို ဆရာရေးသည့်အတိုင်း အတိအကျ ဖော်ပြပါသည်။ ဘာသာမပြန်ပါ။';
+
+  @override
+  String get hwJoinConfirmYes => 'ဟုတ်ကဲ့၊ ဤအတန်းပါ';
+
+  @override
+  String get hwJoinConfirmRetry => 'ကုဒ် ပြန်ထည့်ရန်';
+
+  @override
+  String get hwJoinProfileTitle => 'အတန်းတွင် မည်သည့်အမည် သုံးမည်နည်း';
+
+  @override
+  String get hwJoinProfileSubtitle =>
+      'ဆရာက အတန်းစာရင်းနှင့် တိုက်ဆိုင်စစ်ပါမည်';
+
+  @override
+  String get hwJoinNameLabel => 'အမည်';
+
+  @override
+  String get hwJoinNameHelp => 'အက်ပ်အမည်နှင့် ကွဲပြားနိုင်ပါသည်';
+
+  @override
+  String get hwJoinStudentNoLabel => 'ကျောင်းသားနံပါတ် (ရွေးချယ်နိုင်)';
+
+  @override
+  String get hwJoinStudentNoHelp => 'ဆရာက အတန်းစာရင်း တိုက်ဆိုင်ရန် သုံးပါသည်';
+
+  @override
+  String get hwJoinConsentTitle => 'ဆရာ မြင်နိုင်သည့်အရာ';
+
+  @override
+  String get hwJoinConsentSubtitle => 'အတန်းသို့ ဝင်ရန် သဘောတူရပါမည်';
+
+  @override
+  String get hwJoinConsentSharedHeading => 'ဆရာနှင့် မျှဝေသည်';
+
+  @override
+  String get hwJoinConsentShared1 => 'အတန်းအမည်နှင့် ကျောင်းသားနံပါတ်';
+
+  @override
+  String get hwJoinConsentShared2 => 'အိမ်စာ လုပ်ခဲ့ခြင်း ရှိ၊ မရှိ';
+
+  @override
+  String get hwJoinConsentShared3 => 'အောင်မြင်သော နှင့် လွဲချော်သော ဝါကျများ';
+
+  @override
+  String get hwJoinConsentShared4 =>
+      'အိမ်စာခေါ်ဆိုမှု ကြာချိန်နှင့် အကျဉ်းချုပ်';
+
+  @override
+  String get hwJoinConsentNotSharedHeading => 'မမျှဝေပါ';
+
+  @override
+  String get hwJoinConsentNotShared1 => 'အီးမေးလ်နှင့် ဖုန်းနံပါတ်';
+
+  @override
+  String get hwJoinConsentNotShared2 => 'အက်ပ်အမည်၊ ပရိုဖိုင်နှင့် ဇာတ်ကောင်';
+
+  @override
+  String get hwJoinConsentNotShared3 => 'နိုင်ငံသားနှင့် မိခင်ဘာသာစကား';
+
+  @override
+  String get hwJoinConsentNotShared4 => 'အတန်းပြင်ပ ခေါ်ဆိုမှုနှင့် လေ့လာမှု';
+
+  @override
+  String get hwJoinConsentNotShared5 =>
+      'အသင်းဝင်မှုနှင့် ငွေပေးချေမှု အချက်အလက်';
+
+  @override
+  String get hwJoinConsentAgree => 'အထက်ပါတို့ကို သဘောတူပါသည်';
+
+  @override
+  String get hwJoinConsentCta => 'သဘောတူ၍ ဝင်ရန်';
+
+  @override
+  String hwJoinDoneTitle(String className) {
+    return '$className သို့ ဝင်ရောက်ပြီးပါပြီ';
+  }
+
+  @override
+  String hwJoinDoneSubtitle(int count) {
+    return 'အိမ်စာ $count ခု စောင့်နေပါသည်';
+  }
+
+  @override
+  String get hwJoinDoneNoAssignment => 'အိမ်စာ မရှိသေးပါ';
+
+  @override
+  String get hwJoinDoneNextDue => 'နောက်ထပ် သတ်မှတ်ရက်';
+
+  @override
+  String get hwJoinDoneRosterName => 'အတန်းတွင် သင့်အမည်';
+
+  @override
+  String get hwJoinDoneCta => 'အိမ်စာ ကြည့်ရန်';
+
+  @override
+  String get hwJoinErrorNotFound => 'ထိုကုဒ်ကို ရှာမတွေ့ပါ';
+
+  @override
+  String get hwJoinErrorNotFoundBody => 'ဂဏန်းခြောက်လုံးကို ထပ်စစ်ပါ။';
+
+  @override
+  String get hwJoinErrorExpired => 'ထိုကုဒ် သက်တမ်းကုန်သွားပါပြီ';
+
+  @override
+  String get hwJoinErrorExpiredBody => 'ဆရာထံမှ ကုဒ်အသစ် တောင်းပါ။';
+
+  @override
+  String get hwJoinErrorFull => 'အတန်း ပြည့်နေပါပြီ';
+
+  @override
+  String get hwJoinErrorFullBody => 'ဆရာအား အကြောင်းကြားပါ။';
+
+  @override
+  String get hwJoinFailed => 'ဝင်ရောက်၍ မရပါ။ ခဏနေ ထပ်ကြိုးစားပါ။';
+
+  @override
+  String get hwSectionInProgress => 'လုပ်ဆောင်နေဆဲ';
+
+  @override
+  String get hwSectionUpcoming => 'လာမည့်';
+
+  @override
+  String get hwSectionDone => 'ပြီးဆုံး';
+
+  @override
+  String get hwLeaveClassLink => 'အတန်းမှ ထွက်ရန်';
+
+  @override
+  String get hwListEmptyTitle => 'အိမ်စာ မရှိသေးပါ';
+
+  @override
+  String get hwListEmptyBody => 'ဆရာ ပေးသည့်အခါ ဤနေရာတွင် ပေါ်ပါမည်။';
+
+  @override
+  String get hwListFailed => 'အိမ်စာကို ဖွင့်၍မရပါ။';
+
+  @override
+  String get hwRetry => 'ထပ်ကြိုးစားရန်';
+
+  @override
+  String get hwBadgeDone => 'ပြီးဆုံး';
+
+  @override
+  String get hwBadgeOverdue => 'မတင်ပြရသေး';
+
+  @override
+  String hwBadgeOverdueDays(int days) {
+    return 'မတင်ပြရသေး၊ $days ရက် နောက်ကျ';
+  }
+
+  @override
+  String hwBadgeDday(int days) {
+    return 'D-$days';
+  }
+
+  @override
+  String get hwBadgeDueToday => 'ယနေ့ သတ်မှတ်ရက်';
+
+  @override
+  String get hwActivitySpeaking => 'အသံထွက်';
+
+  @override
+  String get hwActivityConversation => 'စကားဝိုင်း';
+
+  @override
+  String get hwActivityWorkbook => 'လေ့ကျင့်ခန်းစာအုပ်';
+
+  @override
+  String hwChapterLabel(String chapter) {
+    return 'အခန်း $chapter';
+  }
+
+  @override
+  String get hwTaskSpeakingDesc => 'သင့်အသံထွက် ရမှတ်ကို စစ်ကြည့်ပါ';
+
+  @override
+  String get hwTaskConversationDesc =>
+      'သင်ယူထားသည်ကို တကယ့်စကားဝိုင်းတွင် သုံးပါ';
+
+  @override
+  String get hwConversationOnce =>
+      'စကားပြောကို အိမ်စာတစ်ခုလျှင် တစ်ကြိမ်သာ လုပ်နိုင်ပါသည်။';
+
+  @override
+  String get hwTaskWorkbookDesc => 'လေ့ကျင့်ခန်းစာအုပ်တွင် ရေးပြီး လေ့ကျင့်ပါ';
+
+  @override
+  String get hwCtaStudy => 'စတင်ရန်';
+
+  @override
+  String get hwCtaResult => 'ရလဒ် ကြည့်ရန်';
+
+  @override
+  String get hwCtaDownload => 'ဒေါင်းလုဒ်';
+
+  @override
+  String get hwSpeakingNoScore => 'စကားပြော လုပ်ငန်းကို မလုပ်ရသေးပါ';
+
+  @override
+  String get hwWorkbookUnavailable => 'လေ့ကျင့်ခန်းစာအုပ် ဖိုင် မရနိုင်သေးပါ။';
+
+  @override
+  String get hwDetailClosed => 'ဤအိမ်စာ ပိတ်သွားပါပြီ။ ထပ်မံ တင်ပြ၍ မရတော့ပါ။';
+
+  @override
+  String get hwLeaveTitle => 'အတန်းမှ ထွက်မလား';
+
+  @override
+  String get hwLeaveBody =>
+      'ဆရာသည် သင့်အိမ်စာ ရလဒ်များကို နောက်ထပ် မမြင်တော့ပါ။';
+
+  @override
+  String get hwLeaveConfirm => 'ထွက်ရန်';
+
+  @override
+  String get hwLeaveCancel => 'ဆက်နေရန်';
+
+  @override
+  String get hwLeaveFailed => 'အတန်းမှ ထွက်၍ မရပါ။';
+
+  @override
+  String get hwMyClass => 'ကျွန်ုပ်၏ အတန်း';
+
+  @override
+  String get hwClassEmptyTitle => 'မည်သည့်အတန်းမှ မဝင်ရသေးပါ';
+
+  @override
+  String get hwClassEmptySubtitle => 'ဆရာပေးထားသော ကုဒ်ကို ထည့်ပါ';
+
+  @override
+  String get hwClassEmptyCta => 'အတန်းကုဒ် ထည့်ရန်';
+
+  @override
+  String get hwClassContinueCta => 'ဆက်လက်';
+
+  @override
+  String hwHomeBannerDueTomorrow(int count) {
+    return 'အိမ်စာ $count ခု မနက်ဖြန် သတ်မှတ်ရက်';
+  }
+
+  @override
+  String hwHomeBannerOverdue(int count) {
+    return 'မတင်ပြရသေးသော အိမ်စာ $count ခု ရှိပါသည်';
+  }
+
+  @override
+  String get hwSpeakingUnavailable => 'ဤအိမ်စာအတွက် ဝါကျများ မရနိုင်သေးပါ။';
+
+  @override
+  String get hwBadgeClosed => 'ပိတ်ထား';
+
+  @override
+  String hwSpeakingProgress(int passed, int total) {
+    return 'ဝါကျ $total ခုအနက် $passed ခု အောင်မြင်';
+  }
+
+  @override
+  String get challengeFirstWord => 'ပထမစကားလုံး';
+
+  @override
+  String get challengeSeeAnalysis => 'ရလဒ်များ ကြည့်ရန်';
+
+  @override
+  String get challengePaused => 'ခေတ္တရပ်ထားသည်';
+
+  @override
+  String get challengePausedNote =>
+      'အချိန်တိုင်းနှင့် အသံဖမ်းခြင်း အတူရပ်သွားပါပြီ။';
+
+  @override
+  String get challengeTimeLeft => 'ကျန်ချိန်';
+
+  @override
+  String get challengeScoreLabel => 'ရမှတ်';
+
+  @override
+  String get challengeResume => 'ဆက်လုပ်ရန်';
+
+  @override
+  String get challengeBlockedTitle => 'ကင်မရာ သုံး၍မရပါ';
+
+  @override
+  String get challengeBlockedNote =>
+      'ဆက်တင်တွင် ကင်မရာနှင့် မိုက်ခွင့်ပြုချက်ကို ဖွင့်ပါ။';
+
+  @override
+  String get challengeGoBack => 'ပြန်သွားရန်';
+
+  @override
+  String get challengeOpenSettings => 'ဆက်တင် ဖွင့်ရန်';
+
+  @override
+  String get saveDone => 'ဓာတ်ပုံပြခန်းသို့ သိမ်းပြီးပါပြီ';
+
+  @override
+  String get saveFailed => 'မသိမ်းနိုင်ပါ';
+
+  @override
+  String get saveDeniedNote => 'ဓာတ်ပုံ ခွင့်ပြုချက် လိုအပ်သည်';
+
+  @override
+  String get callIncomingCallerFallback => 'Beaver ဆရာ';
+
+  @override
+  String get callIncomingHandle => 'ကိုရီးယားစကား ခေါ်ဆိုမှု';
+
+  @override
+  String get callMissedTitle => 'လွတ်သွားသော ခေါ်ဆိုမှု';
+
+  @override
+  String get callMissedChannelDescription =>
+      'Beaver ထံမှ လွတ်သွားသော ခေါ်ဆိုမှုကို အကြောင်းကြားပါသည်။';
+
+  @override
+  String callMissedBody(String name) {
+    return '$name က သင့်ကို ခေါ်ခဲ့သည်';
+  }
+
+  @override
+  String get callBeaverFallbackName => 'Beaver';
+
+  @override
+  String get callNotifPermissionRationale =>
+      'ခေါ်ဆိုမှုများ လက်ခံရန် အကြောင်းကြားချက် ခွင့်ပြုချက် လိုအပ်သည်။';
+
+  @override
+  String get callNotifPermissionRequired =>
+      'ဆက်တင်တွင် အကြောင်းကြားချက်များကို ခွင့်ပြုပါ။';
+
+  @override
+  String get callHintLockedTitle =>
+      'လေ့လာခြင်းတွင် အကြံပြုချက်ကို အသုံးမပြုနိုင်ပါ';
+
+  @override
+  String get wsTitle => 'အခက်အခဲ အသံများ';
+
+  @override
+  String get wsToList => 'စာရင်းသို့';
+
+  @override
+  String get wsNext => 'ရှေ့ဆက်ရန်';
+
+  @override
+  String get wsRetry => 'ထပ်ကြိုးစားရန်';
+
+  @override
+  String get wsDone => 'ပြီးပါပြီ';
+
+  @override
+  String get wsContinue => 'ဆက်လုပ်ရန်';
+
+  @override
+  String get wsQuit => 'ထွက်ရန်';
+
+  @override
+  String get wsRetryLater => 'ခဏနေ ထပ်ကြိုးစားပါ။';
+
+  @override
+  String get wsMissingTitle => 'ထိုအသံကို ရှာမတွေ့ပါ';
+
+  @override
+  String get wsMissingBody => 'စာရင်းမှ ပြန်ရွေးပါ။';
+
+  @override
+  String get wsListLoadFailed => 'စာရင်းကို ဖွင့်မရပါ';
+
+  @override
+  String get wsLessonLoadFailed => 'သင်ခန်းစာကို ဖွင့်မရပါ';
+
+  @override
+  String get wsNationalTitle => 'သင့်အသံဟန်အတွက် အခက်အခဲ အသံများ';
+
+  @override
+  String get wsNationalPending => 'အသံဟန် ခွဲခြမ်းပြီးလျှင် ဖော်ပြပါမည်';
+
+  @override
+  String get wsNationalPicked => 'အသံဟန် ခွဲခြမ်းချက်မှ ရွေးထားသည်';
+
+  @override
+  String get wsNationalEmptyBody =>
+      'ခေါ်ဆိုမှု ထပ်လုပ်ပါ၊ အသံဟန်ကို ခွဲခြမ်းပေးပါမည်။';
+
+  @override
+  String get wsMineTitle => 'ကျွန်ုပ်၏ အခက်အခဲ အသံများ';
+
+  @override
+  String get wsMineSubtitle =>
+      'မကြာသေးမီ ခေါ်ဆိုမှုများတွင် တိုင်းတာခဲ့သော အသံများ';
+
+  @override
+  String get wsMineEmptyBody =>
+      'ခေါ်ဆိုပြီး ပြန်လေ့လာလျှင် အခက်အခဲ အသံများ စုလာမည်။';
+
+  @override
+  String get wsNoDataYet => 'ဒေတာ မရှိသေးပါ';
+
+  @override
+  String get wsGoToCall => 'ခေါ်ဆိုမှု စတင်ရန်';
+
+  @override
+  String get wsRule => 'စည်းမျဉ်း';
+
+  @override
+  String get wsRecommended => 'အကြံပြုချက်';
+
+  @override
+  String get wsNotMeasured => 'မတိုင်းတာသေးပါ';
+
+  @override
+  String get wsStepUnderstand => 'လေ့လာ';
+
+  @override
+  String get wsStepWords => 'စကားလုံး';
+
+  @override
+  String get wsStepSentence => 'စာကြောင်း';
+
+  @override
+  String get wsStepTest => 'စစ်ဆေး';
+
+  @override
+  String get wsQuitTitle => 'လေ့ကျင့်မှု ရပ်မလား?';
+
+  @override
+  String get wsQuitBody => 'အခု ထွက်ပါက ဤလေ့ကျင့်မှု သိမ်းမည်မဟုတ်ပါ။';
+
+  @override
+  String get wsHowToSound => 'အသံ ထွက်ပုံ';
+
+  @override
+  String get wsPracticeWords => 'စကားလုံး လေ့ကျင့်ရန်';
+
+  @override
+  String get wsPracticeSentence => 'စာကြောင်း လေ့ကျင့်ရန်';
+
+  @override
+  String get wsPracticeAgain => 'နောက်တစ်ကြိမ်';
+
+  @override
+  String get wsStartTest => 'နောက်ဆုံး စစ်ဆေးမှု ဖြေဆိုရန်';
+
+  @override
+  String get wsThisSentence => 'ဤစာကြောင်း';
+
+  @override
+  String get wsNoScoreNote => 'ဤအဆင့်တွင် အမှတ်မပေးပါ။ လိုက်ဆိုကြည့်ပါ။';
+
+  @override
+  String get wsListen => 'အာရုံစိုက် နားထောင်ပါ';
+
+  @override
+  String get wsSayNow => 'အခု လိုက်ဆိုပါ';
+
+  @override
+  String get wsPracticeDone => 'လေ့ကျင့်မှု ပြီးပါပြီ';
+
+  @override
+  String get wsPaused => 'ခေတ္တရပ်ထားသည်';
+
+  @override
+  String get wsAudioFailed => 'အသံဖိုင် ဖွင့်မရပါ။ စာကိုကြည့်၍ ဆိုပါ။';
+
+  @override
+  String get wsReadAloud => 'အောက်ပါစာကြောင်းကို အသံထွက်ဖတ်ပါ';
+
+  @override
+  String get wsTapToStart => 'စတင်ရန် တို့ပါ';
+
+  @override
+  String get wsTapWhenDone => 'ပြီးလျှင် တို့ပါ';
+
+  @override
+  String get wsScoring => 'အမှတ်ပေးနေသည်';
+
+  @override
+  String get wsMicFailed => 'မိုက်ခရိုဖုန်း ဖွင့်မရပါ။';
+
+  @override
+  String get wsMicPermissionBody =>
+      'ဤစာမေးပွဲတွင် အသံထွက်ဖတ်ရသဖြင့် မိုက်ခရိုဖုန်း လိုအပ်သည်။ ဆက်တင်တွင် မိုက်ခရိုဖုန်း အသုံးပြုခွင့်ကို ဖွင့်ပါ။';
+
+  @override
+  String get wsNoSound => 'အသံ မကြားရပါ။ ထပ်ဆိုကြည့်မလား?';
+
+  @override
+  String get wsScoreFailed => 'အမှတ်ပေးမှု မအောင်မြင်ပါ။ ထပ်ကြိုးစားပါ။';
+
+  @override
+  String get wsSomethingWrong => 'ပြဿနာ ရှိပါသည်။';
+
+  @override
+  String get wsLearnDone => 'သင်ခန်းစာ ပြီးပါပြီ';
+
+  @override
+  String get wsRetest => 'ထပ်စစ်ဆေးရန်';
+
+  @override
+  String get wsFirstMeasure => 'ပထမဆုံး တိုင်းတာမှု';
+
+  @override
+  String get wsFinalTest => 'နောက်ဆုံး စစ်ဆေးမှု';
+
+  @override
+  String wsPoints(int score) {
+    return '$score မှတ်';
+  }
+
+  @override
+  String wsBeforePoints(int score) {
+    return 'မတိုင်မီ $score မှတ်';
+  }
+
+  @override
+  String wsGoalPoints(int score) {
+    return 'ပန်းတိုင် $score မှတ်';
+  }
+
+  @override
+  String wsGoalPrefix(String desc) {
+    return 'ပန်းတိုင် · $desc';
+  }
+
+  @override
+  String wsAccentOf(String country) {
+    return '$country အသံဟန်';
+  }
+
+  @override
+  String wsWordsRepeated(int count) {
+    return 'စကားလုံး $count လုံး လိုက်ဆိုပြီး';
+  }
+
+  @override
+  String wsChunksRepeated(int count) {
+    return 'အပိုင်း $count ပိုင်း လိုက်ဆိုပြီး';
+  }
+
+  @override
+  String get wsStartRecommended => 'အကြံပြု အသံမှ စတင်ရန်';
+
+  @override
+  String wsStartRecommendedWith(String label) {
+    return 'စတင်ရန် · $label';
+  }
+
+  @override
+  String get wsPointsUnit => 'မှတ်';
+
+  @override
+  String get wsEnterFromMypage => 'အခက်အခဲ အသံများ လေ့ကျင့်ရန်';
+
+  @override
+  String wsGoalOnly(int score) {
+    return 'ပန်းတိုင် $score';
+  }
+
+  @override
+  String wsSoundOf(String label) {
+    return '$label အသံ';
+  }
+
+  @override
+  String wsResultTip(String desc) {
+    return '$desc။ ခေါ်ဆိုမှုမှာ ပြန်တွေ့ရင် ဒီပုံသဏ္ဌာန်ကို ပြန်စဉ်းစားပါ။';
+  }
+
+  @override
+  String wsNationalSubtitle(String country) {
+    return '$country မှ စကားပြောသူများ မကြာခဏ မှားတတ်သော အသံများ';
+  }
+
+  @override
+  String get wsRetryPackLabel => 'မကြာခဏ မှားသော အသံများ လေ့ကျင့်ရန်';
+
+  @override
+  String wsRetryPackTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'ဤသင်ခန်းစာတွင် မကြာခဏ မှားသော အသံ $count ခု',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get wsRetryPackBody =>
+      '၂ ကြိမ်နှင့်အထက် မှားသော အသံများကို စုထားသည်။ အသံတစ်ခုစီကို အဆင့် ၄ ဆင့်ဖြင့် လေ့ကျင့်ပါ။';
+
+  @override
+  String get wsRetryPackCta => 'စုပြီး လေ့ကျင့်ရန်';
+
+  @override
+  String get wsRetryListTitle => 'မကြာခဏ မှားသော အသံများ';
+
+  @override
+  String get wsRetryListSection => 'ဤသင်ခန်းစာမှ အသံများ';
+
+  @override
+  String get wsRetryListSub =>
+      'ဤသင်ခန်းစာတွင် ၂ ကြိမ်နှင့်အထက် မှားသော အသံများ';
+
+  @override
+  String wsRetryListSubWithCall(String title) {
+    return '“$title” ခေါ်ဆိုမှုတွင် ၂ ကြိမ်နှင့်အထက် မှားသော အသံများ';
+  }
+
+  @override
+  String get wsRetryListAllDone => 'အသံအားလုံး လေ့ကျင့်ပြီးပါပြီ';
+
+  @override
+  String get wsRetryBackToReport => 'အစီရင်ခံစာသို့ ပြန်ရန်';
 }

@@ -4,6 +4,7 @@ import '../../theme/app_color_tokens.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_typography.dart';
 import '../atoms/button.dart';
+import '../atoms/icon_toggle.dart';
 import '../icons/app_icons.dart';
 
 /// CardBookmark — a learned/saved sentence card, measured from Figma
@@ -95,10 +96,14 @@ class CardBookmark extends StatelessWidget {
             children: [
               _glyph(AppIcons.volume, onSpeakerTap, color: context.c.labelStrong),
               const SizedBox(width: 8),
-              _glyph(
-                bookmarked ? AppIcons.bookmarkFill : AppIcons.bookmarkLine,
-                onBookmarkTap,
-                color: bookmarked ? context.c.primaryNormal : context.c.labelStrong,
+              // 즉시 갈아 끼우면 껐다 켠 티가 안 난다 — 교차 페이드 + 팝.
+              IconToggle(
+                value: bookmarked,
+                onIcon: AppIcons.bookmarkFill,
+                offIcon: AppIcons.bookmarkLine,
+                onColor: context.c.primaryNormal,
+                offColor: context.c.labelStrong,
+                onTap: onBookmarkTap,
               ),
               const Spacer(),
               if (actionText != null)

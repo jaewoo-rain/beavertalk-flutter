@@ -3,7 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:beavertalk/components/atoms/button.dart';
-import 'package:beavertalk/components/organisms/bottom_sheet_alarm_settings.dart';
+import 'package:beavertalk/components/organisms/bottom_sheet_alarm_add.dart';
+import 'package:beavertalk/components/organisms/bottom_sheet_alarm_settings.dart' show Meridiem;
 import 'package:beavertalk/features/alarm/domain/entities/alarm.dart';
 import 'package:beavertalk/features/alarm/presentation/providers/alarm_providers.dart';
 import 'package:beavertalk/l10n/app_localizations.dart';
@@ -63,11 +64,11 @@ void main() {
 
     // Sheet body is now on a modal route above the page.
     expect(find.byType(AlarmAddSheet), findsOneWidget);
-    expect(find.byType(BottomSheetAlarmSettings), findsOneWidget);
-    // Add mode header (English default locale). `screen/etc_alarm__add`
-    // (`3665:12018`) titles this 새 일정 추가 — "new", not just "add" — and
-    // repeats it on the footer CTA, so the string is on screen twice.
-    expect(find.text('Add new schedule'), findsNWidgets(2));
+    expect(find.byType(BottomSheetAlarmAdd), findsOneWidget);
+    // Add mode header (English). 09-22 개편(`6222:20710`): 제목 「알람 추가」,
+    // 아래 버튼은 「저장」 — 제목을 되풀이하지 않는다.
+    expect(find.text('Add alarm'), findsOneWidget);
+    expect(find.widgetWithText(Button, 'Save'), findsOneWidget);
   });
 
   testWidgets('saving pops the sheet and returns an AlarmData', (tester) async {
@@ -81,9 +82,7 @@ void main() {
     await tester.tap(find.text('open'));
     await tester.pumpAndSettle();
 
-    // Tap the footer CTA. In add mode it reads "Add new schedule", same as the
-    // header — so target the footer's [Button], not the string.
-    await tester.tap(find.widgetWithText(Button, 'Add new schedule'));
+    await tester.tap(find.widgetWithText(Button, 'Save'));
     await tester.pumpAndSettle();
 
     expect(called, isTrue);
@@ -93,6 +92,8 @@ void main() {
     expect(captured!.minute, 0);
     expect(captured!.meridiem, Meridiem.am);
     expect(captured!.characterId, 1);
+    // 새 알람은 평일(월~금)로 시작한다(Figma 기본값 「평일」). 일요일부터.
+    expect(captured!.days, [false, true, true, true, true, true, false]);
     // Sheet has been dismissed.
     expect(find.byType(AlarmAddSheet), findsNothing);
   });

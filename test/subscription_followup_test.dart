@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:beavertalk/components/organisms/dialog_confirm_icon.dart';
 import 'package:beavertalk/app/routes.dart';
 import 'package:beavertalk/features/auth/domain/entities/member.dart';
 import 'package:beavertalk/features/auth/presentation/providers/auth_providers.dart';
@@ -94,7 +95,12 @@ void main() {
   // ── 2. paywall leave guard ──────────────────────────────────────────────
 
   group('paywall leave guard', () {
+    // Figma `paywall_exit_guard`(Dialog/Confirm-Icon) — 09-24 사장님 「Figma 대로 해」:
+    // 위 「Get Premium」 → 결제 진행 · 아래 「Maybe later」 → 창만 닫기(BACK).
+    late List<String?> pushed;
+
     Future<void> pumpPaywall(WidgetTester tester) async {
+      pushed = [];
       await tester.binding.setSurfaceSize(const Size(375, 1200));
       addTearDown(() => tester.binding.setSurfaceSize(null));
       await tester.pumpWidget(
@@ -106,7 +112,12 @@ void main() {
             home: const Scaffold(body: SizedBox()),
             routes: {
               '/paywall': (_) =>
-                  const PaywallScreen(variant: PaywallVariant.pro),
+                  const PaywallScreen(variant: PaywallVariant.max),
+            },
+            onGenerateRoute: (s) {
+              pushed.add(s.name);
+              return MaterialPageRoute<void>(
+                  settings: s, builder: (_) => const SizedBox.shrink());
             },
           ),
         ),
@@ -116,28 +127,48 @@ void main() {
       await tester.pumpAndSettle();
     }
 
-    testWidgets('X shows the retention prompt; "Keep looking" stays',
+    testWidgets('X shows the guard; "Maybe later" leaves the paywall (09-24 owner)',
         (tester) async {
       await pumpPaywall(tester);
       final l10n = await l10nOf(tester, PaywallScreen);
       // The close glyph is the lone GestureDetector in the 56px GNB strip.
       await tester.tapAt(const Offset(34, 28));
       await tester.pumpAndSettle();
-      expect(find.text(l10n.paywallLeaveTitle), findsOneWidget);
-      await tester.tap(find.text(l10n.ctaKeepLooking));
+      expect(find.text(l10n.paywallGuardTitle), findsOneWidget);
+      expect(find.text(l10n.paywallGuardBody), findsOneWidget);
+      // 주요 버튼이 위(사장님 의도).
+      expect(tester.getTopLeft(find.text(l10n.ctaGetPremium).last).dy,
+          lessThan(tester.getTopLeft(find.text(l10n.ctaMaybeLater)).dy));
+      await tester.tap(find.text(l10n.ctaMaybeLater));
       await tester.pumpAndSettle();
-      expect(find.byType(PaywallScreen), findsOneWidget);
+      expect(find.byType(PaywallScreen), findsNothing, reason: '「나중에 할게요」 = 페이월을 떠난다');
     });
 
-    testWidgets('"Leave anyway" pops; a second back needs no prompt',
+    testWidgets('scrim only closes the guard; a second X leaves without asking',
         (tester) async {
       await pumpPaywall(tester);
       final l10n = await l10nOf(tester, PaywallScreen);
       await tester.tapAt(const Offset(34, 28));
       await tester.pumpAndSettle();
-      await tester.tap(find.text(l10n.ctaLeaveAnyway));
+      await tester.tapAt(const Offset(10, 1100)); // 스크림(창 바깥)
       await tester.pumpAndSettle();
-      expect(find.byType(PaywallScreen), findsNothing);
+      expect(find.text(l10n.paywallGuardTitle), findsNothing);
+      expect(find.byType(PaywallScreen), findsOneWidget, reason: '스크림은 창만 닫는다');
+      await tester.tapAt(const Offset(34, 28));
+      await tester.pumpAndSettle();
+      expect(find.byType(PaywallScreen), findsNothing, reason: '두 번째 X 는 묻지 않고 나간다');
+    });
+
+    testWidgets('"Get Premium" goes to purchase processing', (tester) async {
+      await pumpPaywall(tester);
+      final l10n = await l10nOf(tester, PaywallScreen);
+      await tester.tapAt(const Offset(34, 28));
+      await tester.pumpAndSettle();
+      final inDialog = find.descendant(
+          of: find.byType(DialogConfirmIcon), matching: find.text(l10n.ctaGetPremium));
+      await tester.tap(inDialog);
+      await tester.pumpAndSettle();
+      expect(pushed, contains(Routes.purchaseProcessing));
     });
   });
 
@@ -160,8 +191,6 @@ void main() {
             home: const Scaffold(body: SizedBox()),
             routes: {
               '/processing': (_) => const PurchaseProcessingScreen(),
-              Routes.purchaseSuccessPro: (_) =>
-                  const Scaffold(body: Text('success-pro')),
               Routes.purchaseSuccessMax: (_) =>
                   const Scaffold(body: Text('success-max')),
             },
@@ -173,11 +202,12 @@ void main() {
       await tester.pumpAndSettle();
     }
 
-    testWidgets('annual Pro request buys the yearly product', (tester) async {
+    testWidgets('annual Premium request buys the yearly product', (tester) async {
+      // 단일 티어(09-22): 유료는 Premium(상품 bt_max_*) 하나 — 성공 화면도 하나다.
       await pumpProcessing(
-          tester, (tier: SubscriptionTier.pro, annual: true));
-      expect(boughtIds, [IapProductIds.proYearly]);
-      expect(find.text('success-pro'), findsOneWidget);
+          tester, (tier: SubscriptionTier.max, annual: true));
+      expect(boughtIds, [IapProductIds.maxYearly]);
+      expect(find.text('success-max'), findsOneWidget);
     });
 
     testWidgets('Max request lands on the Max success screen with its product',
@@ -190,9 +220,9 @@ void main() {
 
     testWidgets('a bare tier argument still works and buys monthly',
         (tester) async {
-      await pumpProcessing(tester, SubscriptionTier.pro);
-      expect(boughtIds, [IapProductIds.proMonthly]);
-      expect(find.text('success-pro'), findsOneWidget);
+      await pumpProcessing(tester, SubscriptionTier.max);
+      expect(boughtIds, [IapProductIds.maxMonthly]);
+      expect(find.text('success-max'), findsOneWidget);
     });
 
     testWidgets('a canceled purchase pops back and shows the canceled sheet',
@@ -241,6 +271,8 @@ void main() {
         ProviderScope(
           overrides: [
             subscriptionStatusProvider.overrideWithValue(status),
+            subscriptionStatusAvailabilityProvider
+                .overrideWithValue(SubscriptionStatusAvailability.known),
             signInProviderProvider.overrideWithValue(provider),
             if (member != null)
               myProfileProvider.overrideWith((ref) async => member),
@@ -368,7 +400,6 @@ void tallSweep() {
     Locale('ur'),
   ];
   final screens = <String, Widget Function()>{
-    'PaywallPro': () => const PaywallScreen(variant: PaywallVariant.pro),
     'PaywallProLimit': () =>
         const PaywallScreen(variant: PaywallVariant.proLimit),
     'PaywallMax': () => const PaywallScreen(variant: PaywallVariant.max),

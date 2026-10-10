@@ -45,11 +45,42 @@ abstract final class IapProductIds {
 
   static const subscriptions = {proMonthly, proYearly, maxMonthly, maxYearly};
 
+  /// Play 윈백 오퍼 — `bt_max_monthly` · 기본 플랜 `monthly` · 첫 달 50% × 1회(개발자 결정형 ·
+  /// 09-28 `bt_max` 에서 새 구독으로 복제 · PM-DEC-121 ·
+  /// targeting 없음 — Play 가 스스로 노출하지 않는다). 09-26 branch to dev 세션이 콘솔 API 로
+  /// 생성·활성화(PM-DEC-049·050). iOS 윈백 오퍼는 애플이 자격 판정·노출해 앱 코드가 없다.
+  static const playWinbackOfferId = 'winback-50-1m';
+
+  /// 같은 오퍼의 태그. 오퍼 id 가 바뀌어도 태그로 찾는다.
+  static const playWinbackOfferTag = 'winback';
+
+  /// Play 7일 무료체험 오퍼 — `bt_max_monthly/monthly` · `bt_max_yearly/yearly` 둘 다(09-28 ACTIVE).
+  /// Play 는 이 계정이 받을 자격이 있는 오퍼만 조회 결과에 싣는다. 그래서 결과에 있으면 자격이
+  /// 있는 것이고, 앱은 그 오퍼 토큰으로 결제창을 연다 — 기본 플랜 토큰으로 열면 체험 없이 바로
+  /// 청구된다(09-28 실결제 ₩33,000 즉시 청구).
+  static const playTrialOfferId = 'trial-7d';
+
+  /// 전환 구매가 교체할 수 있는 Play Premium 구독 — 현행 둘 + 레거시 `bt_max`(월간·연간 기본 플랜을
+  /// 한 구독에 두던 시절 · PM-DEC-121 이전 결제). 전환 때 이 중 하나를 가지고 있으면 교체한다(F067).
+  static const playPremiumSubscriptionIds = {
+    'bt_max_monthly',
+    'bt_max_yearly',
+    'bt_max',
+  };
+
+  /// [subscriptionId] 가 현행 Play 구독(주기별로 따로 만든 것)인가 — 레거시 `bt_max` 면 false.
+  static bool subscriptionIdIsCurrent(String subscriptionId) =>
+      _playIds.values.any((v) => v.subscriptionId == subscriptionId);
+
   /// Character product id, keyed by **slug** — never by the server's primary
   /// key. Store ids are permanent while database ids are not, and a bare
   /// integer tells nobody in the console or the payout report which character
   /// sold. Slugs match the asset folders under `assets/avatar/`.
   static String character(String slug) => 'bt_character_$slug';
+
+  /// The three paid characters sold together (PM-DEC-142 · DEC-PR-05). A
+  /// one-time product on both stores; granted by the server once §24 ships.
+  static const characterBundle = 'bt_character_bundle';
 
   /// Server `character_id` → slug. **A fallback, not the source of truth.**
   ///
@@ -80,6 +111,44 @@ abstract final class IapProductIds {
   static bool isFreeCharacter(int serverId) =>
       freeCharacterSlugs.contains(characterSlugs[serverId]);
 
+  /// Store product id for a character, preferring the server's own slug.
+  ///
+  /// [productKey] is `CharacterSummary.product_key`. It wins over the built-in
+  /// table because the table only knows the characters that existed when this
+  /// build shipped: a character added server-side afterwards has no row here,
+  /// and [characterFor] would call it unbuyable when the store may well have
+  /// the product.
+  ///
+  /// **The server sends a bare slug** — `popo`, `rara`, `dudu`, `baba`,
+  /// `bibi`. Confirmed against the live API on 2026-08-24, so the prefix is
+  /// this method's job.
+  ///
+  /// The already-qualified shape (`bt_character_popo`) is still tolerated, and
+  /// deliberately so: prefixing a value that is already prefixed produces
+  /// `bt_character_bt_character_popo`, and the store answers that with a
+  /// silent absence rather than an error. The guard costs one comparison and
+  /// removes a failure mode that would look like "the product vanished".
+  ///
+  /// Returns null for free characters and when nothing identifies the product.
+  static String? characterForKey(String? productKey, int serverId) {
+    final key = productKey?.trim();
+    if (key == null || key.isEmpty) return characterFor(serverId);
+    const prefix = 'bt_character_';
+    final slug = key.startsWith(prefix) ? key.substring(prefix.length) : key;
+    if (slug.isEmpty || freeCharacterSlugs.contains(slug)) return null;
+    return character(slug);
+  }
+
+  /// Every character product that is actually sold.
+  ///
+  /// The free ones are excluded because they were never registered — asking
+  /// the store for `bt_character_baba` returns nothing and would look like an
+  /// outage rather than the deliberate absence it is.
+  static Set<String> get soldCharacters => {
+        for (final slug in characterSlugs.values)
+          if (!freeCharacterSlugs.contains(slug)) character(slug),
+      };
+
   /// Store product id for a server character id, or `null` when that character
   /// has no registered store product.
   ///
@@ -108,8 +177,12 @@ abstract final class IapProductIds {
       <String, ({String subscriptionId, String basePlanId})>{
     proMonthly: (subscriptionId: 'bt_pro', basePlanId: 'monthly'),
     proYearly: (subscriptionId: 'bt_pro', basePlanId: 'yearly'),
-    maxMonthly: (subscriptionId: 'bt_max', basePlanId: 'monthly'),
-    maxYearly: (subscriptionId: 'bt_max', basePlanId: 'yearly'),
+    // Premium 은 주기마다 **따로 만든 구독**이다(PM-DEC-121 · 09-28). 한 구독(`bt_max`)에
+    // 기본 플랜 둘이던 때, 앱이 보내는 논리 SKU(`bt_max_monthly`)와 서버가 비교하는 구글
+    // `lineItems[].productId`(`bt_max`)가 늘 달라 검증이 422 INVALID_RECEIPT 였다(실결제
+    // 09-28 10:18). 구독 id 를 논리 SKU 와 같게 만들어 스토어 쪽에서 맞췄다. bt_pro_* 는 레거시라 그대로.
+    maxMonthly: (subscriptionId: 'bt_max_monthly', basePlanId: 'monthly'),
+    maxYearly: (subscriptionId: 'bt_max_yearly', basePlanId: 'yearly'),
   };
 
   /// Play identifiers for a logical subscription SKU, or `null` if unknown.
@@ -142,21 +215,48 @@ class IapProduct {
     required this.type,
     required this.localizedPrice,
     this.title,
+    this.rawPrice = 0,
+    this.currencyCode = '',
+    this.freeTrial = false,
   });
 
-  /// Store product id.
+  /// Whether the store offered this account the free-trial offer for this
+  /// product. Play lists only offers the account is eligible for, so true
+  /// means eligible; false means not eligible **or** the store cannot say
+  /// (StoreKit) — the paywall then says nothing about a trial (3.1.2).
+  final bool freeTrial;
+
+  /// Logical SKU — `bt_pro_yearly`, `bt_character_popo`.
+  ///
+  /// On iOS this is the App Store product id verbatim. On Android it is the
+  /// (subscription id, base plan id) pair collapsed by
+  /// [IapProductIds.logicalSkuFromPlay]; Play itself never returns this
+  /// string.
   final String id;
 
   /// Subscription or non-consumable.
   final IapProductType type;
 
-  /// The store's localized display price (`$15.99`). **Always displayed
-  /// verbatim** — v2 §6-4 forbids hardcoding character prices; the store is
-  /// the price authority. Mock values stand in until the catalog exists.
+  /// The store's localized display price (`$15.99`, `₩22,000`). **Always
+  /// displayed verbatim** — v2 §6-4: the store is the price authority.
+  ///
+  /// This is also what makes a console-side discount visible without an app
+  /// release. Schedule a price drop on App Store Connect and this string
+  /// changes on its own; quote [PlanPrices] instead and the screen keeps
+  /// showing full price while the member is charged less — a 3.1.2 mismatch
+  /// in the other direction.
   final String localizedPrice;
 
   /// Store display name, when provided.
   final String? title;
+
+  /// The same price as a number, in the store's currency. For comparisons
+  /// (is this cheaper than list?), never for display — formatting is
+  /// [localizedPrice]'s job.
+  final double rawPrice;
+
+  /// ISO-4217 code behind [rawPrice] (`USD`, `KRW`). Empty when unknown.
+  final String currencyCode;
 }
 
 /// What happened to a purchase, delivered on [IapService.purchases].
@@ -177,6 +277,145 @@ enum IapPurchaseState {
   failed,
 }
 
+/// How long a purchase may sit in [IapPurchaseState.pending] before the screen
+/// stops waiting and says so (QA F004).
+///
+/// Not zero: StoreKit reports every purchase as pending while its sheet is up
+/// (`purchasing`), and a normal purchase resolves within seconds. A payment
+/// still pending after this is a slow card, a cash payment or Ask to Buy — the
+/// member must be able to leave; the rail delivers it whenever it completes.
+const kPurchasePendingNoticeAfter = Duration(seconds: 8);
+
+/// Why a [IapPurchaseState.failed] event failed — the screens pick their sheet
+/// from this (QA F005 · F028 · 09-27).
+///
+/// Before this, every failure read as a declined card. But the store can take
+/// the money and our server still not confirm it: telling that member
+/// 「Your card was declined · Nothing was charged」 is false, and sends them to
+/// change a card that worked.
+enum IapFailure {
+  /// The store itself failed — declined card, store outage. Nothing charged.
+  store,
+
+  /// The store took the payment; our server has not confirmed it yet (outage,
+  /// timeout, `VERIFY_UNAVAILABLE`, unknown product). The receipt is kept and
+  /// verified again on the next launch or by Restore.
+  verifyPending,
+
+  /// The store says the receipt is not valid (`INVALID_RECEIPT`). Retrying
+  /// cannot change that, so the rail closes the transaction.
+  rejected,
+
+  /// The receipt already belongs to another BeaverTalk account
+  /// (`RECEIPT_OWNED_BY_OTHER`).
+  otherAccount,
+
+  /// The store refused because this store account already has the product
+  /// (Play `ITEM_ALREADY_OWNED`). Nothing was charged and no card was
+  /// declined — the member is already subscribed.
+  alreadyOwned,
+}
+
+/// Why `POST /purchases/verify` refused a receipt — the server's `detail.code`
+/// (`domains/commerce/routers/purchases.py`). The message is for humans; this
+/// is what the rail branches on.
+enum IapVerifyRejection {
+  /// 404 `UNKNOWN_PRODUCT` — the server does not know the product id.
+  unknownProduct,
+
+  /// 422 `INVALID_RECEIPT` — the store judged it invalid. Retrying is pointless.
+  invalidReceipt,
+
+  /// 409 `RECEIPT_OWNED_BY_OTHER` — used by another account.
+  ownedByOther,
+
+  /// 503 `VERIFY_UNAVAILABLE` — the store did not answer. Retry later.
+  unavailable;
+
+  /// The server's code string to this, or null for anything else.
+  static IapVerifyRejection? fromCode(String? code) => switch (code) {
+        'UNKNOWN_PRODUCT' => unknownProduct,
+        'INVALID_RECEIPT' => invalidReceipt,
+        'RECEIPT_OWNED_BY_OTHER' => ownedByOther,
+        'VERIFY_UNAVAILABLE' => unavailable,
+        _ => null,
+      };
+}
+
+/// A verification refusal carrying the server's reason.
+class IapVerifyException implements Exception {
+  /// Creates the exception.
+  const IapVerifyException(this.reason, [this.cause]);
+
+  /// What the server said.
+  final IapVerifyRejection reason;
+
+  /// The underlying error, for logs.
+  final Object? cause;
+
+  @override
+  String toString() => 'IapVerifyException($reason)';
+}
+
+/// What a restore came to — [IapService.restore] (QA F003 · 09-27).
+///
+/// Counting `restored` events was not enough: the server can refuse every
+/// receipt and still answer 200, and the rail used to report the whole batch
+/// as restored anyway — 「Premium is back」 with the plan still Free.
+/// Whether the store holds a live Premium subscription for **this member**.
+enum StorePremium {
+  /// A live Premium purchase tied to this member's account id.
+  owned,
+
+  /// The store answered and has none for this member.
+  none,
+
+  /// No answer — the query failed or the member's account id is unknown, so
+  /// purchases cannot be matched to the member (QA F112 · PM-DEC-190).
+  unknown,
+}
+
+enum RestoreOutcome {
+  /// The subscription is back — the batch carried a subscription receipt and
+  /// the account is Premium now.
+  restored,
+
+  /// Characters (or the character bundle) are back, but no subscription —
+  /// "Premium is back" would be untrue (QA F097 · PM-DEC-166). Two or more.
+  restoredCharacters,
+
+  /// Exactly one character is back (the title is singular — QA F110).
+  restoredCharacter,
+
+  /// Receipts went up and nothing was granted, for a reason other than another
+  /// account (`invalid` · `unavailable`), or with no per-item reason (older
+  /// server). A neutral "couldn't confirm" (QA F109 · F114).
+  unconfirmed,
+
+  /// An old subscription id (`bt_max` · `bt_pro…`) went up and nothing was
+  /// granted — the server catalog may not know it (UNKNOWN_PRODUCT). The
+  /// receipt stays open for a retry; "still confirming" (PM-DEC-119 · F070).
+  verifying,
+
+  /// The store returned nothing to restore.
+  nothing,
+
+  /// The store returned a subscription receipt the server granted nothing
+  /// for — most often it belongs to another BeaverTalk account.
+  notThisAccount,
+
+  /// Only character receipts came back and none was granted — bought on
+  /// another BeaverTalk account (09-28 device, 409 on bt_character_popo).
+  ///
+  /// Only on a per-item `owned_by_other` (409 · §22 ③). An older server without
+  /// reasons cannot tell 409 from 503, so that case stays [unconfirmed]
+  /// (QA F109 · F114 · PM-DEC-192).
+  charactersNotThisAccount,
+
+  /// The store or our server could not be reached.
+  unavailable,
+}
+
 /// One purchase event.
 class IapPurchase {
   /// Creates a purchase event.
@@ -187,19 +426,37 @@ class IapPurchase {
     this.error,
     this.transactionId,
     this.purchaseToken,
+    this.isSandbox = false,
+    this.failure,
+    this.startedTrial = false,
   });
 
-  /// Which product.
+  /// Whether this purchase was opened with the free-trial offer — the
+  /// success screen then says what is charged after the trial, not today.
+  /// Only the purchase this app launched can know; restores say false.
+  final bool startedTrial;
+
+  /// Which product — the logical SKU, not the raw store id.
   final String productId;
 
   /// Which shape of product.
   final IapProductType type;
 
   /// Outcome so far.
+  ///
+  /// ⚠ [IapPurchaseState.purchased] means **paid _and_ granted by our
+  /// server**, not merely "the store took the money". The rail withholds the
+  /// verdict until `POST /purchases/verify` answers, because a screen that
+  /// celebrates on the store's word alone promises access the backend has not
+  /// recorded.
   final IapPurchaseState state;
 
   /// Store error payload on [IapPurchaseState.failed].
   final Object? error;
+
+  /// Why it failed, on [IapPurchaseState.failed]. Null reads as
+  /// [IapFailure.store] (the rail's own store errors and the mock).
+  final IapFailure? failure;
 
   /// iOS `originalTransactionId` / Android `orderId`.
   ///
@@ -223,6 +480,10 @@ class IapPurchase {
   bool get hasReceipt =>
       (transactionId?.isNotEmpty ?? false) &&
       (purchaseToken?.isNotEmpty ?? false);
+
+  /// Whether the receipt came from a sandbox / test account. The server needs
+  /// it to pick which store endpoint to verify against.
+  final bool isSandbox;
 }
 
 /// The store billing seam every purchase UI talks to.
@@ -241,10 +502,20 @@ abstract class IapService {
   /// exists any more (v2 §2-3).
   Future<void> purchase(IapProduct product);
 
+  /// Buys [product] **in place of** the Premium subscription the member
+  /// already has — monthly ↔ yearly (QA F067 · F083).
+  ///
+  /// Unlike [purchase], this refuses to open a sheet it cannot make a
+  /// replacement of: when the store cannot say which subscription is owned
+  /// (query error, empty list), it throws instead of opening a second,
+  /// parallel subscription. Never uses a free-trial offer.
+  Future<void> purchaseSwitch(IapProduct product);
+
   /// Replays ownership — **subscriptions and non-consumables both** (v2
-  /// completion criterion 11: characters restore too). Results arrive on
-  /// [purchases] as [IapPurchaseState.restored].
-  Future<void> restore();
+  /// completion criterion 11: characters restore too). Accepted receipts also
+  /// arrive on [purchases] as [IapPurchaseState.restored]; the returned
+  /// [RestoreOutcome] is what the result sheet is picked from.
+  Future<RestoreOutcome> restore();
 
   /// Purchase outcomes, including restores.
   Stream<IapPurchase> get purchases;
@@ -263,6 +534,61 @@ abstract class IapService {
   /// "I don't know" and "not eligible" lead to the same screen, and whoever
   /// wires a real SDK has to come here and say `true` on purpose.
   bool get reportsIntroEligibility;
+
+  /// 이 계정이 스토어에서 **연간** Premium 을 가지고 있는가. `null` 은 모름(iOS · 레거시 `bt_max` ·
+  /// 조회 실패) — 호출부가 다른 근거로 판단한다.
+  ///
+  /// 서버 구독 상태에는 결제 주기가 없다. 연간 회원에게 「Switch to yearly」 를 보이지 않으려면
+  /// 스토어에 물어야 한다(QA F067 부수).
+  Future<bool?> ownsAnnualPremium();
+
+  /// 스토어에 이 회원의 **유효한** Premium 구독이 있는가 — 주기와 무관(레거시 `bt_max` 포함).
+  /// 조회 실패·회원 대조 불가는 [StorePremium.unknown] 이다(「없음」 과 가른다 · QA F112).
+  Future<StorePremium> storePremium();
+
+  /// Whether the device can transact at all — no store on this build, a
+  /// signed-out account, or purchases restricted by parental controls.
+  ///
+  /// False is not an error: it means the paywall's buy button leads nowhere
+  /// and should say so before taking a tap.
+  Future<bool> isAvailable();
+
+  /// Opens the store's offer-code redemption sheet, or returns false where the
+  /// platform has none.
+  ///
+  /// This is the app-side half of every console-issued discount: codes can be
+  /// generated at any time without review, but a member can only spend one if
+  /// the app gives them somewhere to type it. Shipping the entry point in the
+  /// binary is what keeps later discount campaigns off the review queue.
+  Future<bool> presentOfferCodeRedemption();
+
+  /// 윈백 오퍼(첫 달 50%)로 월간 Premium 결제창을 연다 — **안드로이드 전용**(PM-DEC-049).
+  ///
+  /// Play 는 이탈 구독자 할인을 스토어 구독 화면에서 자동으로 적용하지 않는다 — 스토어로 보내면
+  /// 정가가 보인다. 그래서 앱이 오퍼 토큰([IapProductIds.playWinbackOfferId])을 붙여 결제창을
+  /// 직접 연다. 결과는 [purchases] 에 월간 Premium([IapProductIds.maxMonthly])으로 온다.
+  ///
+  /// 못 열면(iOS · 스토어 조회 실패 · 오퍼 미등록·비활성) false — 호출부는 스토어 구독 화면으로
+  /// 폴백한다. 대상 판정(이전 구독자)은 호출부 몫이다 — 앱은 만료된 회원에게만 이 길을 보인다.
+  Future<bool> purchaseWinbackOffer();
+}
+
+/// 앱을 거쳐 여는 윈백 결제의 라우트 인자 — `PurchaseProcessingScreen` 이 이걸 받으면
+/// [IapService.purchase] 대신 [IapService.purchaseWinbackOffer] 를 부른다.
+class WinbackPurchase {
+  /// The marker.
+  const WinbackPurchase();
+}
+
+/// 월간↔연간 전환 결제의 라우트 인자 — `PurchaseProcessingScreen` 이 이걸 받으면
+/// [IapService.purchase] 대신 [IapService.purchaseSwitch] 를 부른다(QA F083). 재시도 시트도
+/// 이 표시를 이어 받는다 — 재시도가 새 구독 구매로 바뀌면 이중 청구 입구가 다시 열린다.
+class SwitchPurchase {
+  /// [annual] 은 바꿔 갈 주기.
+  const SwitchPurchase({required this.annual});
+
+  /// Whether the target is the yearly plan.
+  final bool annual;
 }
 
 /// The stand-in rail until store products exist.
@@ -273,15 +599,17 @@ abstract class IapService {
 class MockIapService implements IapService {
   /// Creates a mock. [owned] is the set of products a restore replays.
   MockIapService({
-    List<IapProduct> catalog = defaultCatalog,
+    List<IapProduct>? catalog,
     List<IapPurchase> owned = const [],
     this.scriptedOutcome = IapPurchaseState.purchased,
-  })  : _catalog = catalog,
+  })  : _catalog = catalog ?? defaultCatalog,
         _owned = List.of(owned);
 
-  /// The demo catalog. Prices are mock stand-ins (design list prices) —
-  /// replaced by store-localized values the moment the real SDK lands.
-  static const defaultCatalog = [
+  /// The demo catalog. Prices are whatever [PlanPrices] currently answers —
+  /// the store's own values when a real rail has adopted them, list prices
+  /// otherwise. **Not `const`**: prices are resolved at read time now, which
+  /// is the whole point of the store being the authority.
+  static final defaultCatalog = [
     IapProduct(
         id: IapProductIds.proMonthly,
         type: IapProductType.subscription,
@@ -307,6 +635,28 @@ class MockIapService implements IapService {
   /// trial line off every screen until a real rail lands.
   @override
   bool get reportsIntroEligibility => false;
+
+  @override
+  Future<bool> isAvailable() async => true;
+
+  @override
+  Future<bool> presentOfferCodeRedemption() async => false;
+
+  /// 가짜 레일엔 스토어 오퍼가 없다 — 호출부가 스토어 화면으로 폴백한다.
+  @override
+  Future<bool> purchaseWinbackOffer() async => false;
+
+  /// 가짜 레일은 결제 주기를 모른다.
+  @override
+  Future<bool?> ownsAnnualPremium() async => null;
+
+  /// 가짜 레일엔 스토어가 없다 — 가진 구독도 없다.
+  @override
+  Future<StorePremium> storePremium() async => StorePremium.none;
+
+  /// 가짜 레일엔 교체가 없다 — 같은 구매로 흉내 낸다.
+  @override
+  Future<void> purchaseSwitch(IapProduct product) => purchase(product);
 
   /// What the next [purchase] resolves to.
   IapPurchaseState scriptedOutcome;
@@ -342,11 +692,12 @@ class MockIapService implements IapService {
   }
 
   @override
-  Future<void> restore() async {
+  Future<RestoreOutcome> restore() async {
     // Everything ever owned comes back — subscriptions AND characters.
     for (final p in _owned) {
       _controller.add(p);
     }
+    return _owned.isEmpty ? RestoreOutcome.nothing : RestoreOutcome.restored;
   }
 
   /// Closes the stream (tests).

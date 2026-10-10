@@ -27,11 +27,17 @@ import '../../theme/app_color_tokens.dart';
 /// fills on a clock asserts "analysing the 3rd word now", which is false.
 class ScanCursor extends StatefulWidget {
   /// Creates the sweeping scan cursor.
-  const ScanCursor({super.key, required this.height, this.period});
+  const ScanCursor({super.key, this.height, this.period});
 
-  /// Height of the bar. The frame draws 84 over a 60-high sentence block, i.e.
-  /// the cursor overhangs the text rather than being clipped to it.
-  final double height;
+  /// Height of the bar. **Null means measure the parent** — the caller sizes the
+  /// cursor by stretching it over the sentence block, so a 2-line sentence gets a
+  /// 2-line cursor.
+  ///
+  /// The frame draws 84 over a 60-high sentence block, i.e. the cursor overhangs
+  /// the text rather than being clipped to it. That overhang is the caller's job
+  /// (`_kScanOverhang`); here a null height just fills whatever box it is given,
+  /// keeping the frame's `halo = bar + 8` relation.
+  final double? height;
 
   /// One left→right→left cycle. Defaults to 1.8s — **not from the design**,
   /// which is three static keyframes with no timing on them.
@@ -56,11 +62,16 @@ class _ScanCursorState extends State<ScanCursor>
 
   @override
   Widget build(BuildContext context) {
-    final double haloH = widget.height + 8; // frame: 92 halo over an 84 bar
-
     return LayoutBuilder(
       builder: (context, constraints) {
         final double span = constraints.maxWidth;
+        // frame: 92 halo over an 84 bar. With an explicit height that relation is
+        // built up from the bar; with a null height the box IS the halo, so the
+        // bar is derived back down from it.
+        final double haloH = widget.height != null
+            ? widget.height! + 8
+            : constraints.maxHeight;
+        final double barH = widget.height ?? (constraints.maxHeight - 8);
         return SizedBox(
           height: haloH,
           child: AnimatedBuilder(
@@ -103,7 +114,7 @@ class _ScanCursorState extends State<ScanCursor>
                     left: (span * t) - 1,
                     child: Container(
                       width: 2,
-                      height: widget.height,
+                      height: barH,
                       decoration: BoxDecoration(
                         color: primary,
                         borderRadius: BorderRadius.circular(1),

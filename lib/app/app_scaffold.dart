@@ -4,15 +4,20 @@ import '../components/chrome/status_bar.dart';
 import '../components/chrome/home_indicator.dart';
 
 /// Full-screen shell for every design_app screen. The body fills the real
-/// device height inside a [SafeArea] (so the OS status bar / home indicator
-/// insets are respected), capped at a 430px-wide phone column that is centred
-/// on a dark page for wide/desktop windows.
+/// device width and height inside a [SafeArea], so the OS status bar / home
+/// indicator insets are respected.
 ///
 /// The old fixed 375×812 mock frame (and its reserved fake-chrome spacers) was
 /// dropped: it scaled the whole UI down when the soft keyboard opened. Now the
 /// keyboard resizes the body and each screen's own scroll view handles it.
 /// [statusVariant] / [homeVariant] are retained so existing call sites keep
 /// compiling, but they no longer affect layout.
+///
+/// 폭 캡은 여기 없다. 예전에는 `maxWidth: 430` 으로 전 화면을 폰 칼럼에 가뒀고,
+/// 그래서 태블릿에서는 가운데 430 칼럼 하나에 좌우가 통째로 검은 여백이었다.
+/// 이제 셸은 전폭을 채우고 **폭을 줄이는 일은 본문이 `ContentColumn` 으로
+/// 스스로 한다** — 전폭이어야 하는 부품(상태바·헤더·탭바 배경)과 600으로
+/// 묶여야 하는 본문이 한 캡을 공유하면 둘 중 하나는 반드시 틀리기 때문이다.
 class AppScaffold extends StatelessWidget {
   const AppScaffold({
     super.key,
@@ -49,30 +54,19 @@ class AppScaffold extends StatelessWidget {
       // Keep the soft keyboard resizing the body so each screen's own scroll
       // view lifts the focused field above the keyboard (no whole-UI shrink).
       resizeToAvoidBottomInset: true,
-      body: Stack(
-        children: [
-          // Full-height, phone-width column: fills the real device height and
-          // caps width at 430 so wide/desktop windows keep a centred phone
-          // column with dark side margins. SafeArea respects the OS insets.
-          Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 430),
-              child: ColoredBox(
-                color: background ?? context.c.backgroundNormalDeep,
-                child: SafeArea(
-                  child: SizedBox.expand(
-                    child: Column(
-                      children: [
-                        Expanded(child: body),
-                        ?bottomBar,
-                      ],
-                    ),
-                  ),
-                ),
-              ),
+      // 전폭·전높이. SafeArea 가 OS 인셋을 지킨다.
+      body: ColoredBox(
+        color: background ?? context.c.backgroundNormalDeep,
+        child: SafeArea(
+          child: SizedBox.expand(
+            child: Column(
+              children: [
+                Expanded(child: body),
+                ?bottomBar,
+              ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }

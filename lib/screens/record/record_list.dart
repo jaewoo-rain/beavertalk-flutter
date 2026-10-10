@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
+import '../../features/normalcall/domain/entities/call_course.dart';
+import '../../features/normalcall/domain/entities/call_result.dart';
 import '../../components/atoms/blur_up_image.dart';
 import '../../components/atoms/skeleton.dart';
 import '../../components/molecules/card_bookmark.dart';
@@ -59,9 +62,8 @@ class _RecordListScreenState extends ConsumerState<RecordListScreen> {
         children: [
           Gnb.main(title: '', onBack: () => Navigator.pop(context)),
           // 기록 / 보관 tabs — pure in-page state, no navigation.
-          Padding(
-            padding: const EdgeInsets.fromLTRB(
-                AppSpacing.s20, 14, AppSpacing.s20, 14),
+          ContentColumn(
+            padding: const EdgeInsets.symmetric(vertical: 14),
             child: SegmentedTabs(
               labels: [l10n.tabRecords, l10n.tabArchive],
               activeIndex: _tab,
@@ -71,10 +73,7 @@ class _RecordListScreenState extends ConsumerState<RecordListScreen> {
           Expanded(
             child: IndexedStack(
               index: _tab,
-              children: const [
-                _RecordsBody(),
-                _ArchiveBody(),
-              ],
+              children: const [_RecordsBody(), _ArchiveBody()],
             ),
           ),
         ],
@@ -107,15 +106,37 @@ class _RecordsBody extends ConsumerWidget {
         message: e is AppException && e.fromServer ? e.message : null,
         onRetry: () => ref.invalidate(callListProvider),
       ),
-      data: (state) => state.items.isEmpty
-          ? _recordsEmpty(context)
-          : _RecordList(
-              state: state,
-              onLoadMore: () => ref.read(callListProvider.notifier).loadMore(),
-            ),
+      data: (state) {
+        final shown = state.items.where(isListedCall).toList();
+        if (shown.isEmpty && state.hasMore) {
+          // 받은 쪽이 전부 0초 통화면 보일 게 없다 — 다음 쪽을 불러오는 동안 로딩을 보인다.
+          // 빈 상태를 그리면 기록이 있는 회원에게 「통화 기록이 없어요」 가 뜬다.
+          if (!state.isLoadingMore) {
+            WidgetsBinding.instance.addPostFrameCallback(
+              (_) => ref.read(callListProvider.notifier).loadMore(),
+            );
+          }
+          return const _RecordsLoading();
+        }
+        return shown.isEmpty
+            ? _recordsEmpty(context)
+            : _RecordList(
+                state: state,
+                records: shown,
+                onLoadMore: () => ref.read(callListProvider.notifier).loadMore(),
+              );
+      },
     );
   }
 }
+
+/// 기록 목록에 올릴 통화인가 — **0초 통화는 뺀다**(QA F048 · PM-DEC-030).
+///
+/// 연결만 되고 말 한마디 없이 끊긴 통화가 「대화 기록 · 0분 0초」 카드로 일반 통화와 같은
+/// 모양으로 올라왔고, 열면 전부 「-%」 인 빈 분석이었다. 길이를 모르면(null) 남긴다 —
+/// 모르는 걸 지우면 실제 통화가 사라질 수 있다.
+@visibleForTesting
+bool isListedCall(CallSummary call) => call.totalTime != 0;
 
 /// 기록 tab while `GET /calls` is in flight — Figma `screen/record_list_loading`
 /// (`3489:3921`).
@@ -132,18 +153,30 @@ class _RecordsLoading extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return SkeletonShimmer(
-      child: ListView(
-        padding: const EdgeInsets.fromLTRB(
-            AppSpacing.s20, AppSpacing.s4, AppSpacing.s20, AppSpacing.s24),
-        children: [
-          Text(l10n.callHistory,
-              style: AppType.body1.sb.copyWith(color: context.c.labelNormal)),
-          const SizedBox(height: 8),
-          for (var i = 0; i < 5; i++) ...[
-            if (i > 0) const SizedBox(height: AppSpacing.s12),
-            const CardBoxLoading(),
+      child: ContentColumn(
+        child: ListView(
+          padding: const EdgeInsets.only(
+            top: AppSpacing.s4,
+            bottom: AppSpacing.s24,
+          ),
+          children: [
+            Text(
+              l10n.callHistory,
+              style: AppType.body1.sb.copyWith(color: context.c.labelNormal),
+            ),
+            const SizedBox(height: 8),
+            const AdaptiveTiles(
+              stackedGap: AppSpacing.s12,
+              children: [
+                CardBoxLoading(),
+                CardBoxLoading(),
+                CardBoxLoading(),
+                CardBoxLoading(),
+                CardBoxLoading(),
+              ],
+            ),
           ],
-        ],
+        ),
       ),
     );
   }
@@ -153,15 +186,22 @@ class _RecordsLoading extends StatelessWidget {
 /// bottom triggers [onLoadMore], which appends the next page (guarded in the
 /// notifier), with a spinner while a page is in flight.
 class _RecordList extends StatelessWidget {
-  const _RecordList({required this.state, required this.onLoadMore});
+  const _RecordList({
+    required this.state,
+    required this.records,
+    required this.onLoadMore,
+  });
 
   final CallListState state;
+
+  /// [CallListState.items] 중 목록에 올릴 것([isListedCall]). 페이징은 [state] 원본
+  /// 개수로 한다 — 거른 개수로 오프셋을 잡으면 서버 쪽 순서와 어긋난다.
+  final List<CallSummary> records;
   final VoidCallback onLoadMore;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final records = state.items;
     return NotificationListener<ScrollNotification>(
       onNotification: (n) {
         // Prefetch before the very bottom so the next page is ready in time.
@@ -172,48 +212,58 @@ class _RecordList extends StatelessWidget {
         }
         return false;
       },
-      child: ListView(
-        padding: const EdgeInsets.fromLTRB(
-            AppSpacing.s20, AppSpacing.s4, AppSpacing.s20, AppSpacing.s24),
-        children: [
-          Text(l10n.callHistory,
-              style: AppType.body1.sb.copyWith(color: context.c.labelNormal)),
-          const SizedBox(height: 8),
-          for (var i = 0; i < records.length; i++) ...[
-            if (i > 0) const SizedBox(height: AppSpacing.s12),
-            InkWell(
-              borderRadius: BorderRadius.circular(8),
-              onTap: () => Navigator.pushNamed(
-                context,
-                Routes.analysisLoading,
-                arguments: records[i].callId,
-              ),
-              child: CardBox(
-                type: CardBoxType.record,
-                // Blur-in while the remote character avatar loads (CardBox clips
-                // this to a 64px circle).
-                avatar:
-                    BlurUpImage(image: _avatarFor(records[i].character.imageUrl)),
-                title: records[i].character.name,
-                subtitle: _subtitleFor(l10n, records[i].summary),
-                meta: [
-                  _formatDate(records[i].callDate),
-                  _formatDuration(l10n, records[i].totalTime),
-                ],
-              ),
+      child: ContentColumn(
+        child: ListView(
+          padding: const EdgeInsets.only(
+            top: AppSpacing.s4,
+            bottom: AppSpacing.s24,
+          ),
+          children: [
+            Text(
+              l10n.callHistory,
+              style: AppType.body1.sb.copyWith(color: context.c.labelNormal),
             ),
-          ],
-          if (state.isLoadingMore) ...[
-            const SizedBox(height: AppSpacing.s16),
-            const Center(
-              child: SizedBox(
-                width: 24,
-                height: 24,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              ),
+            const SizedBox(height: 8),
+            AdaptiveTiles(
+              stackedGap: AppSpacing.s12,
+              children: [
+                for (final record in records)
+                  InkWell(
+                    borderRadius: BorderRadius.circular(8),
+                    onTap: () => Navigator.pushNamed(
+                      context,
+                      Routes.analysisLoading,
+                      arguments: record.callId,
+                    ),
+                    child: CardBox(
+                      type: CardBoxType.record,
+                      // Blur-in while the remote character avatar loads
+                      // (CardBox clips this to a 64px circle).
+                      avatar: BlurUpImage(
+                        image: _avatarFor(record.character.imageUrl),
+                      ),
+                      title: record.character.name,
+                      subtitle: _subtitleFor(l10n, record.summary),
+                      meta: [
+                        _formatDate(record.callDate),
+                        _formatDuration(l10n, record.totalTime),
+                      ],
+                    ),
+                  ),
+              ],
             ),
+            if (state.isLoadingMore) ...[
+              const SizedBox(height: AppSpacing.s16),
+              const Center(
+                child: SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+              ),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }
@@ -249,15 +299,21 @@ class _RecordList extends StatelessWidget {
   }
 }
 
-/// Empty state shown when there are no past calls (mirrors
-/// [Routes.recordsEmpty] copy, kept inline so the tabs stay visible).
+/// Empty state shown when there are no past calls, kept inline so the tabs
+/// stay visible. (The standalone `/records/empty` screen was deleted 09-26 —
+/// nothing routed to it.)
 Widget _recordsEmpty(BuildContext context) {
   final l10n = AppLocalizations.of(context);
   return EmptyScreen(
     title: l10n.noCallRecords,
     body: l10n.noCallRecordsBody,
     ctaText: l10n.startCall,
-    onCta: () => Navigator.pushNamed(context, Routes.callLoading),
+    // ⭐ 홈 전화 버튼과 같은 auto 코스(2026-09-13).
+    onCta: () => Navigator.pushNamed(
+      context,
+      Routes.callLoading,
+      arguments: const CourseCallRequest(CallCourse.auto),
+    ),
   );
 }
 
@@ -290,9 +346,9 @@ class _ArchiveBodyState extends ConsumerState<_ArchiveBody> {
   /// Shows [message] as a snackbar.
   void _snack(String message) {
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   /// Runs a mutation, surfacing any failure ([AppException]) as a snackbar.
@@ -301,7 +357,8 @@ class _ArchiveBodyState extends ConsumerState<_ArchiveBody> {
     try {
       await action();
     } catch (e) {
-      _snack(e is AppException ? e.message : l10n.somethingWentWrong);
+      // 서버가 쓴 문구일 때만 그대로 — 앱 기본값은 한국어라 전 언어에 새어 나간다(QA F017).
+      _snack(e is AppException && e.fromServer ? e.message : l10n.somethingWentWrong);
     }
   }
 
@@ -309,13 +366,13 @@ class _ArchiveBodyState extends ConsumerState<_ArchiveBody> {
   /// the tap always clears it (`is_bookmarked: false`); on success the controller
   /// invalidates the list and the row disappears.
   Future<void> _toggleOff(int sentenceId) => _run(() async {
-        await ref
-            .read(bookmarkToggleControllerProvider.notifier)
-            .toggleBookmark(sentenceId, false);
-        // Keep the shared in-memory store in sync so analysis/learning don't keep
-        // showing this sentence as bookmarked after it's un-saved here.
-        setBookmark(sentenceId, false);
-      });
+    await ref
+        .read(bookmarkToggleControllerProvider.notifier)
+        .toggleBookmark(sentenceId, false);
+    // Keep the shared in-memory store in sync so analysis/learning don't keep
+    // showing this sentence as bookmarked after it's un-saved here.
+    setBookmark(sentenceId, false);
+  });
 
   /// Plays the sentence's standard-pronunciation audio: uses the existing
   /// [BookmarkSentence.voiceUrl] when present, otherwise fetches it on demand
@@ -381,47 +438,58 @@ class _ArchiveBodyState extends ConsumerState<_ArchiveBody> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return ref.watch(bookmarkListProvider).when(
+    return ref
+        .watch(bookmarkListProvider)
+        .when(
           loading: () => const _ArchiveLoading(),
           error: (e, _) => NetworkErrorView(
             message: e is AppException && e.fromServer ? e.message : null,
             onRetry: () => ref.invalidate(bookmarkListProvider),
           ),
-          data: (saved) =>
-              saved.isEmpty
-                  ? EmptyScreen(body: l10n.noSavedSentences)
-                  : _list(saved),
+          data: (saved) => saved.isEmpty
+              ? EmptyScreen(body: l10n.noSavedSentences)
+              : _list(saved),
         );
   }
 
   /// The populated list of bookmarked sentences.
   Widget _list(List<BookmarkSentence> saved) {
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(
-          AppSpacing.s20, AppSpacing.s4, AppSpacing.s20, AppSpacing.s24),
-      children: [
-        Text(AppLocalizations.of(context).mySavedExpressions,
-            style: AppType.body1.sb.copyWith(color: context.c.labelNormal)),
-        const SizedBox(height: AppSpacing.s8),
-        for (var i = 0; i < saved.length; i++) ...[
-          if (i > 0) const SizedBox(height: AppSpacing.s12),
-          CardBookmark(
-            korean: saved[i].korean,
-            native: saved[i].native,
-            bookmarked: saved[i].isBookmarked,
-            onBookmarkTap: () => _toggleOff(saved[i].sentenceId),
-            onSpeakerTap: () => _speak(saved[i]),
-            // The frame's archive cards carry the same 연습하기 button as the
-            // analysis ones (`I3360:115;176:15497`); this tab was dropping it,
-            // which cost the archive its only visible way into practice (the
-            // whole-card tap does the same thing, but nothing said so) and left
-            // the card 12px shorter than [CardLoading] reserves for it.
-            actionText: AppLocalizations.of(context).practice,
-            onAction: () => _review(saved[i]),
-            onTap: () => _review(saved[i]),
+    return ContentColumn(
+      child: ListView(
+        padding: const EdgeInsets.only(
+          top: AppSpacing.s4,
+          bottom: AppSpacing.s24,
+        ),
+        children: [
+          Text(
+            AppLocalizations.of(context).mySavedExpressions,
+            style: AppType.body1.sb.copyWith(color: context.c.labelNormal),
+          ),
+          const SizedBox(height: AppSpacing.s8),
+          AdaptiveTiles(
+            stackedGap: AppSpacing.s12,
+            children: [
+              for (final item in saved)
+                CardBookmark(
+                  korean: item.korean,
+                  native: item.native,
+                  bookmarked: item.isBookmarked,
+                  onBookmarkTap: () => _toggleOff(item.sentenceId),
+                  onSpeakerTap: () => _speak(item),
+                  // The frame's archive cards carry the same 연습하기 button as
+                  // the analysis ones (`I3360:115;176:15497`); this tab was
+                  // dropping it, which cost the archive its only visible way
+                  // into practice (the whole-card tap does the same thing, but
+                  // nothing said so) and left the card 12px shorter than
+                  // [CardLoading] reserves for it.
+                  actionText: AppLocalizations.of(context).practice,
+                  onAction: () => _review(item),
+                  onTap: () => _review(item),
+                ),
+            ],
           ),
         ],
-      ],
+      ),
     );
   }
 }
@@ -437,19 +505,24 @@ class _ArchiveLoading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => SkeletonShimmer(
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(
-              AppSpacing.s20, AppSpacing.s4, AppSpacing.s20, AppSpacing.s24),
-          children: [
-            Text(AppLocalizations.of(context).mySavedExpressions,
-                style:
-                    AppType.body1.sb.copyWith(color: context.c.labelNormal)),
-            const SizedBox(height: AppSpacing.s8),
-            for (var i = 0; i < 3; i++) ...[
-              if (i > 0) const SizedBox(height: AppSpacing.s12),
-              const CardLoading(),
-            ],
-          ],
+    child: ContentColumn(
+      child: ListView(
+        padding: const EdgeInsets.only(
+          top: AppSpacing.s4,
+          bottom: AppSpacing.s24,
         ),
-      );
+        children: [
+          Text(
+            AppLocalizations.of(context).mySavedExpressions,
+            style: AppType.body1.sb.copyWith(color: context.c.labelNormal),
+          ),
+          const SizedBox(height: AppSpacing.s8),
+          const AdaptiveTiles(
+            stackedGap: AppSpacing.s12,
+            children: [CardLoading(), CardLoading(), CardLoading()],
+          ),
+        ],
+      ),
+    ),
+  );
 }

@@ -61,10 +61,23 @@ import flutter_callkit_incoming
     // pins the session output to the earpiece(receiver); Dart calls this after
     // the mic pipeline is up to force the loudspeaker — unless a headset/AirPods
     // is connected, in which case we clear the override and keep that route.
+    // 발음 챌린지 화면 녹화. Android 의 MediaProjection 과 같은 채널 규약
+    // (`start` → Bool, `stop` → 파일 경로 or nil)을 ReplayKit 으로 구현한다.
+    if let messenger = engineBridge.pluginRegistry
+      .registrar(forPlugin: "BeaverChallengeRecorder")?.messenger() {
+      challengeRecorder.register(with: messenger)
+    }
     if let messenger = engineBridge.pluginRegistry
       .registrar(forPlugin: "BeaverAudioRoute")?.messenger() {
       let channel = FlutterMethodChannel(
         name: "beavertalk/audio", binaryMessenger: messenger)
+      // Held so a route change can call BACK into Dart (`routeChanged`).
+      // Dart then re-reads the route and tells the server (`route_change`):
+      // `start.aec` is only a session-start snapshot, so pulling the headset
+      // mid-call otherwise leaves the server believing "headset" while the audio
+      // is actually on the loudspeaker — the worst echo case, and precisely the
+      // transition it never sees. No new channel: this one is bidirectional.
+      self.audioChannel = channel
       channel.setMethodCallHandler { [weak self] call, result in
         switch call.method {
         case "routeToSpeaker":
@@ -76,6 +89,12 @@ import flutter_callkit_incoming
           // End-of-call: stop observing and clear the override.
           self?.stopCallAudioRouting()
           result(nil)
+        case "getAudioRoute":
+          // barge-in 진행도 보고에 "비버 오디오가 어느 출력으로 나가던 중이었나"를 싣는다.
+          // isHeadsetConnected 는 bool 이라 스피커/유선/BT/USB 를 못 가른다 — 서버가
+          // 해석하려면 분류가 필요하다. 기존 bool 은 VPIO 활성화 판단에 계속 쓰이므로
+          // 그대로 두고 여기에 별도로 낸다.
+          result(self?.currentAudioRoute() ?? "")
         case "isHeadsetConnected":
           // Dart asks before opening the recorder so it can disable voice
           // processing when a headset is present (see below).
@@ -214,6 +233,14 @@ import flutter_callkit_incoming
   // `setPreferredInput` — which does not disturb an ongoing session.
   private var callAudioRoutingActive = false
 
+  /// `beavertalk/audio` — kept so route changes can be pushed to Dart.
+  private var audioChannel: FlutterMethodChannel?
+
+  // 발음 챌린지 화면 녹화(ReplayKit 인앱 녹화). 채널 핸들러를 들고 있어야
+  // 하므로 인스턴스 프로퍼티다 — 지역 변수로 두면 즉시 해제되어 Dart 의
+  // `start` 호출이 영영 응답을 못 받는다.
+  private let challengeRecorder = ChallengeRecorder()
+
   private func startCallAudioRouting() {
     let session = AVAudioSession.sharedInstance()
     if !callAudioRoutingActive {
@@ -293,6 +320,30 @@ import flutter_callkit_incoming
   /// captured over AirPods. A plain recorder follows the session route and uses
   /// the BT mic. Voice processing is only needed for the loudspeaker case (echo
   /// cancellation), where no headset is present.
+  /// 지금 실제로 소리가 나가는 출력의 종류. 서버 계약 문자열로 낸다.
+  ///
+  /// ⚠ 모르면 빈 문자열이다. "speaker" 로 떨어뜨리면 서버가 "못 읽음"과 "스피커였음"을
+  ///   구분하지 못해, 측정 못 한 기기가 전부 스피커폰 통계에 섞인다.
+  private func currentAudioRoute() -> String {
+    let outputs = AVAudioSession.sharedInstance().currentRoute.outputs
+    guard let port = outputs.first else { return "" }
+    // speaker / headset 두 값만. 서버는 이 값을 분류표가 아니라 **그룹 키**로 쓴다 —
+    // 같은 라우트엔 항상 같은 문자열이면 되고, 세분화하면 오히려 "라우트가 바뀌었다"는
+    // 신호가 희석된다. (A2DP/HFP 구분은 나중 단계에서 AEC 정책 때문에 필요해진다.)
+    //
+    // ⚠ builtInReceiver(리시버)는 "receiver" 라는 **제3의 값**이다. 스피커폰도 헤드셋도
+    //   아니라 둘 중 아무 데나 넣으면 틀린 값이 되고, 그렇다고 빈 문자열도 아니다 —
+    //   빈 값은 서버가 "라우트 불명"으로 읽어 "이어폰을 꽂았다 빼며 재측정하라"는 처방을
+    //   낸다. 아는데 모른다고 하면 측정하는 사람이 헛수고한다.
+    switch port.portType {
+    case .builtInSpeaker: return "speaker"
+    case .builtInReceiver: return "receiver"
+    case .headphones, .headsetMic, .bluetoothA2DP, .bluetoothLE,
+         .bluetoothHFP, .usbAudio, .carAudio: return "headset"
+    default: return ""
+    }
+  }
+
   private func isHeadsetConnected() -> Bool {
     let session = AVAudioSession.sharedInstance()
     let inPorts: Set<AVAudioSession.Port> = [
@@ -315,12 +366,25 @@ import flutter_callkit_incoming
           let raw = info[AVAudioSessionRouteChangeReasonKey] as? UInt,
           let reason = AVAudioSession.RouteChangeReason(rawValue: raw)
     else { return }
-    // React ONLY to a headset being physically added/removed (AirPods connect/
-    // disconnect). Ignore Control Center / overrides / config changes — reacting
-    // there (re-activating the session) drops the live call.
+    // Steer the input ONLY when a headset is physically added/removed (AirPods
+    // connect/disconnect). Never re-apply the session here — re-activating it on
+    // Control Center / overrides / config changes dropped the live call (453b5b97).
+    // Output-selection changes are only *reported* to Dart (see below).
     switch reason {
     case .newDeviceAvailable, .oldDeviceUnavailable:
       steerInputToHeadset()
+      // Tell Dart the route moved. We deliberately do NOT send the route itself:
+      // the notification fires before the session settles, so Dart re-reads it
+      // (one 5-15ms round trip) and reports that.
+      audioChannel?.invokeMethod("routeChanged", arguments: nil)
+    case .override, .categoryChange, .routeConfigurationChange:
+      // 10-06 실기기 R7: AirPods 연결은 그대로 둔 채 출력만 스피커로 고르면(출력 선택)
+      // 이 사유들로 온다. 예전엔 버려서 Dart 가 레코더를 다시 열지 못했고 마이크가 죽었다.
+      // ⛔ 여기서도 세션·카테고리는 건드리지 않는다(453b5b97 — 재적용이 통화를 끊었다).
+      //   입력도 조정하지 않는다 — 사용자가 고른 출력을 BT 로 되돌려 버린다.
+      //   Dart 는 출력 문자열이 실제로 바뀐 경우에만 레코더를 다시 연다(같은 값이면 무시) —
+      //   레코더 재오픈이 낳는 categoryChange 로 되도는 일도 그 비교에서 끊긴다.
+      audioChannel?.invokeMethod("routeChanged", arguments: nil)
     default:
       break
     }
@@ -360,8 +424,22 @@ import flutter_callkit_incoming
     guard type == .voIP else { completion(); return }
     let dict = payload.dictionaryPayload
     let id = dict["id"] as? String ?? UUID().uuidString
-    let nameCaller = dict["nameCaller"] as? String ?? "비버 튜터"
-    let handle = dict["handle"] as? String ?? "한국어 통화"
+    // 서버가 문구를 안 실어 보내면 **앱이 마지막으로 저장한 번역**을 쓴다.
+    //
+    // 이 핸들러는 Dart 가 깨어나기 전에 돌기 때문에(iOS 13+ 는 VoIP 푸시마다
+    // 즉시 통화를 보고하지 않으면 앱을 죽인다) ARB 를 읽을 수 없다. 그래서
+    // `StandaloneL10n` 이 번역을 만들 때마다 이 두 값을 UserDefaults 로
+    // 미러링해 둔다. SharedPreferences 는 iOS 에서 NSUserDefaults 이고 키에
+    // `flutter.` 접두가 붙는다.
+    //
+    // 미러가 아직 없으면(첫 실행 등) 종전 한국어 리터럴로 떨어진다.
+    let defaults = UserDefaults.standard
+    let fallbackCaller =
+      defaults.string(forKey: "flutter.call_caller_fallback") ?? "비버 튜터"
+    let fallbackHandle =
+      defaults.string(forKey: "flutter.call_handle") ?? "한국어 통화"
+    let nameCaller = dict["nameCaller"] as? String ?? fallbackCaller
+    let handle = dict["handle"] as? String ?? fallbackHandle
     let isVideo = dict["isVideo"] as? Bool ?? false
     let data = flutter_callkit_incoming.Data(
       id: id, nameCaller: nameCaller, handle: handle, type: isVideo ? 1 : 0)

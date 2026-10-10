@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../theme/app_color_tokens.dart';
+import '../../theme/app_motion.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_typography.dart';
 import '../atoms/checkbox.dart';
@@ -51,14 +52,21 @@ class SelectCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Widget card = Container(
+    // 안쪽 체크박스는 이미 부드럽게 갈리는데 카드 테두리만 튀면 둘이 따로 논다.
+    // ⚠ `checked ? Border.all(...) : null` 은 두께가 0↔1 로 오가 내용이 1px
+    //   흔들린다. 폭을 1 로 고정하고 색만 투명으로 섞는다.
+    final Widget card = AnimatedContainer(
+      duration: AppMotion.medium,
+      curve: AppMotion.toggle,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
       decoration: BoxDecoration(
         color: context.c.backgroundNormalAlternative,
         borderRadius: BorderRadius.circular(AppRadius.md),
-        border: checked
-            ? Border.all(color: context.c.primaryNormal, width: 1)
-            : null,
+        border: Border.all(
+          color:
+              checked ? context.c.primaryNormal : const Color(0x00000000),
+          width: 1,
+        ),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,

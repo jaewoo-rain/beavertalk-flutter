@@ -1,7 +1,9 @@
+import '../../app/adaptive.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart' hide Badge;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
@@ -11,10 +13,13 @@ import '../../components/molecules/card_line.dart';
 import '../../components/organisms/bottom_sheet_country_select.dart';
 import '../../components/organisms/dialog_basic.dart';
 import '../../components/organisms/gnb.dart';
+import '../../core/config/app_version.dart';
+import '../../core/config/store_flags.dart';
 import '../../core/error/app_exception.dart';
 import '../../core/format/dates.dart';
 import '../../core/i18n/locale_controller.dart';
 import '../../features/auth/domain/entities/member.dart';
+import '../../features/legal/legal_urls.dart';
 import '../../features/auth/presentation/providers/auth_controller.dart';
 import '../../features/auth/presentation/providers/auth_providers.dart';
 import '../../features/auth/presentation/providers/my_profile_provider.dart';
@@ -26,6 +31,7 @@ import '../../theme/app_color_tokens.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
+import '../../components/layout/need_based_rows.dart';
 
 /// My-page settings — Figma `screen/main_mypage_settings` (Dark `4085:30568`,
 /// Light `4086:30700`).
@@ -61,7 +67,7 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
 
   /// (멀티랭귀지 도그푸딩) 학습 언어 선택지 — 서버 target_language **코드**(커리큘럼
   /// 시드된 것만). 다른 언어가 시드되면 여기 한 줄 추가하면 된다.
-  static const _learningLanguages = <MockLanguage>[
+  static const _allLearningLanguages = <MockLanguage>[
     MockLanguage('ko', '한국어', 'KR'),
     MockLanguage('ja', '日本語', 'JP'),
     MockLanguage('en', 'English', 'US'),
@@ -69,6 +75,11 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
     MockLanguage('fr', 'Français', 'FR'),
     MockLanguage('vi', 'Tiếng Việt', 'VN'),
   ];
+
+  /// 스토어 심사 빌드면 한국어 하나뿐이다([storeKoOnly] · PM-DEC-409·410).
+  static List<MockLanguage> get _learningLanguages => storeKoOnly
+      ? _allLearningLanguages.where((l) => l.id == 'ko').toList()
+      : _allLearningLanguages;
 
   /// First subtag of a language id, lowercased (`ko-KR` → `ko`).
   ///
@@ -80,8 +91,11 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
   static String _langHead(String v) => v.split('-').first.toLowerCase();
 
   /// Display name for a learning-language code (falls back to the first entry).
-  String _learningName(String code) => _learningLanguages
-      .firstWhere((l) => l.id == code, orElse: () => _learningLanguages.first)
+  ///
+  /// 이름은 **전체 목록**에서 찾는다 — 스토어 빌드에서도 이미 다른 언어로 바꿔 둔 회원은
+  /// 실제(서버) 언어 이름을 본다. 서버 값은 앱이 바꾸지 않는다.
+  String _learningName(String code) => _allLearningLanguages
+      .firstWhere((l) => l.id == code, orElse: () => _allLearningLanguages.first)
       .name;
 
   // The legacy modal subscription sheet (manage → change-plan → cancel, the
@@ -118,6 +132,9 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
     if (picked == null || picked == currentId || !mounted) return;
     final l10n = AppLocalizations.of(context);
     setState(() => _userLangId = picked);
+    // 실패 시 되돌릴 **직전 화면 언어**. [currentId] 는 회원 서버 언어에서 온 표시값이라
+    // 화면 언어와 다를 수 있다 — 그걸로 되돌리면 원복이 오히려 화면 언어를 바꾼다.
+    final previousUi = ref.read(localeControllerProvider);
     // Switch the app UI immediately (persisted); the backend save follows.
     unawaited(ref.read(localeControllerProvider.notifier).setLanguage(picked));
     try {
@@ -127,8 +144,16 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
           .read(authControllerProvider.notifier)
           .updateLanguage(_langHead(picked));
     } catch (e) {
+      // 서버 저장이 실패하면 화면 언어도 되돌린다(QA F013) — 두면 UI 는 새 언어인데 서버
+      // member.language 는 옛 언어라, 서버가 번역하는 취약 발음 설명이 옛 언어로 남고 같은 언어를
+      // 다시 고르면 「바뀐 게 없다」로 막혀 재저장도 못 한다.
+      unawaited(ref
+          .read(localeControllerProvider.notifier)
+          .setLanguage(previousUi.toLanguageTag()));
       if (!mounted) return;
-      final msg = e is AppException ? e.message : l10n.languageSaveFailed;
+      setState(() => _userLangId = currentId);
+      // 서버가 쓴 문구일 때만 그대로 — 앱 기본값은 한국어라 전 언어에 새어 나간다(QA F017).
+      final msg = e is AppException && e.fromServer ? e.message : l10n.languageSaveFailed;
       ScaffoldMessenger.of(context)
         ..clearSnackBars()
         ..showSnackBar(SnackBar(content: Text(msg)));
@@ -143,7 +168,10 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
   /// 그 구간). 앱을 지우면 선택도 사라졌다. 이제 서버(member.target_language)가 단일
   /// 소스이고 통화 소켓은 이 값을 보내지 않는다.
   Future<void> _pickLearningLanguage(String currentCode) async {
-    var staged = currentCode;
+    // 스토어 빌드에서 목록에 없는 언어(예: ja)면 한국어를 미리 고른 채로 연다 — 되돌리기만 가능.
+    var staged = _learningLanguages.any((l) => l.id == currentCode)
+        ? currentCode
+        : _learningLanguages.first.id;
     final picked = await showModalBottomSheet<String>(
       context: context,
       backgroundColor: Colors.transparent,
@@ -166,14 +194,35 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
     if (picked == null || picked == currentCode || !mounted) return;
     final l10n = AppLocalizations.of(context);
     try {
-      await ref.read(authControllerProvider.notifier).updateTargetLanguage(picked);
+      await ref
+          .read(authControllerProvider.notifier)
+          .updateTargetLanguage(picked);
     } catch (e) {
       if (!mounted) return;
-      final msg = e is AppException ? e.message : l10n.languageSaveFailed;
+      final msg = e is AppException && e.fromServer ? e.message : l10n.languageSaveFailed;
       ScaffoldMessenger.of(context)
         ..clearSnackBars()
         ..showSnackBar(SnackBar(content: Text(msg)));
     }
+  }
+
+  /// Contact Us → 메일 앱으로 문의 메일 작성(QA F012/F021 · 09-26 사용자 결정 A).
+  ///
+  /// 전엔 행에 화살표만 있고 눌러도 아무 일이 없었다. 제목에 설치 빌드를 싣는다 —
+  /// 베타 문의를 어느 빌드에서 겪었는지 바로 맞춰 보기 위해서다(F031 과 같은 값).
+  /// 메일 앱이 없으면 주소를 보여 준다 — 주소는 어느 언어에서도 그대로 읽힌다.
+  Future<void> _contactUs() async {
+    final uri = contactMailUri(
+      version: ref.read(appVersionLabelProvider).valueOrNull,
+    );
+    var opened = false;
+    try {
+      opened = await launchUrl(uri);
+    } catch (_) {}
+    if (opened || !mounted) return;
+    ScaffoldMessenger.of(context)
+      ..clearSnackBars()
+      ..showSnackBar(const SnackBar(content: Text(kContactEmail)));
   }
 
   /// Confirms and performs account deletion (backend delete + sign-out).
@@ -183,20 +232,26 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
       context,
       title: l10n.deleteAccountTitle,
       description: l10n.deleteAccountBody,
-      variant: DialogBasicVariant.twoHorizontal,
-      primary: DialogAction(
+      actions: [
+        DialogAction(
           label: l10n.cancel,
-          onPressed: () => Navigator.of(context).pop(false)),
-      secondary: DialogAction(
+          onPressed: () => Navigator.of(context).pop(false),
+        ),
+        DialogAction(
           label: l10n.delete,
-          onPressed: () => Navigator.of(context).pop(true)),
+          onPressed: () => Navigator.of(context).pop(true),
+        ),
+      ],
     );
     if (confirmed != true || !mounted) return;
     try {
       await ref.read(authControllerProvider.notifier).deleteAccount();
     } catch (e) {
       if (!mounted) return;
-      final msg = e is AppException ? e.message : l10n.accountDeleteFailed;
+      // 서버가 쓴 문구일 때만 그대로 — 앱 기본값은 한국어라 전 언어에 새어 나간다(QA F017).
+      final msg = e is AppException && e.fromServer
+          ? e.message
+          : l10n.accountDeleteFailed;
       ScaffoldMessenger.of(context)
         ..clearSnackBars()
         ..showSnackBar(SnackBar(content: Text(msg)));
@@ -212,7 +267,8 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
     // language when it maps to a known language, else English.
     final memberLang = member?.language;
     final matchedUiLang = mockLanguages.where(
-        (l) => memberLang != null && _langHead(l.id) == _langHead(memberLang));
+      (l) => memberLang != null && _langHead(l.id) == _langHead(memberLang),
+    );
     final userLangId =
         _userLangId ?? (matchedUiLang.isEmpty ? 'en' : matchedUiLang.first.id);
 
@@ -221,7 +277,7 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
     // exactly what the next call will teach. Falls back to 'ko' while loading or
     // when the saved code is not one of the seeded languages.
     final memberTarget = member?.targetLanguage;
-    final learningLangId = _learningLanguages.any((l) => l.id == memberTarget)
+    final learningLangId = _allLearningLanguages.any((l) => l.id == memberTarget)
         ? memberTarget!
         : 'ko';
 
@@ -233,106 +289,128 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
           // the current screen, so there is no trailing action.
           Gnb.main(title: '', onBack: () => Navigator.pop(context)),
           Expanded(
-            child: ListView(
-              padding: const EdgeInsets.fromLTRB(AppSpacing.s20, AppSpacing.s24,
-                  AppSpacing.s20, AppSpacing.s24),
-              children: [
-                // Account — Figma `section/Account` (4514:4691), all four
-                // rows: Nickname (chevron → editor), Email, Login Method
-                // badge, Joined.
-                _section(l10n.accountSection),
-                const SizedBox(height: AppSpacing.s16),
-                _group(_accountRows(l10n, member)),
-                const SizedBox(height: AppSpacing.s24),
+            child: ContentColumn(
+              child: ListView(
+                padding: const EdgeInsets.only(top: AppSpacing.s24, bottom: AppSpacing.s24),
+                children: [
+                  // Account — Figma `section/Account` (4514:4691), all four
+                  // rows: Nickname (chevron → editor), Email, Login Method
+                  // badge, Joined.
+                  _section(l10n.accountSection),
+                  const SizedBox(height: AppSpacing.s16),
+                  _group(_accountRows(l10n, member)),
+                  const SizedBox(height: AppSpacing.s24),
 
-                _section(l10n.settingsSection),
-                const SizedBox(height: AppSpacing.s16),
-                _group([
-                  // User (UI) language — editable.
-                  _navRow(
-                    l10n.userLanguage,
-                    _langName(userLangId),
-                    onTap: () => _pickUserLanguage(userLangId),
-                  ),
-                  // Learning language — 시드된 언어 중 선택. 값은 서버
-                  // (member.target_language)가 소유한다. 통화 시작 시 서버가 이
-                  // 컬럼을 읽어 그 언어 코스로 진행한다(소켓은 안 보낸다).
-                  _navRow(
-                    l10n.learningLanguage,
-                    _learningName(learningLangId),
-                    onTap: () => _pickLearningLanguage(learningLangId),
-                  ),
-                  CardLine(
-                    type: CardLineType.defaultToggle,
-                    label: l10n.notificationLabel,
-                    checked: _notification,
-                    onChanged: (v) => setState(() => _notification = v),
-                    showDivider: false,
-                  ),
-                ]),
-                const SizedBox(height: AppSpacing.s24),
+                  _section(l10n.settingsSection),
+                  const SizedBox(height: AppSpacing.s16),
+                  _group([
+                    // User (UI) language — editable.
+                    _navRow(
+                      l10n.userLanguage,
+                      _langName(userLangId),
+                      onTap: () => _pickUserLanguage(userLangId),
+                    ),
+                    // Learning language — 시드된 언어 중 선택. 값은 서버
+                    // (member.target_language)가 소유한다. 통화 시작 시 서버가 이
+                    // 컬럼을 읽어 그 언어 코스로 진행한다(소켓은 안 보낸다).
+                    _navRow(
+                      l10n.learningLanguage,
+                      _learningName(learningLangId),
+                      onTap: () => _pickLearningLanguage(learningLangId),
+                    ),
+                    CardLine(
+                      type: CardLineType.defaultToggle,
+                      label: l10n.notificationLabel,
+                      checked: _notification,
+                      onChanged: (v) => setState(() => _notification = v),
+                      showDivider: false,
+                    ),
+                  ]),
+                  const SizedBox(height: AppSpacing.s24),
 
-                _section(l10n.paymentSection),
-                const SizedBox(height: AppSpacing.s16),
-                _group([
-                  // Three rows, matching Figma `depth/main_mypage_settings`
-                  // (`4514:4684`): Subscription / Current Plan / Payment
-                  // History.
-                  //
-                  // Subscription and Current Plan are deliberately separate
-                  // destinations. The first opens the state-driven manage
-                  // screen; the second opens the plan comparison. They were
-                  // folded into one Current Plan row for a while, and the cost
-                  // was that [Routes.plansCompare] lost its entry point here —
-                  // the only way left to reach it was one level deeper, from
-                  // inside the manage screen.
-                  _navRow(l10n.subscriptionRow, '',
+                  _section(l10n.paymentSection),
+                  const SizedBox(height: AppSpacing.s16),
+                  _group([
+                    // Three rows, matching Figma `depth/main_mypage_settings`
+                    // (`4514:4684`): Subscription / Current Plan / Payment
+                    // History.
+                    //
+                    // Subscription and Current Plan are deliberately separate
+                    // destinations. The first opens the state-driven manage
+                    // screen; the second opens the plan comparison. They were
+                    // folded into one Current Plan row for a while, and the cost
+                    // was that [Routes.plansCompare] lost its entry point here —
+                    // the only way left to reach it was one level deeper, from
+                    // inside the manage screen.
+                    _navRow(
+                      l10n.subscriptionRow,
+                      '',
                       onTap: () =>
-                          Navigator.pushNamed(context, Routes.subscription)),
-                  _navRow(l10n.currentPlan, _planLabel(l10n),
+                          Navigator.pushNamed(context, Routes.subscription),
+                    ),
+                    _navRow(
+                      l10n.currentPlan,
+                      _planLabel(l10n),
                       onTap: () =>
-                          Navigator.pushNamed(context, Routes.plansCompare)),
-                  _navRow(l10n.paymentHistory, '',
-                      route: Routes.paymentHistory, divider: false),
-                ]),
-                const SizedBox(height: AppSpacing.s24),
+                          Navigator.pushNamed(context, Routes.plansCompare),
+                    ),
+                    _navRow(
+                      l10n.paymentHistory,
+                      '',
+                      route: Routes.paymentHistory,
+                      divider: false,
+                    ),
+                  ]),
+                  const SizedBox(height: AppSpacing.s24),
 
-                _section(l10n.supportSection),
-                const SizedBox(height: AppSpacing.s16),
-                _group([
-                  _navRow(l10n.contactUs, ''),
-                  _navRow(l10n.termsOfService, '', route: Routes.terms),
-                  _navRow(l10n.privacyPolicy, '',
-                      route: Routes.privacy, divider: false),
-                ]),
-                const SizedBox(height: AppSpacing.s24),
+                  _section(l10n.supportSection),
+                  const SizedBox(height: AppSpacing.s16),
+                  _group([
+                    _navRow(l10n.contactUs, '', onTap: _contactUs),
+                    _navRow(l10n.termsOfService, '', route: Routes.terms),
+                    _navRow(l10n.privacyPolicy, '', route: Routes.privacy),
+                    // AI 생성 콘텐츠 신고 — Play 생성형 AI 정책이 요구하는 앱 내
+                    // 신고 경로다. 정책은 위치를 강제하지 않으므로 약관·처리방침과
+                    // 같은 고객지원 묶음에 둔다.
+                    _navRow(
+                      l10n.reportEntry,
+                      '',
+                      route: Routes.reportContent,
+                      divider: false,
+                    ),
+                  ]),
+                  const SizedBox(height: AppSpacing.s24),
 
-                // log out — design-system secondary-fill Button (60).
-                Button(
-                  type: BtnType.secondaryFill,
-                  size: BtnSize.s60,
-                  text: l10n.logOut,
-                  onPressed: () =>
-                      ref.read(authControllerProvider.notifier).logout(),
-                ),
-                const SizedBox(height: AppSpacing.s16),
-                Center(
-                  child: InkWell(
-                    onTap: _confirmDeleteAccount,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: AppSpacing.s16, vertical: AppSpacing.s8),
-                      child: Text(
-                        l10n.deleteAccount,
-                        style: AppType.body1.r
-                            .copyWith(color: context.c.labelNormal),
+                  // log out — design-system secondary-fill Button (60).
+                  Button(
+                    type: BtnType.secondaryFill,
+                    size: BtnSize.s60,
+                    text: l10n.logOut,
+                    onPressed: () =>
+                        ref.read(authControllerProvider.notifier).logout(),
+                  ),
+                  const SizedBox(height: AppSpacing.s16),
+                  Center(
+                    child: InkWell(
+                      onTap: _confirmDeleteAccount,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.s16,
+                          vertical: AppSpacing.s8,
+                        ),
+                        child: Text(
+                          l10n.deleteAccount,
+                          style: AppType.body1.r.copyWith(
+                            color: context.c.labelNormal,
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(height: AppSpacing.s16),
-                _version(),
-              ],
+                  const SizedBox(height: AppSpacing.s16),
+                  _version(),
+                ],
+              ),
             ),
           ),
         ],
@@ -343,7 +421,14 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
   /// The Current-plan value, derived from the resolved status — never
   /// hardcoded. This is where "bought Max, still says Pro" showed up: the row
   /// used to carry a literal `'Pro'`.
+  ///
+  /// 모르는 동안(로딩·실패)은 비운다 — 오프라인인 Premium 회원에게 「Free」 를 보이지
+  /// 않는다(QA F014). 행을 누르면 들어가는 화면은 그대로다.
   String _planLabel(AppLocalizations l10n) {
+    if (ref.watch(subscriptionStatusAvailabilityProvider) !=
+        SubscriptionStatusAvailability.known) {
+      return '';
+    }
     final status = ref.watch(subscriptionStatusProvider);
     if (!status.grantsPaidAccess) return l10n.planFree;
     return status.tier == SubscriptionTier.max ? l10n.planMax : l10n.planPro;
@@ -363,18 +448,21 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
 
     final rows = <Widget Function(bool last)>[
       (last) => _navRow(
-            l10n.nicknameLabel,
-            member?.name ?? '',
-            route: Routes.editNickname,
-            divider: !last,
-          ),
-      (last) => _infoRow(l10n.fieldEmailLabel, member?.email ?? '—',
-          divider: !last),
+        l10n.nicknameLabel,
+        member?.name ?? '',
+        route: Routes.editNickname,
+        divider: !last,
+      ),
+      (last) =>
+          _infoRow(l10n.fieldEmailLabel, member?.email ?? '—', divider: !last),
       if (provider != null && provider.isNotEmpty)
         (last) => _loginMethodRow(l10n, provider, divider: !last),
       if (joined != null)
-        (last) => _infoRow(l10n.joinedLabel, localizedFullDate(context, joined),
-            divider: !last),
+        (last) => _infoRow(
+          l10n.joinedLabel,
+          localizedFullDate(context, joined),
+          divider: !last,
+        ),
     ];
     return [
       for (var i = 0; i < rows.length; i++) rows[i](i == rows.length - 1),
@@ -386,46 +474,46 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
   /// same metrics (56 row, 12/8 padding, 0.5 divider).
   Widget _infoRow(String label, String value, {bool divider = true}) =>
       Container(
-        height: 56,
+        // 높이 **하한**. 고정 56 이었을 때 배율 1.3배에서 이메일이
+        // `soardick@gmail.` 로, 가입일 라벨은 둘째 줄이 잘렸다(2026-09-22 실측).
+        // 값은 아래에서 줄만 바꾸도록 돼 있는데, 상자가 안 늘어나면 그 줄이
+        // 그대로 잘려 나간다 — 두 방어는 같이 있어야 한다.
+        constraints: const BoxConstraints(minHeight: 56),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: divider
             ? BoxDecoration(
                 border: Border(
-                    bottom: BorderSide(
-                        color: context.c.lineAlternative, width: 0.5)))
+                  bottom: BorderSide(
+                    color: context.c.lineAlternative,
+                    width: 0.5,
+                  ),
+                ),
+              )
             : null,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            // 2:3, not 1:1 — an even split truncated `device2026@te…` while
-            // the short label sat on dead space. Both stay flexible so a long
-            // label (es `Fecha de registro`) shrinks instead of overflowing;
-            // an unbounded label is what blew the 320px sweep open.
-            Flexible(
-              flex: 2,
-              child: Text(label,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style:
-                      AppType.body1.r.copyWith(color: context.c.labelStrong)),
-            ),
-            const SizedBox(width: 8),
-            Flexible(
-              flex: 3,
-              child: Text(value,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.end,
-                  style:
-                      AppType.body1.r.copyWith(color: context.c.labelNormal)),
-            ),
-          ],
+        // 폭은 **글자 폭대로** 나눈다(LabelValueRow). 고정 2:3 분할은 짧은 라벨 「이메일」 몫을
+        // 비워 둔 채 값을 60% 안에서만 흘려 `bt.qa.free0924@example.` / `com` 으로 줄을
+        // 바꿨다(09-24 실기기 · 전수조사 F). 값은 **자르지 않는다** — 줄만 바꾼다.
+        child: LabelValueRow(
+          label: Text(
+            label,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: AppType.body1.r.copyWith(color: context.c.labelStrong),
+          ),
+          value: Text(
+            value,
+            textAlign: TextAlign.end,
+            style: AppType.body1.r.copyWith(color: context.c.labelNormal),
+          ),
         ),
       );
 
   /// Login-method row — label + positive Badge, per the Account card design.
-  Widget _loginMethodRow(AppLocalizations l10n, String method,
-      {bool divider = true}) {
+  Widget _loginMethodRow(
+    AppLocalizations l10n,
+    String method, {
+    bool divider = true,
+  }) {
     final label = switch (method.toLowerCase()) {
       'google' => 'Google',
       'kakao' => 'Kakao',
@@ -434,22 +522,29 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
       _ => method,
     };
     return Container(
-      height: 56,
+      // 높이 하한(위 `_infoRow` 와 같은 이유).
+      constraints: const BoxConstraints(minHeight: 56),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: divider
           ? BoxDecoration(
               border: Border(
-                  bottom: BorderSide(
-                      color: context.c.lineAlternative, width: 0.5)))
+                bottom: BorderSide(
+                  color: context.c.lineAlternative,
+                  width: 0.5,
+                ),
+              ),
+            )
           : null,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Flexible(
-            child: Text(l10n.loginMethodLabel,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: AppType.body1.r.copyWith(color: context.c.labelStrong)),
+            child: Text(
+              l10n.loginMethodLabel,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: AppType.body1.r.copyWith(color: context.c.labelStrong),
+            ),
           ),
           const SizedBox(width: 8),
           Badge(tone: BadgeTone.positive, label: label),
@@ -460,46 +555,60 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
 
   /// Section header (Body 1 SemiBold).
   Widget _section(String title) => Text(
-        title,
-        style: AppType.body1.sb.copyWith(color: context.c.labelStrong),
-      );
+    title,
+    style: AppType.body1.sb.copyWith(color: context.c.labelStrong),
+  );
 
   /// Wraps a section's rows in an elevated grouping card.
   Widget _group(List<Widget> rows) => Container(
-        padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.s12, vertical: AppSpacing.s8),
-        decoration: BoxDecoration(
-          color: context.c.backgroundSurfaceAlternative,
-          borderRadius: BorderRadius.circular(AppRadius.sm), // 12
-        ),
-        child: Column(mainAxisSize: MainAxisSize.min, children: rows),
-      );
+    padding: const EdgeInsets.symmetric(
+      horizontal: AppSpacing.s12,
+      vertical: AppSpacing.s8,
+    ),
+    decoration: BoxDecoration(
+      color: context.c.backgroundSurfaceAlternative,
+      borderRadius: BorderRadius.circular(AppRadius.sm), // 12
+    ),
+    child: Column(mainAxisSize: MainAxisSize.min, children: rows),
+  );
 
   /// A tappable label/value row with a trailing chevron.
   ///
   /// Provide either a named [route] (pushed on tap) or a custom [onTap]; [onTap]
   /// takes precedence. With neither, the row is inert.
-  Widget _navRow(String label, String value,
-          {String? route, VoidCallback? onTap, bool divider = true}) =>
-      InkWell(
-        onTap: onTap ??
-            (route == null ? null : () => Navigator.pushNamed(context, route)),
-        child: CardLine(
-          type: CardLineType.defaultRow,
-          label: label,
-          value: value.isEmpty ? null : value,
-          showDivider: divider,
-        ),
-      );
+  Widget _navRow(
+    String label,
+    String value, {
+    String? route,
+    VoidCallback? onTap,
+    bool divider = true,
+  }) => InkWell(
+    onTap:
+        onTap ??
+        (route == null ? null : () => Navigator.pushNamed(context, route)),
+    child: CardLine(
+      type: CardLineType.defaultRow,
+      label: label,
+      value: value.isEmpty ? null : value,
+      showDivider: divider,
+    ),
+  );
 
-  /// "Beavertalk • v1.0.0" footer.
-  Widget _version() => Center(
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text('Beavertalk',
-                style: AppType.body1.r.copyWith(color: context.c.labelNormal)),
-            const SizedBox(width: AppSpacing.s4),
+  /// "Beavertalk • v1.0.0 (41)" footer — 설치된 빌드를 읽는다(QA F031).
+  /// 못 읽으면 앱 이름만 — 점과 버전 칸을 비워 두지 않는다.
+  Widget _version() {
+    final label = ref.watch(appVersionLabelProvider).valueOrNull;
+    final style = AppType.body1.r.copyWith(color: context.c.labelNormal);
+    // Wrap: 빌드 번호가 붙어 길어졌다 — 큰 글꼴 배율에서 한 줄을 넘으면 버전이 다음 줄로
+    // 내려간다(Row 는 넘쳤다).
+    return Center(
+      child: Wrap(
+        alignment: WrapAlignment.center,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        spacing: AppSpacing.s4,
+        children: [
+          Text('Beavertalk', style: style),
+          if (label != null) ...[
             Container(
               width: AppSpacing.s4,
               height: AppSpacing.s4,
@@ -508,10 +617,10 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
                 shape: BoxShape.circle,
               ),
             ),
-            const SizedBox(width: AppSpacing.s4),
-            Text('v1.0.0',
-                style: AppType.body1.r.copyWith(color: context.c.labelNormal)),
+            Text(label, style: style),
           ],
-        ),
-      );
+        ],
+      ),
+    );
+  }
 }

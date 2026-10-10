@@ -14,7 +14,9 @@ import '../../theme/app_typography.dart';
 /// - [primaryOutline] — `bg surface / border primary / text primary`
 /// - [primaryOutlineWhite] — `bg surface / border primary / text white`
 /// - [secondaryFill] — `bg surface2 / text white`
-/// - [secondaryOutline] — `bg surface2 / border surface2 / text textSecondary`
+/// - [secondaryOutline] — `bg 투명 / border Line/Neutral 1px / text Label/Normal`
+///   (09-26 사용자 결정 · 예전 `bg surface2 / border surface2` 는 테두리가 바탕과 같아
+///   [secondaryFill] 과 같은 모양이었다)
 /// - [secondaryWhite] — `bg surfaceElevated / border surface2 / text white`
 /// - [secondaryElevated] — `bg surfaceElevatedNormal / text white`
 /// - [disabled] — `bg surface / border borderSubtle / text textTertiary`
@@ -26,13 +28,16 @@ enum BtnType {
   secondaryOutline,
   secondaryWhite,
 
-  /// Like [secondaryFill] but a shade lighter — `Background/Elevated/Normal`
-  /// (#2F3340) instead of `surface2` (#252932).
+  /// 카드 위 보조 버튼 — 반투명 `Fill/Strong`(Light #70737C 16% · Dark #FFFFFF 20%) 바탕 ·
+  /// `Common/WhiteAndDark` 글자(Light #111 · Dark #FFF).
   ///
-  /// The 연습하기 button inside `Card-Bookmark` (`176:15497`, in both the
-  /// analysis and archive instances) is filled this way. It sits on the card's
-  /// own #1F222A, where `secondaryFill` would be only one step lighter than the
-  /// card and read as flat.
+  /// 09-26 사용자 시안 B: 예전 바탕 `Background/Elevated/Normal`(Light #CBCCD3)은 회색
+  /// 페이지 기준으로 고른 불투명 회색이라 흰 카드 위에서 너무 진했다. 반투명이면 올라앉은
+  /// 면에 맞춰 한 단계만 짙어진다. 글자를 `Label/Normal` 로 두지 않는 이유 — Dark 에서
+  /// #9EA3B2 는 대비 3.3:1 이고 `Common/WhiteAndDark` 는 8.3:1.
+  ///
+  /// 쓰는 곳: `Card/Bookmark`(`176:15563`) · `Card/Native`(`6177:28201`) 「연습하기」 ·
+  /// 마이페이지 카드 버튼 · 자동 연습.
   secondaryElevated,
 
   /// Gold fill (`Status/Cautionary`) with a `Static/Black` label — the Max
@@ -202,12 +207,15 @@ class Button extends StatelessWidget {
       case BtnType.disabled:
         return c.backgroundNormalNormal;
       case BtnType.secondaryFill:
-      case BtnType.secondaryOutline:
         return c.backgroundNormalAlternative;
+      case BtnType.secondaryOutline:
+        // 바탕 없이 테두리로만 선다(09-26 · Figma Button type=secondary_outline 16변형).
+        return Colors.transparent;
       case BtnType.secondaryWhite:
         return c.backgroundElevatedAlternative;
       case BtnType.secondaryElevated:
-        return c.backgroundElevatedNormal;
+        // 반투명 — 올라앉은 면에 맞춰 짙어진다(09-26 시안 B).
+        return c.fillStrong;
       case BtnType.gold:
         return c.statusCautionary;
     }
@@ -225,7 +233,7 @@ class Button extends StatelessWidget {
       case BtnType.secondaryElevated:
         return null; // no stroke in Figma
       case BtnType.secondaryOutline:
-        return c.backgroundNormalAlternative;
+        return c.lineNeutral;
       case BtnType.secondaryWhite:
         return c.backgroundNormalAlternative;
       case BtnType.gold:
@@ -245,8 +253,9 @@ class Button extends StatelessWidget {
       case BtnType.primaryOutlineWhite:
         return c.labelStrong; // white
       case BtnType.secondaryFill:
-      case BtnType.secondaryElevated:
         return c.labelStrong; // white
+      case BtnType.secondaryElevated:
+        return c.commonWhiteAndDark; // Light #111 · Dark #FFF(09-26 시안 B)
       case BtnType.secondaryOutline:
         return c.labelNormal;
       case BtnType.secondaryWhite:
@@ -272,17 +281,32 @@ class Button extends StatelessWidget {
     if (leftIcon != null) {
       children.add(_sizedIcon(leftIcon!, spec.icon, fg));
     }
-    children.add(
-      Flexible(
-        child: Text(
-          text,
-          style: _textStyle().copyWith(color: fg),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          softWrap: false,
+    // 빈 [text] 는 **아이콘 전용 버튼**이다. 빈 `Text` 를 그대로 넣으면 폭 0 짜리
+    // 자식이 하나 남고 그 앞의 gap 4 때문에 아이콘이 2px 치우친다. 아예 뺀다.
+    // ⚠ 라벨이 없으면 스크린리더가 읽을 것도 없다 — 호출부가 [Semantics] 로
+    //   이름을 붙여야 한다.
+    if (text.isNotEmpty) {
+      children.add(
+        // 라벨은 **자르지 말고 줄을 바꾼다**(2026-09-22 사장님 확정).
+        //
+        // 예전에는 `maxLines: 1` + `softWrap: false` 였다. 넘침을 막으려던
+        // 설정인데, 그 결과 「설정 열기」가 `सेटिङ खो…` 가 됐다 — 사용자가 **뭘
+        // 누르는지 모르는** 상태다. 전수감사 실측(411dp·배율 1.1): 78건.
+        //
+        // 버튼은 높이가 고정이 아니라 `padV` 로 크는 구조라, 줄이 늘면 버튼이
+        // 같이 커진다. 셋째 줄부터는 ellipsis 로 막는다 — 그쯤이면 번역이 잘못된
+        // 것이고, 버튼 하나가 화면을 먹는 쪽이 더 나쁘다.
+        Flexible(
+          child: Text(
+            text,
+            style: _textStyle().copyWith(color: fg),
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
         ),
-      ),
-    );
+      );
+    }
     if (rightIcon != null) {
       children.add(_sizedIcon(rightIcon!, spec.icon, fg));
     }

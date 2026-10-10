@@ -23,6 +23,13 @@ class AppLocalizationsFil extends AppLocalizations {
   String get callErrorGeneric => 'May naganap na problema habang tumatawag.';
 
   @override
+  String get callDailyLimit =>
+      'Nagamit mo na ang oras ng pag-aaral ngayong araw.';
+
+  @override
+  String get callAlreadyInCall => 'Nasa tawag ka na.';
+
+  @override
   String get callNetworkError => 'May network error na naganap.';
 
   @override
@@ -55,6 +62,16 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get callRatingPrompt => 'Kumusta ang tawag mo?';
+
+  @override
+  String get callRatingBody =>
+      'Nakakatulong ang rating mo para mas gumanda ang usapan sa susunod.';
+
+  @override
+  String get callRatingSubmit => 'Ipadala';
+
+  @override
+  String get callRatingSkip => 'Laktawan';
 
   @override
   String get ratingBad => 'Hindi maganda';
@@ -126,6 +143,24 @@ class AppLocalizationsFil extends AppLocalizations {
   String get alarms => 'Mga Alarma';
 
   @override
+  String get alarmAdd => 'Magdagdag ng alarm';
+
+  @override
+  String get alarmEdit => 'I-edit ang alarm';
+
+  @override
+  String get alarmEveryDay => 'Araw-araw';
+
+  @override
+  String get alarmWeekdays => 'Weekdays';
+
+  @override
+  String get alarmWeekend => 'Weekends';
+
+  @override
+  String get alarmNoRepeat => 'Hindi uulit';
+
+  @override
   String get addSchedule => 'Magdagdag ng Schedule';
 
   @override
@@ -151,6 +186,12 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get callPartner => 'Karakter';
+
+  @override
+  String get alarmModeLearnSub => 'Sanayin ang mga ekspresyon ng kurikulum';
+
+  @override
+  String get alarmModeChatSub => 'Mag-usap tungkol sa kahit ano';
 
   @override
   String get quickStart => 'Mabilis na simula';
@@ -200,13 +241,52 @@ class AppLocalizationsFil extends AppLocalizations {
   String get conversation => 'Usapan';
 
   @override
-  String get review => 'Review';
-
-  @override
-  String get pronunciationChallenge => 'Hamon sa Bigkas';
-
-  @override
   String get newExpressions => 'Mga Bagong Ekspresyon';
+
+  @override
+  String get analysisPrepNote => 'Binabalikan ang tawag ngayon.';
+
+  @override
+  String get analysisPrepNoteHint => 'Lalabas dito ang mensahe mamaya';
+
+  @override
+  String get analysisPrepTitle =>
+      'Ginagawang card ng beaver ang mga ekspresyon ngayon';
+
+  @override
+  String get analysisPrepSub => 'Lalabas dito agad kapag handa na.';
+
+  @override
+  String get analysisPrepStepSave => 'Pag-save ng usapan';
+
+  @override
+  String get analysisPrepStepCards => 'Paggawa ng expression card';
+
+  @override
+  String get analysisPrepStateDone => 'Tapos na';
+
+  @override
+  String get analysisPrepStateWorking => 'Ginagawa';
+
+  @override
+  String get analysisPrepStateWaiting => 'Naghihintay';
+
+  @override
+  String get usedExpressions => 'Mga ekspresyong ginamit mo';
+
+  @override
+  String quizExpressionsCount(int count) {
+    return 'Mga natutunang ekspresyon $count';
+  }
+
+  @override
+  String get quizPassed => 'Tama';
+
+  @override
+  String get quizFailed => 'Balikan ulit';
+
+  @override
+  String get quizPending => 'Ituloy sa susunod';
 
   @override
   String get analysisResult => 'Resulta ng Analysis';
@@ -217,6 +297,9 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get practice => 'Practice';
+
+  @override
+  String get analysisNativeLabel => 'Katutubo';
 
   @override
   String recentScore(int score) {
@@ -265,33 +348,6 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get cancel => 'Kanselahin';
-
-  @override
-  String get selectTime => 'Pumili ng oras';
-
-  @override
-  String get getStarted => 'Magsimula';
-
-  @override
-  String get permissionTitle =>
-      'Payagan ang mga permiso\npara sa maayos na karanasan';
-
-  @override
-  String get permissionSubtitle =>
-      'Kailangan ang mga permisong ito para magamit ang serbisyo.';
-
-  @override
-  String get permissionMicTitle => 'Mikropono (kailangan)';
-
-  @override
-  String get permissionMicDesc => 'Kailangan para makausap ang AI sa Ingles.';
-
-  @override
-  String get permissionNotifTitle => 'Mga Notification (opsyonal)';
-
-  @override
-  String get permissionNotifDesc =>
-      'Magpapadala kami ng mga paalala sa pag-aaral at schedule ng tawag.';
 
   @override
   String get micPermissionNeededTitle => 'Kailangan ang access sa mikropono';
@@ -445,13 +501,122 @@ class AppLocalizationsFil extends AppLocalizations {
   String get endLearning => 'Tapusin ang Session';
 
   @override
-  String get navCalendar => 'Kalendaryo';
-
-  @override
   String get navCall => 'Tawag';
 
   @override
-  String get navStats => 'Stats';
+  String get homeCourseExpression => 'Ekspresyon';
+
+  @override
+  String get homeCourseFreetalk => 'Usapan';
+
+  @override
+  String homeExpressionsLeft(int count) {
+    return '$count ekspresyon na lang bago ang usapan';
+  }
+
+  @override
+  String get homeFreetalkNote => 'Gamitin ang natutunan at malayang mag-usap';
+
+  @override
+  String get homeTalkTitle => 'Ano\'ng nangyari ngayon?';
+
+  @override
+  String get homeTalkNote =>
+      'Makipag-usap nang malaya at matuto habang nag-uusap.';
+
+  @override
+  String get homeModeLearn => 'Mag-aral';
+
+  @override
+  String get homeModeTalk => 'Mag-usap';
+
+  @override
+  String homeStreakDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count araw na sunod-sunod',
+      one: '1 araw na sunod-sunod',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakCalendarTitle => 'Kalendaryo ng pag-aaral';
+
+  @override
+  String streakDaysUnit(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'araw na sunod-sunod',
+      one: 'araw na sunod-sunod',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String streakBest(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Pinakamahabang streak: $count araw',
+      one: 'Pinakamahabang streak: $count araw',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakMetricCallTime => 'Tagal ng tawag';
+
+  @override
+  String get streakMetricLearned => 'Mga ekspresyon';
+
+  @override
+  String get streakMetricWords => 'Mga salitang nasabi';
+
+  @override
+  String streakCountValue(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString';
+  }
+
+  @override
+  String streakMinutes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count min',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakNoCallsThatDay => 'Walang tawag sa araw na ito.';
+
+  @override
+  String get homeLevelPending => 'Wala pang level';
+
+  @override
+  String get homeNoLevelTitle => 'Wala ka pang level';
+
+  @override
+  String get homeNoLevelNote => 'Tapusin ang unang tawag para makakuha';
+
+  @override
+  String get homeCurriculumPendingBadge => 'Malapit na';
+
+  @override
+  String homeCurriculumPendingTitle(String language) {
+    return 'Parating na ang curriculum sa $language';
+  }
+
+  @override
+  String get homeCurriculumPendingNote =>
+      'Magpapraktis ka ng mga pangkalahatang ekspresyon sa tawag';
 
   @override
   String get myPage => 'Aking Page';
@@ -464,6 +629,27 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get changeAvatar => 'Baguhin ang Avatar';
+
+  @override
+  String get avatarUseNow => 'Gamitin na';
+
+  @override
+  String get avatarPurchaseFailed => 'Hindi natuloy ang pagbili';
+
+  @override
+  String avatarPromoTitle(int percent) {
+    return 'Ngayong araw lang · $percent% off';
+  }
+
+  @override
+  String avatarPromoLeft(String time) {
+    return '$time na lang';
+  }
+
+  @override
+  String avatarPromoLeftDays(int days, String time) {
+    return '$days araw $time na lang';
+  }
 
   @override
   String get avatarIntro =>
@@ -507,9 +693,6 @@ class AppLocalizationsFil extends AppLocalizations {
   String get subscriptionManage => 'Pamahalaan ang Subscription';
 
   @override
-  String get changePlan => 'Baguhin ang Plan';
-
-  @override
   String get cancelSubscription => 'Kanselahin ang Subscription';
 
   @override
@@ -529,18 +712,9 @@ class AppLocalizationsFil extends AppLocalizations {
   String get viewBillingHistory => 'Tingnan ang Kasaysayan ng Bayad';
 
   @override
-  String get keepUsingPro => 'Ipagpatuloy ang Pro';
-
-  @override
-  String get proMembership => 'Pro Membership';
-
-  @override
   String pricePerMonth(String price) {
     return '$price / buwan';
   }
-
-  @override
-  String get benefitUnlimitedCalls => 'Walang limitasyong tawag';
 
   @override
   String get benefitDetailedAnalysis =>
@@ -576,8 +750,7 @@ class AppLocalizationsFil extends AppLocalizations {
   String get challengeLoadingTitle => 'Naglo-load…';
 
   @override
-  String get challengeLoadingNote =>
-      'Dina-download ang Korean speech model (~82MB) sa unang pagpapatakbo.\nPakihintay lang.';
+  String get challengeLoadingNote => 'Inihahanda ang camera at mikropono.';
 
   @override
   String get challengeSttFallback =>
@@ -685,6 +858,11 @@ class AppLocalizationsFil extends AppLocalizations {
   String get accentSoundsLike => 'Ang tunog ng iyong Korean accent';
 
   @override
+  String accentShareText(String country) {
+    return 'Nag-aaral ako ng Korean sa BeaverTalk — ang Korean accent ko ay parang taga-$country! 🦫 Alamin ang accent mo at mag-aral kasama ko: https://beavertalk.im';
+  }
+
+  @override
   String get hintLabel => 'Hint';
 
   @override
@@ -732,7 +910,7 @@ class AppLocalizationsFil extends AppLocalizations {
   String get home => 'Home';
 
   @override
-  String get callNow => 'Tumawag ngayon';
+  String get onboardingLevelTestCta => 'Kumuha ng level test';
 
   @override
   String get pronunciation => 'Bigkas';
@@ -742,10 +920,6 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get rhythm => 'Ritmo';
-
-  @override
-  String get analysisTimeout =>
-      'Mas matagal ito kaysa inaasahan. Pakisubukan muli sandali.';
 
   @override
   String get analysisFailed =>
@@ -792,6 +966,9 @@ class AppLocalizationsFil extends AppLocalizations {
   String get loginAppleSignInFailed => 'Nabigo ang Apple sign-in.';
 
   @override
+  String get loginFacebookSignInFailed => 'Nabigo ang Facebook sign-in.';
+
+  @override
   String get loginKakaoSignInFailed => 'Nabigo ang Kakao sign-in.';
 
   @override
@@ -799,6 +976,9 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get loginContinueWithGoogle => 'Magpatuloy gamit ang Google';
+
+  @override
+  String get loginContinueWithFacebook => 'Magpatuloy gamit ang Facebook';
 
   @override
   String get loginContinueWithApple => 'Magpatuloy gamit ang Apple';
@@ -986,12 +1166,7 @@ class AppLocalizationsFil extends AppLocalizations {
   String get lastPayment => 'Huling bayad';
 
   @override
-  String subscriptionSwitchNote(String date) {
-    return 'Magagamit mo pa ang mga benepisyo ng Pro hanggang $date, pagkatapos ay awtomatikong lilipat sa Libre ang plano mo.';
-  }
-
-  @override
-  String get freePlanCallLimit => '1 tawag kada araw · 5 min na limitasyon';
+  String get freePlanCallLimit => '5 minutong tawag kada araw';
 
   @override
   String get freePlanBasicCharacters => 'Kasama ang mga basic na karakter';
@@ -1004,9 +1179,6 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get noPayments => 'Wala pang bayad';
-
-  @override
-  String get morePaymentsExist => 'Hindi pa ipinapakita ang mas lumang bayad';
 
   @override
   String get undatedPayments => 'Walang petsa';
@@ -1093,7 +1265,7 @@ class AppLocalizationsFil extends AppLocalizations {
   }
 
   @override
-  String get accentAnalysis => 'Pagsusuri ng punto';
+  String get accentAnalysis => 'Pagsusuri ng accent';
 
   @override
   String get overallLevel => 'Pangkalahatang antas';
@@ -1129,15 +1301,38 @@ class AppLocalizationsFil extends AppLocalizations {
   String get retakeLevelTest => 'Ulitin ang level test';
 
   @override
+  String get levelTestOncePerDay =>
+      'Isang beses lang sa isang araw puwedeng kumuha ng level test. Subukan ulit bukas.';
+
+  @override
+  String get levelRetakeTitle => 'Ulitin ang level test?';
+
+  @override
+  String get levelRetakeBody =>
+      'Kapag inulit mo, babalik ang progreso mo sa unang aralin ng level na iyon — kahit pareho ang level na makuha mo. Mananatili ang mga natutunang ekspresyon at kasaysayan ng tawag.';
+
+  @override
+  String get levelRetakeKeep => 'Panatilihin ang progreso';
+
+  @override
+  String get levelRetakeConfirm => 'Ulitin ang test';
+
+  @override
   String get practicePronunciation => 'Magsanay ng pagbigkas';
 
   @override
-  String get priceChangedTitle => 'Nagbago ang presyo';
+  String get learnResultView => 'Tingnan ang resulta ng pag-aaral';
 
   @override
-  String priceChangedBody(String price) {
-    return 'Ang item na ito ay $price na ngayon. Magpapatuloy ka ba?';
-  }
+  String get learnAgain => 'Mag-aral muli';
+
+  @override
+  String get analysisNoScoreReview =>
+      'Mag-practice para makuha ang score mo sa pagbigkas';
+
+  @override
+  String get analysisNoScoreEmpty =>
+      'Walang pangungusap na mabibigyan ng score';
 
   @override
   String get billingGroupPlanPurchases => 'Plan at mga binili';
@@ -1146,16 +1341,16 @@ class AppLocalizationsFil extends AppLocalizations {
   String get billingGroupInTheStore => 'Sa store';
 
   @override
-  String get billingChangePlan => 'Baguhin ang plan';
-
-  @override
-  String get billingCompareAllPlans => 'Ikumpara lahat ng plan';
+  String get billingCompareAllPlans => 'Ikumpara ang mga plan';
 
   @override
   String get billingBuyACharacter => 'Bumili ng karakter';
 
   @override
   String get billingRestorePurchases => 'I-restore ang mga binili';
+
+  @override
+  String get billingRedeemCode => 'Mag-redeem ng code';
 
   @override
   String get billingPaymentHistory => 'Kasaysayan ng bayad';
@@ -1203,13 +1398,31 @@ class AppLocalizationsFil extends AppLocalizations {
   String get planPro => 'Pro';
 
   @override
-  String get planMax => 'Max';
+  String get planMax => 'Premium';
 
   @override
-  String get planMaxTrial => 'Max trial';
+  String get premiumBulletVideo => '15 minutong video call bawat araw';
 
   @override
-  String get freePlanPriceLine => '\$0.00 — isang tawag kada araw';
+  String get premiumBulletAnalysis =>
+      'Walang limitasyong pag-iskor ng pagbigkas sa review';
+
+  @override
+  String get premiumBulletWeakSounds =>
+      'Pagsasanay sa mahihirap na tunog para sa wika mo';
+
+  @override
+  String get noteCharactersSeparate =>
+      'Hiwalay na binebenta ang mga karakter. Sa iyo ang mga bibilhin mo.';
+
+  @override
+  String get ctaGetPremium => 'Kunin ang Premium';
+
+  @override
+  String get planMaxTrial => 'Premium trial';
+
+  @override
+  String get freePlanPriceLine => 'Libre — 5 minutong tawag kada araw';
 
   @override
   String pricePerMonthLine(String amount) {
@@ -1222,11 +1435,11 @@ class AppLocalizationsFil extends AppLocalizations {
   }
 
   @override
-  String get todaysCalls => 'Mga tawag ngayon';
+  String get todaysCalls => 'Oras ng tawag ngayon';
 
   @override
   String callsUsedOfLimit(int used, int limit) {
-    return '$used sa $limit ang nagamit';
+    return '$used sa $limit min ang nagamit';
   }
 
   @override
@@ -1247,35 +1460,23 @@ class AppLocalizationsFil extends AppLocalizations {
   }
 
   @override
-  String get bannerGoUnlimitedTitle => 'Maging unlimited sa Pro';
-
-  @override
-  String bannerGoUnlimitedSub(String price) {
-    return 'Unlimited na tawag · tig-15 minuto · $price kada buwan';
-  }
-
-  @override
-  String get bannerMaxUpsellTitle => 'I-on ang video sa Max';
+  String get bannerMaxUpsellTitle =>
+      'Makipag-usap nang harapan gamit ang Premium';
 
   @override
   String bannerMaxUpsellSub(String price) {
-    return 'Harapang tawag · $price kada buwan';
+    return 'Video call · 15 minuto bawat araw · $price kada buwan';
   }
 
   @override
   String get bannerAnnualSwitchTitle => 'Lumipat sa taunan';
 
   @override
-  String bannerAnnualSwitchSub(String yearly, String perMonth) {
-    return '$yearly kada taon · $perMonth kada buwan';
-  }
-
-  @override
   String get bannerPaymentFailedTitle => 'Hindi namin makuha ang bayad';
 
   @override
   String get bannerPaymentFailedSub =>
-      'I-update ang bayad sa store para manatili ang Pro';
+      'I-update ang bayad sa store para manatili ang Premium';
 
   @override
   String get bannerPausedTitle => 'Naka-pause ang plan mo';
@@ -1292,10 +1493,6 @@ class AppLocalizationsFil extends AppLocalizations {
       'Ang paraan ng pagbabayad, pagpapalit ng plan, at pagkansela ay hinahawakan ng store.';
 
   @override
-  String get noteFairUse =>
-      'Ang unlimited na paggamit ay sakop ng aming fair use policy.';
-
-  @override
   String noteTrialEnds(String date) {
     return 'Matatapos ang trial mo sa $date. Kanselahin sa store bago iyon at walang sisingilin.';
   }
@@ -1306,7 +1503,7 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get noteHold =>
-      'Naka-pause ang Pro hanggang matuloy ang bayad. Ligtas ang mga karakter at progreso mo.';
+      'Naka-pause ang Premium hanggang matuloy ang bayad. Ligtas ang mga karakter at progreso mo.';
 
   @override
   String noteEnding(String date) {
@@ -1314,7 +1511,7 @@ class AppLocalizationsFil extends AppLocalizations {
   }
 
   @override
-  String get trialExpiredTitle => 'Natapos na ang Max trial mo';
+  String get trialExpiredTitle => 'Natapos na ang Premium trial mo';
 
   @override
   String get trialExpiredSub => 'Nasa Libre ka na ngayon';
@@ -1326,72 +1523,26 @@ class AppLocalizationsFil extends AppLocalizations {
   String get currentPlanTitle => 'Kasalukuyang Plan';
 
   @override
-  String get badgeRecommended => 'Inirerekomenda';
-
-  @override
   String get perMonthUnit => 'kada buwan';
 
   @override
-  String get planTaglinePro => 'Unlimited na tawag. Tig-15 minuto.';
+  String get planTaglineFree => '5 minutong tawag kada araw. Libre.';
 
   @override
-  String get planTaglineMax => 'Ngayon ay makikita mo na sila.';
+  String get bulletProCorrections => 'Pagtatama na angkop sa sariling wika mo';
 
   @override
-  String get planTaglineFree => 'Isang tawag kada araw. Libre.';
+  String get bulletFreeCall => '5 minutong voice call kada araw';
 
   @override
-  String get bulletProCalls => 'Voice call kahit gaano kadalas mo gusto';
-
-  @override
-  String get bulletProLength => '15 minuto kada tawag';
-
-  @override
-  String get bulletProScoring => 'Bigkas na sinusukat letra por letra';
-
-  @override
-  String get bulletProCorrections =>
-      'Mga koreksyon na angkop sa sariling wika mo';
-
-  @override
-  String get bulletProBeaverCalls => 'Si Beaver ang unang tatawag sa iyo';
-
-  @override
-  String get bulletMaxVideo => 'Harapang video call';
-
-  @override
-  String get bulletMaxEverything => 'Lahat ng nasa Pro';
-
-  @override
-  String get bulletMaxCharacters => 'Bawat karakter, unlimited';
-
-  @override
-  String get bulletMaxStudyBook => 'Study book na akma sa antas mo';
-
-  @override
-  String get bulletMaxWeeklyReport =>
-      'Lingguhang report kung paano nagbabago ang bigkas mo';
-
-  @override
-  String get bulletFreeCall => 'Isang 5-minutong voice call kada araw';
-
-  @override
-  String get bulletFreeCheck => 'Isang pagsusuri ng bigkas kada araw';
-
-  @override
-  String get bulletFreeAccent => 'Unlimited na pagsusuri ng accent';
-
-  @override
-  String get bulletFreeCharacter => 'Isang karakter para magsimula';
-
-  @override
-  String get ctaGoUnlimited => 'Maging unlimited';
+  String get bulletFreeCharacter => 'Dalawang karakter para magsimula';
 
   @override
   String get ctaTurnOnVideo => 'I-on ang video';
 
   @override
-  String get noteCallLength => 'Tig-15 minuto ang bawat tawag.';
+  String get noteCallLength =>
+      'Premium: 15 minuto bawat araw — sa loob nito, tumawag nang ilang beses mo man gusto.';
 
   @override
   String get paywallProTitle1 => 'Ang Korean friend mo';
@@ -1400,33 +1551,29 @@ class AppLocalizationsFil extends AppLocalizations {
   String get paywallProTitle2 => 'na gising kahit alas-3 ng madaling-araw';
 
   @override
-  String get paywallProSub => 'Unlimited na tawag. Tig-15 minuto. Buong taon.';
+  String get paywallLimitHeadline =>
+      'Sa Premium, may 15 minuto kang tawag bawat araw.';
 
   @override
-  String get paywallLimitHeadline => 'Inaalis ng Pro ang limitasyon.';
+  String get limitBannerCallTitle =>
+      'Nagamit mo na ang oras ng tawag ngayong araw';
 
   @override
-  String get limitBannerCallTitle => 'Iyon na ang tawag mo ngayong araw';
-
-  @override
-  String get limitBannerCallSub => 'Isang tawag kada araw sa Libre';
-
-  @override
-  String get limitBannerCheckTitle => 'Iyon na ang pagsusuri mo ngayong araw';
-
-  @override
-  String get limitBannerCheckSub => 'Isang pagsusuri kada araw sa Libre';
+  String get limitBannerCallSub =>
+      'Sa Libre, may 5 minuto kang tawag kada araw';
 
   @override
   String get bulletProCharactersForever =>
       'Ang mga karakter na binili mo ay sa iyo habambuhay';
 
   @override
-  String get paywallMaxTitle => 'Ngayon ay makikita mo na sila.';
+  String get paywallMaxTitle =>
+      'Ngayon, puwede na kayong mag-usap nang harapan sa video call.';
 
   @override
-  String get paywallMaxSub =>
-      'Video call, bawat karakter, at study book na ginawa para sa antas mo.';
+  String paywallTutorCompare(String price) {
+    return 'Ang isang oras sa tutor ay \$25. Ang isang buwan ng Premium ay $price.';
+  }
 
   @override
   String get planMonthly => 'Buwanan';
@@ -1465,8 +1612,31 @@ class AppLocalizationsFil extends AppLocalizations {
   }
 
   @override
+  String ctaCaptionMaxYearly(String price) {
+    return '$price kada taon · kanselahin anumang oras sa store';
+  }
+
+  @override
   String ctaCaptionMaxTrial(String price) {
     return '7 araw libre, tapos $price kada buwan · kanselahin anumang oras sa store';
+  }
+
+  @override
+  String ctaCaptionMaxYearlyTrial(String price) {
+    return '7 araw libre, tapos $price kada taon · kanselahin anumang oras sa store';
+  }
+
+  @override
+  String get bundleTitle => 'Lahat ng tatlo nang sabay';
+
+  @override
+  String bundleOffBadge(int percent) {
+    return '$percent% off';
+  }
+
+  @override
+  String bundleLinkLabel(String price) {
+    return 'Kunin ang tatlo sa halagang $price';
   }
 
   @override
@@ -1480,61 +1650,26 @@ class AppLocalizationsFil extends AppLocalizations {
   String get footerPrivacy => 'Privacy';
 
   @override
-  String get noteMaxCharacters =>
-      'Ang mga karakter na binuksan ng Max ay magagamit habang aktibo ang subscription mo. Ang mga karakter na binili mo ay mananatiling sa iyo.';
-
-  @override
   String get processingTitle => 'Kinukumpirma ang binili mo';
 
   @override
   String get processingSub => 'Karaniwang ilang segundo lang ito.';
 
   @override
-  String get successProTitle => 'Nasa Pro ka na.';
+  String get successProTitle => 'Nasa Premium ka na.';
 
   @override
-  String get successProSub => 'Unlimited na tawag, simula ngayon mismo.';
-
-  @override
-  String get successProBenefit1 =>
-      'Tumawag kahit gaano kadalas — 15 minuto kada tawag';
-
-  @override
-  String get successProBenefit2 => 'Unlimited na pagsusuri ng bigkas';
-
-  @override
-  String get successProBenefit3 => 'Bawat karakter, pati one-off na pagbili';
-
-  @override
-  String get successMaxTitle => 'Makikita mo na sila ngayon.';
+  String get successMaxTitle => 'Makikita mo na kung sino ang kausap mo.';
 
   @override
   String get successMaxSub =>
       'Naka-on na ang video call. I-tap ang video button sa kahit anong tawag.';
 
   @override
-  String get successMaxBenefit1 => 'Harapang video call';
-
-  @override
-  String get successMaxBenefit2 =>
-      'Bawat karakter, unlimited at una sa mga bago';
-
-  @override
-  String get successMaxBenefit3 => 'Study book na akma sa antas mo';
-
-  @override
-  String get ctaStartACall => 'Magsimula ng tawag';
-
-  @override
   String get ctaStartAVideoCall => 'Magsimula ng video call';
 
   @override
   String get ctaSeeYourSubscription => 'Tingnan ang subscription mo';
-
-  @override
-  String successProCaption(String price) {
-    return '$price ang sisingilin buwan-buwan hanggang kanselahin mo. Pamahalaan o kanselahin anumang oras sa store.';
-  }
 
   @override
   String successMaxCaption(String price) {
@@ -1554,94 +1689,16 @@ class AppLocalizationsFil extends AppLocalizations {
   String get plansErrorCaption => 'Walang siningil.';
 
   @override
-  String get changePlanTitle => 'Baguhin ang Plan';
-
-  @override
-  String get moveToMaxTitle => 'Lumipat sa Max';
-
-  @override
-  String maxPriceShort(String price) {
-    return '$price / buwan';
-  }
-
-  @override
-  String get moveToMaxCardSub =>
-      'Harapang video call · bawat karakter · study book na para sa iyo';
-
-  @override
-  String get whatHappensNow => 'Ano ang mangyayari ngayon';
-
-  @override
-  String get maxStartsLabel => 'Magsisimula ang Max';
-
-  @override
-  String get immediately => 'Kaagad';
-
-  @override
-  String get unusedProTime => 'Hindi nagamit na oras ng Pro';
-
-  @override
-  String get creditedTowardMax => 'Ikre-kredito sa Max';
-
-  @override
-  String nextPaymentMaxValue(String price, String date) {
-    return '$price · $date';
-  }
-
-  @override
-  String nextPaymentProValue(String price, String date) {
-    return '$price · $date';
-  }
-
-  @override
-  String get ctaSwitchToMax => 'Lumipat sa Max';
-
-  @override
-  String get upgradeCaption =>
-      'Agad magsisimula ang bago mong plan. Ang hindi nagamit na oras ng Pro ay ikre-kredito, hindi kailanman sisingilin nang dalawang beses.';
-
-  @override
-  String get moveToProTitle => 'Lumipat sa Pro';
-
-  @override
-  String get moveToProSub =>
-      'Walang magbabago ngayon. Tuloy ang Max hanggang matapos ang buwang nabayaran mo na.';
-
-  @override
-  String get maxRunsUntil => 'Tuloy ang Max hanggang';
-
-  @override
-  String get proStarts => 'Magsisimula ang Pro';
-
-  @override
-  String get whatYouKeep => 'Ang mananatili sa iyo';
-
-  @override
-  String get keepBenefitCalls => 'Unlimited na voice call, tig-15 minuto';
-
-  @override
-  String get keepBenefitCharacters =>
-      'Ang mga karakter na binili mo ay sa iyo habambuhay';
-
-  @override
-  String downgradeWarning(String date) {
-    return 'Mao-off ang video call at mga karakter na pang-Max lang sa $date.';
-  }
-
-  @override
-  String get ctaSwitchToPro => 'Lumipat sa Pro';
-
-  @override
-  String get ctaKeepMax => 'Panatilihin ang Max';
+  String get ctaKeepMax => 'Panatilihin ang Premium';
 
   @override
   String get winbackSkip => 'Laktawan';
 
   @override
-  String get winbackTitle => 'Natapos na ang Pro plan mo';
+  String get winbackTitle => 'Natapos na ang Premium plan mo';
 
   @override
-  String get winbackSub => 'Nasa Libre ka na — isang tawag kada araw.';
+  String get winbackSub => 'Nasa Libre ka na — 5 minutong tawag kada araw.';
 
   @override
   String get winbackQuestion => 'Puwede mo bang sabihin kung bakit ka umalis?';
@@ -1678,7 +1735,7 @@ class AppLocalizationsFil extends AppLocalizations {
   String get ctaClose => 'Isara';
 
   @override
-  String get ovRestoreSuccessTitle => 'Bumalik na ang Pro';
+  String get ovRestoreSuccessTitle => 'Bumalik na ang Premium';
 
   @override
   String get ovRestoreSuccessBody =>
@@ -1699,13 +1756,28 @@ class AppLocalizationsFil extends AppLocalizations {
       'Aktibo na ang subscription na ito sa ibang BeaverTalk account.';
 
   @override
+  String ovRestoreCharactersTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Bumalik na ang mga character mo',
+      one: 'Bumalik na ang character mo',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get ovRestoreCharacterOtherTitle =>
+      'Binili ang character na ito sa ibang account';
+
+  @override
   String get ctaSignInThatAccount => 'Mag-sign in sa account na iyon';
 
   @override
   String get ctaGetHelp => 'Humingi ng tulong';
 
   @override
-  String get ovCharacterOfferTitle => 'Hindi pa handa para sa Pro?';
+  String get ovCharacterOfferTitle => 'Hindi pa handa para sa Premium?';
 
   @override
   String get ovCharacterOfferBody =>
@@ -1716,7 +1788,7 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String rowFromPrice(String price) {
-    return 'mula $price';
+    return '$price bawat isa';
   }
 
   @override
@@ -1760,7 +1832,7 @@ class AppLocalizationsFil extends AppLocalizations {
   String get rowCharactersYouBought => 'Mga karakter na binili mo';
 
   @override
-  String get rowProRunsUntil => 'Tuloy ang Pro hanggang';
+  String get rowProRunsUntil => 'Tuloy ang Premium hanggang';
 
   @override
   String get ctaSwitchToYearly => 'Lumipat sa taunan';
@@ -1775,7 +1847,7 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get ovAnnualSwitchBody =>
-      'Dalawang buwan ka na sa Pro. Mas mura ang taunang plan sa kabuuan.';
+      'Mas mura ang taunang plan kaysa magbayad buwan-buwan.';
 
   @override
   String get rowYouSave => 'Matitipid mo';
@@ -1836,7 +1908,7 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get ovTrialEndingBody =>
-      'Tuloy ang Max maliban kung kanselahin mo. Ito ang mangyayari.';
+      'Tuloy ang Premium maliban kung kanselahin mo. Ito ang mangyayari.';
 
   @override
   String get rowTrialEnds => 'Matatapos ang trial';
@@ -1851,7 +1923,7 @@ class AppLocalizationsFil extends AppLocalizations {
   String get ctaCancelInStore => 'Kanselahin sa store';
 
   @override
-  String get ovTrialStartTitle => '7 araw ng Max, libre';
+  String get ovTrialStartTitle => '7 araw ng Premium, libre';
 
   @override
   String ovTrialStartBody(String price, String date) {
@@ -1866,7 +1938,7 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get ovOtoBody =>
-      'Magandang desisyon — aktibo na ang unlimited na tawag. Mas mura ang parehong Pro kung magbabayad ka taunan.';
+      'Magandang pili. Mas mura ang parehong Premium kung taunan ang bayad.';
 
   @override
   String get ovFailedDeclinedTitle => 'Tinanggihan ang card mo';
@@ -1892,7 +1964,28 @@ class AppLocalizationsFil extends AppLocalizations {
       'Hindi namin maabot ang store. Walang siningil.';
 
   @override
-  String get ovAlreadyTitle => 'Nasa Pro ka na';
+  String get ovVerifyingTitle => 'Natanggap ang bayad';
+
+  @override
+  String get ovVerifyingBody =>
+      'Kinukumpirma pa namin ito sa store. Maa-activate ito sa lalong madaling panahon — kung hindi, i-tap ang “I-restore ang mga binili”.';
+
+  @override
+  String get ovPendingTitle => 'Nakabinbin ang bayad';
+
+  @override
+  String get ovPendingBody =>
+      'Hindi pa tapos ng store ang bayad. Maa-activate ito kapag tapos na — puwede mong iwan ang screen na ito.';
+
+  @override
+  String get ovRejectedTitle => 'Hindi namin makumpirma ang pagbiling ito';
+
+  @override
+  String get ovRejectedBody =>
+      'Hindi kinumpirma ng store ang bayad na ito kaya walang na-apply. Kung nasingil ka, makipag-ugnayan sa amin.';
+
+  @override
+  String get ovAlreadyTitle => 'Nasa Premium ka na';
 
   @override
   String get ovAlreadyBody =>
@@ -1906,30 +1999,24 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String subCancelBody(String date) {
-    return 'Tuloy ang Pro hanggang $date. Pagkatapos noon ay lilipat ka sa Libre.';
+    return 'Tuloy ang Premium hanggang $date. Pagkatapos noon ay lilipat ka sa Libre.';
   }
 
   @override
   String get subWhatYouLose => 'Ang mawawala sa iyo';
 
   @override
-  String get benefitCalls15 => 'Unlimited na tawag, tig-15 minuto';
-
-  @override
   String get benefitScoring => 'Bigkas na sinusukat letra por letra';
 
   @override
-  String get benefitEveryCharacter => 'Bawat karakter, unlimited';
-
-  @override
-  String get ctaKeepPro => 'Panatilihin ang Pro';
+  String get benefitEveryMetric => 'Bawat sukatan, bawat pangungusap';
 
   @override
   String get subPaymentTitle => 'I-update ang bayad';
 
   @override
   String get subPaymentBody =>
-      'Hindi namin makuha ang bayad. Tuloy ang Pro sa buong grace period.';
+      'Hindi namin makuha ang bayad. Tuloy ang Premium sa buong grace period.';
 
   @override
   String get subHowToFix => 'Paano ito ayusin';
@@ -1949,7 +2036,7 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String subResubBody(String date) {
-    return 'Matatapos ang Pro sa $date. I-on muli ang auto-renew at walang magbabago.';
+    return 'Matatapos ang Premium sa $date. I-on muli ang auto-renew at walang magbabago.';
   }
 
   @override
@@ -1959,23 +2046,10 @@ class AppLocalizationsFil extends AppLocalizations {
   String get ctaTurnItBackOn => 'I-on itong muli';
 
   @override
-  String get flTodayTitle => 'Iyon na ang tawag mo ngayong araw';
+  String get flTodayTitle => 'Nagamit mo na ang oras ng tawag ngayong araw';
 
   @override
   String get flTodayBody => 'Ituloy kung saan ka huminto — ngayon mismo.';
-
-  @override
-  String get flCheckTitle => 'Iyon na ang pagsusuri mo ngayong araw';
-
-  @override
-  String get flCheckBody =>
-      'Isang pagsusuri kada araw sa Libre. Ginagawa itong unlimited ng Pro.';
-
-  @override
-  String get flBenefitCalls => 'Unlimited na tawag sa Pro · tig-15 minuto';
-
-  @override
-  String get flBenefitChecks => 'Unlimited na pagsusuri ng bigkas sa Pro';
 
   @override
   String flCaption(String price) {
@@ -2018,38 +2092,42 @@ class AppLocalizationsFil extends AppLocalizations {
   String get subscriptionRow => 'Subscription';
 
   @override
-  String get iapSuccessTitle => 'Purchase complete';
+  String get iapSuccessTitle => 'Tapos na ang pagbili';
 
   @override
   String iapSuccessBody(String name) {
-    return 'The $name avatar is yours forever.\nApplied as soon as the receipt clears.';
+    return 'Sa iyo na habambuhay ang avatar na $name.\nIlalapat agad kapag na-confirm ang resibo.';
   }
 
   @override
-  String get ctaGoHome => 'Home';
+  String get ctaGoHome => 'Pumunta sa home';
 
   @override
-  String get ctaUseNow => 'Use it now';
+  String get ctaUseNow => 'Gamitin na';
 
   @override
-  String get iapFailTitle => 'The payment didn\'t go through';
+  String get iapFailTitle => 'Hindi natuloy ang bayad';
 
   @override
-  String get iapFailBody => 'You can try again';
+  String get iapFailBody => 'Puwede mong subukan ulit';
 
   @override
-  String get paywallLeaveTitle =>
-      'Kapag umalis ka ngayon, hindi ka pa naka-subscribe';
+  String get paywallGuardTitle => 'Puwede kang magpatuloy nang Libre';
 
   @override
-  String get paywallLeaveBody =>
-      'Mabubuksan agad ang mga benepisyo pagkatapos magbayad. Puwede kang bumalik anumang oras mula sa Aking pahina.';
+  String get paywallGuardBody => 'May 5 minutong tawag ka pa rin kada araw.';
 
   @override
-  String get ctaKeepLooking => 'Tingnan pa';
+  String get ctaMaybeLater => 'Siguro mamaya';
 
   @override
-  String get ctaLeaveAnyway => 'Umalis pa rin';
+  String get winbackOfferBadge => '50% off sa unang buwan mo';
+
+  @override
+  String get winbackOfferTitle => 'Maligayang pagbabalik';
+
+  @override
+  String get ctaGetHalfOff => 'Kunin ang 50% off';
 
   @override
   String get iapCharacterSuccessTitle => 'May bagong kaibigan ka na!';
@@ -2096,10 +2174,6 @@ class AppLocalizationsFil extends AppLocalizations {
   String get takeLevelTest => 'Kumuha ng level test';
 
   @override
-  String get reviewToSeeScore =>
-      'Mag-review para makita ang iskor ng bigkas mo';
-
-  @override
   String get playAgain => 'Ulitin';
 
   @override
@@ -2113,4 +2187,812 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get difficultyLabel => 'Antas ng hirap';
+
+  @override
+  String get connected => 'Nakakonekta';
+
+  @override
+  String get unlockedWithMax => 'Kasama sa plan mo';
+
+  @override
+  String get fcEndedTitle => 'Tapos na ang libre mong tawag';
+
+  @override
+  String get fcEndedBody =>
+      'Hanggang 5 minuto lang ang libreng tawag\nMag-subscribe para mas mahabang usapan';
+
+  @override
+  String get ctaSubscribeKeepTalking => 'Mag-subscribe at ituloy ang usapan';
+
+  @override
+  String get kgTitle => 'Ituloy pa?';
+
+  @override
+  String get kgBody =>
+      'Nagpapatuloy ang tawag nang paunti-unti.\nMagtatanong ulit kami sa bawat pagkakataon.';
+
+  @override
+  String get pcEndedTitleToday => 'Tapusin na natin ang tawag ngayong araw.';
+
+  @override
+  String get pcEndedBodyToday =>
+      'Balikan ang pinag-usapan natin, at tawagan mo ulit ako bukas!';
+
+  @override
+  String get pcEndedTitle => 'Tapusin na natin ang tawag na ito.';
+
+  @override
+  String get pcEndedBody =>
+      'Balikan ang pinag-usapan natin, at tawagan mo ulit ako!';
+
+  @override
+  String get ctaKeepTalking => 'Ituloy ang usapan';
+
+  @override
+  String get callModeSheetTitle => 'Paano mo gustong mag-usap?';
+
+  @override
+  String get callModeSheetSubtitle => 'Agad na mag-aaply sa tawag na ito';
+
+  @override
+  String get callModeFreeTalk => 'Malayang usapan';
+
+  @override
+  String get callModeFreeTalkDesc => 'Mag-usap nang walang pagwawasto';
+
+  @override
+  String get callModeChange => 'Palitan ang mode';
+
+  @override
+  String get callModeKeep => 'Hindi muna';
+
+  @override
+  String get callExitTitle => 'Tapusin ang tawag?';
+
+  @override
+  String get callExitSubtitle =>
+      'Kasama pa rin sa ngayong araw ang oras na naitawag mo';
+
+  @override
+  String get callExitKeep => 'Magpatuloy sa pag-uusap';
+
+  @override
+  String get callExitConfirm => 'Tapusin ang tawag';
+
+  @override
+  String get callMicMute => 'I-mute';
+
+  @override
+  String get callMicUnmute => 'I-unmute';
+
+  @override
+  String get callPushToTalk => 'Pindutin nang matagal para magsalita';
+
+  @override
+  String get callFreeEndedTitle => 'Naubos na ang libre mong tawag';
+
+  @override
+  String get callFreeEndedCta => 'Mag-subscribe at magpatuloy';
+
+  @override
+  String get callKeepGoingTitle => 'Ituloy pa?';
+
+  @override
+  String get callKeepGoingSubtitle =>
+      'Nagpapatuloy ang tawag kada 5 minuto. Magtatanong kami ulit sa bawat pagkakataon.';
+
+  @override
+  String get articulationSelectedWord => 'Napiling salita';
+
+  @override
+  String get articulationYouSaid => 'Ang bigkas mo';
+
+  @override
+  String get articulationTargetSound => 'Target';
+
+  @override
+  String get reportEntry => 'I-report';
+
+  @override
+  String get reportTitle => 'I-report';
+
+  @override
+  String get reportPrompt => 'Ano ang naging problema?';
+
+  @override
+  String get reportGuide =>
+      'Sabihin sa amin kung anong sinabi ng AI character ang hindi mo nagustuhan. Sinusuri namin ang bawat report.';
+
+  @override
+  String get reportReasonSexual => 'Sekswal na nilalaman';
+
+  @override
+  String get reportReasonHate => 'Poot o diskriminasyon';
+
+  @override
+  String get reportReasonViolence => 'Marahas o nagbabantang nilalaman';
+
+  @override
+  String get reportReasonSelfHarm => 'Naghihikayat ng pananakit sa sarili';
+
+  @override
+  String get reportReasonMisinfo => 'Maling impormasyon';
+
+  @override
+  String get reportReasonOther => 'Iba pang problema';
+
+  @override
+  String get reportDetailHint => 'Ilarawan ang nangyari (opsyonal)';
+
+  @override
+  String get reportSubmit => 'Ipadala ang report';
+
+  @override
+  String get reportDoneTitle => 'Natanggap na ang iyong report';
+
+  @override
+  String get reportDoneBody =>
+      'Susuriin namin ito at gagawa ng aksyon kung kailangan. Salamat sa pagtulong na panatilihing ligtas ang BeaverTalk.';
+
+  @override
+  String get reportFailed => 'Hindi naipadala ang report. Subukan ulit.';
+
+  @override
+  String get hwTitle => 'Takdang-aralin';
+
+  @override
+  String get hwJoinCodeTitle => 'Ilagay ang class code mo';
+
+  @override
+  String get hwJoinCodeSubtitle =>
+      'Ito ang 6-character na code mula sa guro mo';
+
+  @override
+  String get hwJoinCodeLabel => 'Class code';
+
+  @override
+  String get hwJoinCodeHelp => 'Hindi case-sensitive ang code';
+
+  @override
+  String get hwJoinConfirmTitle => 'Ito ba ang tamang klase?';
+
+  @override
+  String get hwJoinConfirmSubtitle => 'Kung hindi, tingnan ulit ang code';
+
+  @override
+  String get hwJoinFieldInstitution => 'Institusyon';
+
+  @override
+  String get hwJoinFieldTeacher => 'Guro';
+
+  @override
+  String get hwJoinFieldLearners => 'Mga mag-aaral';
+
+  @override
+  String get hwJoinFieldTerm => 'Termino';
+
+  @override
+  String get hwJoinConfirmNote =>
+      'Ipinapakita ang pangalan ng klase gaya ng isinulat ng guro mo. Hindi namin ito isinasalin.';
+
+  @override
+  String get hwJoinConfirmYes => 'Oo, ito nga';
+
+  @override
+  String get hwJoinConfirmRetry => 'Ilagay ulit ang code';
+
+  @override
+  String get hwJoinProfileTitle => 'Anong pangalan ang gagamitin mo sa klase?';
+
+  @override
+  String get hwJoinProfileSubtitle =>
+      'Itatapat ito ng guro mo sa listahan ng klase';
+
+  @override
+  String get hwJoinNameLabel => 'Pangalan';
+
+  @override
+  String get hwJoinNameHelp => 'Puwedeng iba sa pangalan mo sa app';
+
+  @override
+  String get hwJoinStudentNoLabel => 'Student number (opsyonal)';
+
+  @override
+  String get hwJoinStudentNoHelp =>
+      'Ginagamit ito ng guro mo para itapat sa listahan';
+
+  @override
+  String get hwJoinConsentTitle => 'Ang nakikita ng guro mo';
+
+  @override
+  String get hwJoinConsentSubtitle =>
+      'Kailangan mong pumayag para sumali sa klase';
+
+  @override
+  String get hwJoinConsentSharedHeading => 'Ibinabahagi sa guro mo';
+
+  @override
+  String get hwJoinConsentShared1 => 'Pangalan ng klase at student number';
+
+  @override
+  String get hwJoinConsentShared2 => 'Kung ginawa mo ang takdang-aralin';
+
+  @override
+  String get hwJoinConsentShared3 => 'Mga pangungusap na pumasa at hindi';
+
+  @override
+  String get hwJoinConsentShared4 =>
+      'Haba at buod ng tawag para sa takdang-aralin';
+
+  @override
+  String get hwJoinConsentNotSharedHeading => 'Hindi ibinabahagi';
+
+  @override
+  String get hwJoinConsentNotShared1 => 'Email at numero ng telepono';
+
+  @override
+  String get hwJoinConsentNotShared2 => 'Pangalan sa app, profile at karakter';
+
+  @override
+  String get hwJoinConsentNotShared3 => 'Nasyonalidad at unang wika';
+
+  @override
+  String get hwJoinConsentNotShared4 =>
+      'Mga tawag at pag-aaral sa labas ng klase';
+
+  @override
+  String get hwJoinConsentNotShared5 => 'Detalye ng subscription at bayad';
+
+  @override
+  String get hwJoinConsentAgree => 'Sang-ayon ako sa nasa itaas';
+
+  @override
+  String get hwJoinConsentCta => 'Sumang-ayon at sumali';
+
+  @override
+  String hwJoinDoneTitle(String className) {
+    return 'Sumali ka sa $className';
+  }
+
+  @override
+  String hwJoinDoneSubtitle(int count) {
+    return '$count na takdang-aralin ang naghihintay';
+  }
+
+  @override
+  String get hwJoinDoneNoAssignment => 'Wala pang takdang-aralin';
+
+  @override
+  String get hwJoinDoneNextDue => 'Susunod na deadline';
+
+  @override
+  String get hwJoinDoneRosterName => 'Pangalan mo sa klase';
+
+  @override
+  String get hwJoinDoneCta => 'Tingnan ang takdang-aralin';
+
+  @override
+  String get hwJoinErrorNotFound => 'Hindi namin nahanap ang code na iyon';
+
+  @override
+  String get hwJoinErrorNotFoundBody => 'Pakisuri ulit ang anim na digit.';
+
+  @override
+  String get hwJoinErrorExpired => 'Expired na ang code na iyon';
+
+  @override
+  String get hwJoinErrorExpiredBody => 'Humingi ng bagong code sa guro mo.';
+
+  @override
+  String get hwJoinErrorFull => 'Puno na ang klase';
+
+  @override
+  String get hwJoinErrorFullBody => 'Pakisabi sa guro mo.';
+
+  @override
+  String get hwJoinFailed => 'Hindi nakasali. Subukan ulit mamaya.';
+
+  @override
+  String get hwSectionInProgress => 'Ginagawa';
+
+  @override
+  String get hwSectionUpcoming => 'Paparating';
+
+  @override
+  String get hwSectionDone => 'Tapos';
+
+  @override
+  String get hwLeaveClassLink => 'Umalis sa klase';
+
+  @override
+  String get hwListEmptyTitle => 'Wala pang takdang-aralin';
+
+  @override
+  String get hwListEmptyBody =>
+      'Lalabas ito rito kapag nagbigay na ang guro mo.';
+
+  @override
+  String get hwListFailed => 'Hindi ma-load ang takdang-aralin mo.';
+
+  @override
+  String get hwRetry => 'Subukan ulit';
+
+  @override
+  String get hwBadgeDone => 'Tapos';
+
+  @override
+  String get hwBadgeOverdue => 'Hindi naipasa';
+
+  @override
+  String hwBadgeOverdueDays(int days) {
+    return 'Hindi naipasa, $days araw na huli';
+  }
+
+  @override
+  String hwBadgeDday(int days) {
+    return 'D-$days';
+  }
+
+  @override
+  String get hwBadgeDueToday => 'Deadline ngayon';
+
+  @override
+  String get hwActivitySpeaking => 'Bigkas';
+
+  @override
+  String get hwActivityConversation => 'Usapan';
+
+  @override
+  String get hwActivityWorkbook => 'Workbook';
+
+  @override
+  String hwChapterLabel(String chapter) {
+    return 'Kabanata $chapter';
+  }
+
+  @override
+  String get hwTaskSpeakingDesc => 'Tingnan ang iskor ng pagbigkas mo';
+
+  @override
+  String get hwTaskConversationDesc =>
+      'Gamitin ang natutunan mo sa totoong usapan';
+
+  @override
+  String get hwConversationOnce =>
+      'Isang beses lang ang usapan kada takdang-aralin.';
+
+  @override
+  String get hwTaskWorkbookDesc => 'Magsanay sa pagsulat sa workbook';
+
+  @override
+  String get hwCtaStudy => 'Simulan';
+
+  @override
+  String get hwCtaResult => 'Tingnan ang resulta';
+
+  @override
+  String get hwCtaDownload => 'I-download';
+
+  @override
+  String get hwSpeakingNoScore =>
+      'Hindi mo pa ginagawa ang gawain sa pagsasalita';
+
+  @override
+  String get hwWorkbookUnavailable => 'Wala pa ang file ng workbook.';
+
+  @override
+  String get hwDetailClosed =>
+      'Sarado na ang takdang-aralin na ito. Hindi ka na makakapagpasa.';
+
+  @override
+  String get hwLeaveTitle => 'Aalis sa klase?';
+
+  @override
+  String get hwLeaveBody =>
+      'Hindi na makikita ng guro mo ang resulta ng takdang-aralin mo.';
+
+  @override
+  String get hwLeaveConfirm => 'Umalis';
+
+  @override
+  String get hwLeaveCancel => 'Manatili';
+
+  @override
+  String get hwLeaveFailed => 'Hindi makaalis sa klase.';
+
+  @override
+  String get hwMyClass => 'Klase ko';
+
+  @override
+  String get hwClassEmptyTitle => 'Hindi ka pa sumasali sa klase';
+
+  @override
+  String get hwClassEmptySubtitle => 'Ilagay ang code na ibinigay ng guro mo';
+
+  @override
+  String get hwClassEmptyCta => 'Ilagay ang class code';
+
+  @override
+  String get hwClassContinueCta => 'Magpatuloy';
+
+  @override
+  String hwHomeBannerDueTomorrow(int count) {
+    return '$count na takdang-aralin ang due bukas';
+  }
+
+  @override
+  String hwHomeBannerOverdue(int count) {
+    return 'May $count kang hindi naipasang takdang-aralin';
+  }
+
+  @override
+  String get hwSpeakingUnavailable =>
+      'Wala pa ang mga pangungusap para sa takdang-aralin na ito.';
+
+  @override
+  String get hwBadgeClosed => 'Sarado';
+
+  @override
+  String hwSpeakingProgress(int passed, int total) {
+    return '$passed sa $total na pangungusap ang pumasa';
+  }
+
+  @override
+  String get challengeFirstWord => 'Unang salita';
+
+  @override
+  String get challengeSeeAnalysis => 'Tingnan ang resulta';
+
+  @override
+  String get challengePaused => 'Naka-pause';
+
+  @override
+  String get challengePausedNote =>
+      'Sabay na huminto ang timer at ang recording.';
+
+  @override
+  String get challengeTimeLeft => 'Natitirang oras';
+
+  @override
+  String get challengeScoreLabel => 'Iskor';
+
+  @override
+  String get challengeResume => 'Ipagpatuloy';
+
+  @override
+  String get challengeBlockedTitle => 'Hindi magamit ang camera';
+
+  @override
+  String get challengeBlockedNote =>
+      'I-on ang access sa camera at mic sa Settings.';
+
+  @override
+  String get challengeGoBack => 'Bumalik';
+
+  @override
+  String get challengeOpenSettings => 'Buksan ang Settings';
+
+  @override
+  String get saveDone => 'Na-save sa gallery mo';
+
+  @override
+  String get saveFailed => 'Hindi ma-save';
+
+  @override
+  String get saveDeniedNote => 'Kailangan ng access sa mga larawan';
+
+  @override
+  String get callIncomingCallerFallback => 'Tutor na Beaver';
+
+  @override
+  String get callIncomingHandle => 'Tawag sa Korean';
+
+  @override
+  String get callMissedTitle => 'Hindi nasagot na tawag';
+
+  @override
+  String get callMissedChannelDescription =>
+      'Ipinapaalam kapag may hindi mong nasagot na tawag mula kay Beaver.';
+
+  @override
+  String callMissedBody(String name) {
+    return 'Tinawagan ka ni $name';
+  }
+
+  @override
+  String get callBeaverFallbackName => 'Beaver';
+
+  @override
+  String get callNotifPermissionRationale =>
+      'Kailangan ng pahintulot sa notification para makatanggap ng tawag.';
+
+  @override
+  String get callNotifPermissionRequired =>
+      'Payagan ang mga notification sa Settings.';
+
+  @override
+  String get callHintLockedTitle => 'Hindi available ang hint sa Pag-aaral';
+
+  @override
+  String get wsTitle => 'Mahihirap na tunog';
+
+  @override
+  String get wsToList => 'Bumalik sa listahan';
+
+  @override
+  String get wsNext => 'Susunod';
+
+  @override
+  String get wsRetry => 'Subukan Muli';
+
+  @override
+  String get wsDone => 'Tapos';
+
+  @override
+  String get wsContinue => 'Ituloy';
+
+  @override
+  String get wsQuit => 'Umalis';
+
+  @override
+  String get wsRetryLater => 'Pakisubukan muli maya-maya.';
+
+  @override
+  String get wsMissingTitle => 'Hindi namin nakita ang tunog na iyon';
+
+  @override
+  String get wsMissingBody => 'Pakipili muli ito sa listahan.';
+
+  @override
+  String get wsListLoadFailed => 'Hindi ma-load ang listahan';
+
+  @override
+  String get wsLessonLoadFailed => 'Hindi ma-load ang aralin';
+
+  @override
+  String get wsNationalTitle => 'Mahihirap na tunog para sa accent mo';
+
+  @override
+  String get wsNationalPending =>
+      'Pupunan namin ito kapag na-analyze na ang accent mo';
+
+  @override
+  String get wsNationalPicked => 'Pinili base sa analysis ng accent mo';
+
+  @override
+  String get wsNationalEmptyBody =>
+      'Tumawag pa ng kaunti at i-aanalyze namin ang accent mo.';
+
+  @override
+  String get wsMineTitle => 'Mga mahirap kong tunog';
+
+  @override
+  String get wsMineSubtitle => 'Mga tunog na nasukat sa mga huli mong tawag';
+
+  @override
+  String get wsMineEmptyBody =>
+      'Tumawag at mag-review, at madadagdagan ang mahirap mong tunog.';
+
+  @override
+  String get wsNoDataYet => 'Wala pang data';
+
+  @override
+  String get wsGoToCall => 'Simulan ang Tawag';
+
+  @override
+  String get wsRule => 'Tuntunin';
+
+  @override
+  String get wsRecommended => 'Rekomendado';
+
+  @override
+  String get wsNotMeasured => 'Hindi pa nasukat';
+
+  @override
+  String get wsStepUnderstand => 'Alamin';
+
+  @override
+  String get wsStepWords => 'Salita';
+
+  @override
+  String get wsStepSentence => 'Pangungusap';
+
+  @override
+  String get wsStepTest => 'Test';
+
+  @override
+  String get wsQuitTitle => 'Ihinto ang pag-practice?';
+
+  @override
+  String get wsQuitBody =>
+      'Kung aalis ka ngayon, hindi ma-save ang practice na ito.';
+
+  @override
+  String get wsHowToSound => 'Paano bigkasin ang tunog';
+
+  @override
+  String get wsPracticeWords => 'Sanayin ang salita';
+
+  @override
+  String get wsPracticeSentence => 'Sanayin ang pangungusap';
+
+  @override
+  String get wsPracticeAgain => 'Isa pang beses';
+
+  @override
+  String get wsStartTest => 'Kumuha ng huling test';
+
+  @override
+  String get wsThisSentence => 'Ang pangungusap na ito';
+
+  @override
+  String get wsNoScoreNote =>
+      'Walang score sa hakbang na ito. Sumunod lang sa pagbigkas.';
+
+  @override
+  String get wsListen => 'Makinig nang mabuti';
+
+  @override
+  String get wsSayNow => 'Ngayon, sabihin mo na';
+
+  @override
+  String get wsPracticeDone => 'Tapos na ang practice';
+
+  @override
+  String get wsPaused => 'Naka-pause';
+
+  @override
+  String get wsAudioFailed =>
+      'Hindi ma-load ang audio. Basahin nang malakas ang teksto.';
+
+  @override
+  String get wsReadAloud => 'Basahin nang malakas ang pangungusap sa ibaba';
+
+  @override
+  String get wsTapToStart => 'I-tap para magsimula';
+
+  @override
+  String get wsTapWhenDone => 'I-tap kapag tapos na';
+
+  @override
+  String get wsScoring => 'Kinakalkula ang score';
+
+  @override
+  String get wsMicFailed => 'Hindi mabuksan ang mikropono.';
+
+  @override
+  String get wsMicPermissionBody =>
+      'Babasahin mo nang malakas ang test na ito, kaya kailangan ang mikropono. I-on ang access sa mikropono sa Settings.';
+
+  @override
+  String get wsNoSound => 'Wala kaming narinig. Subukan muli?';
+
+  @override
+  String get wsScoreFailed => 'Nabigo ang pag-iskor. Pakisubukan muli.';
+
+  @override
+  String get wsSomethingWrong => 'May nangyaring mali.';
+
+  @override
+  String get wsLearnDone => 'Tapos na ang aralin';
+
+  @override
+  String get wsRetest => 'Test muli';
+
+  @override
+  String get wsFirstMeasure => 'Unang pagsukat';
+
+  @override
+  String get wsFinalTest => 'Huling test';
+
+  @override
+  String wsPoints(int score) {
+    return '$score puntos';
+  }
+
+  @override
+  String wsBeforePoints(int score) {
+    return 'Dati $score puntos';
+  }
+
+  @override
+  String wsGoalPoints(int score) {
+    return 'Target $score puntos';
+  }
+
+  @override
+  String wsGoalPrefix(String desc) {
+    return 'Target · $desc';
+  }
+
+  @override
+  String wsAccentOf(String country) {
+    return 'Accent ng $country';
+  }
+
+  @override
+  String wsWordsRepeated(int count) {
+    return '$count salitang naulit';
+  }
+
+  @override
+  String wsChunksRepeated(int count) {
+    return '$count bahaging naulit';
+  }
+
+  @override
+  String get wsStartRecommended => 'Magsimula sa rekomendadong tunog';
+
+  @override
+  String wsStartRecommendedWith(String label) {
+    return 'Magsimula sa $label';
+  }
+
+  @override
+  String get wsPointsUnit => 'puntos';
+
+  @override
+  String get wsEnterFromMypage => 'Sanayin ang mahihirap na tunog';
+
+  @override
+  String wsGoalOnly(int score) {
+    return 'Target $score';
+  }
+
+  @override
+  String wsSoundOf(String label) {
+    return 'Tunog $label';
+  }
+
+  @override
+  String wsResultTip(String desc) {
+    return '$desc. Isipin ang hugis na ito kapag lumabas ito sa tawag.';
+  }
+
+  @override
+  String wsNationalSubtitle(String country) {
+    return 'Mga tunog na madalas mamali ang mga nagsasalita mula sa $country';
+  }
+
+  @override
+  String get wsRetryPackLabel => 'Sanayin ang mga tunog na madalas mong mali';
+
+  @override
+  String wsRetryPackTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count tunog na madalas mong mali sa session na ito',
+      one: '1 tunog na madalas mong mali sa session na ito',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get wsRetryPackBody =>
+      'Tanging ang mga tunog na nabigkas mo nang mali nang 2 beses o higit pa ang tinipon namin. Sanayin ang bawat isa sa 4 na hakbang.';
+
+  @override
+  String get wsRetryPackCta => 'Sanayin ang lahat';
+
+  @override
+  String get wsRetryListTitle => 'Mga tunog na madalas mong mali';
+
+  @override
+  String get wsRetryListSection => 'Mga tunog mula sa session na ito';
+
+  @override
+  String get wsRetryListSub =>
+      'Mga tunog na nabigkas mo nang mali nang 2 beses o higit pa sa session na ito';
+
+  @override
+  String wsRetryListSubWithCall(String title) {
+    return 'Mga tunog na nabigkas mo nang mali nang 2 beses o higit pa sa tawag na “$title”';
+  }
+
+  @override
+  String get wsRetryListAllDone => 'Na-practice mo na ang lahat ng tunog';
+
+  @override
+  String get wsRetryBackToReport => 'Bumalik sa ulat';
 }

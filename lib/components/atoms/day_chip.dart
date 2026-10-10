@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../theme/app_color_tokens.dart';
+import '../../theme/app_motion.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_typography.dart';
 
@@ -43,7 +44,11 @@ class DayChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final chip = Container(
+    // 채움과 글자색이 한 프레임에 갈리면 요일을 눌렀는지 안 눌렀는지 눈이
+    // 못 따라간다. 둘 다 [AppMotion.medium] 로 묶는다.
+    final chip = AnimatedContainer(
+      duration: AppMotion.medium,
+      curve: AppMotion.toggle,
       height: 34,
       alignment: Alignment.center,
       decoration: BoxDecoration(
@@ -51,12 +56,16 @@ class DayChip extends StatelessWidget {
             selected ? context.c.primaryStrong : context.c.backgroundNormalNormal,
         borderRadius: BorderRadius.circular(AppRadius.xs),
       ),
-      child: Text(
-        label,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
+      child: AnimatedDefaultTextStyle(
+        duration: AppMotion.medium,
+        curve: AppMotion.toggle,
         style: AppType.caption1.r.copyWith(
           color: selected ? context.c.primaryOnPrimary : context.c.labelNormal,
+        ),
+        child: Text(
+          label,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
       ),
     );

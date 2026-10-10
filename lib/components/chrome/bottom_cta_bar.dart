@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../app/adaptive.dart';
 import '../../theme/app_spacing.dart';
 
 /// Shared bottom-CTA container that gives every screen ONE consistent bottom
@@ -16,6 +17,10 @@ import '../../theme/app_spacing.dart';
 /// The horizontal/top padding (`20 / 12 / 20 / 0`) matches the design's
 /// standard CTA gutter; the bottom is left to [SafeArea] so it never
 /// double-pads.
+///
+/// 좌우 여백은 폭을 따라 자란다. 도킹 위치는 그대로 하단이고 **버튼 폭만**
+/// 본문 컬럼(600)에 맞춘다 — 정본 규격의 「810 전폭 버튼은 쓰지 않는다」가
+/// 이것이다. 태블릿에서 화면을 가로지르는 버튼은 눌러야 할 곳을 잃게 만든다.
 class BottomCtaBar extends StatelessWidget {
   /// Creates a bottom-CTA bar wrapping [child] with the consistent inset.
   const BottomCtaBar({super.key, required this.child});
@@ -29,13 +34,8 @@ class BottomCtaBar extends StatelessWidget {
       top: false,
       minimum: const EdgeInsets.only(bottom: AppSpacing.s24),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          AppSpacing.s20,
-          AppSpacing.s12,
-          AppSpacing.s20,
-          0,
-        ),
-        child: child,
+        padding: const EdgeInsets.only(top: AppSpacing.s12),
+        child: ContentColumn(child: child),
       ),
     );
   }

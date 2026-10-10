@@ -5,12 +5,15 @@ import 'package:flutter/widgets.dart';
 import 'package:video_player/video_player.dart';
 
 import 'avatar_tempo.dart';
-import 'avatar_view.dart'
+import 'avatar_assets.dart'
     show
         kEmotionHappy,
         kEmotionSurprised,
         kEmotionSad,
         kEmotionAngry,
+        kEmotionLaugh,
+        kEmotionExciting,
+        kEmotionCrying,
         kIdleWait,
         kIdleListen,
         kIdleThink;
@@ -59,7 +62,10 @@ class SyncAvatar extends StatefulWidget {
     this.tempo,
     this.idleKind,
     this.autoTempo = false,
+    this.silentEmotion = false,
     this.fallback,
+    this.loading,
+    this.onDiag,
   });
 
   /// Asset dir holding `idle.mp4`, `talk.mp4` and optional `emo_*.mp4`.
@@ -71,7 +77,7 @@ class SyncAvatar extends StatefulWidget {
   /// True while the character holds the turn (keeps talking through pauses).
   final ValueListenable<bool> speaking;
 
-  /// Emotion code (see avatar_view k* constants) → optional reacting clip.
+  /// Emotion code (see `avatar_assets.dart` k* constants) → optional reacting clip.
   final ValueListenable<int> emotion;
 
   /// 발화 템포([kTalkSlow]/[kTalkNormal]/[kTalkFast]). 안 주면 [kTalkNormal] 고정.
@@ -94,8 +100,42 @@ class SyncAvatar extends StatefulWidget {
   /// 그때까지는 켜지 마라 — 틀린 템포가 걸리느니 normal 고정이 낫다.
   final bool autoTempo;
 
-  /// Shown until the clips are ready (and if they fail to load).
+  /// 목소리 없이도 감정 클립을 튼다.
+  ///
+  /// 통화에서는 감정이 **발화에 얹히는 표정**이라 `_talking` 중에만 보이는 것이 맞다.
+  /// 그런데 학습 화면의 반응 밴드는 **소리가 없다** — 채점 결과를 얼굴 하나로만
+  /// 말한다. 거기서는 `level` 을 아무도 안 쓰므로 `_onLevel` 의
+  /// `audible`(`level > _onThreshold`)이 영영 거짓이고, `_startTalking` 이 안 불려
+  /// `_syncEmotionLayer` 가 `!_talking` 으로 즉시 빠져나간다.
+  /// ⇒ **정답/오답에 emo_happy·emo_angry 가 한 번도 안 떴다**(2026-08-30 실기기
+  ///   실측 — `[avatar] TALK on` 로그 0건, 로드된 클립은 idle·talk·idle_listen·
+  ///   idle_think 뿐).
+  ///
+  /// 기본값은 `false` — 통화 화면과 아바타 랩의 거동을 그대로 둔다.
+  final bool silentEmotion;
+
+  /// 클립을 **못 열었을 때** 보여 줄 것(영구 폴백).
+  ///
+  /// ⛔ 로딩 중에는 쓰지 않는다 — 그건 [loading] 이다. 종전에는 둘이 한 인자라
+  ///   100~300ms 의 여는 시간에도 이 정지컷이 깔려, 통화를 열 때마다 캐릭터
+  ///   얼굴이 확대된 채 깜빡였다(2026-09-12 실기기 확인).
   final Widget? fallback;
+
+  /// 클립을 **여는 동안** 보여 줄 것. 생략하면 빈 칸이다.
+  ///
+  /// 여는 시간은 안드로이드에서 100~300ms 라, 무엇을 깔든 깜빡임으로 읽힌다.
+  /// 그래서 통화 화면은 이걸 안 넘긴다 — 잠깐 비어 있는 편이 낫다.
+  final Widget? loading;
+
+  /// [계측] 영상 쪽에서 일어난 일을 밖으로 흘린다. **UI 는 이걸로 아무것도 바꾸지 않는다.**
+  ///
+  /// ⛔ 왜 필요한가: 사장님이 실기기에서 보시는 증상 — 「웃는 게 두어 번 반복되다 갑자기
+  ///   멈추고, 말할 차례가 되니 듣는 영상으로 넘어간다」 — 은 **전부 이 위젯 안에서**
+  ///   일어난다. 그런데 이 위젯의 로그는 죄다 `kDebugMode` 뒤라 릴리즈에서 사라진다.
+  ///   서버는 마커를 보냈다는 것까지만 알고, 그게 화면에서 어떻게 됐는지는 아무도 모른다.
+  ///   ⇒ 그 구간을 잇는 유일한 실이다.
+  /// ⚠ 널이면 계측이 없을 뿐 동작은 같다(R5).
+  final void Function(String event, [Map<String, Object?>? fields])? onDiag;
 
   @override
   State<SyncAvatar> createState() => _SyncAvatarState();
@@ -118,6 +158,10 @@ class _SyncAvatarState extends State<SyncAvatar> {
 
   /// Visible layers (cross-faded).
   double _talkOpacity = 0;
+
+  /// 클립이 처음 붙을 때 0 → 1 로 올린다. 한 번 1 이 되면 다시 내려가지 않는다 —
+  /// 감정·템포 교체는 각자의 페이드를 쓰고, 이건 **최초 등장** 전용이다.
+  double _appearOpacity = 0;
   double _emoOpacity = 0;
 
   /// True while the talking clip should be on screen.
@@ -136,6 +180,14 @@ class _SyncAvatarState extends State<SyncAvatar> {
 
   /// Silence this long ends the talking clip.
   static const Duration _hangover = Duration(milliseconds: 180);
+
+  /// 첫 클립이 열렸을 때 **들어오는** 페이드.
+  ///
+  /// 클립 여는 데 100~300ms 가 걸리는 건 못 줄인다(디코더 초기화다). 줄일 수 있는
+  /// 것은 **그 끝이 얼마나 튀는가**다 — 종전엔 빈 칸에서 영상이 전부 불투명하게
+  /// 툭 나타나, 「늦다」보다 「갑자기 튄다」로 읽혔다. 180ms 면 눈이 「차오른다」로
+  /// 읽고, idle↔talk 전환([_fadeIn]·[_fadeOut])과도 같은 결이다.
+  static const Duration _appear = Duration(milliseconds: 180);
 
   static const Map<int, String> _talkAsset = {
     kTalkSlow: 'talk_slow',
@@ -158,6 +210,12 @@ class _SyncAvatarState extends State<SyncAvatar> {
     kEmotionSurprised: 'emo_surprised',
     kEmotionSad: 'emo_sad',
     kEmotionAngry: 'emo_angry',
+    // ⭐ 파일명만 `emo_` 접두사가 없다 — 11종 세트에서 감정과 따로 만들어졌기 때문이다.
+    //   ⛔ 이름을 맞추려고 자산을 개명하지 마라. 5캐릭터 × 앱스토어 자산이 걸린다.
+    kEmotionLaugh: 'laugh',
+    // 학습 반응 전용(무발화). 통화용 `emo_*` 와 같은 폴더에 공존하는 다른 자산이다.
+    kEmotionExciting: 'react_exciting',
+    kEmotionCrying: 'react_crying',
   };
 
   /// 대기 클립 3종. **하나의 슬롯**에서 갈아끼운다(디코더 3개 한계).
@@ -174,6 +232,8 @@ class _SyncAvatarState extends State<SyncAvatar> {
   @override
   void initState() {
     super.initState();
+    // ⛔ [_diagSink] 참조 — 해제 뒤에도 디코더 반납을 남기려면 지금 받아야 한다.
+    _diagSink = widget.onDiag;
     widget.level.addListener(_onLevel);
     widget.emotion.addListener(_onEmotion);
     widget.speaking.addListener(_onLevel);
@@ -184,30 +244,94 @@ class _SyncAvatarState extends State<SyncAvatar> {
     _load();
   }
 
+  /// 대기 클립을 연다. 자산이 없는 캐릭터는 기본 `idle` 로 되돌린다.
+  Future<VideoPlayerController?> _loadIdle() async {
+    final c = await _open(_idleAsset[_idleKind] ?? 'idle',
+        loop: true, play: true);
+    if (c != null || _idleKind == kIdleWait) return c;
+    _idleKind = kIdleWait;
+    return _open('idle', loop: true, play: true);
+  }
+
+  /// 발화 클립을 연다. 템포 자산이 없는 캐릭터(아직 `talk.mp4` 하나뿐인 bibi 등)는
+  /// 기본으로 되돌린다.
+  Future<VideoPlayerController?> _loadTalk() async {
+    final c = await _open(_talkAsset[_talkTempo] ?? 'talk',
+        loop: true, play: true);
+    if (c != null || _talkTempo == kTalkNormal) return c;
+    _talkTempo = kTalkNormal;
+    return _open('talk', loop: true, play: true);
+  }
+
   Future<void> _load() async {
     // 컨트롤러는 둘 다 열어 둔다(초기화 유지 = 전환이 즉시다). 다만 **재생은 보이는
     // 쪽만** 한다 — 아래 _applyPlayback 참조.
-    _idle = await _open(_idleAsset[_idleKind] ?? 'idle', loop: true, play: true);
-    // 대기 자산이 없는 캐릭터는 기본 idle 로 되돌린다(talk 템포와 같은 폴백).
-    if (_idle == null && _idleKind != kIdleWait) {
-      _idleKind = kIdleWait;
-      _idle = await _open('idle', loop: true, play: true);
+    //
+    // ## 둘을 나란히 열고, 대기 클립이 오면 곧바로 그린다
+    //
+    // 종전엔 `idle` 을 await 하고 그 다음 `talk` 을 await 한 뒤에야 화면을 열었다.
+    // 한 클립 여는 데 안드로이드에서 100~300ms 라, 통화를 열 때마다 **둘을 더한
+    // 만큼** 빈 칸이었다. 그런데 `_ready` 는 원래 `_idle != null || _talk != null`
+    // 이다 — 하나만 있어도 그릴 수 있다는 뜻인데, 코드가 굳이 둘을 다 기다렸다.
+    //
+    // 그래서 ① 두 요청을 동시에 띄우고 ② 대기 클립이 도착하는 즉시 화면을 연다.
+    // 발화 클립은 뒤에서 마저 열려 `_talk` 슬롯에 들어간다 — 말을 시작하기 전에는
+    // 쓰이지 않으므로 늦게 와도 보이는 것이 없다.
+    //
+    // ⚠ 디코더 동시 개수는 **늘지 않는다.** 종전에도 끝나면 둘 다 열려 있었다
+    //   (한계는 2~3개 — [_freeEmotionSlot] 주석). 여는 시점만 겹친다.
+    final idleFuture = _loadIdle();
+    final talkFuture = _loadTalk();
+
+    _idle = await idleFuture;
+    if (!mounted) {
+      // 위젯이 사라졌으면 뒤따라오는 발화 클립까지 반납한다 — 안 하면 디코더가
+      // 새는데, 그 증상은 **다음 통화에서** 그림이 얼어붙는 것으로 나타난다.
+      unawaited(talkFuture.then((c) => c?.dispose()));
+      return;
     }
-    _talk = await _open(_talkAsset[_talkTempo] ?? 'talk', loop: true, play: true);
-    // 템포 자산이 없는 캐릭터(아직 talk.mp4 하나뿐인 bibi 등)는 기본으로 되돌린다.
-    if (_talk == null && _talkTempo != kTalkNormal) {
-      _talkTempo = kTalkNormal;
-      _talk = await _open('talk', loop: true, play: true);
+    if (_idle != null) {
+      // 대기 클립만으로 화면을 연다. 발화 클립은 아래에서 계속 기다린다.
+      setState(() {
+        _ready = true;
+        if (_talking) _talkOpacity = 1;
+      });
+      _armAppear();
+      await _applyPlayback();
     }
+
+    _talk = await talkFuture;
     if (!mounted) return;
+    // 실패를 조용히 삼키지 않는다. `_open` 이 `catch (_)` 로 먹기 때문에, 이
+    // 한 줄이 없으면 「영상이 안 뜬다」가 자산 문제인지 디코더 부족인지 화면만
+    // 보고는 가릴 수 없다 — 이 저장소에서 이미 세 번 겪은 실패 모드다.
+    if (_idle == null && _talk == null) {
+      debugPrint('SyncAvatar: idle·talk 둘 다 못 열었다 → 정지컷 폴백 '
+          '(assetDir=${widget.assetDir})');
+    }
     setState(() {
+      // 대기 클립이 이미 열었으면 여기선 그대로 참이다.
       _ready = _idle != null || _talk != null;
       _failed = !_ready;
       // Apply whatever state the voice already asked for while we were loading.
       if (_ready && _talking) _talkOpacity = 1;
     });
+    if (_ready) _armAppear();
     if (_ready && _talking) _syncEmotionLayer();
     await _applyPlayback();
+  }
+
+  /// 등장 페이드를 건다 — **다음 프레임**에 올린다.
+  ///
+  /// 같은 프레임에 1 로 두면 [AnimatedOpacity] 가 시작값과 끝값을 같게 보아
+  /// 애니메이션을 건너뛴다(그러면 종전처럼 툭 나타난다). 한 프레임 뒤에 올려야
+  /// 0 → 1 이 실제로 보간된다.
+  void _armAppear() {
+    if (_appearOpacity == 1) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      setState(() => _appearOpacity = 1);
+    });
   }
 
   /// 화면에 보이는 클립만 재생한다.
@@ -216,8 +340,12 @@ class _SyncAvatarState extends State<SyncAvatar> {
   /// 돌리면 서로를 굶겨 그림이 얼어붙는다(2026-08-02 S8 실기기에서 재현).
   /// 컨트롤러 자체는 살려 두므로 전환은 opacity + play() 한 번으로 끝난다.
   Future<void> _applyPlayback() async {
-    final showEmo = _talking && _emoOpacity > 0 && _emo != null;
+    // 무음 감정(학습 반응 밴드)에서는 `_talking` 이 영영 false 다 — 그때도 튼다.
+    final emoAllowed = _talking || widget.silentEmotion;
+    final showEmo = emoAllowed && _emoOpacity > 0 && _emo != null;
     final showTalk = _talking && !showEmo;
+    // ⚠ idle 은 감정 밑에서 **계속 돌린다.** 여기서 멈추면 감정이 페이드로 걷힐 때
+    //   그 밑이 정지 프레임으로 드러난다(같은 증상을 talk 쪽에서 이미 한 번 밟았다).
     await _setPlaying(_idle, !_talking);
     await _setPlaying(_talk, showTalk);
     for (final c in _emoCache.values) {
@@ -238,11 +366,114 @@ class _SyncAvatarState extends State<SyncAvatar> {
     }
   }
 
+  /// 지금 살아 있는 [VideoPlayerController] 수 = **하드웨어 디코더 점유 수**.
+  ///
+  /// ## 왜 세는가 — 「3개를 안 넘는다」가 지금까지 **주석에만** 있었다
+  ///
+  /// 파일 곳곳에 「⛔ 네 번째 컨트롤러를 열지 마라」가 적혀 있지만 **아무도 세지 않았다.**
+  /// 그래서 멈춤이 돌아왔을 때 그것이 한계 초과인지 다른 원인인지 가릴 외부 증거가 한 줄도
+  /// 없었다(2026-08-15 실기기: 캐스케이드 통화 중 영상 멈춤).
+  /// ⇒ 규칙을 **셈으로** 바꾼다. 넘으면 로그에 남고, 로그가 곧 판정이다.
+  static int _decoders = 0;
+
+  /// [widget.onDiag] 의 **해제 이후에도 쓸 수 있는** 사본.
+  ///
+  /// ⛔ [dispose] 가 `unawaited(_release(...))` 로 비동기 해제를 걸기 때문에,
+  ///   그 안에서 `widget` 을 만지면 이미 사라진 State 의 필드를 읽게 된다
+  ///   (디버에선 assert, 릴리즈엔 조용한 오동작). 통화 끝나는 순간의
+  ///   디코더 반납은 **가장 보고 싶은 구간**이라 그걸 버릴 수 없다.
+  ///   ⇒ 콜백을 initState 에서 미리 받아 둔다.
+  void Function(String, [Map<String, Object?>?])? _diagSink;
+
+  /// 디코더 수를 **서버로** 보낸다.
+  ///
+  /// ## ⛔⛔ 왜 고쳐야 했나 — 이 셀이 릴리즈에선 통째로 안 돌았다
+  ///
+  /// 이 셀은 「멈춤이 한계초과 때문인지 가릴 외부 증거」를 만들려고 지은 것인데
+  /// (2026-08-15), 정작 출력이 `kDebugMode` 안에 갇혀 있었다. 사장님이 쓰시는
+  /// **릴리즈 빌드에선 한 줄도 안 남는다.**
+  ///
+  /// 그래서 2026-08-27 실기기 멈춤(call 1224, 비버가 말하는 도중)을 조사할 때
+  /// 로그에 `vid_dec` 가 0건이었고, 나는 그 침묵을 「초과 없음」으로 읽었다.
+  /// **안 보내는 것과 없는 것을 구분할 수 없었다** — 계측이 스스로 거짓을 말한
+  /// 셀 중 또 하나다.
+  ///
+  /// ⚠ `n` 은 **이 앱 전체**의 살아 있는 컨트롤러 수다(static). 하드웨어 디코더는
+  ///   프로세스 단위 자원이라 그게 맞는 세기다.
+  void _diagDecoders(String name, String delta) {
+    _diagSink?.call('vid_dec', {
+      'n': _decoders,
+      'd': delta,
+      'name': name,
+      if (_decoders > 3) 'over': true,
+    });
+  }
+
+  void _countOpen(String name) {
+    _decoders++;
+    _diagDecoders(name, '+');
+    if (kDebugMode) {
+      debugPrint('[avatar] decoder +1 → $_decoders ($name)'
+          '${_decoders > 3 ? '  ⛔ 한계초과' : ''}');
+    }
+  }
+
+  /// 트리에서 빠졌으나 **아직 해제되지 않은** 컨트롤러들.
+  ///
+  /// ## 왜 목록이 필요한가 — 2026-08-15 실기기에서 한계초과 2건이 남았다
+  ///
+  /// 교체는 옛것을 페이드(340ms) 뒤에 해제한다. 그런데 대기 상태는 턴마다
+  /// `듣기 → 생각 → 대기` 로 **연달아** 바뀌고, 실측 간격이 그보다 짧다:
+  ///
+  ///     16:56:55.674  +1 → 3 (idle_think)
+  ///     16:56:56.060  +1 → 4 (idle)   ⛔ 386ms 뒤 — 앞의 옛것이 아직 대기 중
+  ///
+  /// `_idleSwapping` 은 `_open` 이 끝나면 풀리므로 이 창을 못 막는다.
+  /// ⇒ 대기 중인 옛것은 **이미 트리에서 빠져 있으므로** 새로 열기 전에 즉시 해제해도
+  ///   안전하다(v6.4 의 금지 대상은 «그려지는 중»이지 «대기 중»이 아니다).
+  final List<VideoPlayerController> _retiring = [];
+
+  /// 옛 컨트롤러를 대기열에 넣고 페이드가 끝나면 해제한다.
+  void _retire(VideoPlayerController? c, String why) {
+    if (c == null) return;
+    _retiring.add(c);
+    Future.delayed(_fadeOut + const Duration(milliseconds: 120), () {
+      if (_retiring.remove(c)) unawaited(_release(c, why));
+    });
+  }
+
+  /// 대기 중인 옛 컨트롤러를 **지금** 해제한다 — 새로 열기 전에 자리를 비운다.
+  Future<void> _flushRetiring(String why) async {
+    if (_retiring.isEmpty) return;
+    final now = List.of(_retiring);
+    _retiring.clear();
+    for (final c in now) {
+      await _release(c, '$why(대기분 조기해제)');
+    }
+  }
+
+  /// 컨트롤러를 해제하고 셈을 줄인다.
+  ///
+  /// ⛔ 그리는 중인 텍스처를 해제하면 화면이 굳는다(2026-08-02 실기기, v6.4 에서 확정).
+  ///   그래서 호출자는 **참조를 먼저 끊고** 이 함수를 부른다.
+  Future<void> _release(VideoPlayerController? c, String why) async {
+    if (c == null) return;
+    try {
+      await c.dispose();
+    } catch (_) {
+      // 이미 정리된 컨트롤러 — 조용히 넘어간다.
+    }
+    _decoders--;
+    _diagDecoders(why, '-');
+    if (kDebugMode) debugPrint('[avatar] decoder -1 → $_decoders ($why)');
+  }
+
   Future<VideoPlayerController?> _open(String name,
       {required bool loop, required bool play}) async {
     final c = VideoPlayerController.asset('${widget.assetDir}/$name.mp4');
     try {
       await c.initialize();
+      _countOpen(name);
       await c.setLooping(loop);
       await c.setVolume(0);
       if (play) await c.play();
@@ -250,6 +481,80 @@ class _SyncAvatarState extends State<SyncAvatar> {
     } catch (_) {
       await c.dispose();
       return null;
+    }
+  }
+
+  /// 새 컨트롤러를 열기 **전에** 감정 슬롯을 비운다 — 4번째를 만들지 않기 위해서다.
+  ///
+  /// ## 왜 필요한가 — 「열고 나서 나중에 해제」가 겹침을 만든다
+  ///
+  /// 교체 자리(`_swapIdle`·`_swapTalk`·감정 전환)는 전부 **새것을 먼저 열고 옛것을
+  /// 페이드 뒤에 해제**한다. 그 규율 자체는 옳다(v6.4 가 그걸로 멈춤을 고쳤다).
+  /// 그러나 그 340ms 동안 **컨트롤러가 하나 더 있다.** 감정 클립이 한 번이라도 뜬
+  /// 뒤에는
+  ///
+  ///     idle + talk + emo + (새로 여는 것) = **4개**
+  ///
+  /// 가 되어 하드 한계(2~3개)를 넘는다. 통화 초반에는 감정이 아직 없어 3개라 멀쩡하고,
+  /// **감정이 한 번 뜬 뒤부터** 교체마다 4개가 된다 — 「하다가 중간에 멈춘다」의 형태다.
+  ///
+  /// ⇒ 감정은 **선택적인 층**이다(없어도 talk 가 화면을 채운다). 자리가 모자라면 감정을
+  ///   먼저 내린다. 다음 발화에서 다시 열리고, 그때는 idle+talk+emo = 3 이다.
+  ///
+  /// ⛔ 트리에서 뺀 **다음 프레임에** 해제한다. 지금 그려지는 텍스처를 지우면 굳는다.
+  /// ⛔⛔ **감정이 떠 있는 동안 미뤄 둔 교체.** (2026-09-02)
+  ///
+  /// `_swapIdle`·`_swapTalk` 은 자리를 만들려고 [_freeEmoSlot] 을 부른다. 그 자체는
+  /// 옳지만, **재생 중인 감정을 죽인다.** idle 교체는 턴마다 세 번 일어나므로
+  /// (대기→듣기→생각→대기) 감정 클립이 열리자마자 잘렸다 —
+  /// 실측: 2.2초짜리가 **0.45~1.56초**에 끝났다(call 1252, `vid_emo_end` 5건 전부).
+  ///
+  /// ⭐ 그런데 감정이 떠 있는 동안 **idle 도 talk 도 화면에 없다**(감정이 덮는다).
+  ///   ⇒ 지금 갈아끼울 이유가 없다. 감정이 끝난 뒤에 하면 되고, 그러면
+  ///     디코더 4개 창도 함께 사라진다. 「자리를 뺏어서 여는」 문제가 아니라
+  ///     **「보이지도 않는 것 때문에 보이는 것을 죽인」** 문제였다.
+  int? _deferredIdleKind;
+  int? _deferredTalkTempo;
+
+  /// 감정이 내려간 자리에서 미뤄 둔 교체를 잇는다.
+  ///
+  /// ⚠ 다음 감정이 이어 열렸다면(큐) `_swapIdle` 이 스스로 다시 미룬다 —
+  ///   값은 그대로 남으므로 **다음 감정이 끝날 때 재시도된다.** 유실이 없다.
+  Future<void> _applyDeferredSwaps() async {
+    final k = _deferredIdleKind;
+    if (k != null) {
+      _deferredIdleKind = null;
+      await _swapIdle(k);
+    }
+    final t = _deferredTalkTempo;
+    if (t != null) {
+      _deferredTalkTempo = null;
+      await _swapTalk(t);
+    }
+  }
+
+  /// 지금 감정 클립이 **화면에 떠 있는가**. 떠 있으면 idle·talk 은 안 보인다.
+  bool get _emoOnScreen => _emo != null && _emoOpacity > 0;
+
+  Future<void> _freeEmoSlot(String why) async {
+    // ⚠ 미뤄 둔 감정은 자리를 비우는 순간 무효다 — 그 감정이 가리키던 맥락이 사라졌다.
+    _emoQueue.clear();
+    if (_emoCache.isEmpty) return;
+    _disarmEmoFinish();
+    final stale = _emoCache.values.toList();
+    _emoCache.clear();
+    _emoCode = 0;
+    _emo = null;
+    if (mounted) {
+      setState(() => _emoOpacity = 0);
+      // ⛔ 위와 같은 이유 — 감정을 내린 순간부터 talk 이 멈춰 있다. 새 감정을 여는 데
+      //   수백 ms 가 걸리므로 그 사이 화면이 정지 프레임이 된다.
+      await _applyPlayback();
+      // 참조를 끊은 뒤 한 프레임을 넘겨야 렌더러가 그 텍스처를 놓는다.
+      await WidgetsBinding.instance.endOfFrame;
+    }
+    for (final c in stale) {
+      await _release(c, why);
     }
   }
 
@@ -294,6 +599,7 @@ class _SyncAvatarState extends State<SyncAvatar> {
 
   void _startTalking() {
     _talking = true;
+    widget.onDiag?.call('vid_talk', {'on': true, 'emo': _emoCode});
     if (kDebugMode) debugPrint('[avatar] TALK on (level ${widget.level.value})');
     // 컨트롤러는 이미 열려 있다 — 보이게 하고 재생만 켠다. 새 디코더도 seek도 없다.
     if (mounted) setState(() => _talkOpacity = 1);
@@ -303,6 +609,19 @@ class _SyncAvatarState extends State<SyncAvatar> {
 
   void _stopTalking() {
     _talking = false;
+    // ⛔ **밀린 감정은 버린다**(2026-09-01, 큐 도입과 한 몸).
+    //   큐는 「이 발화에 붙일 표정들」이다. 발화가 끝났으면 그 표정들이 붙을 데가 없다 —
+    //   그대로 두면 **말 없는 얼굴에 감정이 뜬다**(감정 클립 ~2초 × 최대 3개 = 6초).
+    //   ⚠ [SyncAvatar.silentEmotion](학습 반응 밴드)은 무음에도 감정을 쓰므로 예외다.
+    if (!widget.silentEmotion && _emoQueue.isNotEmpty) {
+      widget.onDiag?.call('vid_emo_drop', {'n': _emoQueue.length, 'why': 'talk_end'});
+      _emoQueue.clear();
+    }
+    // ⚠ 여기서 `_emoOpacity` 가 **0 으로 뚝 떨어진다**(페이드 없음). 감정 클립이
+    //   `loop:true` 라 같은 동작을 반복하다 이 지점에서 잘리는 것이, 사장님이 보신
+    //   「웃다가 갑자기 멈춘다」의 그 순간이다. 고치지 않고 **시각만 남긴다** —
+    //   증상과 시각이 붙어야 처방을 고를 수 있다.
+    widget.onDiag?.call('vid_talk', {'on': false, 'emo': _emoCode});
     if (kDebugMode) debugPrint('[avatar] TALK off');
     if (mounted) {
       setState(() {
@@ -310,7 +629,38 @@ class _SyncAvatarState extends State<SyncAvatar> {
         _emoOpacity = 0;
       });
     }
+    // ⛔⛔ **감정 클립을 여기서 확실히 끝낸다**(2026-09-05 실측).
+    //
+    //   증상: 2.2초짜리 감정이 `vid_emo_end` 까지 **최대 51.9초** 걸렸다(실측 c5:
+    //   10.6·14.9·16.2·17.8·26.0·51.9초). 열림 14건 중 2건은 아예 안 끝났다.
+    //
+    //   원인: [_applyPlayback] 은 `_talking` 일 때만 감정을 재생한다
+    //   (`emoAllowed = _talking || silentEmotion`). 발화가 클립보다 먼저 끝나면
+    //   (2.2초 클립인데 발화가 1.8초) **남은 0.4초에서 클립이 멈춘 채 굳는다.**
+    //   그런데 끝 판정은 `position >= duration - 80ms` 라 영영 안 온다 —
+    //   다음 발화가 시작돼 재생이 재개될 때까지. 그 간격이 곧 10~51초다.
+    //
+    //   ⚠ 화면은 멀쩡하다(`_emoOpacity=0` 이라 안 보인다). 새는 것은 **디코더**다 —
+    //     하드웨어 한계가 2~3개인데 끝나지 않은 감정이 계속 한 자리를 문다.
+    //
+    //   ⇒ 발화가 끝나면 감정도 **끝난 것으로 친다.** 감시자를 풀고 자리를 비운다.
+    //     ⛔ `silentEmotion`(학습 반응 밴드)은 예외다 — 거기선 `_talking` 이 영영
+    //       false 라 이 규칙을 적용하면 감정이 아예 안 뜬다.
+    if (!widget.silentEmotion) {
+      // ⚠ 계측을 남긴다. 이 자리에서 끝내면 [_armEmoFinish] 의 `vid_emo_end` 가 안 찍혀,
+      //   다음에 로그만 보면 «감정이 안 끝났다» 로 보인다(고쳐 놓고 못 알아본다).
+      //   `why` 로 두 경로를 가른다 — 'played'(끝까지 재생) vs 'talk_end'(발화가 먼저).
+      if (_emo != null) {
+        widget.onDiag?.call('vid_emo_end', {'code': _emoCode, 'why': 'talk_end'});
+      }
+      _disarmEmoFinish();
+      unawaited(_freeEmoSlot('발화 종료 — 감정 정리'));
+    }
     _applyPlayback();
+    // ⭐ 감정이 여기서 **뚝 내려간다** ⇒ 감정에 가려 미뤄 뒀던 idle·talk 교체가
+    //   고아가 된다. 발화가 끝나 다음 감정이 안 올 수도 있으므로 지금 잇는다.
+    //   ⛔ 안 이으면 대기 클립이 옛 kind 로 굳는다(듣기 자세로 멈춘 채 남는다).
+    unawaited(_applyDeferredSwaps());
     _settleTempo();
     _rewindTalk();
   }
@@ -380,16 +730,30 @@ class _SyncAvatarState extends State<SyncAvatar> {
   ///    새것으로 갈아끼우고 **페이드가 끝난 뒤** 해제한다(`_swapTalk` 와 같은 규율).
   /// 🟡 말하는 중에도 갈아끼운다 — 그때 idle 은 talk 에 가려 보이지 않으므로
   ///    교체가 화면에 드러나지 않는다. 오히려 말이 끝나기 전에 준비되어야 한다.
+  ///
+  /// ⭐ 열기 **전에** [_freeEmoSlot] 으로 자리를 만든다. 이 교체는 턴마다 세 번
+  ///   일어나므로(대기→듣기→생각→대기), 겹침을 그대로 두면 감정이 한 번 뜬 뒤부터
+  ///   **매 턴 세 번씩** 한계를 넘는다.
   Future<void> _swapIdle(int kind) async {
     if (kind == _idleKind || _idleSwapping || !_ready) return;
     final name = _idleAsset[kind];
     if (name == null) return;
+    // ⛔ 감정이 떠 있으면 **미룬다.** 지금 갈아끼우면 아래 `_freeEmoSlot` 이
+    //   재생 중인 감정을 죽인다 — 그리고 idle 은 어차피 감정에 가려 안 보인다.
+    //   [_deferredIdleKind] 참조.
+    if (_emoOnScreen) {
+      _deferredIdleKind = kind;
+      widget.onDiag?.call('vid_idle_defer', {'kind': kind});
+      return;
+    }
     _idleSwapping = true;
+    await _flushRetiring('idle 교체');
+    await _freeEmoSlot('idle 교체 자리 확보');
     final next = await _open(name, loop: true, play: false);
     _idleSwapping = false;
     if (next == null) return; // 그 캐릭터엔 해당 대기 자산이 없다 — 쓰던 것을 유지한다.
     if (!mounted) {
-      await next.dispose();
+      await _release(next, 'idle 교체 중 unmount');
       return;
     }
     final stale = _idle;
@@ -397,12 +761,18 @@ class _SyncAvatarState extends State<SyncAvatar> {
       _idle = next;
       _idleKind = kind;
     });
+    // ⛔⛔ **`_applyPlayback` 앞이다.** 예전엔 뒤에 있었고, 그 사이(재생 상태를 세 컨트롤러에
+    //   적용하는 await 여러 번)에 감정이 열리면 **디코더가 4개**가 됐다 —
+    //   idle옛것 + idle새것 + talk + 감정. 실측 call 1211 에서 5회:
+    //       +1 → 3 (idle_listen) → +1 → 4 (emo_sad) ⛔ → -1 → 3 (idle 옛것)
+    //   그 창에서는 옛것이 아직 [_retiring] 에 **들어가기 전**이라 감정 경로의
+    //   `_flushRetiring` 이 비울 것을 못 찾았다.
+    // ⭐ 여기로 옮기면 창이 사라진다. 안전한 이유: `setState` 로 `_idle` 이 이미 새것을
+    //   가리키므로 `stale` 은 **트리에서 빠졌고**, `_applyPlayback` 도 `stale` 을 안 만진다.
+    //   ⛔ v6.4 의 금지(«그려지는 중»인 것을 즉시 해제하지 마라)는 그대로다 —
+    //     `_retire` 는 즉시 해제가 아니라 **페이드 뒤 해제**를 예약할 뿐이다.
+    _retire(stale, 'idle 옛것');
     await _applyPlayback();
-    if (stale != null) {
-      Future.delayed(_fadeOut + const Duration(milliseconds: 120), () async {
-        await stale.dispose();
-      });
-    }
   }
 
   /// talk 클립을 다른 템포로 갈아끼운다.
@@ -416,12 +786,20 @@ class _SyncAvatarState extends State<SyncAvatar> {
     if (tempo == _talkTempo || _talkSwapping || !_ready) return;
     final name = _talkAsset[tempo];
     if (name == null) return;
+    // ⛔ idle 과 같은 이유로 미룬다 — talk 도 감정에 가려 안 보인다.
+    if (_emoOnScreen) {
+      _deferredTalkTempo = tempo;
+      widget.onDiag?.call('vid_talk_defer', {'tempo': tempo});
+      return;
+    }
     _talkSwapping = true;
+    await _flushRetiring('talk 교체');
+    await _freeEmoSlot('talk 교체 자리 확보');
     final next = await _open(name, loop: true, play: false);
     _talkSwapping = false;
     if (next == null) return; // 그 캐릭터엔 해당 템포 자산이 없다 — 쓰던 것을 유지한다.
     if (!mounted) {
-      await next.dispose();
+      await _release(next, 'talk 교체 중 unmount');
       return;
     }
     final stale = _talk;
@@ -429,89 +807,245 @@ class _SyncAvatarState extends State<SyncAvatar> {
       _talk = next;
       _talkTempo = tempo;
     });
+    // ⛔ 위 [_swapIdle] 과 같은 이유 — 옛것을 대기열에 **먼저** 넣는다.
+    //   (지금은 autoTempo 가 꺼져 있어 이 경로가 안 돌지만, 켜는 순간 같은 병이 난다.)
+    _retire(stale, 'talk 옛것');
     await _applyPlayback();
-    if (stale != null) {
-      Future.delayed(_fadeOut + const Duration(milliseconds: 120), () async {
-        await stale.dispose();
-      });
-    }
   }
 
   void _onEmotion() {
     if (!_ready) return;
+    // ⭐⭐ **재생 중이면 덮지 않고 줄을 세운다**(2026-09-01).
+    //   `avatarEmotion` 은 값 하나짜리 노티파이어라, 마커가 연달아 오면 뒤엣것이
+    //   앞엣것을 덮는다. 여기서 큐로 받아야 **둘 다** 보여줄 수 있다.
+    //   ⚠ 「재생 중」의 판정은 불투명도다 — 클립이 화면에 떠 있으면 그것이 끝나고
+    //     [_armEmoFinish] 가 [_drainPendingEmo] 를 부를 때까지 기다린다.
+    if (_emoOpacity > 0 && _emo != null) {
+      _enqueueEmo(widget.emotion.value);
+      return;
+    }
     _syncEmotionLayer();
   }
 
+  /// 아직 못 보여준 감정들. **먼저 온 순서대로** 재생한다.
+  ///
+  /// ## ⭐ 왜 한 칸이 아니라 큐인가 (2026-09-01 사장님 지시)
+  ///
+  /// 예전엔 「표정은 누적값이 아니라 현재 상태」라는 이유로 **가장 최근 하나만** 들고
+  /// 있었다. 그 전제는 감정이 드문드문 올 때만 맞다. 실제로는 모델이 **한 차례에 두 개를
+  /// 연달아** 부른다(실측 call 1252: `happy` → 0.5ms 뒤 `neutral`). 그러면 뒤엣것이
+  /// 앞엣것을 덮어 **아무 표정도 안 보인다** — 마커 8개가 왔는데 화면엔 3개만 떴다.
+  ///
+  /// ⇒ 덮지 않고 **순서대로 이어 재생**한다. `happy` 를 2초 보여주고 그다음 `neutral`.
+  ///   그게 서버가 보낸 것을 그대로 재현하는 유일한 방법이다.
+  ///
+  /// ⛔ **상한 [_emoQueueMax] 를 둔다.** 무한히 쌓으면 대사가 끝난 뒤에도 표정이 계속
+  ///   나와 말 없는 얼굴에 감정이 뜬다. 넘치면 **오래된 것부터 버린다** — 최신이 지금
+  ///   맥락에 가깝다.
+  final List<int> _emoQueue = <int>[];
+
+  /// 큐 상한. 감정 클립이 약 2초라 3개면 6초 — 한 차례 발화 길이의 상한쯤이다.
+  static const int _emoQueueMax = 3;
+
+  /// 큐에 하나 넣는다. 지금 보여줄 게 없으면 바로 재생을 건다.
+  void _enqueueEmo(int code) {
+    // ⚠ 직전 값과 같으면 넣지 않는다 — 같은 얼굴을 두 번 재생할 이유가 없다.
+    final last = _emoQueue.isNotEmpty ? _emoQueue.last : _emoCode;
+    if (code == last) return;
+    _emoQueue.add(code);
+    while (_emoQueue.length > _emoQueueMax) {
+      final dropped = _emoQueue.removeAt(0);
+      widget.onDiag?.call('vid_emo_drop', {'code': dropped, 'why': 'queue_full'});
+    }
+  }
+
+  /// 큐에서 다음 감정을 꺼내 재생한다. 비었으면 아무것도 안 한다.
+  ///
+  /// ⚠ 위젯의 **현재** 값과 다를 때만 돈다 — 그 사이 서버가 또 바꿨다면
+  ///   `widget.emotion` 쪽이 최신이고, 그건 [_onEmotion] 이 이미 처리했다.
+  Future<void> _drainPendingEmo() async {
+    if (_emoQueue.isEmpty) return;
+    final next = _emoQueue.removeAt(0);
+    if (next == _emoCode) return await _drainPendingEmo();  // 같은 얼굴은 건너뛴다
+    await _syncEmotionLayer(override: next);
+  }
+
+  /// 지금 감시 중인 감정 클립과 그 리스너(중복 등록 방지용 참조).
+  VideoPlayerController? _emoWatched;
+  VoidCallback? _emoFinishWatch;
+
+  /// 감정 클립이 **끝까지 재생되면** 스스로 내려가고 말하는 얼굴로 돌아간다.
+  ///
+  /// ⛔ `loop:false` 와 한 몸이다. 루프만 끄면 클립이 **마지막 프레임에 얼어붙어**
+  ///   그 턴 내내 남는다 — 반복되던 것이 정지 화면으로 바뀔 뿐 나아지지 않는다.
+  /// ⚠ 타이머로 재지 않는다. 클립 길이는 캐릭터·감정마다 다르고 디코더가 늦으면
+  ///   실제 재생이 더 걸린다. **컨트롤러가 알려주는 위치**가 유일하게 맞는 근거다.
+  void _armEmoFinish(VideoPlayerController c) {
+    _disarmEmoFinish();
+    void onTick() {
+      final v = c.value;
+      if (!v.isInitialized) return;
+      final dur = v.duration;
+      if (dur <= Duration.zero) return;
+      // 마지막 프레임 언저리에서 판정한다 — position 이 duration 에 정확히 안 닿는다.
+      if (v.position < dur - const Duration(milliseconds: 80)) return;
+      _disarmEmoFinish();
+      widget.onDiag?.call('vid_emo_end', {'code': _emoCode, 'why': 'played'});
+      if (!mounted) return;
+      // 감정만 내린다. talk 은 [_applyPlayback] 이 다시 켠다 — 그게 「말하는 얼굴」이다.
+      setState(() => _emoOpacity = 0);
+      unawaited(() async {
+        await _applyPlayback();
+        // ⭐ **여기가 순서 재생의 이음매다**(2026-09-01). 클립이 끝까지 재생된 뒤에
+        //   다음 감정을 연다 — 그래야 `happy` 를 다 보여주고 `neutral` 로 넘어간다.
+        //   ⛔ 클립 도중에 다음 것을 열면 앞엣것이 잘린다(예전 「한 칸」이 그랬다).
+        await _drainPendingEmo();
+        // ⭐ 큐까지 비었으면 미뤄 둔 idle·talk 교체를 지금 잇는다([_deferredIdleKind]).
+        //   다음 감정이 이어 열렸다면 `_swapIdle` 이 스스로 다시 미룬다.
+        await _applyDeferredSwaps();
+      }());
+    }
+    _emoWatched = c;
+    _emoFinishWatch = onTick;
+    c.addListener(onTick);
+  }
+
+  void _disarmEmoFinish() {
+    final w = _emoWatched;
+    final f = _emoFinishWatch;
+    _emoWatched = null;
+    _emoFinishWatch = null;
+    if (w != null && f != null) {
+      try {
+        w.removeListener(f);
+      } catch (_) {
+        // 이미 해제된 컨트롤러 — 무시한다(R5).
+      }
+    }
+  }
+
   /// Loads (once) and shows the clip for the current emotion while talking.
-  Future<void> _syncEmotionLayer() async {
+  /// [override] 가 주어지면 위젯 값 대신 그것을 연다 — 큐에서 꺼낸 감정을 재생할 때다.
+  /// (위젯 값은 이미 큐의 **마지막** 것이라, 그걸 쓰면 중간 감정을 건너뛴다.)
+  Future<void> _syncEmotionLayer({int? override}) async {
     if (!_ready) return; // don't contend with the idle/talk decoders warming up
-    final code = widget.emotion.value;
+    final code = override ?? widget.emotion.value;
     final name = _emoAsset[code];
-    if (!_talking || name == null) {
-      if (_emoOpacity != 0 && mounted) setState(() => _emoOpacity = 0);
+    // [SyncAvatar.silentEmotion] 이면 발화 없이도 연다 — 학습 반응 밴드는 무음이다.
+    final gated = !_talking && !widget.silentEmotion;
+    if (gated || name == null) {
+      if (_emoOpacity != 0 && mounted) {
+        setState(() => _emoOpacity = 0);
+        // ⛔⛔ **여기서 talk 을 다시 켜야 한다.** [_applyPlayback] 이 감정을 보일 때
+        //   talk 을 `pause()` 해 두기 때문에(showTalk = _talking && !showEmo),
+        //   감정만 숨기면 그 밑에서 **멈춘 프레임**이 드러난다 — 소리는 계속 나는데
+        //   입이 안 움직인다. 사장님 실측: "표정 하고 갑자기 표정이 사라질 때가 있다,
+        //   표정 다 했으면 무표정이 아니라 말하는 표정이어야 하잖아"(2026-08-26).
+        // ⚠ 다시 켜는 곳이 [_startTalking]·[_stopTalking]·새 감정 열기 셋뿐이라,
+        //   `neutral` 마커부터 **그 턴이 끝날 때까지** 얼어 있었다(실측 8~13초).
+        await _applyPlayback();
+      }
       return;
     }
     if (_emoCode != code || _emo == null) {
       var next = _emoCache[code];
       if (next == null) {
-        if (_emoLoading) return;
+        if (_emoLoading) {
+          // ⭐ **버리지 않고 큐에 넣는다.** 앞 감정을 여는 데 수백 ms 가 걸리므로,
+          //   그 사이 온 마커를 버리면 영영 안 뜬다.
+          // ⚠ 2026-09-01 에 「한 칸」에서 **큐**로 바꿨다 — 모델이 한 차례에 두 개를
+          //   연달아 부르는 것이 실측됐고(call 1252), 한 칸이면 뒤엣것이 앞엣것을 덮어
+          //   아무 표정도 안 보였다. 상한은 [_emoQueueMax] 가 건다.
+          _enqueueEmo(code);
+          widget.onDiag?.call('vid_emo_defer', {'code': code});
+          return;
+        }
         _emoLoading = true;
-        next = await _open(name, loop: true, play: true);
+        // ★감정은 **한 개만** 살려 둔다. 캐시를 쌓으면 idle·talk 까지 더해 디코더가
+        // 최대 6개가 되고, 하드웨어 한계(2~3개)를 넘어 화면이 얼었다(2026-08-02 S8).
+        //
+        // ⛔ 예전엔 새것을 **먼저 열고** 옛것을 페이드 뒤에 해제했다. 해제 순서는 옳았지만
+        //   (v6.4) 그 340ms 동안 idle + talk + 옛감정 + 새감정 = **4개**가 됐다.
+        //   ⇒ 옛 감정을 **먼저 내리고**(트리에서 뺀 뒤 다음 프레임에 해제) 그다음에 연다.
+        //   그 사이 화면은 talk 이 채운다 — 같은 발화의 기본 클립이라 튀지 않는다.
+        await _freeEmoSlot('감정 교체 자리 확보');
+        // ⛔ **대기 중인 옛것도 비운다.** `_freeEmoSlot` 은 감정 캐시만 치우므로,
+        //   직전에 idle 을 갈아끼웠다면 그 옛 컨트롤러가 아직 [_retiring] 에 있다
+        //   ⇒ idle + talk + idle옛것 + 새감정 = **4개**. 하드 한계 2~3 초과다.
+        //   실측 call 1207 의 `decoder +1 → 4 ⛔한계초과` 2회가 정확히 이 자리다:
+        //     decoder +1 → 3 (idle_listen) → TALK on → +1 → 4 (emo_happy) ⛔
+        //     → -1 → 3 (idle 옛것)          ← 옛것이 그제서야 풀린다
+        //   ⚠ `_swapIdle`·`_swapTalk` 은 이미 이걸 부른다(c37e8b4). **감정 경로만
+        //     빠져 있었다** — 같은 수정에서 세 자리 중 하나를 놓친 것이다.
+        await _flushRetiring('감정 열기');
+        // ⛔ **loop:false 다.** 예전엔 `loop:true` 라 감정이 그 턴 내내 같은 동작을
+        //   되풀이했다 — 사장님 실측: "웃다가 웃다가를 계속 반복하다가 문장이 끝날
+        //   때도 있고"(2026-08-25). 감정은 **그 문장의 반응**이지 턴 전체의 상태가
+        //   아니다. 한 번 보여주고 말하는 얼굴로 돌아간다.
+        //   ⇒ happy → talk → sad → talk (사장님이 정한 모델, 2026-08-26)
+        next = await _open(name, loop: false, play: true);
         _emoLoading = false;
         if (!mounted) {
-          await next?.dispose();
+          await _release(next, '감정 교체 중 unmount');
           return;
         }
         if (next == null) return;
-        // ★감정은 **한 개만** 살려 둔다. 캐시를 계속 쌓으면 idle·talk 까지 더해
-        // 디코더가 최대 6개가 되고, 하드웨어 한계(2~3개)를 넘어 화면이 얼었다
-        // (2026-08-02 S8 실기기). 이제 최대 3개 = idle + talk + 감정 1.
-        //
-        // ⛔ 여기서 바로 해제하면 안 된다. 지금 이 순간 `_emo`(그리고 위젯 트리)가
-        // 옛 컨트롤러를 가리키고 있어서, 먼저 해제하면 **해제된 텍스처를 그리다 화면이
-        // 굳는다**(2026-08-02 실기기에서 "말하다 멈춤"으로 나타남).
-        // 새 컨트롤러로 갈아끼우고 페이드가 끝난 뒤에 해제한다.
-        final stale = _emoCache.entries
-            .where((e) => e.key != code)
-            .map((e) => e.value)
-            .toList();
-        _emoCache
-          ..clear()
-          ..[code] = next;
+        _emoCache[code] = next;
         _emo = next;
         _emoCode = code;
+        widget.onDiag?.call('vid_emo', {'code': code, 'cached': false});
+        _armEmoFinish(next);
         if (mounted) setState(() => _emoOpacity = 1);
         await _applyPlayback();
-        if (stale.isNotEmpty) {
-          Future.delayed(_fadeOut + const Duration(milliseconds: 120), () async {
-            for (final c in stale) {
-              await c.dispose();
-            }
-          });
-        }
+        // 여는 동안 다음 감정이 왔다면 지금 잇는다(위 [_emoQueue] 참조).
+        await _drainPendingEmo();
         return;
       }
       _emo = next;
       _emoCode = code;
+      widget.onDiag?.call('vid_emo', {'code': code, 'cached': true});
     }
     final e = _emo;
     if (e == null) return;
+    // ⭐ 캐시에서 다시 꺼낸 클립은 **끝에 멈춰 있다**(loop:false). 되감지 않으면
+    //   같은 감정이 두 번째로 왔을 때 마지막 프레임 한 장만 보이고 끝난다.
+    try {
+      await e.seekTo(Duration.zero);
+    } catch (_) {
+      // 이미 정리된 컨트롤러 — 아래 _applyPlayback 이 걸러 낸다.
+    }
+    _armEmoFinish(e);
     if (mounted) setState(() => _emoOpacity = 1);
     await _applyPlayback();
   }
 
   @override
   void dispose() {
+    _disarmEmoFinish();
     widget.level.removeListener(_onLevel);
     widget.speaking.removeListener(_onLevel);
     widget.emotion.removeListener(_onEmotion);
     widget.tempo?.removeListener(_onTempo);
     widget.idleKind?.removeListener(_onIdleKind);
     _stopTimer?.cancel();
-    _idle?.dispose();
-    _talk?.dispose();
-    for (final c in _emoCache.values) {
-      c.dispose(); // _emo 는 캐시를 가리키므로 별도 dispose 하지 않는다(중복 방지)
+    // ⛔ [_release] 로 해제한다 — 셈이 [_decoders] 하나로 모여야 다음 통화의 시작값이
+    //   0 이 된다. 여기서만 `dispose()` 를 직접 부르면 통화를 걸 때마다 셈이 남아
+    //   두 번째 통화부터 「한계초과」가 거짓으로 뜬다(계측이 스스로 거짓말을 한다).
+    // ⛔ [_retiring] 도 같이 비운다. 통화를 끊는 순간 대기 중이던 옛것이 남아 있으면
+    //   그 타이머는 위젯이 사라진 뒤에 돌고, 그때까지 디코더를 물고 있다.
+    final leaving = <VideoPlayerController?>[
+      _idle,
+      _talk,
+      ..._emoCache.values,
+      ..._retiring,
+    ];
+    _retiring.clear();
+    _idle = null;
+    _talk = null;
+    _emo = null; // _emo 는 캐시를 가리키므로 목록에 또 넣지 않는다(중복 해제 방지)
+    _emoCache.clear();
+    for (final c in leaving) {
+      unawaited(_release(c, '위젯 해제'));
     }
     super.dispose();
   }
@@ -527,8 +1061,15 @@ class _SyncAvatarState extends State<SyncAvatar> {
 
   @override
   Widget build(BuildContext context) {
-    if (_failed || !_ready) return widget.fallback ?? const SizedBox.expand();
-    return ClipRect(
+    // 로딩과 실패를 **가른다.** 종전엔 한 줄이라 잠깐 여는 동안에도 영구 폴백이
+    // 깔렸다 — 그게 통화 진입 때 얼굴이 깜빡이던 원인이다.
+    if (_failed) return widget.fallback ?? const SizedBox.expand();
+    if (!_ready) return widget.loading ?? const SizedBox.expand();
+    return AnimatedOpacity(
+      opacity: _appearOpacity,
+      duration: _appear,
+      curve: Curves.easeOut,
+      child: ClipRect(
       child: Stack(
         fit: StackFit.expand,
         children: [
@@ -548,6 +1089,7 @@ class _SyncAvatarState extends State<SyncAvatar> {
               child: _cover(_emo!),
             ),
         ],
+      ),
       ),
     );
   }

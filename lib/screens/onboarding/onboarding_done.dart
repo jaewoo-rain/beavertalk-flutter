@@ -1,20 +1,24 @@
 import 'package:flutter/material.dart';
 
+import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
+import '../../features/normalcall/domain/entities/call_course.dart';
 import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
 import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 import '../../components/atoms/button.dart';
+import '../../components/molecules/stacked_button_pair.dart';
 
 /// Onboarding — completion. Figma `screen/onborading_done` (`2291:21311`).
 ///
 /// Reached after the final onboarding step ([OnboardingReasonScreen]) submits
 /// the draft. A centered beaver avatar with a welcome heading + sub copy, and a
-/// pinned two-button row: a secondary "Home" (drops to the now-onboarded home)
-/// and a primary "Call now" (jumps straight into the call flow).
+/// pinned stacked button pair: a secondary 「홈으로」 on top (drops to the now-onboarded
+/// home) and a primary 「레벨 테스트하기」 below (jumps straight into the call flow — a new
+/// member has no level, so the server routes this call to the level test).
 class OnboardingDoneScreen extends StatelessWidget {
   /// Creates the onboarding completion screen.
   const OnboardingDoneScreen({super.key});
@@ -25,8 +29,15 @@ class OnboardingDoneScreen extends StatelessWidget {
       Navigator.of(context).popUntil((r) => r.isFirst);
 
   /// Jumps straight into the call flow, clearing this screen from the stack.
-  void _startCall(BuildContext context) => Navigator.of(context)
-      .pushNamedAndRemoveUntil(Routes.callLoading, (r) => r.isFirst);
+  ///
+  /// ⭐ 홈 전화 버튼과 같이 **`auto` 코스**다(사장님 결정 2026-09-13) — 서버가 진도로
+  ///   코스를 정한다. 제품 진입점은 전부 auto 로 모은다; 옛 경로(call_type 미전송)는
+  ///   개발자 도구 «일반 통화» 와 수신·레벨테스트만 쓴다.
+  void _startCall(BuildContext context) => Navigator.of(context).pushNamedAndRemoveUntil(
+        Routes.callLoading,
+        (r) => r.isFirst,
+        arguments: const CourseCallRequest(CallCourse.auto),
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -37,9 +48,7 @@ class OnboardingDoneScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Expanded(
-            child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
+            child: ContentColumn.narrow(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -74,33 +83,28 @@ class OnboardingDoneScreen extends StatelessWidget {
               ),
             ),
           ),
-          // Figma `BottomSheet` two-button row: pt 12, px 20, gap 10.
-          Padding(
-            padding: const EdgeInsets.fromLTRB(
-                AppSpacing.s20,
-                AppSpacing.s12,
-                AppSpacing.s20,
-                AppSpacing.s12),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Button(
-                    type: BtnType.secondaryOutline,
-                    size: BtnSize.s60,
-                    text: l10n.home,
-                    onPressed: () => _goHome(context),
-                  ),
-                ),
-                const SizedBox(width: 10), // Figma 10px gap (no AppSpacing token)
-                Expanded(
-                  child: Button(
-                    type: BtnType.primaryFill,
-                    size: BtnSize.s60,
-                    text: l10n.callNow,
-                    onPressed: () => _startCall(context),
-                  ),
-                ),
-              ],
+          // Figma `BottomSheet` 두 버튼(Mobile `3360:48` · Tablet `5281:1142`): pt 12, px 20, pb 0 —
+          // 그 밑은 홈 표시줄이다(아래 12 를 두면 버튼이 12px 떠 있었다 · 09-24 figma-code-diff).
+          ContentColumn(
+            padding: const EdgeInsets.only(top: AppSpacing.s12),
+            // 버튼 쌍은 항상 세로(09-24 사장님 확정) — 「홈으로」 위 · 「레벨 테스트하기」 아래, 각자
+            // 전폭 · 간격 12. 옛 가로 1:1 에서는 긴 언어가 반 폭 안에서 줄을 바꿨다(전수조사 H).
+            // 문구는 Figma(Mobile `I3360:55` · Tablet `I5281:1149`) — 사장님 「Figma 대로 해」(09-24).
+            child: StackedButtonPair(
+              top: Button(
+                type: BtnType.secondaryOutline,
+                size: BtnSize.s60,
+                text: l10n.goHome,
+                onPressed: () => _goHome(context),
+              ),
+              bottom: Button(
+                type: BtnType.primaryFill,
+                size: BtnSize.s60,
+                // 사용자 지시(09-24): 「'비버와 통화하기'도 '레벨 테스트'로」 — P30(「지금 통화하기」)
+                // 번복. 가입 직후 회원은 레벨이 없어 이 통화가 서버에서 레벨테스트로 라우팅된다.
+                text: l10n.onboardingLevelTestCta,
+                onPressed: () => _startCall(context),
+              ),
             ),
           ),
         ],

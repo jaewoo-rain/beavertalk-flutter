@@ -10,14 +10,22 @@ import 'package:uuid/uuid.dart';
 
 import '../../../app/navigation.dart';
 import '../../../app/routes.dart';
+import '../../../core/i18n/standalone_l10n.dart';
 import '../../normalcall/presentation/normalcall_controller.dart';
 import '../data/models/incoming_call_payload_dto.dart';
 import '../domain/entities/incoming_call_payload.dart';
 import '../services/callkit_service.dart';
 import '../services/missed_call_notifier.dart';
 
-/// 로컬 트리거 데모의 기본 캐릭터 id(비비). 서버/알람에서 characterId를 못 받은
+/// 로컬 트리거 데모의 기본 캐릭터 id(**BABA**). 서버/알람에서 characterId를 못 받은
 /// 경우의 폴백이기도 하다.
+///
+/// ⚠ **표시용이다.** 통화 상대를 정하는 값이 아니다 — 캐릭터는 서버가
+/// `resolve_call_character` 로 정하고(알람 → 대표 캐릭터 순), 앱이 보낸
+/// `start.character_id` 는 서버가 무시한다. 이 값은 CallKit 수신 화면에 쓴다.
+///
+/// (1=BABA / 2=BIBI — `character_copy_overrides.dart`. 예전 주석이 1을 「비비」로
+///  적어 뒀는데 틀린 값이었다.)
 const int kDefaultInboundCharacterId = 1;
 
 /// CallKit 수신 이벤트를 오케스트레이션하는 코디네이터(상태 없는 서비스 성격).
@@ -171,8 +179,12 @@ class IncomingCallCoordinator with WidgetsBindingObserver {
         await callkit.endCall(callKitParams.id);
       case CallEventActionCallTimeout(:final id):
         // 타임아웃 이벤트엔 이름이 없어서(id만), 표시 시점에 기억해 둔 실제
-        // 캐릭터명을 쓴다(없으면 '비버'로 폴백).
-        await _onTimeout(uuid: id, name: callkit.nameFor(id) ?? '비버');
+        // 캐릭터명을 쓴다. 없으면 저장된 UI 언어의 「비버」로 폴백한다.
+        await _onTimeout(
+          uuid: id,
+          name: callkit.nameFor(id) ??
+              (await StandaloneL10n.load()).callBeaverFallbackName,
+        );
       case CallEventActionCallEnded(:final callKitParams):
         await _onEnded(callKitParams.id);
       case CallEventActionCallToggleAudioSession(:final isActive):
@@ -209,10 +221,7 @@ class IncomingCallCoordinator with WidgetsBindingObserver {
 
     // 이미 통화 중이면 새 수신을 거절(endCall).
     final phase = ref.read(normalCallControllerProvider).phase;
-    final busy = phase == CallPhase.connecting ||
-        phase == CallPhase.inCall ||
-        phase == CallPhase.ending;
-    if (busy) {
+    if (phase.isBusy) {
       _log('accept 거절: 이미 통화 중(phase=$phase)');
       if (uuid != null) await callkit.endCall(uuid);
       return;

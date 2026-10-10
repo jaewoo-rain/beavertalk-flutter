@@ -45,6 +45,9 @@ class LearnedSentenceDto {
     this.nativeSentence,
     this.voiceUrl,
     this.isBookmarked = false,
+    this.kind,
+    this.pairedSentenceId,
+    this.nuance,
   });
 
   final int sentenceId;
@@ -53,6 +56,11 @@ class LearnedSentenceDto {
   final String? voiceUrl;
   final bool isBookmarked;
 
+  /// `"native"` = 현지인 표현 짝. 기본 문장에는 키 자체가 없다(null 이 아니라 부재).
+  final String? kind;
+  final int? pairedSentenceId;
+  final String? nuance;
+
   factory LearnedSentenceDto.fromJson(Map<String, dynamic> json) {
     return LearnedSentenceDto(
       sentenceId: (json['sentence_id'] as num?)?.toInt() ?? 0,
@@ -60,6 +68,9 @@ class LearnedSentenceDto {
       nativeSentence: json['native_sentence'] as String?,
       voiceUrl: json['voice_url'] as String?,
       isBookmarked: json['is_bookmarked'] as bool? ?? false,
+      kind: json['kind'] as String?,
+      pairedSentenceId: (json['paired_sentence_id'] as num?)?.toInt(),
+      nuance: json['nuance'] as String?,
     );
   }
 
@@ -69,6 +80,9 @@ class LearnedSentenceDto {
         native: nativeSentence,
         voiceUrl: voiceUrl,
         isBookmarked: isBookmarked,
+        isNative: kind == 'native',
+        pairedSentenceId: pairedSentenceId,
+        nuance: nuance,
       );
 }
 
@@ -95,6 +109,8 @@ class CallResultDto {
     this.character,
     this.callSequence,
     this.note,
+    this.usedItems = const [],
+    this.quizItems = const [],
   });
 
   final int callId;
@@ -107,6 +123,8 @@ class CallResultDto {
   final CallCharacterBriefDto? character;
   final int? callSequence;
   final CharacterNote? note;
+  final List<UsedItem> usedItems;
+  final List<QuizItem> quizItems;
 
   factory CallResultDto.fromJson(Map<String, dynamic> json) {
     final average = (json['average'] as Map<String, dynamic>?) ?? const {};
@@ -124,6 +142,8 @@ class CallResultDto {
       character: _character(json['character']),
       callSequence: (json['call_sequence'] as num?)?.toInt(),
       note: _note(json['character_note']),
+      usedItems: _usedItems(json['used_items']),
+      quizItems: _quizItems(json['quiz_items']),
     );
   }
 
@@ -142,6 +162,50 @@ class CallResultDto {
     return text == null ? null : CharacterNote(text: text);
   }
 
+  /// 서버가 준 「이번 통화에서 쓴 표현」. 모양이 어긋난 원소는 조용히 버린다 —
+  /// 한 줄 때문에 결과 화면 전체가 안 뜨면 안 된다.
+  static List<UsedItem> _usedItems(Object? value) {
+    if (value is! List) return const [];
+    final out = <UsedItem>[];
+    for (final e in value) {
+      if (e is! Map<String, dynamic>) continue;
+      final id = (e['item_id'] as num?)?.toInt();
+      final surface = _text(e['surface']);
+      if (id == null || surface == null) continue;
+      out.add(UsedItem(itemId: id, surface: surface, quote: _text(e['quote'])));
+    }
+    return out;
+  }
+
+  /// 표현학습 퀴즈 결과(`quiz_items`). [_usedItems] 와 같은 규율 — 모양이 어긋난
+  /// 원소는 조용히 버리고, 키가 없으면 빈 목록이다(옛 응답·다른 콜타입).
+  ///
+  /// 서버 스키마(`CallResultQuizItem`, 9cbea87):
+  ///   `item_id:int · surface:str · meaning:str|null · passed:bool · failed:bool`
+  /// `meaning` 은 옛 스냅샷에서 null, `failed` 는 옛 스냅샷에서 키가 없다 — 둘 다
+  /// 없으면 null/false 로 두고 결과 파싱을 멈추지 않는다.
+  /// ⛔ `failed` 를 `!passed` 로 채우지 마라. 서버가 «퀴즈에서 틀림»(failed) 과
+  ///   «아직 퀴즈 안 봄»(passed=false·failed=false) 을 가르는 유일한 칸이 이것이다.
+  ///   `passed` 면 항상 `failed=false` 다(단조).
+  static List<QuizItem> _quizItems(Object? value) {
+    if (value is! List) return const [];
+    final out = <QuizItem>[];
+    for (final e in value) {
+      if (e is! Map<String, dynamic>) continue;
+      final id = (e['item_id'] as num?)?.toInt();
+      final surface = _text(e['surface']);
+      if (id == null || surface == null) continue;
+      out.add(QuizItem(
+        itemId: id,
+        surface: surface,
+        meaning: _text(e['meaning']),
+        passed: e['passed'] == true,
+        failed: e['failed'] == true,
+      ));
+    }
+    return out;
+  }
+
   /// A blank string is as absent as null — both must hide the section rather
   /// than render an empty card.
   static String? _text(Object? value) {
@@ -154,13 +218,17 @@ class CallResultDto {
         callId: callId,
         summary: summary,
         rating: rating,
-        callDate: DateTime.tryParse(callDate ?? ''),
+        // 서버 `call_date` 는 timestamptz(UTC)다 — 현지 시각으로 바꿔야 자정 근처 통화가
+        // 전날로 찍히지 않는다(09-24 00:16 KST 가 「9월 23일」 로 보였다, 실기기 0f80de9).
+        callDate: DateTime.tryParse(callDate ?? '')?.toLocal(),
         totalTime: totalTime,
         average: average.toEntity(),
         sentences: sentences.map((s) => s.toEntity()).toList(),
         character: character?.toEntity(),
         callSequence: callSequence,
         note: note,
+        usedItems: usedItems,
+        quizItems: quizItems,
       );
 }
 
@@ -224,7 +292,9 @@ class CallSummaryDto {
   CallSummary toEntity() => CallSummary(
         callId: callId,
         character: character.toEntity(),
-        callDate: DateTime.tryParse(callDate ?? ''),
+        // 서버 `call_date` 는 timestamptz(UTC)다 — 현지 시각으로 바꿔야 자정 근처 통화가
+        // 전날로 찍히지 않는다(09-24 00:16 KST 가 「9월 23일」 로 보였다, 실기기 0f80de9).
+        callDate: DateTime.tryParse(callDate ?? '')?.toLocal(),
         totalTime: totalTime,
         summary: summary,
         rating: rating,

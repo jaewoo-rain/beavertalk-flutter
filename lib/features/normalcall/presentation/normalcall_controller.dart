@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io' show File;
 import 'dart:math' as math;
 import 'dart:typed_data';
 
 import 'package:audio_session/audio_session.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:flutter/foundation.dart'
     show
         ValueNotifier,
@@ -11,6 +13,7 @@ import 'package:flutter/foundation.dart'
         defaultTargetPlatform,
         kDebugMode,
         kIsWeb,
+        visibleForTesting,
         TargetPlatform;
 import 'package:flutter/widgets.dart' show AppLifecycleState, WidgetsBinding;
 import 'package:flutter/services.dart' show MethodChannel;
@@ -19,16 +22,245 @@ import 'package:flutter_pcm_sound/flutter_pcm_sound.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_sound/flutter_sound.dart';
+// ⭐ [2026-09-06] 안드로이드 통화 마이크는 이쪽이다. `flutter_sound` 는 캡처 루프에 전용
+//   스레드가 없어 메인 루퍼에 자기를 재게시하고, 그게 5분 통화에서 메인 지각을
+//   93ms → 282ms 로 키워 **영상**을 끊었다(마이크만 끈 대조판에서 31 → 28ms 로 평평).
+//   `record` 는 `RecordThread.kt:84` 에서 진짜 Thread 를 띄우고 메인으로는 전달만 한다.
+//   ⚠ 별칭을 쓴다 — 두 패키지가 `AudioSource`·`Codec` 같은 이름을 겹쳐 갖는다.
+import 'package:record/record.dart' as rec;
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
+import '../../../core/analytics/app_analytics.dart';
 import '../../../core/i18n/locale_controller.dart';
 import '../../../core/network/ws_url.dart';
+import '../../../core/time/device_timezone.dart';
 import '../../../l10n/app_localizations.dart';
+import '../data/datasources/audio_route_probe.dart';
+import '../data/datasources/call_diag_sink.dart';
+import '../data/datasources/pcm_playback_control.dart';
+import '../../subscription/presentation/providers/subscription_providers.dart';
+import '../../subscription/presentation/providers/subscription_state_providers.dart';
+import '../domain/entities/call_allowance.dart';
+import '../domain/entities/call_resume_status.dart';
+import '../domain/seamless_fragment.dart';
+import '../domain/segment_call_id_recovery.dart';
+import '../domain/entities/call_channel.dart';
+import '../domain/entities/call_course.dart';
 import '../domain/entities/call_hint.dart';
-import 'avatar_emotion.dart';
-import 'avatar_view.dart' show kIdleWait, kIdleListen, kIdleThink;
+import '../domain/entities/playback_ledger.dart';
+import '../domain/pcm_gain.dart';
+import 'avatar_assets.dart' show kIdleWait, kIdleListen, kIdleThink;
+import 'cascade_auto_talk.dart';
+import 'cascade_experiment.dart'
+    show
+        CascadeCushionGrowthOff,
+        CascadeMicAlwaysGated,
+        CascadeMicNoAec,
+        CascadeMicOff,
+        CascadeMicToFile,
+        CallPlaybackGainOff;
 import 'normalcall_providers.dart';
+
+/// `call_ended.call_id` 정규화 — **빈 값은 없는 것**이다.
+///
+/// 서버는 통화 행이 없을 때 null 이 아니라 **빈 문자열**을 보낸다
+/// (`cascade_session.py:3198` — `ServerCallEnded(call_id=str(self._call_id or ""))`).
+/// 그대로 받으면 "우리가 id 를 가졌다"가 되어 **통화 종료 화면의 복구 폴링이 안 돈다**
+/// (`call_finish.dart` `_analyze()` 는 `callId == null` 일 때만 `_recoverCallId()` 를 부른다).
+/// 즉 복구가 가장 필요한 경우에 정확히 복구가 죽는다 — null 보다 나쁘다.
+///
+/// ⭐ 통로로 가르지 않는다. 여기 한 자리에서 막으면 라이브 서버가 언젠가 같은 값을 보내도
+/// 안 깨진다. 공백만 있는 값도 없는 것으로 본다(서버가 `" "` 를 보낼 이유는 없지만,
+/// 이 함수의 계약은 "쓸 수 있는 id 인가"이지 "서버가 무엇을 보냈나"가 아니다).
+String? normalizeCallId(Object? raw) {
+  final s = raw?.toString().trim();
+  return (s == null || s.isEmpty) ? null : s;
+}
+
+/// 테스트에서 [NormalCallController] 인스턴스 없이 라벨 매핑만 검사하기 위한 창구.
+/// (구현은 컨트롤러 안의 `_emotionCode` 하나뿐이다 — 두 벌로 만들지 않는다.)
+int emotionCodeForTest(String? raw) => NormalCallController.emotionCode(raw);
+
+/// 같은 목적의 창구 — 「이 라벨을 우리가 읽을 수 있는가」.
+/// `neutral` 과 모르는 값은 **둘 다 코드 0** 이라 [emotionCodeForTest] 로는 못 가른다.
+bool emotionKnownForTest(String? raw) => NormalCallController.knownLabel(raw);
+
+/// 통화 한 건의 **경계 판정용 요약 줄**.
+///
+/// ⛔ **통로를 인자로 받는다 — 필드를 읽지 않는다.** 실기기 첫 통화에서 이 줄이
+/// `통로=live` 라고 **거짓을 말했다**(2026-08-12). 원인은 값이 아니라 **읽는 시점**이었다:
+/// `_teardown` 이 통로를 기본값(live)으로 되돌린 **뒤에** 이 줄이 찍혔다.
+/// 되돌리는 것 자체는 맞다(안 되돌리면 다음 통화가 게이팅 없이 열린다 — 자기-대화 루프).
+///
+/// ⭐ 그래서 "로그를 리셋 위로 옮긴다"로 안 고쳤다. 그건 **순서에 의존**하는 수리라
+/// 다음에 누가 리셋을 재배치하면 같은 버그가 돌아온다. 값을 **인자로 넘기게** 만들고
+/// 호출부가 함수 진입 시점에 붙잡아 두면 순서와 무관해진다.
+///
+/// ⚠ 원인을 가르려고 넣은 줄이 정확히 그 자리에서 거짓을 말하면, 그 줄이 없느니만 못하다.
+String buildCallSummaryLine({
+  required int sentences,
+  required int pendingMarkers,
+  required int oddFrames,
+  required CallChannel channel,
+  int hints = 0,
+  int hintsDropped = 0,
+}) =>
+    '통화 요약: sentence=$sentences hint=$hints'
+    '${hintsDropped > 0 ? '(버림 $hintsDropped)' : ''} '
+    '미발화마커=$pendingMarkers odd_frames=$oddFrames 통로=${channel.name}';
+
+/// 소켓이 열린 직후 보내는 `start` 프레임.
+///
+/// ⛔ **순수 함수로 빼 둔 이유가 있다.** 이 프레임의 결함은 전부 "필드가 조용히
+/// 빠졌다"였고, 그 셋 다 **화면상으로는 통화가 멀쩡해서** 실기기로도 안 보였다:
+///
+///   - `continues_call_id` 미전송 → 비버가 앞 구간을 잊는다(2026-08-24)
+///   - `inbound_call_id` 미전송   → 이어간 순간 **상대가 바뀐다**(2026-08-31)
+///
+/// 둘 다 `?` 스프레드가 null 인 값의 **필드 자체를 뺀** 결과다. 서버는 못 받은 걸
+/// 에러로 알리지 않고 조용히 폴백하므로, 여기가 테스트로 고정되지 않으면 다음에
+/// 또 같은 방식으로 샌다. 소켓 없이 검사할 수 있게 컨트롤러 밖에 둔다.
+///
+/// [inboundCallId] 는 **이어가는 구간에도 실려야 한다** — 서버는 이 값으로만 알람을
+/// 되짚어 그 알람의 캐릭터를 고른다(`continues_call_id` 로는 못 고른다).
+Map<String, dynamic> buildStartFrame({
+  required Map<String, dynamic> aec,
+  required int sampleRate,
+  required int numChannels,
+  String? inboundCallId,
+  String? continuesCallId,
+  int? assignmentId,
+  String? callType,
+  bool forceCourse = false,
+  String? planOverride,
+  bool silentResume = false,
+  String? tz,
+  int? tzOffsetMin,
+}) =>
+    <String, dynamic>{
+      'type': 'start',
+      // 수신통화(알람)에서 온 통화면 서버가 준 uuid 를 그대로 되돌려준다. 서버가
+      // 그걸로 알람 → 캐릭터를 되짚는다. 홈에서 건 전화는 null 이라 필드가 빠지고,
+      // 서버는 member.character_id(대표 캐릭터)를 쓴다.
+      'inbound_call_id': ?inboundCallId,
+      // (barge-in) AEC 자기진단. 서버가 **세션마다** 끼어들기 확인 방식을 고르는 입력이다.
+      'aec': aec,
+      // ⭐ 마이크 규격을 **명시한다**(2026-08-14). 지금까지 안 보냈고 서버는 기본값
+      //   16000Hz 를 가정했는데, 우연히 우리 레코더도 16000 이라 맞았을 뿐이다.
+      //   ⛔ 암묵 계약이라 취약하다 — 누가 레코더 상수를 바꾸면 서버는 모른 채 틀리고,
+      //     **에러가 안 나서 조용히 이상한 목소리가 된다.** 값이 한 곳에서 나오게 묶는다.
+      'sample_rate': sampleRate,
+      'num_channels': numChannels,
+      // 「Keep talking」 으로 이어진 구간이면 직전 구간의 id 를 싣는다. 서버가 그
+      // 대화를 요약해 새 세션에 넣어 줘야 비버가 앞 구간을 기억한다.
+      // 첫 구간에는 null 이라 `?` 로 빠진다 — 필드 자체가 안 나간다.
+      'continues_call_id': ?continuesCallId,
+      // ⭐ 과제 통화 — 숙제 상세의 회화 카드에서 시작했을 때만 실린다. 서버가
+      //   이 과제의 목표 표현을 대화 유도에 주입한다.
+      //   ⛔ 통화의 성립 조건이 아니라 **재료**다. 서버는 자격이 없으면 조용히
+      //     무시하고 평소 선별로 진행한다 — 여기서 보냈다고 통화가 막히지 않는다.
+      'assignment_id': ?assignmentId,
+      // 이 통화가 **무엇을 하는 통화인가**(표현학습·프리토킹). [CallCourse] 참조.
+      // ⭐ null 이면 `?` 가 **필드를 통째로 뺀다** — 그래야 서버의 자동 라우팅
+      //   (D11: 레벨 미확정이면 레벨테스트)이 그대로 돈다.
+      // ⛔ 빈 문자열이나 `'normal'` 을 대신 넣지 마라. 그건 그 판단을 **덮어쓴다.**
+      'call_type': ?callType,
+      // QA 용 잠금 우회(개발자 도구 «프리토킹 통화» 버튼만). admin 계정만 서버가 받아
+      // `COURSE_LOCKED` 를 우회하고 진도는 안 바꾼다 — user 면 무시된다.
+      // ⭐ false 면 **키 자체가 안 나간다** — 서버 기본값(False)과 같고, 옛 서버는 extra=ignore
+      //   라 있어도 버리지만 굳이 보낼 이유가 없다.
+      if (forceCourse) 'force_course': true,
+      // QA 용 플랜 강제(개발자 도구 «Max/Free 로 통화»). admin 만 유효, user 는 무시.
+      // null 이면 키 자체가 빠진다 — 서버 기본값(None)과 같다. [PlanOverride] 참조.
+      'plan_override': ?planOverride,
+      // 끊김 없는 조각 전환의 재개(seamless_fragment.dart). 서버가 seed_resume 을 생략해
+      // 비버가 먼저 말하지 않고 사용자 첫 발화를 기다린다(S1·S2). 구서버는 extra=ignore.
+      // false 면 키 자체가 안 나간다 — 첫 조각·시트 경유 이어하기는 종전 프레임 그대로.
+      if (silentResume) 'silent_resume': true,
+      // 서버 `premium` 브랜치(09-23) §3 — 「오늘」의 경계(하루 예산·연속일·달력)를 기기
+      // 로컬 자정으로 자른다. `tz`(IANA)가 우선, `tz_offset_min` 은 폴백. 둘 다 없으면 UTC 라
+      // 한국은 오전 9시에 날짜가 바뀐다. 구서버는 extra=ignore 로 버린다.
+      // ⛔ daily-status·calendar 와 **같은 값**이어야 한다([DeviceTimezone] 한 곳에서 읽는다).
+      'tz': ?tz,
+      'tz_offset_min': ?tzOffsetMin,
+    };
+
+/// 자막을 **틱당 몇 글자씩** 드러낼지. 봉투 틱 = 25ms(= 40틱/초).
+///
+/// ⭐ [spanTicks] 가 양수면 그건 **이 조각이 실제로 차지하는 오디오 길이**다(다음 마커가
+/// 이미 대기 중이라 그 위치를 안다 — 마커는 오디오보다 먼저 도착한다). 그러면 추정이
+/// 아니라 실제 길이에 맞춘다: 글자가 조각의 소리와 **정확히 같이 끝난다**.
+///
+/// 모를 때만(마지막 조각) 언어별 기본값을 쓴다. 근거는 실측 말하기 속도다:
+///   한국어 6.3~8.5 자/초(중앙 7.7) → ≈0.19 자/틱
+///   영어 19.6 자/초              → ≈0.49 자/틱
+/// ⚠ 한글 1글자(음절)가 영문 3~4글자 소리다. 같은 속도를 쓰면 한글 자막이 소리보다 훨씬
+///   먼저 끝난다 — 그래서 **한글이 섞여 있으면 느린 쪽**을 쓴다(섞인 조각은 한글이 시간을 지배한다).
+double revealRatePerTick({
+  required String text,
+  int spanBytes = -1,
+  double charsPerByte = 0,
+}) {
+  if (text.isEmpty) return 1.0;
+  // 봉투 틱 = 25ms, 24kHz·16bit = 48,000 B/s → 틱당 1,200 B.
+  const bytesPerTick = 1200;
+  if (spanBytes > 0) {
+    final ticks = spanBytes / bytesPerTick;
+    if (ticks >= 1) return text.length / ticks;
+  }
+  if (charsPerByte > 0) {
+    // ⭐ **짧은 쪽으로 편향한다**(계수 < 1). 비대칭이기 때문이다:
+    //   짧게 잡으면 → 글자가 먼저 다 나오고 **가만히 있는다**(눈에 잘 안 띈다)
+    //   길게 잡으면 → 다음 마커에서 남은 걸 **한 번에 쏟는다** = 지금 고치려는 그 점프
+    final estBytes = text.length / charsPerByte;
+    final ticks = estBytes / bytesPerTick * _revealShortBias;
+    if (ticks >= 1) return text.length / ticks;
+  }
+  // 아무 재료도 없을 때(턴의 첫 구간이자 마지막 구간)만 언어별 실측 기본값.
+  //   한국어 6.3~8.5 자/초(중앙 7.7) → ≈0.19 자/틱 · 영어 19.6 자/초 → ≈0.49 자/틱
+  // ⚠ 한글 1글자(음절)가 영문 3~4글자 소리다 — 섞이면 한글이 시간을 지배하므로 느린 쪽.
+  final hasHangul = RegExp(r'[가-힣ㄱ-ㅎㅏ-ㅣ]').hasMatch(text);
+  return hasHangul ? 0.19 : 0.49;
+}
+
+/// 추정 구간의 길이 편향 계수. 1 보다 작아야 **짧은 쪽**으로 틀린다.
+const double _revealShortBias = 0.8;
+
+/// 첫 소리가 **들리는 시각**까지의 응답시간(ms). 순수 산수라 따로 뽑아 테스트한다.
+///
+/// 지금 넣은 오디오는 **엔진에 이미 들어 있던 것이 다 나간 뒤**에 들린다:
+///     들리는 시각 = 피드한 시각 + (피드 **직전** 엔진 잔량)
+///
+/// ⛔ 끝점을 「오디오 **도착**」으로 잡으면 안 된다. 그러면 엔진 잔량(= 지터 쿠션이 만든 것)이
+///   지표에서 사라져 **쿠션 0 과 300 이 같아 보인다** — 지금 가리려는 게 정확히 그 차이다.
+///   그래서 [preDepthFrames] 가 커지면 이 값도 반드시 커져야 한다(테스트로 고정).
+int audibleResponseMs({
+  required int userTurnEndAtMs,
+  required int fedAtMs,
+  required int preDepthFrames,
+  required int sampleRate,
+}) {
+  final depth = preDepthFrames < 0 ? 0 : preDepthFrames;
+  final audibleAt = fedAtMs + (sampleRate > 0 ? depth * 1000 ~/ sampleRate : 0);
+  return audibleAt - userTurnEndAtMs;
+}
+
+/// 마이크가 **왜 닫혔는지** — 세 관문 중 무엇이 막았나.
+///
+/// 여는 데는 둘이 **전부** 필요하다: 통로가 캐스케이드 · 서버가 열라고 함.
+/// ⛔ 예전엔 셋째로 클라 컴파일 스위치(`ANDROID_VOICE_AUDIO`)가 있었고, **그게 빠진 APK 가
+/// 돌아다녀 반나절을 태웠다.** 그 스위치를 없앴다 — 판단은 이제 서버 한 곳이다.
+/// ⚠ 이 문장이 없으면 "끼어들기가 안 된다"는 보고에서 **통로 문제인지 서버 정책인지**
+/// 구분이 안 된다 — 둘은 다음 행동이 완전히 다르다.
+String micGateReason({
+  required bool channelGates,
+  required bool serverMicAlwaysOpen,
+}) {
+  if (channelGates) return '라이브 통로 — 반이중 게이팅';
+  if (!serverMicAlwaysOpen) return '서버 정책(ready.mic_always_open=false)';
+  return '알 수 없음';
+}
 
 /// Lifecycle phases of a live normalcall session.
 enum CallPhase {
@@ -41,6 +273,20 @@ enum CallPhase {
   /// Live conversation in progress (beaver and/or user talking).
   inCall,
 
+  /// 5분 구간을 다 써서 **사용자의 결정을 기다리는 중**(플랜 §3-5).
+  ///
+  /// 이 구간의 세션은 이미 닫혔다 — 소켓·마이크·재생이 전부 내려간 상태다. 사용자가
+  /// 고민하는 동안 소켓을 붙들지 않는 이유는, 상한(5분)이 마침 Cloud Run 요청
+  /// 타임아웃 기본값(300초)과 같아서 **붙들어 봐야 곧 끊기기 때문**이다.
+  ///
+  /// 여기서 갈리는 길은 둘뿐이다:
+  /// - [NormalCallController.continueCall] → 새 세션을 열고 [inCall] 로 돌아간다
+  /// - [NormalCallController.hangUp] → [ended] 로 가고 요약 화면이 뜬다
+  ///
+  /// ⛔ **[ended] 로 대신 쓰지 마라.** 통화 화면은 `ended` 를 보면 요약 화면으로
+  ///   넘어간다(`call.dart`). 그러면 사용자가 고르기도 전에 화면이 떠난다.
+  awaitingContinue,
+
   /// Wind-down: `call_ended` received, draining the final audio before close.
   ending,
 
@@ -49,6 +295,25 @@ enum CallPhase {
 
   /// Connection/auth failure; [CallState.errorMsg] holds a reason.
   error,
+}
+
+/// [CallPhase] 술어.
+extension CallPhaseX on CallPhase {
+  /// 이 phase 가 **통화를 붙들고 있는가** — 새 수신 전화를 띄우면 안 되는 상태인가.
+  ///
+  /// ⛔ 이 판정을 호출부에 복사하지 마라. 예전엔 `connecting || inCall || ending` 이
+  ///   세 곳(`push_bootstrap`·`inbound_call_scheduler`·`incoming_call_coordinator`)에
+  ///   복붙돼 있었고, phase 가 하나 늘 때마다 **세 곳을 다 고쳐야 새 상태가 반영**됐다.
+  ///   [CallPhase.awaitingContinue] 를 추가하며 한 자리로 모았다 — 시트를 보고 있는
+  ///   동안 수신 전화가 끼어들면 통화가 통째로 날아간다.
+  bool get isBusy => switch (this) {
+        CallPhase.connecting ||
+        CallPhase.inCall ||
+        CallPhase.ending ||
+        CallPhase.awaitingContinue =>
+          true,
+        CallPhase.idle || CallPhase.ended || CallPhase.error => false,
+      };
 }
 
 /// Immutable snapshot of the current call, exposed to the UI.
@@ -65,9 +330,23 @@ class CallState {
     this.errorMsg,
     this.hint,
     this.teachingPlan = const [],
-    this.subtitleOn = true,
-    this.hintOn = true,
+    this.subtitleOn = false,
+    this.hintOn = false,
+    this.beaverPreparing = false,
+    this.channel = CallChannel.live,
+    this.course,
+    this.planOverride,
+    this.segmentsUsed = 0,
+    this.paidCallTime = false,
+    this.micMuted = false,
+    this.endedAtCap = false,
   });
+
+  /// 유료 통화가 **상한(15분)을 다 써서** 끝났는가 — [CallPhase.ended] 와 함께만 참.
+  ///
+  /// 화면이 종료 화면으로 가기 전에 「오늘 통화를 마칠게요」 시트를 띄울지 가른다
+  /// (P19, 사용자 결정 2026-09-22). 사용자가 끊은 종료·무료 종료는 false 다.
+  final bool endedAtCap;
 
   /// Current lifecycle phase.
   final CallPhase phase;
@@ -111,13 +390,80 @@ class CallState {
   /// a future teaching-card screen — not rendered by `screen/call_main`.
   final List<TeachingItem> teachingPlan;
 
-  /// Whether the subtitle (caption) is shown. When false the speaking
-  /// equalizer replaces it. UI preference; resets to true each call.
+  /// 자막을 보여 주는가. false 면 자리에 [SpeakingEqualizer] 가 대신 선다.
+  ///
+  /// **통화마다 꺼진 채로 시작한다**(2026-09-13 결정). 화면 보조 장치는 필요할
+  /// 때 켜는 것이지 기본으로 깔고 시작하는 것이 아니다 — 먼저 듣게 하고, 안
+  /// 들리면 그때 켠다. 종전 기본값은 true 였다.
   final bool subtitleOn;
 
-  /// Whether the hint affordance is enabled. When false the hint card is hidden
-  /// even if a hint has arrived. UI preference; resets to true each call.
+  /// 힌트 어포던스를 쓰는가. false 면 힌트가 도착해도 카드를 안 띄운다.
+  ///
+  /// [subtitleOn] 과 같은 이유로 **꺼진 채로 시작한다** — 먼저 떠올려 보게 하는
+  /// 것이 힌트의 목적이고, 처음부터 펼쳐 두면 그 목적이 사라진다.
   final bool hintOn;
+
+  /// 서버가 대답을 만드는 중인가(`beaver_preparing`). **캐스케이드 통로 전용**이고
+  /// 라이브에서는 항상 false 다.
+  ///
+  /// ⚠ 아직 그리는 UI 가 없다 — 설명되지 않는 침묵이 통화를 끊게 만들기 때문에 서버가
+  /// 단계를 보내 주는데, 그걸 받을 자리를 먼저 만들어 둔다. `turn_start` 에서 내려간다
+  /// (소리가 나기 시작하면 준비 중이 아니다).
+  final bool beaverPreparing;
+
+  /// 이 통화가 붙은 통로. **화면이 통로를 알아야** 캐스케이드만 벗기고 라이브는 제품
+  /// 그대로 둘 수 있다(격리 실험의 대조군 유지 — [CascadeExperiment]).
+  final CallChannel channel;
+
+  /// 이 통화의 **코스**(표현학습·프리토킹). 일반 통화·레벨테스트는 null.
+  ///
+  /// 화면이 이걸 알아야 **표현학습**에서 힌트 UI 를 가릴 수 있다 — 서버가 그 코스에는
+  /// `hint` 프레임을 안 보내므로, 켤 수 있는 토글을 두면 「눌러도 아무것도 안 나오는
+  /// 버튼」이 된다. 프리토킹은 일반 통화와 같은 힌트 상자다(사장님 결정 2026-09-12).
+  /// ⛔ 컨트롤러의 `_callCourse` 를 public getter 로 내지 않고 여기로 싣는 이유:
+  ///   `avoid_public_notifier_properties` — Notifier 의 공개 API 는 `state` 하나다.
+  ///   [channel] 이 같은 이유로 여기 있다.
+  final CallCourse? course;
+
+  /// 이 통화의 **플랜 흉내**(QA). null 이면 구독 플랜 그대로.
+  ///
+  /// 화면이 이걸 알아야 영상/음성 UI 를 서버 엔진과 맞출 수 있다 — 서버는 이미
+  /// override 플랜대로 엔진(영상·3.1 / 음성·2.5)을 고르는데, 화면이 구독 티어만 보면
+  /// Free 계정의 «Max 로 통화» 가 원형 스틸에 Max 목소리가 되고 그 반대는 영상 밴드에
+  /// Free 목소리가 된다(사장님 지시 2026-09-13: 화면을 그 선택에 맞춰라).
+  /// [course] 와 같은 이유로 state 에 싣는다(컨트롤러 공개 getter 금지).
+  final PlanOverride? planOverride;
+
+  /// 지금까지 **끝낸** 5분 구간의 수. 0 = 첫 구간 진행 중, 1 = 첫 5분을 마쳤다.
+  ///
+  /// 통화는 5분 세션을 이어 붙여 만든다([CallAllowance]). 한 소켓이 15분을 버티는 게
+  /// 아니라 구간마다 새로 연결하므로, "몇 초 지났나"([elapsedSec])가 아니라 이 값이
+  /// 상한 판정의 단위다.
+  ///
+  /// ⚠ **재연결을 건너서 유지된다.** 구간 사이의 [_teardown] 이 이 값을 0 으로
+  ///   되돌리면 통화가 영원히 끝나지 않는다.
+  final int segmentsUsed;
+
+  /// 이 통화가 **유료 통화 시간**을 쓰는가 — 통화 시작 시 굳힌 값.
+  ///
+  /// 화면이 어느 시트를 띄울지 가르는 값이다(무료=구독 유도 / 유료=「Keep going?」).
+  /// 컨트롤러가 판정해서 실어 보내는 이유는, 화면이 따로 구독 상태를 읽으면 **판정이
+  /// 두 벌**이 되고 서로 어긋날 수 있기 때문이다. 판정 근거는
+  /// `SubscriptionStatus.grantsPaidAccess` 하나다 — `grace`(결제 재시도)는 접근권을
+  /// 유지하고 `onHold`(결제 실패 정지)는 차단한다(스펙 §6).
+  ///
+  /// ⛔ **컨트롤러는 시트를 띄우지 않는다.** 앱 스코프 싱글톤이라 `BuildContext` 가
+  ///   없고, 잠금화면·백그라운드에서도 살아 있다. 여기서 UI 를 부르면 컨텍스트가 없는
+  ///   시점에 터진다. 컨트롤러는 상태만 싣고 표시는 화면의 몫이다.
+  final bool paidCallTime;
+  /// 사용자가 **음소거**했는가. [CallChannel.live] 전용이다.
+  ///
+  /// 라이브는 스트리밍 세션이라 마이크가 통화 내내 열려 있고, 사용자가 잠시 닫을
+  /// 수단이 필요하다. 켜도 **세션은 유지된다** — 업링크 프레임만 버린다. 비버는
+  /// 계속 말하고 경과시간도 계속 흐른다.
+  ///
+  /// ⚠ 캐스케이드에는 대응 수단이 없다 — 그쪽은 종전대로 서버 정책이 마이크를 쥔다.
+  final bool micMuted;
 
   /// Sentinel so [copyWith] can distinguish "leave [hint] unchanged" from
   /// "clear [hint] to null" — the `?? this.hint` idiom cannot express the latter.
@@ -138,6 +484,14 @@ class CallState {
     List<TeachingItem>? teachingPlan,
     bool? subtitleOn,
     bool? hintOn,
+    bool? beaverPreparing,
+    CallChannel? channel,
+    CallCourse? course,
+    PlanOverride? planOverride,
+    int? segmentsUsed,
+    bool? paidCallTime,
+    bool? micMuted,
+    bool? endedAtCap,
   }) {
     return CallState(
       phase: phase ?? this.phase,
@@ -152,6 +506,14 @@ class CallState {
       teachingPlan: teachingPlan ?? this.teachingPlan,
       subtitleOn: subtitleOn ?? this.subtitleOn,
       hintOn: hintOn ?? this.hintOn,
+      beaverPreparing: beaverPreparing ?? this.beaverPreparing,
+      channel: channel ?? this.channel,
+      course: course ?? this.course,
+      planOverride: planOverride ?? this.planOverride,
+      segmentsUsed: segmentsUsed ?? this.segmentsUsed,
+      paidCallTime: paidCallTime ?? this.paidCallTime,
+      micMuted: micMuted ?? this.micMuted,
+      endedAtCap: endedAtCap ?? this.endedAtCap,
     );
   }
 }
@@ -185,19 +547,19 @@ class NormalCallController extends Notifier<CallState> {
   AppLocalizations get _l10n =>
       lookupAppLocalizations(ref.read(localeControllerProvider));
 
-  // ── Avatar lip-sync signals (video-call avatar; see avatar_view.dart) ───────
+  // ── Avatar lip-sync signals (video-call avatar; see avatar_assets.dart) ───────
   // Gemini Live returns raw PCM with no viseme timing, so the mouth is driven
   // from the audio envelope. These are published from the PCM *about to play*
   // (in [_onFeed] via [_takeArray]) — NOT from arrival time — because the
   // playback queue buffers seconds ahead, so arrival-time RMS would lead the
-  // sound. In-memory only; consumed by [BeaverAvatar]. Additive: the audio
+  // sound. In-memory only; consumed by the avatar renderer. Additive: the audio
   // pipeline itself is unchanged.
 
   /// Live mouth-open level, 0 (closed) .. 1 (wide), from the RMS of the audio
   /// currently being fed to the player. ~10Hz; the widget smooths to 60fps.
   final ValueNotifier<double> avatarLevel = ValueNotifier<double>(0.0);
 
-  /// True while the beaver is speaking (mirrors [_beaverSpeaking]).
+  /// True while the beaver is speaking (mirrors [_beaverAudioActive]).
   final ValueNotifier<bool> avatarSpeaking = ValueNotifier<bool>(false);
 
   /// Current avatar emotion code (0 neutral/smug, 1 happy, 2 surprised, 3 sad,
@@ -212,6 +574,61 @@ class NormalCallController extends Notifier<CallState> {
   /// 사용자 말)로, 응답 대기는 `turn_end` 뒤 `turn_start` 전 구간으로 잡는다.
   /// 「마이크/유저턴 신호가 없어서 못 한다」는 옛 기록은 사실이 아니었다.
   final ValueNotifier<int> avatarIdleKind = ValueNotifier<int>(kIdleWait);
+
+  /// [계측] 사용자 턴 타이밍 — **사람이 말하는 판에서만 값이 생긴다.**
+  ///
+  /// 자동 대화(`__test_say`)는 STT 를 안 타므로 `user_turn_start`/`input_transcript` 가
+  /// 아예 안 온다. 그래서 오늘(2026-08-13)까지 이 구간을 **한 번도 못 쟀다** — 사장님이
+  /// 「응답이 느리다」고 하신 바로 그 구간인데도 그렇다.
+  /// ⛔ 값이 안 나오는 것을 「계측 실패」로 읽지 마라. 그 판에는 경로가 없다.
+  int? _userTurnStartAtMs;
+  int? _userFirstTranscriptAtMs;
+  int? _userTurnEndAtMs;
+
+  /// ⛔ **[_userTurnEndAtMs] 를 재사용하면 안 된다.** 그 값은 `turn_start` 핸들러가 로그를
+  /// 찍고 **바로 null 로 만든다**(`RESPONSE:` 줄). 그런데 첫 오디오는 `turn_start` **뒤에**
+  /// 오므로, 같은 필드를 쓰면 응답시간 계기가 **한 번도 안 돈다** — 그리고 로그가 조용해서
+  /// 「응답이 빨라서 안 찍히나」로 읽힌다. 오늘 여러 번 물린 그 함정이다.
+  /// ⇒ 소리 기준 계기는 **자기 필드**를 쓴다.
+  int? _userTurnEndForAudioMs;
+
+  /// `user_turn_end` → `turn_start` 도착(ms). 기존 `RESPONSE:` 줄이 찍고 **버리던** 값이다.
+  /// 서버로 같이 보내야 서버가 「제어 신호까지」와 「소리까지」를 한 줄에서 뺀다.
+  int? _turnStartDelayMs;
+
+  // ── [계측] 「내가 입을 연 시각」 ──────────────────────────────────────────
+  //
+  // ⛔ **턴 판정에 쓰지 않는다.** 턴은 전적으로 서버가 판정한다(클라에 VAD 를 두지 않는
+  //   그 규율 그대로다). 이건 **오직 원점을 기록하기 위한 것**이다.
+  //
+  // 왜 필요한가: `audible_ms` 는 `user_turn_end` **수신 시각**부터 잰다 = 서버가 「말이
+  // 끝났다」고 알려 준 시각이다. 그 앞에 침묵판정·전송·전사·대기가 **약 1.1초** 숨어 있어서,
+  // 사장님 체감(4~5초)과 우리 지표(2.8초)가 안 맞았다.
+  // ⭐ 웹 데모는 로컬 VAD 로 이 원점을 이미 갖고 있다. **앱만 없어서** 같은 자로 비교가 안 됐다.
+
+  /// 유성 판정 임계(0~1 정규화 RMS).
+  ///
+  /// ⚠ **검증된 값이 아니다.** 서버 barge-in 게이트가 0.05 인데 그건 「끊어도 되나」를 보는
+  /// 값이라 보수적이다. 여기는 「입을 열었나」라서 더 예민해야 한다. 0.02 로 시작하고,
+  /// 실측에서 첫 유성이 너무 늦거나(임계 높음) 숨소리에 걸리면(낮음) 조정한다.
+  static const double _voicedRmsThreshold = 0.02;
+
+  /// 이 정도 조용하면 **다음 발화**로 본다(웹 데모와 같은 규율).
+  static const int _voicedResetMs = 400;
+
+  int? _firstVoicedAtMs;
+  int _lastVoicedAtMs = 0;
+
+  /// `user_turn_end` 시점에 **굳혀 둔** 첫 유성 시각. 그 뒤 리셋에 안 쓸리게 따로 둔다.
+  int? _frozenFirstVoicedAtMs;
+
+  /// 라이브 폴백에서 **이미 소비한** 유성 앵커. 한 발화로 두 턴을 재지 않게 막는다
+  /// (`_recordResponseTime` 은 턴의 첫 오디오마다 불린다).
+  int _voicedAnchorConsumed = 0;
+
+  /// 위와 같은 목적이되 `turn_start` 전용. 두 계기가 **다른 시점**에 소비하므로
+  /// 한 필드를 겸직시키면 나중 것이 먼저 것을 굶긴다.
+  int _turnStartVoicedUsed = 0;
 
   /// 사용자 발화가 끊긴 뒤 [kIdleListen] 을 유지하는 시간.
   /// 문장 사이의 짧은 공백마다 끄덕임이 끊기면 오히려 산만하다.
@@ -237,11 +654,10 @@ class NormalCallController extends Notifier<CallState> {
   /// it. Characters without EE/OO sprites simply ignore this.
   final ValueNotifier<double> avatarShape = ValueNotifier<double>(0.0);
 
-  /// 표정 분류기. 어휘 사전·문장 분할·최소 유지 시간은 `avatar_emotion.dart` 에
-  /// 있다 — 랩(`avatar_lab_main.dart`)과 단위 테스트가 **같은 코드**를 돌리기
-  /// 위해서다. 유지 시간은 계측으로 고른 기본값(400ms)을 쓴다 — 근거는 그 파일의
-  /// [SentenceEmotion] 주석.
-  final SentenceEmotion _emo = SentenceEmotion();
+  // ⛔ 표정 분류기(`SentenceEmotion`)를 여기서 **들어냈다**(2026-08-20). 서버가
+  //   `set_face` 로 감정을 직접 준다 — 클라는 추측하지 않는다.
+  //   ⚠ `avatar_emotion.dart` 파일 자체는 남긴다: 랩(`avatar_lab_main.dart`)과
+  //     단위 테스트가 그 코드를 계속 돌린다. 통화 경로에서만 뺀 것이다.
 
   /// Sub-frame mouth envelope: one entry per [_envStepMs] of audio, queued as
   /// audio is handed to the player and drained in real time. A single RMS per
@@ -250,6 +666,107 @@ class NormalCallController extends Notifier<CallState> {
   final List<double> _envQueue = <double>[];
   Timer? _envTimer;
   static const int _envStepMs = 25;
+
+  // ── `sentence` 마커 (캐스케이드) ──────────────────────────────────────────
+  //
+  // 서버가 구간 오디오 **직전에 인밴드**로 자막·표정을 보낸다. 미리 안 보낸다.
+  // ⛔ **도착 시점에 발화하면 안 된다.** 그 오디오는 아직 안 들린다 — 우리는 최대
+  //   1.2초치를 앞당겨 엔진에 밀어 넣으므로, 도착 즉시 자막을 바꾸면 소리보다 그만큼
+  //   앞서 간다. 그래서 입모양([_envQueue])과 **같은 큐에 위치로 꽂는다.**
+  //   이게 이 봉투 큐가 존재하는 이유다.
+
+  /// 지금까지 봉투 큐에 **넣은** 칸 수(누계). 마커는 도착 시점의 이 값을 위치로 잡는다.
+  int _envAdded = 0;
+
+  /// 지금까지 **소비된**(재생된 것으로 간주) 칸 수(누계). 캡으로 잘려 나간 분도 포함한다 —
+  /// 안 그러면 그 뒤 마커가 영영 안 터진다.
+  int _envPlayed = 0;
+
+  /// 타자기 드러내기 — 지금까지 **붙은 전체 자막**과 그중 **드러낸 글자 수**.
+  /// 화면에는 `_revealTarget.substring(0, _revealed)` 만 나간다.
+  ///
+  /// ⛔ 조각을 통째로 붙이면 자막이 2~5단어씩 **점프**한다(사장님 지적, 2026-08-12).
+  ///   한 문장이 TTS 언어 분할로 2~3구간이라 그 점프가 문장 중간마다 일어난다.
+  /// 다음에 자막을 쓸 때 **누적이 아니라 교체**할 것인가.
+  ///
+  /// `turn_start` 에서 세우고, 새 대사가 화면에 **처음 쓰이는 순간** 내려간다.
+  /// 그 사이에는 이전 턴 대사가 그대로 화면에 남는다 — 화면이 비는 순간을 0 으로 만드는
+  /// 장치다(2026-08-15 사장님 지시: 「이전 대사 지우고 새 대사로 처음부터 전사」).
+  bool _subtitleReplaceOnNext = false;
+
+  String _revealTarget = '';
+  int _revealed = 0;
+  double _revealAccum = 0;
+  double _revealPerTick = 0.49;
+
+  /// 이 턴에서 발화된 구간들의 **글자 수 / 서버 바이트** 누계 — 마지막 구간의 길이를
+  /// 추정하는 재료다. 한 턴 안에서는 말하기 속도가 거의 일정하다.
+  int _revealCharsSum = 0;
+  int _revealBytesSum = 0;
+
+  /// 봉투 큐에서 앞에서부터 [count] 칸을 버리되 **지나간 것으로 계상**한다.
+  ///
+  /// ## ⛔ 불변식 — 이걸 깨면 자막이 영구히 늦는다
+  ///     `_envAdded == _envPlayed + _envQueue.length`
+  /// 두 카운터는 **통화 스코프 절대값**이고 마커는 `at: _envAdded` 에 꽂혀
+  /// `_envPlayed >= at` 일 때 터진다([_fireDueMarkers]). 큐에서 N칸을 없애면서
+  /// `_envPlayed` 를 안 올리면 그 차이가 **영구히** N 만큼 벌어지고,
+  /// **이후 모든 마커가 N×25ms 늦게** 터진다. 끼어들 때마다 누적된다.
+  ///
+  /// 실측(2026-08-16, 사장님 실기기): 취소 시 `discarded=33120 inFrames` = **1.38초**.
+  /// 그 통화 후반 자막이 그만큼 늦게 떴다.
+  /// ⚠ 입모양은 [_envQueue] 값 자체로 도는 별개 경로라 **안 늦는다** ⇒ 「입은 맞는데
+  ///   자막만 늦는」 모양으로 나타난다. 그래서 원인을 립싱크에서 찾으면 못 찾는다.
+  ///
+  /// ⭐ **큐를 비우는 모든 경로가 이 함수를 거쳐야 한다.** 예전엔 폭주 캡 경로만 계상하고
+  ///   (주석까지 달아 놨다) 취소 경로가 빠져 있었다 — 규칙을 아는 사람이 한 곳만 고친 것이다.
+  ///   그래서 숫자를 맞추는 대신 **자리를 하나로 모았다.**
+  void _dropEnvelopeFront(int count) {
+    if (count <= 0) return;
+    _envQueue.removeRange(0, count);
+    _envPlayed += count;
+  }
+
+  /// 봉투 큐를 통째로 비운다 — [_dropEnvelopeFront] 와 **같은 계상 규칙**을 쓴다.
+  void _clearEnvelope() => _dropEnvelopeFront(_envQueue.length);
+
+  /// 아직 발화되지 않은 마커들. `at` 은 [_envPlayed] 가 그 값에 닿으면 터진다는 뜻.
+  final List<
+          ({
+            int at,
+            String text,
+            int emotion,
+            int seq,
+            int serverBytes,
+            // ⭐ **서버가 이 마커에 실어 준 턴.** 지금까지 받아 놓고 버렸다 —
+            //   그래서 「자기 턴에 떴는가」를 판정할 근거가 없었다.
+            String turnId,
+          })>
+      _pendingMarkers = [];
+
+  // ── dev 자동 대화 ─────────────────────────────────────────────────────────
+  /// 지금까지 던진 문장 수. 다음 문장 고르기와 로그에 쓴다.
+  int _autoTalkSent = 0;
+
+  /// 예약된 다음 문장. 발화 종료마다 하나만 건다(겹치면 취소하고 다시 건다).
+  Timer? _autoTalkTimer;
+
+  /// 자동 대화를 시작한 시각 — [CascadeAutoTalk.duration] 이 지나면 스스로 끊는다.
+  DateTime? _autoTalkStartedAt;
+
+  /// [계측] 이 통화에서 받은 `sentence` 마커 수. **0 이면 서버가 안 보낸 것**이고,
+  /// 0 이 아닌데 화면이 비면 앱 문제다 — 첫 실기기 통화에서 그 경계를 가르는 값이다.
+  int _sentenceCount = 0;
+
+  /// [계측] 이 통화에서 **받아서 쓴** 힌트 / **버린** 힌트.
+  ///
+  /// ⭐ 서버도 `hint[turn=b4]: 3개` 를 찍는다 — 두 로그를 나란히 놓으면 **턴 단위로
+  /// 대조**되어 "서버가 안 보냈나 / 우리가 버렸나"가 한눈에 갈린다. 그게 요약에 넣는 이유다.
+  int _hintCount = 0;
+  int _hintDropped = 0;
+
+  // ⛔ `_serverEmotionSeen` 게이트도 없앴다 — 추측기가 사라져 가를 대상이 없다.
+  //   그 게이트는 "서버 값이 추측을 이긴다"를 위한 것이었는데, 이제 소스가 하나다.
 
   /// Extra holdback on top of the engine's own depth, to cover the platform
   /// channel hop. Small on purpose: the avatar switches picture on this signal,
@@ -272,7 +789,15 @@ class NormalCallController extends Notifier<CallState> {
   WebSocketChannel? _channel;
   StreamSubscription<dynamic>? _wsSub;
 
+  /// 통화 마이크 — **플랫폼마다 다른 구현이다.** 둘 중 하나만 살아 있다.
+  ///
+  ///     안드로이드   [_recRecorder]  (`record`)        ⭐ 전용 스레드
+  ///     그 외        [_recorder]     (`flutter_sound`)
+  ///
+  /// ⛔ 정리는 반드시 [_closeMicRecorders] 로 한다 — 한쪽만 닫으면 다음 통화에서
+  ///   «마이크가 이미 잡혀 있다» 로 열리지 않는데, 그때 나는 예외는 원인을 안 가리킨다.
   FlutterSoundRecorder? _recorder;
+  rec.AudioRecorder? _recRecorder;
 
   /// Native channel to force loudspeaker (speakerphone) routing during a call —
   /// see ios/Runner/AppDelegate.swift `beavertalk/audio`.
@@ -313,6 +838,121 @@ class NormalCallController extends Notifier<CallState> {
   /// CallKit call UUID backing this session, when there is one. [hangUp] ends it
   /// so the lock-screen call UI disappears together with the conversation.
   String? _callUuid;
+
+  /// 이 통화를 띄운 **알람의 통화 id**(수신통화만 있다. 서버가 푸시로 내려준 uuid).
+  ///
+  /// ## 왜 들고 있어야 하나 — 캐릭터가 여기 달려 있다
+  ///
+  /// 통화 캐릭터는 앱이 아니라 **서버가** 정한다(서버 `resolve_call_character`).
+  /// 폴백 사슬이 이렇다:
+  ///
+  ///     ① 수신통화  inbound_call_id → push_dispatch_log → alarm.character_id
+  ///     ② 그 외      member.character_id (사용자가 고른 대표 캐릭터)
+  ///
+  /// ⛔ **`continues_call_id` 는 그 판정에 안 들어간다.** 그래서 이어가는 구간이 이
+  ///   값 없이 열리면 서버는 알람을 되짚지 못하고 ② 로 떨어진다 — 알람 캐릭터로
+  ///   5분을 통화하다 「Keep talking」 한 순간 **대표 캐릭터로 바뀐다**(사장님 실기기
+  ///   2026-08-31: BABA → BIBI). 화면은 멀쩡히 이어져서 목소리와 아바타만 바뀐다.
+  ///
+  /// 예전엔 [start] 의 파라미터로 스쳐 지나갈 뿐이라 다음 구간에 실을 값이 없었다.
+  ///
+  /// ⛔ **[_teardown] 에서 지우지 마라.** 구간 경계의 [_reachSegmentEnd] 가 teardown 을
+  ///   먼저 돌리는데, 거기서 지우면 바로 뒤의 [continueCall] 이 읽을 값이 사라진다.
+  ///   [_connect] 가 연결마다 덮어쓰므로 새 통화(null 전달)에서 저절로 비워진다.
+  String? _inboundCallId;
+
+  /// 이 통화가 수행하는 **과제 id**. [_inboundCallId] 와 **같은 이유로 필드**다.
+  ///
+  /// ⛔ 지역 인자로만 두면 「Keep talking」 2구간부터 `assignment_id` 가 빠지고,
+  ///   서버가 그 값으로 하던 네 가지가 **한꺼번에 되돌아간다**:
+  ///   통화 언어 ko 고정(`call_session.py:438`) · 5분 고정(`:1670`) ·
+  ///   과제 목표 표현 주입(`:1291`) · 과제 귀속(link_call).
+  ///   ⚠ 에러가 안 난다. 통화는 멀쩡히 이어지고 화면도 정상이라 아무도 모른다 —
+  ///     이 프레임이 이미 두 번 겪은(`continues_call_id`·`inbound_call_id`)
+  ///     「필드가 조용히 빠지는」 패턴 그대로다.
+  ///   ⚠ 서버는 앞 조각에서 과제를 **못 되짚는다** — `call` 테이블에 `assignment_id`
+  ///     컬럼이 없고, 이어하기 검증도 과제를 승계하지 않는다(2026-09-06 확인).
+  ///     즉 클라가 매 조각마다 다시 싣는 것 말고는 방법이 없다.
+  /// [_connect] 가 연결마다 덮어쓰므로 새 통화(null 전달)에서 저절로 비워진다.
+  int? _assignmentId;
+
+  /// 이 통화가 수행하는 **코스**(표현학습·프리토킹). [_assignmentId] 와 **같은 이유로
+  /// 필드**다 — 「Keep talking」 재연결이 `start` 프레임을 다시 조립하는데, 지역 인자로
+  /// 두면 **2구간부터 null 이 되어** 평소 통화로 되돌아간다. 그리고 그때 **에러가 안 난다.**
+  ///
+  /// ⛔ 이 프레임이 같은 방식으로 이미 세 번 샜다 — `continues_call_id`(2026-08-24) ·
+  ///   `inbound_call_id`(2026-08-31) · `assignment_id`(2026-09-06). 네 번째를 만들지 마라.
+  /// [_connect] 가 연결마다 덮어쓰므로 새 통화(null 전달)에서 저절로 비워진다.
+  CallCourse? _callCourse;
+
+  /// QA 잠금 우회 플래그. [_callCourse] 와 **같은 이유로 필드**다 — 「Keep talking」
+  /// 재연결이 `start` 를 다시 조립할 때 인자로는 안 넘어간다.
+  bool _forceCourse = false;
+
+  // ── 끊김 없는 5분 조각 전환(Pro·Max) — seamless_fragment.dart ──────────────────
+  /// 전환 상태기계(F1). 시트는 Free 만 — 이 값은 화면에 안 나간다.
+  ///
+  ///   none → (5:00, 유료·대상 코스) pending / pendingFinal
+  ///   pending → (사용자 발화 뒤 turn_end) switching → reconnecting → none
+  ///   pendingFinal → (사용자 발화 뒤 turn_end) 종료 드레인(재연결 없음)
+  _FragmentSwitch _fragmentSwitch = _FragmentSwitch.none;
+
+  /// 5:00 뒤 사용자가 **말했나** — 로컬 VAD 유성 AND 비어 있지 않은 `input_transcript`.
+  /// 전환은 «사용자 발화 → 비버 응답 turn_end» 에서만 한다 — 5:00 에 비버가 말하던
+  /// 중이면 그 turn_end 로는 안 바꾸고, 소음만·전사만으로도 안 바꾼다.
+  final UserSpeechEvidence _speechSincePending = UserSpeechEvidence();
+
+  /// 소켓이 아직 안 열린 사이의 마이크 PCM(F3). `call_started` 뒤 순서대로 흘린다.
+  final MicPrebuffer _micPrebuffer = MicPrebuffer();
+
+  /// [_paidAccess] 가 풀린 값. 경계 판정은 1초 틱 안이라 await 를 못 한다.
+  bool? _paidResolved;
+
+  /// 서버 `call_started.fragment_index / max_fragments`(S4). 안 오면 null → 로컬 카운트.
+  int? _serverFragmentIndex;
+  int? _serverMaxFragments;
+
+  /// 이 조각이 끝나는 누적 초 — 서버 `call_started.remaining_s`(premium §4)로 잡는다.
+  /// 안 오면 null → 종전 5분 경계. 조각마다 새로 받는다.
+  int? _fragmentEndSec;
+
+  /// 이 조각에서 하루 예산이 끝나는가(`remaining_s` < [kServerFragmentCapSec]).
+  bool _budgetFinal = false;
+
+  /// 재연결 시도 횟수. 2회 실패면 기존 «이어하기» 시트로 폴백(계획 §5).
+  int _switchAttempts = 0;
+
+  /// 전환을 시작한 시점의 세대 — aecHint 왕복 사이에 끊겼는지 본다.
+  int _genAtSwitchStart = -1;
+
+  /// 새 소켓의 `call_started` 를 기다리는 자리.
+  Completer<bool>? _fragmentReady;
+
+  /// `fragment_end` 뒤 서버의 `fragment_saved` 를 기다리는 자리(값 = 저장된 call_id).
+  Completer<String?>? _fragmentSaved;
+
+  /// `fragment_saved` 를 기다리는 상한. 구서버는 이 프레임을 모르니 넘기면 종전처럼
+  /// close + 300ms 로 간다(계약 폴백).
+  ///
+  /// 5초(codex 2차): 서버 마지막 판정 LLM ≤2s + 저장 + usage. 실측 1447 은 1.6s 라 여유.
+  /// 타임아웃으로 폴백을 탄 횟수는 diag `fragment_saved_timeout` 에 남긴다 — 이 값이
+  /// 쌓이면 상한을 올리거나 서버 저장이 느려진 것이다.
+  static const Duration _fragmentSavedTimeout = Duration(seconds: 5);
+
+  /// 이 통화에서 `fragment_saved` 타임아웃으로 폴백을 탄 횟수(diag 요약용).
+  int _fragmentSavedTimeouts = 0;
+
+  /// 재연결 시도당 기다리는 상한.
+  static const Duration _fragmentReadyTimeout = Duration(seconds: 8);
+
+  /// close 뒤 start 까지 띄우는 간격 — 서버가 조각을 저장할 시간(계획 §2: ≥300ms).
+  static const Duration _fragmentCloseSettle = Duration(milliseconds: 300);
+
+  /// QA 플랜 강제. [_forceCourse] 와 같은 이유로 필드 — 2구간 재연결에 다시 싣는다.
+  PlanOverride? _planOverride;
+
+  /// 통화 시작 때 읽은 기기 IANA 시간대([DeviceTimezone]). 조각 재연결 프레임이 재사용한다.
+  String? _deviceTz;
 
   /// Set by [onCallKitAudioReady] (the plugin's didActivate event). A zero-latency
   /// accelerator only — [_awaitCallKitAudio] treats the native flag as truth.
@@ -434,7 +1074,14 @@ class NormalCallController extends Notifier<CallState> {
   /// once). At the old 400ms the first chunk alone satisfied the gate, so playback
   /// started and ran dry 471ms later — every single turn. The cushion has to be
   /// bigger than that opening chunk or it buys nothing.
-  static const int _prebufferBytes = _playbackSampleRate * 2 * 900 ~/ 1000;
+  /// ⚠ **통로마다 다르다.** 이 상수는 라이브(900ms) 기본값이자 필드 초기화용이고,
+  /// 실제로 쓰는 값은 [_prebufferBytes] 다 — 통화가 열릴 때 [_channelMode] 를 따라간다.
+  /// 근거는 [CallChannel.prebufferMs] 주석(두 서버가 오디오를 다른 모양으로 준다).
+  static const int _prebufferLiveBytes = _playbackSampleRate * 2 * 900 ~/ 1000;
+
+  /// 이번 통화의 지터 쿠션 하한(바이트). 통로가 정한다.
+  int get _prebufferBytes =>
+      _playbackSampleRate * 2 * _channelMode.prebufferMs ~/ 1000;
 
   /// Safety net for a *missed* `turn_end`: audio is queued, the cushion never
   /// fills, and nothing more arrives. Normally unused — a completed short
@@ -452,7 +1099,7 @@ class NormalCallController extends Notifier<CallState> {
   /// jitter — 900ms covers a 9s turn and nothing longer. Rather than tax every
   /// reply with a cushion sized for the worst turn, this tracks the deficit the
   /// call is actually showing.
-  int _cushionBytes = _prebufferBytes;
+  int _cushionBytes = _prebufferLiveBytes;
 
   /// Growth per starved turn (~150ms), ceiling (~1.2s), and decay per clean turn
   /// (~300ms).
@@ -589,6 +1236,80 @@ class NormalCallController extends Notifier<CallState> {
   /// point of the "~76초에 음성이 튐" investigation).
   int? _logAnchorMs;
 
+  // ── [계측] 서버로 보내는 통화 진단 ────────────────────────────────────────
+  //
+  // ⛔⛔ **[_log] 와 같은 자리에 두되 같은 운명이 아니다.** [_log] 는 `kDebugMode` 뒤에
+  //   있어 **릴리즈 빌드에서 통째로 사라진다** — 사장님이 실기기로 겪는 증상이 로그에
+  //   한 줄도 안 남는 이유가 그것이다. 이 싱크는 그 게이트 **밖**이다.
+  // ⛔ 그렇다고 항상 떠드는 것도 아니다. 켜고 끄는 주인은 **서버**다
+  //   (`call_started.diag` = off | summary | full). 앱을 다시 배포하지 않고 끌 수 있어야
+  //   한다 — 계측이 문제를 일으켰을 때 유일한 탈출구가 그것이다.
+  late final CallDiagSink _diag = CallDiagSink(
+    send: _send,
+    micIsGated: () => _micGated,
+  );
+
+  /// 진단 이벤트 1건. 핫패스에서 불리므로 **여기서 문자열을 만들지 않는다.**
+  ///
+  /// [atEpochMs] 는 **일어난 시각을 소급해 찍을 때**만 준다(예: `voice_off` 는 침묵이
+  /// 400ms 넘어야 알 수 있어, 아는 시각과 일어난 시각이 다르다).
+  void _dg(String e, [Map<String, Object?>? f, int? atEpochMs]) =>
+      _diag.add(e, fields: f, atEpochMs: atEpochMs);
+
+  /// [SyncAvatar] 가 흘리는 영상 계측을 받는다.
+  ///
+  /// ⛔ 위젯이 싱크를 직접 들고 있게 하지 않는다. 계측 정책(레벨·상한·전송 창)은 한
+  ///   곳에만 있어야 하고, 그 한 곳이 여기다 — 위젯은 「무슨 일이 있었는지」만 말한다.
+  void onAvatarDiag(String event, [Map<String, Object?>? fields]) =>
+      _dg(event, fields);
+
+  /// 통화 종료 직전 한 번 — 요약 1건을 얹고 남은 배치를 모두 밀어낸다.
+  ///
+  /// ⚠ 두 종료 경로(사용자 끊기 / 서버 `call_ended`)에서 **둘 다** 불릴 수 있다.
+  ///   그래도 안전하다 — 버퍼가 비면 [CallDiagSink.finish] 가 아무것도 안 보낸다.
+  void _flushDiagSummary() {
+    if (!_diag.enabled) return;
+    _dg('summary', {
+      'turns': _responseSamples.length,
+      'p50_ms': _responseMedianMs,
+      'sentences': _sentenceCount,
+      'cushion_ms': _cushionBytes ~/ 48,
+      'produced': _diag.buffer.produced,
+    });
+    _diag.finish();
+  }
+
+  /// GA4 `call_started` 를 보낸 시각(벽시계 ms). 대화 하나에 한 번만 센다.
+  ///
+  /// 5분 구간 경계에서 소켓이 새로 열리면 서버가 `call_started` 를 또 보내지만,
+  /// 사용자에게는 같은 대화다 — 이 값이 남아 있는 동안은 다시 세지 않는다.
+  int? _gaCallStartedAtMs;
+
+  void _gaCallStarted() {
+    if (_gaCallStartedAtMs != null) return;
+    _gaCallStartedAtMs = DateTime.now().millisecondsSinceEpoch;
+    AppAnalytics.instance.log(AppEvent.callStarted, {
+      'course': state.course?.wireValue ?? 'none',
+    });
+  }
+
+  /// 대화가 끝났다 — 종료 경로 여럿(사용자 끊기·서버 `call_ended`·마지막 조각·
+  /// 오류 teardown)에서 불려도 한 번만 보낸다.
+  void _gaCallEnded() {
+    final at = _gaCallStartedAtMs;
+    if (at == null) return;
+    _gaCallStartedAtMs = null;
+    final seconds = (DateTime.now().millisecondsSinceEpoch - at) ~/ 1000;
+    AppAnalytics.instance.log(AppEvent.callEnded, {'seconds': seconds});
+  }
+
+  /// 지금까지의 응답시간 중앙값(표본이 없으면 -1).
+  int get _responseMedianMs {
+    if (_responseSamples.isEmpty) return -1;
+    final sorted = [..._responseSamples]..sort();
+    return sorted[sorted.length ~/ 2];
+  }
+
   /// When the queue went empty *while the beaver was still speaking* — i.e. the
   /// server stopped feeding us mid-utterance. Cleared (and reported) when real
   /// audio resumes, which yields the stall duration: the number that decides
@@ -640,12 +1361,65 @@ class NormalCallController extends Notifier<CallState> {
 
   Timer? _elapsedTimer;
 
+  // ── 통화 시간 구간(5분) ─────────────────────────────────────────────────────
+
+  /// 이 통화의 유료 접근권. **통화가 시작될 때 한 번 굳힌다.**
+  ///
+  /// ⛔ **5분 경계에서 그때그때 읽으면 안 된다.** `subscriptionStatusProvider` 는
+  ///   autoDispose 라, 경계 시점에 다시 읽으면 서버 응답이 아직 안 실린 빈 상태
+  ///   (`SubscriptionStatus.none` → free)로 떨어질 수 있다. 그러면 **유료 회원의
+  ///   통화가 5분에 잘리고 구독 유도 시트가 뜬다.** 통화 도중 플랜이 바뀌는 것도
+  ///   이 통화에 반영하지 않는다 — 시작 시점의 권한으로 끝까지 간다.
+  ///
+  /// Future 로 들고 있는 이유: 연결 직후 **비동기로 띄워 두고** 5분 뒤에 받는다.
+  /// 시작 경로에서 await 하면 소켓 연결이 그만큼 늦어지는데, 이 값은 5분 뒤에야
+  /// 필요하다(서버가 첫 인사말을 만드는 시간을 까먹지 않으려는 것 — [_connect] 주석).
+  Future<bool>? _paidAccess;
+
+  /// 이 통화의 접근권을 확정한다. 서버 판정을 우선하고, 못 받으면 기존 추론으로 내려간다.
+  ///
+  /// ⛔ **서버 답을 그대로 믿으면 안 된다 — [applySessionEntitlement] 를 반드시 태운다.**
+  ///   결제는 [MockIapService] 를 타서 **서버에 닿지 않는다**(그 provider 주석: "the mock
+  ///   rail never reaches the server at all"). 그래서 방금 결제한 사람에게도 서버는
+  ///   계속 `free` 라고 답하고, 보정 없이 읽으면 **유료 회원이 무료로 판정된다.**
+  ///   실제로 그래서 결제 직후 [resumeAfterPaywall] 이 통화를 끊고 요약으로 보냈다
+  ///   (사장님 실기기 리포트 2026-08-22).
+  ///
+  /// 이 보정은 통화 **시작** 경로에도 똑같이 필요하다 — 홈에서 결제하고 바로 전화를
+  /// 걸어도 같은 이유로 5분에 잘린다.
+  ///
+  /// ⚠ [subscriptionStatusProvider] 를 그냥 읽어 대신하지 마라. autoDispose 라 여기서
+  ///   차갑게 읽으면 서버 값이 아직 없는 빈 상태로 떨어진다. 그래서 **서버는 직접
+  ///   fetch 해서 기다리고**, 세션 보정만 같은 규칙으로 얹는다.
+  Future<bool> _resolvePaidAccess() async {
+    final bought = ref.read(sessionEntitlementProvider);
+    try {
+      final status =
+          await ref.read(subscriptionRepositoryProvider).fetchStatus();
+      if (status != null) {
+        return applySessionEntitlement(status, bought).grantsPaidAccess;
+      }
+    } catch (_) {
+      // 서버가 못 주면(구버전·네트워크) 아래 폴백. 통화를 막을 이유는 아니다.
+    }
+    return ref.read(subscriptionStatusProvider).grantsPaidAccess;
+  }
+
+  /// 다음 구간을 여는 중인가 — [continueCall] 재진입 방어.
+  ///
+  /// 시트의 버튼은 연타될 수 있고, 재연결은 `await` 가 여러 번 들어간 긴 경로다.
+  /// 이게 없으면 소켓이 두 벌 열린다.
+  bool _continuing = false;
+
   /// Application-level keepalive: pings the server every [_keepaliveInterval] so
   /// the socket has periodic client→server traffic. Without it, a long beaver
   /// monologue (mic gated, no upstream bytes) lets a proxy/LB idle-timeout close
   /// the WS around ~1 min — the "1분 경과 시 voice 끊김" symptom.
   Timer? _keepaliveTimer;
   static const Duration _keepaliveInterval = Duration(seconds: 15);
+
+  /// 마지막 `ping` 을 보낸 시각. `pong.s` 와 짝지어 **서버 시계 오프셋**을 잡는다.
+  int? _pingSentAtMs;
 
   /// True once a close is expected (hang-up / `call_ended` / teardown) so the
   /// socket's `onDone` isn't mistaken for an unexpected mid-call drop.
@@ -684,13 +1458,172 @@ class NormalCallController extends Notifier<CallState> {
   // DROP mic frames instead of forwarding them. This is intentionally
   // half-duplex: the user cannot barge-in / interrupt the AI mid-sentence — an
   // accepted tradeoff to kill the self-talk loop.
+  //
+  // ── 통화 통로 (live ↔ cascade) ────────────────────────────────────────────
+
+  /// 이번 통화가 붙은 통로. 소켓 주소와 마이크 정책이 여기서 같이 갈린다.
+  ///
+  /// **통화별 런타임 값이다.** 예전엔 컴파일 상수 하나여서 **한 APK 가 한 통로만**
+  /// 됐다 — 두 통로를 같이 쓰려면 빌드를 두 벌 내야 했고, 되돌리는 데 스토어 심사가
+  /// 꼈다. [CallChannel.defaultChannel] 이 `bool.fromEnvironment` 를 기본값 출처로
+  /// 들고 있으므로 **아무도 인자를 안 주면 동작이 종전과 같다.**
+  ///
+  /// [_connect] 가 통화마다 새로 넣는다(초기 [_teardown] **뒤에**). 값의 출처는 지금은
+  /// 호출부이고, 서버가 통화 시작 응답에 실어 주게 되면 그쪽으로 바뀐다.
+  CallChannel _channelMode = CallChannel.defaultChannel;
+
+  /// [dev] 지터 쿠션 **성장을 끈다** — 통로 하한(캐스케이드 300ms)에 고정한다.
+  ///
+  /// ## 왜 재보나
+  ///
+  /// 실측: 서버는 캐스케이드 오디오를 **실시간의 103~105%** 로 보내는데도 쿠션이
+  /// **상한 1200ms 까지 자랐다.** 즉 **전달 부족이 아니라 재생 쪽 정체**다. 그렇다면
+  /// 쿠션을 키워도 못 막고 **첫 소리 지연만 그만큼 더한다**(쿠션은 모든 응답의 시작에
+  /// 그대로 얹힌다). 이 플래그는 그 맞바꿈의 **크기**를 재기 위한 것이다.
+  ///
+  /// ⭐ 둘 다 재야 답이 나온다: **첫 소리까지의 지연** vs **끊김**(무음 삽입 횟수·총 길이).
+  ///   `INFLATE` 줄의 `발화중구멍` 이 후자다.
+  ///
+  /// ⛔ 기본은 **현행 동작 유지**(성장 켬). 그리고 자동 대화와 **같은 통화에서 켜지 마라** —
+  ///   순정 곡선을 먼저 얻고, 쿠션 실험은 그다음이다. 섞으면 해석이 흔들린다.
+  /// 화면 토글(마이페이지 → 개발자 도구). **기본 꺼짐 = 제품 동작(쿠션이 자란다).**
+  /// ⛔ 예전엔 `bool.fromEnvironment('CUSHION_GROWTH_OFF')` 였다 — 켜려면 APK 를 구워야 했다.
+  bool get _cushionGrowthOff => CascadeCushionGrowthOff.enabled;
+
+  /// [Android] 통화 용도 오디오로 열지 여부 — 플랫폼 AEC 를 실제로 걸기 위한 스위치.
+  ///
+  /// **기본은 false = 종전 동작 그대로.** 켜면 세 곳이 한꺼번에 통화 경로로 넘어간다:
+  ///   ① 재생 트랙 `USAGE_VOICE_COMMUNICATION`/`CONTENT_TYPE_SPEECH`
+  ///   ② 녹음 소스 `AudioSource.voice_communication`
+  ///   ③ `AudioManager.MODE_IN_COMMUNICATION` (+ 헤드셋 없으면 스피커폰 강제)
+  ///
+  /// ⚠ **셋 중 하나만 바꾸면 의미가 없다.** 플랫폼 AEC 는 "통화 다운링크를 참조해
+  ///   업링크에서 뺀다"는 구조라, 재생만 통화 경로로 옮기고 녹음이 `DEFAULT` 로 남으면
+  ///   참조할 짝이 안 생긴다. 그래서 세 곳이 같은 플래그를 본다.
+  ///
+  /// ⚠ 켜면 **볼륨 스트림이 미디어→통화로 넘어가고 기본 라우팅이 리시버로 빠지려 한다.**
+  ///   그래서 기본을 끔으로 두고, 실기기에서 전/후를 재서 확인한 뒤에 켠다.
+  ///   리그는 이 플래그와 무관하게 런타임으로 전/후를 전환한다([debugOpenPlayback]).
+  /// ⛔ **컴파일 플래그를 없앴다(2026-08-14).** 이건 실험 스위치가 아니라 **제품 설정**이다 —
+  ///   끼어들기가 여기 달려 있다. 그런데 실험 플래그처럼 다뤄져서 **이게 빠진 APK 가
+  ///   돌아다녔고**, 사장님 폰에 그게 깔렸다. 서버는 마이크를 열라고 보내는데 클라가
+  ///   거부했고, 서버 로그엔 **기각 로그조차 없어서**(판정 자체가 안 돌았다) 반나절을 태웠다.
+  ///   ⇒ 「이 플래그가 없는 APK」라는 상태 자체를 없앤다. **항상 통화 용도로 연다.**
+  ///   ⇒ 끌 일이 생기면 **서버 env** 로 끈다(`CASCADE_MIC_ALWAYS_OPEN`). 30초면 되고
+  ///     APK 재배포가 필요 없다 — 되돌리기가 훨씬 싸다.
+  ///   ⚠ 리그는 여전히 런타임으로 전/후를 전환한다([debugOpenPlayback]의 인자).
+
+  /// 통화 용도 오디오 모드를 실제로 켰는가. 켠 쪽만 되돌린다 — 우리가 안 켠 켠 쪽만 되돌린다 — 우리가 안 켠
+  /// 모드를 teardown 이 NORMAL 로 돌리면 시스템 통화(CallKit/수신전화)를 밟는다.
+  bool _voiceModeSet = false;
 
   /// Count of mic frames actually forwarded to the socket (dev-log heartbeat).
   int _micFramesSent = 0;
 
-  /// True while the beaver is speaking (turn open and/or audio still playing).
-  /// While true, mic PCM is dropped (not sent to the socket).
-  bool _beaverSpeaking = false;
+  /// 서버로 **실제로 보낸** 마이크 PCM 누적 바이트. `route_change` 가 이 값을 싣는다.
+  ///
+  /// ⭐ ms 가 아니라 바이트인 이유는 `played_server_bytes` 와 **같다**: 마이크는
+  /// PCM16/16kHz mono = **32,000 B/s 고정**이라 바이트↔ms 는 산수이고, 서버가 받은
+  /// 바이트 수와 **정수로 대조**된다. 시각으로 보내면 어느 시계인지가 불분명하고
+  /// 네트워크 지터·시계 오차가 낀다 — 서버는 이 판정을 오디오 시각으로 한다.
+  int _uplinkBytes = 0;
+
+  /// 마지막으로 서버에 알린 라우트. 같은 값을 반복해 보내지 않는다(콜백은 라우트가
+  /// 안 바뀌는 사건에서도 온다 — 예: 볼륨 경로 변경).
+  String _lastReportedRoute = '';
+
+  /// 비버 오디오가 살아 있는가 — 턴이 열려 있거나 아직 스피커에서 나오는 중.
+  ///
+  /// ⚠ 이 플래그는 원래 세 가지를 겸직했다: ①마이크 게이트 ②재생 회계 ③아바타 UI.
+  ///   barge-in 을 켜면 ①이 사라지는데, ②③은 그대로 필요하다. 그래서 **저장 필드는
+  ///   하나로 두고 해석만 나눈다** — 마이크는 [_micGated] 를 보고, 재생 회계와 아바타는
+  ///   이 필드를 직접 본다. 전이 지점을 복제해 두 플래그로 나누면 둘이 어긋나는 새 버그가
+  ///   생긴다(전이 지점이 4곳: [_gateMic] / 행오버 / idle-ungate / [_teardown]).
+  bool _beaverAudioActive = false;
+
+  bool get _micGated {
+    if (state.micMuted) return true;
+    if (!_channelMode.gatesMic && _serverMicAlwaysOpen) {
+      return false;
+    }
+    return _beaverAudioActive;
+  }
+
+  // ── 서버가 준 세션 정책(`ready`) ─────────────────────────────────────────────
+  // ⭐ **서버가 이긴다.** 이 값들은 서버의 에너지 게이트·barge-in 확인 정책과 한 몸이라,
+  //   클라가 다르게 돌면 두 쪽이 다른 세계를 가정한다.
+  // ⚠ 와이어는 **snake_case** 다(`cascade_protocol.py` + 서버 데모 HTML 로 확인).
+  //   camelCase 로 읽으면 기능이 **조용히 아무 일도 안 한다** — 그래서 양쪽을 다 받는다.
+
+  /// `ready.mic_always_open`. 도착 전에는 false = **닫혀 있다**(안전한 쪽).
+  bool _serverMicAlwaysOpen = false;
+
+  /// `ready.bargein_confirm` — 'immediate' | 'transcript'. 지금은 로그·상태로만 둔다.
+  String _serverBargeinConfirm = '';
+
+  /// `ready.turn_silence_ms` — 서버 자체 침묵 타이머. 지금은 로그·상태로만 둔다.
+  int _serverTurnSilenceMs = 0;
+
+  /// [계측] 홀수 길이로 도착한 바이너리 프레임 수 — **서버 불변식 I6 의 외부 감시자**다.
+  ///
+  /// 우리 바이트 큐는 홀수가 와도 다음 청크와 이어붙어 재생이 안 깨진다(구조적으로 안전).
+  /// 그래서 **자연 신호가 없다** — 서버가 깨져도 우리는 모른다. 백엔드 회귀는 자기 코드만
+  /// 보므로 실기기에서 다른 경로가 생기면 못 본다. **0 이 아니면 서버 버그다.**
+  int _oddFrames = 0;
+
+  // ── barge-in: 취소(audio_cancel) 처리 상태 ─────────────────────────────────
+
+  /// `audio_cancel` 을 받은 뒤 **다음 `turn_start` 까지** 도착하는 바이너리를 버릴지.
+  ///
+  /// 서버 불변식이 이걸 안전하게 만든다: *서버는 비버 턴 밖에서 오디오를 보내지 않고,
+  /// 모든 비버 턴은 반드시 `turn_start` 로 시작한다.* 따라서 이 구간에 도착하는
+  /// 바이너리는 정의상 **취소된 턴의 잔여**뿐이다(WS 가 한 연결 내 순서를 보장한다).
+  ///
+  /// ⭐ 그 불변식이 서버 코드에 **이름으로** 박혀 있다(`cascade_session.py:736-742`,
+  /// `BeaverOutput` 독스트링 — 2026-08-14 백엔드 확인):
+  ///   I1. 비버 턴 밖에서는 오디오를 일절 보내지 않는다
+  ///   I2. 모든 비버 턴은 `turn_start` 로 시작한다 — 오디오 첫 바이트보다 **먼저**
+  ///   I4. 취소된 턴에는 `turn_end` 를 보내지 않는다 — `audio_cancel` 이 종결을 겸한다
+  /// 그리고 말이 아니라 **구조가 강제한다**: 오디오는 `_cur.pcm.extend()` 를 거쳐야
+  /// 송출에 닿고, `_cur` 은 `turn_start` 를 먼저 내는 자리에서만 생긴다. 턴 없이 보내려면
+  /// null 참조로 터진다 — 조용히 새는 경로가 아니다.
+  ///
+  /// ⛔ **관문을 푸는 곳은 `turn_start` 하나뿐이다.** 위 불변식이 깨지면(취소 뒤 `turn_start`
+  /// 없이 새 오디오가 오면) 클라는 그것을 잔여로 알고 **통째로 버린다** — 증상은
+  /// 「끼어든 뒤 비버가 영영 말을 안 한다」로 나타난다. 서버가 그 계약을 바꾸면
+  /// **여기 해제 조건을 같이 넓혀야 한다.**
+  ///
+  /// ⚠ 폐기는 [_onWsData] 에서 해야 한다. [_feedPlayerBody] 는 청크마다 [_gateMic] 을
+  ///   부르므로, 거기까지 들여보내면 잔여 바이트가 게이트를 되닫고 턴 상태를 되살린다.
+  bool _cancelledResidual = false;
+
+  /// 서버가 알려준 현재 비버 턴 id. 진행도 회신에 실어 어느 턴인지 밝힌다.
+  /// 비동기라 서버가 이미 다음 턴을 시작했을 수 있어, 없으면 아예 싣지 않는다.
+  String? _currentTurnId;
+
+  /// 엔진에 넣은 오디오의 출처 원장 — `played_server_bytes` 산출의 근거.
+  /// 서버발 오디오와 **우리가 만든 무음 필러**를 갈라야 "실제로 들은 양"이 나온다.
+  final PlaybackLedger _ledger = PlaybackLedger();
+
+  /// [_clearPlayback] 이 돌 때마다 증가. **비동기 경합 차단용**이다.
+  ///
+  /// [_pump] 은 `await FlutterPcmSound.feed(...)` 로 플랫폼채널을 다녀오는데, 그 사이
+  /// barge-in 이 들어와 재생을 비울 수 있다. 그때 피드가 돌아와 앵커와
+  /// `_audioTailUntilMs` 를 갱신하면 **방금 리셋한 값을 취소된 턴의 값으로 되살린다.**
+  /// [_pump] 은 await 전후로 이 값을 비교해 그 갱신을 건너뛴다.
+  int _clearGen = 0;
+
+  /// [계측] 직전 비버 턴이 열릴 때의 잔류 백로그(ms). 첫 턴은 -1.
+  int _prevTurnBacklogMs = -1;
+
+  /// [계측] 턴 경계 백로그가 연속으로 커진 횟수.
+  ///
+  /// 정상 버스트 백로그는 **턴 경계에서 반드시 0 으로 돌아온다** — 마이크 재개방 조건
+  /// 자체가 오디오 배수 완료([_audioDrained])라서 그렇다. 반면 서버 송출량이 실시간
+  /// 레이트를 넘으면(스트림 인플레이션) 백로그가 **턴 경계를 넘어 잔류하고 턴마다 커진다.**
+  /// 그래서 이 연속 증가 횟수가 둘을 가르는 지표다. 60초 폭주 가드([_maxQueueBytes])는
+  /// 이 구간을 표현하지 못한다 — 10초, 20초로 자라도 아무 말이 없다.
+  int _backlogRiseStreak = 0;
 
   /// True once `turn_end` for the current beaver turn has arrived; the gate
   /// only clears after this *and* the playback queue has drained.
@@ -735,11 +1668,31 @@ class NormalCallController extends Notifier<CallState> {
   /// `endAllCalls()` 로 CallKit 을 정리하고 이 경로로 들어오므로 [startFromIncoming]
   /// 을 타지 않는데, 그래도 서버는 어느 알람의 전화인지 알아야 그 알람의 캐릭터로
   /// 연결한다. CallKit 세션은 이미 없으므로 callUuid(끊기용)와는 분리한다.
-  Future<void> start({String? inboundCallId}) async {
+  ///
+  /// [callChannel] 은 이 통화가 붙을 통로다. 안 주면 [CallChannel.defaultChannel] —
+  /// 즉 **호출부를 안 고치면 동작이 종전과 같다.** 나중에 서버가 통화 시작 응답으로
+  /// 내려주면 그 값을 여기로 넘긴다(필드 계약은 아직 없다).
+  ///
+  /// [callCourse] 는 이 통화가 **무엇을 하는 통화인가**다(표현학습·프리토킹).
+  /// 안 주면 null → `start` 프레임에서 `call_type` 필드가 통째로 빠지고 **서버가
+  /// 판단한다.** 즉 기존 진입점의 동작은 한 글자도 안 바뀐다([CallCourse] 참조).
+  Future<void> start({
+    String? inboundCallId,
+    CallChannel? callChannel,
+    int? assignmentId,
+    CallCourse? callCourse,
+    bool forceCourse = false,
+    PlanOverride? planOverride,
+  }) async {
     final ok = await _connect(
       callUuid: null,
       inboundCallId: inboundCallId,
       callkitOwnedAudio: false,
+      callChannel: callChannel,
+      assignmentId: assignmentId,
+      callCourse: callCourse,
+      forceCourse: forceCourse,
+      planOverride: planOverride,
     );
     if (!ok) return;
     await _startAudio();
@@ -766,11 +1719,12 @@ class NormalCallController extends Notifier<CallState> {
   /// 캐릭터**로 통화를 연다 — 알람마다 캐릭터가 다를 수 있는데 대표 캐릭터 하나로는
   /// 표현할 수 없기 때문이다. 앱이 캐릭터를 고르는 게 아니라, 서버가 준 불투명한
   /// uuid 를 그대로 돌려줄 뿐이다.
-  Future<void> startFromIncoming({String? callUuid}) async {
+  Future<void> startFromIncoming({String? callUuid, CallChannel? callChannel}) async {
     final ok = await _connect(
       callUuid: callUuid,
       inboundCallId: callUuid,
       callkitOwnedAudio: true,
+      callChannel: callChannel,
     );
     if (!ok) return;
     final myGen = _gen;
@@ -791,10 +1745,19 @@ class NormalCallController extends Notifier<CallState> {
   ///
   /// Returns true when the socket is up and the caller should proceed to
   /// [_startAudio]. Never touches playback, the mic, or the audio session.
+  /// [keepCallkitCall] 은 **이 연결이 같은 CallKit 콜을 이어받는가**다(구간 이어가기).
+  /// [_connect] 는 언제나 teardown-first 라, 이걸 안 넘기면 그 teardown 이 방금 살려
+  /// 둔 콜을 도로 끊는다 — 이어가는 순간 잠금화면 통화가 사라진다.
   Future<bool> _connect({
     required String? callUuid,
     required String? inboundCallId,
     required bool callkitOwnedAudio,
+    CallChannel? callChannel,
+    bool keepCallkitCall = false,
+    int? assignmentId,
+    CallCourse? callCourse,
+    bool forceCourse = false,
+    PlanOverride? planOverride,
   }) async {
     if (_starting) return false;
     final phase = state.phase;
@@ -806,16 +1769,33 @@ class NormalCallController extends Notifier<CallState> {
     _starting = true;
     try {
       // teardown-first-then-connect → two sockets are structurally impossible.
-      await _teardown();
+      await _teardown(keepCallkitCall: keepCallkitCall);
       // Claim this start's generation AFTER the initial teardown. A hangUp() at
       // any await below bumps _gen, so `_stale(myGen)` aborts this start cleanly.
       final myGen = ++_gen;
+      // ⚠ 초기 [_teardown] **뒤에** 넣는다. teardown 이 통로를 기본값으로 되돌리므로
+      //   앞에서 넣으면 방금 정한 값이 지워진다.
+      _channelMode = callChannel ?? CallChannel.defaultChannel;
       _callkitOwnedAudio = callkitOwnedAudio;
       _callUuid = callUuid;
+      // ⭐ 이 통화가 어느 알람에서 왔는지를 **구간을 넘어 기억한다**([_inboundCallId]).
+      //   여기서 덮어쓰므로 새 통화(null 전달)에서는 저절로 비워진다.
+      _inboundCallId = inboundCallId;
+      // ⭐ 과제도 **구간을 넘어 기억한다** — 이유는 [_assignmentId] 참조.
+      _assignmentId = assignmentId;
+      // ⭐ 코스도 **구간을 넘어 기억한다** — 이유는 [_callCourse] 참조.
+      _callCourse = callCourse;
+      _forceCourse = forceCourse;
+      _planOverride = planOverride;
       _callkitAudioReady = false;
       _sessionStartedAt = DateTime.now();
       _gotFirstAudio = false;
-      state = const CallState(phase: CallPhase.connecting);
+      state = CallState(
+        phase: CallPhase.connecting,
+        channel: _channelMode,
+        course: _callCourse,
+        planOverride: _planOverride,
+      );
 
       // Every failure below tears down with keepError so the error phase SURVIVES
       // for the UI to react to. A plain _teardown() resets the state to idle,
@@ -852,11 +1832,34 @@ class NormalCallController extends Notifier<CallState> {
       // therefore the beaver's first word, by that request's entire latency.
       // Fire it alongside the socket instead. A failure just leaves the baseline
       // null and recovery degrades to "newest id".
+      // ⛔ **새 연결마다 비운다.** 안 비우면 이 구간의 `call_started` 가 (구버전 서버나
+      //   유실로) 안 왔을 때 **직전 구간의 id 가 남아** 다음 이어가기에 실린다 —
+      //   서버가 엉뚱한 대화를 요약해 넣는다. 없는 편이 틀린 것보다 낫다.
+      _serverCallId = null;
+      // ⛔ **여기서 붙잡아야 한다.** [continueCall] 의 `finally` 가 [_continuesCallId] 를
+      //   비우는데, `call_started` 는 그보다 늦게 올 수 있다(비동기 프레임이다).
+      //   그때 읽으면 늘 null 이라 **이어하기 성패를 영영 못 가린다.**
+      //   새 통화면 null 이 들어가 저절로 비워진다.
+      _askedContinueId = _continuesCallId;
       unawaited(_captureBaselineCallId(myGen));
 
       // Connect the WebSocket.
       _expectClose = false;
-      final url = normalcallWsUrl(token);
+      // 통로에 따라 소켓 주소가 갈린다. 토큰은 둘 다 같다(서버가 둘 다 Supabase
+      // 액세스 토큰을 `verify_token` 으로 본다).
+      final url = callStreamWsUrl(
+        token: token,
+        cascade: _channelMode.isCascade,
+      );
+      // 통로를 매 연결마다 찍는다. 캐스케이드일 때는 **전제조건 상태까지** 같이 찍는다 —
+      // 위험은 "운영 서버냐"가 아니라 "플랫폼 AEC 가 실제로 걸렸냐"다. 마이크가 상시
+      // 열리므로 AEC 없이 고르면 비버가 자기 목소리에 끊긴다(call_id=855 전례).
+      // ⚠ 게이트가 아니라 **정보**다. 막지 않는 이유는 [CallChannel] 문서 참조 —
+      //   클라는 지금 붙은 백엔드가 운영인지 알 방법이 없다(실서비스도 ENV=test 다).
+      _log(_channelMode.isCascade
+          ? '연결 통로: cascade → ${_channelMode.wsPath} '
+              '(마이크 상시개방 · Android 통화용 오디오=항상 켬)'
+          : '연결 통로: live → ${_channelMode.wsPath}');
       final channel = WebSocketChannel.connect(Uri.parse(url));
       _channel = channel;
       _wsSub = channel.stream.listen(
@@ -879,10 +1882,43 @@ class NormalCallController extends Notifier<CallState> {
       // 수신통화만 서버가 준 통화 id 를 `inbound_call_id` 로 되돌려주고, 서버가
       // 그걸로 알람을 되짚어 그 알람의 캐릭터를 쓴다. 홈에서 건 전화는 이 필드가
       // 없어 서버가 member.character_id 를 쓴다.
-      _send({
-        'type': 'start',
-        'inbound_call_id': ?inboundCallId,
-      });
+      // ⚠ 조립은 [buildStartFrame] 이 한다 — 필드가 조용히 빠지는 사고가 두 번
+      //   났고(그 문서 참조), 소켓 없이 테스트로 고정하기 위해 밖으로 뺐다.
+      _deviceTz = await DeviceTimezone.iana();
+      final startFrame = buildStartFrame(
+        aec: await _aecHint(),
+        sampleRate: _micSampleRate,
+        numChannels: _micNumChannels,
+        inboundCallId: inboundCallId,
+        continuesCallId: _continuesCallId,
+        // ⚠ 인자가 아니라 **필드**에서 읽는다. 이어가기 재연결은 인자를 안 넘기므로
+        //   인자를 쓰면 2구간부터 null 이 된다.
+        assignmentId: _assignmentId,
+        // ⚠ 같은 이유로 **필드**에서 읽는다([_callCourse]).
+        callType: _callCourse?.wireValue,
+        forceCourse: _forceCourse,
+        planOverride: _planOverride?.wireValue,
+        tz: _deviceTz,
+        tzOffsetMin: DeviceTimezone.offsetMinutes(),
+      );
+      // ⭐ **보낸 것을 그대로 남긴다.** 이 줄이 없어서 `continues_call_id` 가 한 번도
+      //   안 나가고 있다는 걸 아무도 몰랐다 — 화면상 통화는 멀쩡히 이어지고 비버만
+      //   기억을 못 하는데, 그건 서버 탓으로도 보이기 때문이다. 요청서에까지
+      //   「클라는 이미 보내고 있습니다」라는 **틀린 문장**이 실려 백엔드로 갔다.
+      //   지우지 마라. 이 한 줄이 클라/서버 책임을 가른다(2026-08-24).
+      _log('start 송신: $startFrame');
+      _send(startFrame);
+
+      _startAutoTalkIfEnabled();
+
+      // 이 통화의 유료 접근권을 **지금 띄워 둔다**(await 하지 않는다). 5분 뒤에야
+      // 필요한 값이라, 여기서 기다리면 서버가 첫 인사말을 만들 시간만 까먹는다.
+      // ⚠ 이어가기가 **아닐 때만** 다시 받는다 — 한 통화 안에서는 시작 시점의 권한으로
+      //   끝까지 간다(구간마다 다시 물으면 중간에 만료된 회원의 통화가 잘린다).
+      if (_continuesCallId == null) _paidAccess = null;
+      _paidAccess ??= _resolvePaidAccess();
+      // 경계 판정(1초 틱)이 동기로 읽을 수 있게 풀린 값을 받아 둔다.
+      unawaited(_paidAccess!.then((v) => _paidResolved = v));
 
       // Keepalive so an idle proxy/LB doesn't drop the socket mid-call.
       _startKeepalive();
@@ -899,6 +1935,251 @@ class NormalCallController extends Notifier<CallState> {
     } finally {
       _starting = false;
     }
+  }
+
+  /// 세션 시작에 실을 AEC 자기진단(`start.aec`).
+  ///
+  /// 서버는 이걸로 **세션마다** barge-in 확인 방식을 고른다 — 이어폰은 음향 결합이
+  /// 사실상 없어 즉시 끊어도 되지만, 스피커폰 + AEC 미적용이면 비버가 자기 목소리에
+  /// 끊긴다. 전역 설정 하나로는 이 차이를 못 담는다.
+  ///
+  /// ## ⛔ 관측한 것만 싣는다. 정책은 서버 몫이다
+  ///
+  /// - **`hw`(플랫폼 AEC 가 실제로 걸렸다)를 실측 전에 주장하지 않는다.**
+  ///   `AcousticEchoCanceler.create()` 가 호출된다는 것까지는 확인됐지만
+  ///   (flutter_sound_core AAR), **불렸다와 걸렸다는 다르다** — 기기가 지원하지 않으면
+  ///   조용히 실패한다. `hw` 는 서버에서 `immediate` 를 켜고, 그건 자기-대화 루프의
+  ///   문을 여는 것이다. 에코 실측이 나온 뒤에 매핑을 확정한다.
+  /// - **`immediate`/`transcript` 같은 정책을 클라가 요청하지 않는다.** "헤드셋이다"
+  ///   까지만 말한다. 클라가 정책을 실어 보내기 시작하면 서버가 정책을 바꿔도 구버전
+  ///   앱이 안 따라온다.
+  /// - 라우트를 못 읽으면 필드를 **빼서** 보낸다(서버 기본 None). `speaker` 로 추측해
+  ///   채우면 측정 실패와 스피커폰이 서버에서 같은 값이 된다.
+  ///
+  /// ## ⚠ 한계 두 가지
+  ///
+  /// ① **재생을 열기 전 시점의 스냅샷이다** — `start` 는 오디오보다 먼저 나가야 한다.
+  ///   그래도 우리가 쓰는 유일한 구분(헤드셋이냐 아니냐)은 물리적 사실이라 재생 전에도
+  ///   맞다. speaker/receiver 구분은 활성 라우트에 의존해 흔들릴 수 있는데, 그 둘은
+  ///   어차피 똑같이 `unknown` 으로 떨어진다.
+  /// ② **통화 도중 라우트가 바뀌면 서버에 알릴 방법이 없다.** 이어폰을 뽑으면
+  ///   speaker 로 넘어가는데 서버는 세션 시작의 `headset` 을 계속 믿는다. 프로토콜에
+  ///   세션 중 재통보가 없다(서버 주석도 P1 로 남겨 뒀다). 지금은 그대로 두되,
+  ///   "이어폰 뽑고 에코가 터졌는데 왜 immediate 로 남아 있었나"는 여기가 원인이다.
+  Future<Map<String, dynamic>> _aecHint() async {
+    final route = await AudioRouteProbe.currentRoute();
+    return <String, dynamic>{
+      'mode': route == 'headset' ? 'headset' : 'unknown',
+      if (route.isNotEmpty) 'route': route,
+    };
+  }
+
+  /// 통화 **도중** 출력 라우트가 바뀌면 기록한다 — **서버에는 더 안 보낸다.**
+  ///
+  /// ⛔ 서버가 09-23(C14 · `70e20e2`)에 `route_change` 를 프로토콜에서 지웠다. 보내면
+  ///   모르는 제어 메시지로 경고 로그만 남는다(QA F038 · 09-26 사용자 결정 「송신만 끊기」).
+  ///   아래는 보내던 시절의 설계 이유다 — 서버가 되살리면 [_send] 한 줄로 돌아간다.
+  ///
+  /// ## 왜 필요했나
+  ///
+  /// `start.aec` 는 **세션 시작 스냅샷**이다. 통화 중 이어폰을 뽑으면 서버는 계속
+  /// `headset` 을 믿고 즉시 끊기 정책을 유지하는데, 실제로는 **스피커폰**(에코 최악)이다.
+  /// 정확히 그 전이가 안 잡혀서 비버가 자기 목소리에 끊긴다.
+  ///
+  /// ## 페이로드가 `start.aec` 와 **같은 객체**인 이유
+  ///
+  /// 서버가 `_apply_aec_hint` 를 그대로 재사용할 수 있다. 필드를 새로 만들면 두 곳이
+  /// 갈라지고, **갈라진 두 곳은 반드시 어긋난다.**
+  ///
+  /// ⛔ 정책(`immediate`/`transcript`)은 여전히 **클라가 요청하지 않는다.** "지금 헤드셋이다"
+  ///   까지만 말한다. `hw` 도 실측 전까지 쓰지 않는다 — [_aecHint] 와 같은 규칙이다.
+  Future<void> _onRouteChanged() async {
+    final route = await AudioRouteProbe.currentRoute();
+    // 콜백은 라우트가 안 바뀌는 사건에서도 온다. 같은 값을 반복해 보내면 서버가
+    // 정책을 계속 다시 잡는다.
+    if (route == _lastReportedRoute) return;
+    _lastReportedRoute = route;
+    // 로그의 uplink 는 시각이 아니라 **업링크 누적 바이트**다(PCM16/16kHz mono =
+    // 32,000 B/s 고정) — 서버 로그와 정수로 대조할 수 있다.
+    _log('route (미전송) → ${route.isEmpty ? '(못 읽음)' : route} '
+        'uplink=${_uplinkBytes}B (=${_uplinkBytes ~/ 32}ms)');
+    _scheduleMicReopenForRoute(route);
+  }
+
+  /// iOS: 통화 중 헤드셋이 붙거나 떨어지면 마이크를 다시 연다(10-06 실기기 R7).
+  ///
+  /// 사용자 「에어팟으로 받았다가 스피커로 전환했다가 다시 에어팟 끼면 마이크 인식이
+  /// 아예 안돼」. 레코더는 통화 시작 때 한 번만 열리고, 그때의 헤드셋 유무로
+  /// VoiceProcessing 을 정한다([_startMic]). 경로가 바뀌면 네이티브는
+  /// `setPreferredInput` 만 해서, 이미 열린 레코더가 입력 형식이 다른 BT HFP 마이크에
+  /// 묶이지 못하고 조용히 멈춘다. 워치독은 「시작 뒤 6초 프레임 0」만 봐서 이걸 못 잡는다.
+  ///
+  /// 그래서 경로가 실제로 바뀐 뒤 잠깐 기다렸다가(세션이 자리 잡을 시간) 레코더를 새로
+  /// 연다 — [_startMic] 이 헤드셋 유무를 다시 읽어 VoiceProcessing 도 다시 정한다
+  /// (AirPods = 끔 · 스피커 = 켬, 에코 제거 복귀). 재오픈 뒤 워치독을 다시 무장해,
+  /// 새 레코더가 프레임을 못 내면 기존 복구(최대 [_micRestartMaxAttempts]회)가 이어받는다.
+  ///
+  /// ⛔ Android 는 여기서 하지 않는다 — 네이티브가 SCO 를 직접 다룬다(9a72d5c).
+  void _scheduleMicReopenForRoute(String route) {
+    if (kIsWeb || defaultTargetPlatform != TargetPlatform.iOS) return;
+    // 출력을 못 읽었으면(빈 값) 시작 때 규칙(헤드셋 연결 여부)으로 돌아간다.
+    _micRouteVoiceProcessing = route.isEmpty ? null : route != 'headset';
+    _micRouteReopenTimer?.cancel();
+    _micRouteReopenTimer = Timer(_micRouteReopenDelay, () async {
+      _micRouteReopenTimer = null;
+      final phase = state.phase;
+      if (phase != CallPhase.inCall && phase != CallPhase.connecting) return;
+      if (_micSub == null || _micRouteReopening) return; // 마이크가 아직 안 열렸다
+      _micRouteReopening = true;
+      final myGen = _gen;
+      _log('route 변경 → 마이크 재오픈(헤드셋 유무로 음성처리 다시 결정)');
+      await _logNativeAudio('mic-route/before-reopen');
+      try {
+        await _restartMic();
+      } catch (e) {
+        _log('mic route reopen failed: $e');
+      } finally {
+        _micRouteReopening = false;
+      }
+      if (myGen != _gen) return;
+      await _logNativeAudio('mic-route/after-reopen');
+      // 새 레코더가 실제로 프레임을 내는지 다시 본다.
+      _micFramesReceived = 0;
+      _armMicWatchdog();
+    });
+  }
+
+  /// 경로 변경 알림 뒤 레코더를 다시 열기까지 기다리는 시간 — 알림은 세션이 자리
+  /// 잡기 전에 온다(AppDelegate.handleAudioRouteChange 주석).
+  static const Duration _micRouteReopenDelay = Duration(milliseconds: 600);
+  Timer? _micRouteReopenTimer;
+  bool _micRouteReopening = false;
+
+  /// 통화 중 출력이 바뀐 뒤 정한 음성처리 여부(헤드셋 출력 = 끔 · 그 밖 = 켬).
+  /// null 이면 [_openMicStream] 이 시작 때 규칙(헤드셋 연결 여부)을 쓴다. 통화마다 초기화.
+  bool? _micRouteVoiceProcessing;
+
+  /// Opens the native PCM playback engine and starts the push pump.
+  ///
+  /// Extracted from [_startAudio] so the debug cancel rig ([debugOpenPlayback])
+  /// can bring up the exact same pipeline **without** a socket, mic, or audio
+  /// session. Copy-pasting it there would have drifted: this block owns the
+  /// per-call playback reset (cushion, ledger, barge-in flags), and a rig running
+  /// against a stale copy of that reset would measure a pipeline the call never
+  /// uses. Touches nothing outside playback.
+  Future<void> _openPlayback({bool? voiceCallAudio}) async {
+    // [AEC] 통화 용도로 열지. 리그만 인자로 덮어쓰고(리빌드 없이 전/후 측정), 통화
+    // 경로는 컴파일 플래그를 따른다.
+    // 리그만 인자로 덮어쓴다. 통화 경로는 **항상 통화 용도**다(컴파일 스위치 없앴다).
+    final voice = voiceCallAudio ?? true;
+    if (voice && !kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
+      // ⚠ setup() **전에** 모드를 세운다. AudioTrack 은 만들어지는 시점의 모드로
+      //   라우팅이 정해지므로, 뒤에 바꾸면 이번 트랙에는 안 먹는다.
+      final diag = await AudioRouteProbe.setVoiceCallMode(true);
+      _voiceModeSet = true;
+      _log('AEC: 통화 용도 오디오 ON → $diag');
+    }
+
+    // Open native gapless PCM playback at the server's 24kHz (no upsampling).
+    // The feed callback pulls from [_pcmQueue]; silence keep-alive prevents the
+    // underflow-churn stall that cut audio out after ~1 minute.
+    //
+    // NOTE: _pcmQueue/_pcmHead are NOT reset here. [_connect]'s teardown already
+    // cleared them, and anything that arrived since is the server's opening line
+    // waiting to be played — clearing it would silence exactly what we buffered.
+    _pcmActive = false;
+    _playing = false;
+    await FlutterPcmSound.setLogLevel(LogLevel.error);
+    await FlutterPcmSound.setup(
+      sampleRate: _playbackSampleRate,
+      channelCount: _playbackChannels,
+      // MUST be passed — both defaults are wrong for a phone call:
+      //
+      // `iosAllowBackgroundAudio` defaults to FALSE, and the plugin's `feed`
+      // handler then does this whenever the app is not active:
+      //     if (!mIsAppActive && !mAllowBackgroundAudio) {
+      //         [self.mSamples setLength:0];   // discards the audio
+      //         result(@YES);                  // and reports SUCCESS
+      //     }
+      // i.e. every PCM chunk is silently thrown away the moment the screen
+      // locks, with no error for us to see — the beaver went mute on the lock
+      // screen and audio "came back" only when the app was reopened
+      // (mIsAppActive flips on UIApplicationDidBecomeActive).
+      //
+      // `iosAudioCategory` defaults to `playback`, and setup() applies it with
+      // setCategory: alone — no options, no mode — wiping playAndRecord +
+      // allowBluetooth + defaultToSpeaker + voiceChat. `playback` has no input
+      // at all. We re-assert the full category right after (routeToSpeaker),
+      // but ask for the closest one so the window is harmless.
+      iosAudioCategory: IosAudioCategory.playAndRecord,
+      iosAllowBackgroundAudio: true,
+      androidVoiceCallAudio: voice,
+    );
+    _pcmSetup = true;
+    await FlutterPcmSound.setFeedThreshold(_feedThresholdFrames);
+    FlutterPcmSound.setFeedCallback(_onFeed);
+    _pcmActive = true;
+    _lastFeedSilent = null;
+    _clearEnvelope();
+    // ⛔ 큐에 꽂아 둔 **미발화 마커**도 같이 버린다. 안 지우면 다음 턴에 지난 턴
+    //   표정·자막이 뜬다(그 오디오는 이미 폐기됐다).
+    _pendingMarkers.clear();
+    // 진행 중이던 드러내기도 멈춘다 — 남은 글자가 새면 안 들은 말이 자막에 남는다.
+    _resetReveal();
+    // 새 통화는 화면에 아무 대사도 없다 — 첫 대사는 그냥 쓰면 된다(교체할 것이 없다).
+    _subtitleReplaceOnNext = false;
+    _startEnvelope();
+    _startEventLoopProbe(); // [계측] 청크 갭의 원인(서버 공백 vs 루프 블록) 판별용
+    _startInflateLog(); // [계측] 무음 주입으로 스트림이 부풀어 백로그가 자라는지 판별용
+
+    // Per-call playback state. The cushion in particular must not carry over:
+    // a rough previous call must not tax this one.
+    _logAnchorMs = DateTime.now().millisecondsSinceEpoch;
+    _starveAtMs = null;
+    _cushionBytes = _prebufferBytes;
+    _turnStarved = false;
+    _turnFirstAudioFed = false;
+    _userTurnEndForAudioMs = null;
+    _turnStartDelayMs = null;
+    // 발화 감지도 통화 스코프다 — 이전 통화의 시작 시각이 남으면 첫 턴 값이 통째로 부풀린다.
+    _firstVoicedAtMs = null;
+    _lastVoicedAtMs = 0;
+    _frozenFirstVoicedAtMs = null;
+    _voicedAnchorConsumed = 0;
+    _turnStartVoicedUsed = 0;
+    _gatedLoudFrames = 0;
+    // ⛔ 계측 앵커도 **통화 스코프**다. 서버 `call_started` 에서 잡으면 두 가지가 깨진다:
+    //   ① 그 프레임 **전에** 일어난 일(마이크 개방·첫 롤업)이 버퍼 비우기에 함께 지워지고
+    //   ② 이 컨트롤러는 재사용되므로, 두 번째 통화가 첫 통화의 버퍼·손실수를 물려받는다.
+    //   ⇒ 통화 리셋과 같은 자리에 둔다. `call_started` 는 **레벨만** 바꾼다.
+    _diag.start(_logAnchorMs!);
+    _responseSamples.clear();
+    responseSummary.value = '';
+    _resumeFlushed = false;
+    // barge-in 상태도 통화 스코프다: 이전 통화의 취소 구간이 살아 있으면 새 통화의
+    // 첫 인사가 통째로 폐기된다.
+    _cancelledResidual = false;
+    _cancelledResidualBytes = 0;
+    _currentTurnId = null;
+    _ledger.reset();
+    _prevTurnBacklogMs = -1;
+    _backlogRiseStreak = 0;
+
+    // Drive playback from Dart's own clock instead of the plugin's feed
+    // callback. Note this also sidesteps FlutterPcmSound.start(), which only
+    // kicks when the plugin's *static* `_needsStart` flag is true — and that
+    // flag is NEVER reset by release()/setup(): the first call feeds audio →
+    // sets it false → it stays false, so on the 2nd call start() no-ops and
+    // playback never begins (the "재통화 시 음성 안 나옴" bug). Pumping ourselves
+    // is independent of that stale flag and works on every call.
+    // 통화 도중 라우트 전환을 서버에 알린다(`route_change`). 재생을 연 뒤에 건다 —
+    // 그래야 첫 조회가 실제 통화 라우트를 본다(재생 전에는 세션이 아직 안 굳었다).
+    _lastReportedRoute = await AudioRouteProbe.currentRoute();
+    AudioRouteProbe.setRouteChangeListener(() => unawaited(_onRouteChanged()));
+    _startPushFeed();
+    unawaited(_pump()); // don't wait a tick to open the stream
+    _log('playback started @ ${_playbackSampleRate}Hz '
+        '(queued ${_queueLen}B waiting)');
   }
 
   /// Stage 2 — open playback and the mic, then drain whatever the server already
@@ -920,7 +2201,11 @@ class NormalCallController extends Notifier<CallState> {
       // 권한 팝업을 띄운다. 거부 상태면 마이크 없이는 대화가 불가하므로 안내하고 끝낸다
       // (소켓은 이미 열려 있으므로 반드시 teardown 한다).
       final micStatus = await Permission.microphone.request();
-      if (!micStatus.isGranted) {
+      if (!micStatus.isGranted && CascadeAutoTalk.enabled) {
+        // 자동 대화는 업링크가 없어도 성립한다 — 권한 거부로 통화를 못 열면
+        // 에뮬레이터에서 6분 곡선을 아예 못 잰다. 제품 경로는 아래처럼 그대로 막힌다.
+        _log('⚠ [auto] 마이크 권한이 없다 — 자동 대화라 통화는 계속한다');
+      } else if (!micStatus.isGranted) {
         state = state.copyWith(
           phase: CallPhase.error,
           errorMsg: micStatus.isPermanentlyDenied
@@ -979,69 +2264,7 @@ class NormalCallController extends Notifier<CallState> {
       }
       await _logNativeAudio('startAudio/session-ready +${_elapsedSinceStartMs}ms');
 
-      // Open native gapless PCM playback at the server's 24kHz (no upsampling).
-      // The feed callback pulls from [_pcmQueue]; silence keep-alive prevents the
-      // underflow-churn stall that cut audio out after ~1 minute.
-      //
-      // NOTE: _pcmQueue/_pcmHead are NOT reset here. [_connect]'s teardown already
-      // cleared them, and anything that arrived since is the server's opening line
-      // waiting to be played — clearing it would silence exactly what we buffered.
-      _pcmActive = false;
-      _playing = false;
-      await FlutterPcmSound.setLogLevel(LogLevel.error);
-      await FlutterPcmSound.setup(
-        sampleRate: _playbackSampleRate,
-        channelCount: _playbackChannels,
-        // MUST be passed — both defaults are wrong for a phone call:
-        //
-        // `iosAllowBackgroundAudio` defaults to FALSE, and the plugin's `feed`
-        // handler then does this whenever the app is not active:
-        //     if (!mIsAppActive && !mAllowBackgroundAudio) {
-        //         [self.mSamples setLength:0];   // discards the audio
-        //         result(@YES);                  // and reports SUCCESS
-        //     }
-        // i.e. every PCM chunk is silently thrown away the moment the screen
-        // locks, with no error for us to see — the beaver went mute on the lock
-        // screen and audio "came back" only when the app was reopened
-        // (mIsAppActive flips on UIApplicationDidBecomeActive).
-        //
-        // `iosAudioCategory` defaults to `playback`, and setup() applies it with
-        // setCategory: alone — no options, no mode — wiping playAndRecord +
-        // allowBluetooth + defaultToSpeaker + voiceChat. `playback` has no input
-        // at all. We re-assert the full category right after (routeToSpeaker),
-        // but ask for the closest one so the window is harmless.
-        iosAudioCategory: IosAudioCategory.playAndRecord,
-        iosAllowBackgroundAudio: true,
-      );
-      _pcmSetup = true;
-      await FlutterPcmSound.setFeedThreshold(_feedThresholdFrames);
-      FlutterPcmSound.setFeedCallback(_onFeed);
-      _pcmActive = true;
-      _lastFeedSilent = null;
-      _envQueue.clear();
-      _startEnvelope();
-      _startEventLoopProbe(); // [계측] 청크 갭의 원인(서버 공백 vs 루프 블록) 판별용
-      _startInflateLog(); // [계측] 무음 주입으로 스트림이 부풀어 백로그가 자라는지 판별용
-
-      // Per-call playback state. The cushion in particular must not carry over:
-      // a rough previous call must not tax this one.
-      _logAnchorMs = DateTime.now().millisecondsSinceEpoch;
-      _starveAtMs = null;
-      _cushionBytes = _prebufferBytes;
-      _turnStarved = false;
-      _resumeFlushed = false;
-
-      // Drive playback from Dart's own clock instead of the plugin's feed
-      // callback. Note this also sidesteps FlutterPcmSound.start(), which only
-      // kicks when the plugin's *static* `_needsStart` flag is true — and that
-      // flag is NEVER reset by release()/setup(): the first call feeds audio →
-      // sets it false → it stays false, so on the 2nd call start() no-ops and
-      // playback never begins (the "재통화 시 음성 안 나옴" bug). Pumping ourselves
-      // is independent of that stale flag and works on every call.
-      _startPushFeed();
-      unawaited(_pump()); // don't wait a tick to open the stream
-      _log('playback started @ ${_playbackSampleRate}Hz '
-          '(queued ${_queueLen}B waiting)');
+      await _openPlayback();
       if (myGen != _gen) return _abortStart();
 
       // iOS: settle the category and select a Bluetooth headset input BEFORE
@@ -1057,7 +2280,22 @@ class NormalCallController extends Notifier<CallState> {
       }
 
       // Start streaming the mic to the server.
-      await _startMic();
+      //
+      // ⛔ **자동 대화에서만** 마이크 실패를 견딘다. 에뮬레이터엔 마이크가 없어
+      //   (`AUDIO_DEVICE_NONE`) `_startMic` 이 재시도 끝에 던지고, 그러면 통화가 통째로
+      //   죽어 **재려던 6분 곡선을 못 잰다.** 자동 대화는 글자를 직접 주입하므로 업링크가
+      //   없어도 성립한다.
+      // ⚠ 제품 경로는 **그대로 죽는다.** 마이크 없는 통화는 실사용자에게 무의미하고,
+      //   조용히 이어 가면 "말해도 반응이 없다"가 된다 — 그건 지금 고치는 종류의 결함이다.
+      if (CascadeAutoTalk.enabled) {
+        try {
+          await _startMic();
+        } catch (e) {
+          _log('⚠ [auto] 마이크를 못 열었다 — 자동 대화라 통화는 계속한다: $e');
+        }
+      } else {
+        await _startMic();
+      }
       if (myGen != _gen) return _abortStart();
       // The recorder can open successfully and still capture nothing when the
       // session/route was not settled yet — a silent failure with no exception.
@@ -1090,6 +2328,11 @@ class NormalCallController extends Notifier<CallState> {
     try {
       final base = await ref.read(normalcallRepositoryProvider).latestCallId();
       if (myGen != _gen) return;
+      // ⚠ 이 캡처는 소켓과 **경주한다.** 서버가 접속 시점에 통화 행을 만들면, 이 HTTP 가
+      //   늦게 도착할 때 기준값이 **이 통화 자신의 id** 가 되어 되짚기가 영영 실패한다.
+      //   (2026-08-24 실측에서는 이겼다 — 기준 1181 / 이 통화 1182.) 되짚기가 예비로
+      //   내려간 지금은 치명적이지 않지만, 로그로 남겨 두면 실패했을 때 바로 보인다.
+      _log('baseline 캡처: ${base ?? '(없음)'}');
       state = state.copyWith(baselineCallId: base);
     } catch (_) {
       // Recovery degrades to "newest id".
@@ -1192,10 +2435,19 @@ class NormalCallController extends Notifier<CallState> {
   }
 
   Future<void> _hangUp() async {
+    // ⭐ **소켓을 닫기 전에** 남은 계측을 밀어낸다. 여기서 안 보내면 통화의 마지막
+    //   구간 — 하필 「끊겼다」를 조사할 때 제일 보고 싶은 그 구간 — 이 통째로 사라진다.
+    //   `finish()` 는 마이크 창을 기다리지 않는다(기다릴 다음 창이 없다).
+    _flushDiagSummary();
+    _gaCallEnded();
     // Invalidate any in-flight start() so it can't re-establish the pipeline
     // after we tear it down here.
     _gen++;
     _expectClose = true;
+    // 이어가지 않고 끝냈으니 되짚기는 버린다. 남겨 두면 **다음 통화의**
+    // [continueCall] 이 지난 통화의 id 를 집어 서버가 엉뚱한 대화를 요약해 넣는다.
+    // (`_gen` 이 올라가 되짚기 자체도 곧 null 로 빠진다 — 이건 그 흔적까지 지우는 것.)
+    _pendingSegmentCallId = null;
     if (state.phase == CallPhase.ended || state.phase == CallPhase.idle) {
       await _teardown();
       return;
@@ -1218,28 +2470,115 @@ class NormalCallController extends Notifier<CallState> {
 
   /// Opens the recorder and pipes its PCM16k stream straight to the socket.
   Future<void> _startMic() async {
-    final controller = StreamController<Uint8List>();
-    _micController = controller;
-    _micSub = controller.stream.listen((bytes) {
+    // [실험] 마이크를 아예 안 연다 — 플랫폼 스레드 부하에서 마이크를 빼고 곡선을 본다.
+    // ⛔ 게이팅으로는 이걸 못 한다(게이팅은 Dart 에서 버리므로 채널은 그대로 탄다).
+    if (CascadeMicOff.enabled) {
+      _log('⚠ [실험] MIC_OFF — 레코더를 열지 않는다. 사람 목소리는 서버에 안 간다. '
+          '자동 대화는 STT 를 안 타므로 대화는 계속된다');
+      return;
+    }
+    if (CascadeMicAlwaysGated.enabled) {
+      _log('⚠ [실험] MIC_ALWAYS_GATED — 마이크는 열되 **업링크만** 통화 내내 막는다. '
+          '프레임은 계속 채널을 건너온다(그게 이 실험의 요점이다). uplink_bytes 는 0 이 된다');
+    }
+    // ⭐ 스트림이 **null 일 수 있다** — MIC_TO_FILE 실험은 파일로 녹음하므로 프레임이
+    //   Dart 로 안 올라온다(그게 그 실험의 요점이다). 그때는 리스너를 안 붙인다.
+    final stream = await _openMicStream();
+    if (stream != null) _micSub = stream.listen(_onMicFrame);
+  }
+
+  /// 마이크 프레임 한 장을 계측하고, 게이트를 통과하면 소켓으로 보낸다.
+  ///
+  /// ⚠ 초당 45~90회 돈다 — 여기서 비싸지면 우리가 재려던 것을 우리가 흔든다.
+  void _onMicFrame(Uint8List bytes) {
+    {
       // Counted BEFORE the gate: this measures whether the recorder is capturing
       // at all, which is a different failure from "gated because the beaver is
       // speaking". [_armMicWatchdog] keys off it.
       _micFramesReceived++;
+      // [계측] 이 창에서 **네이티브가 올려 준** 건수·바이트. 묶기 실험의 눈금이다 —
+      // 묶음 크기를 바꿨을 때 건수가 실제로 줄었는지는 이 값으로만 확인된다
+      // (dart-define 을 줬다고 네이티브가 그렇게 준다는 보장이 없다).
+      _micRxWindow++;
+      _micRxBytesWindow += bytes.length;
+      // ⭐ [계측 2026-08-14] 마이크 건수가 통화 도중 45/s → 92/s 로 계단을 밟는데
+      //   **건당 바이트는 704B 그대로**인 현상을 가른다. 갈래가 둘이고 수사 방향이 정반대다:
+      //     ⓐ 같은 버퍼가 두 번 올라온다(네이티브/채널 중복)
+      //     ⓑ 서로 다른 프레임이 두 배 = 캡처가 두 배 속도(HAL/장치)
+      //
+      // ⛔ **내용 비교(직전 프레임과 같은가)는 이 판에서 못 쓴다.** 실측으로 확인했다
+      //   (2026-08-14): 에뮬 호스트 마이크가 무음이라 프레임이 전부 0 이고, 계단 **전에도**
+      //   중복률이 100% 로 나왔다. 무음에서는 ⓐ든 ⓑ든 100% 다 — 아무것도 못 가른다.
+      //
+      // ⭐ 그래서 **도착 간격**으로 가른다. 이건 소리 내용과 무관하다:
+      //     ⓐ 같은 버퍼 두 번 → 짝지어 도착한다: ~0ms, ~22ms, ~0ms, ~22ms …
+      //                        ⇒ **2ms 미만 간격이 전체의 절반 가까이** 나온다
+      //     ⓑ 두 배 속도     → 고르게 ~11ms
+      //   한 프레임이 704B = 352샘플 = 16kHz 에서 **22ms** 다. 그게 기준자다.
+      final nowUs = DateTime.now().microsecondsSinceEpoch;
+      final prevUs = _micPrevAtUs;
+      if (prevUs != 0) {
+        final gapUs = nowUs - prevUs;
+        if (gapUs < 2000) _micBackToBackWindow++; // 2ms 미만 = 사실상 동시 도착
+        _micGapSumUs += gapUs;
+        _micGapCount++;
+      }
+      _micPrevAtUs = nowUs;
+      // ⭐ [계측] **첫 유성 프레임 시각.** 정수 산술만 쓰고 할당이 없다 — 초당 45~90회
+      //   도는 자리라 여기서 비싸지면 우리가 재려던 것을 우리가 흔든다.
+      // ⚠ `gated:` 를 넘기는 이유 — 반이중 게이트가 닫혀 있는 동안에도 이 줄은 돈다.
+      //   그때 잡히는 큰 소리는 **비버 목소리가 AEC 를 새어 마이크로 돌아온 것**일 수
+      //   있어서, 그걸 「사용자가 입을 열었다」로 기록하면 응답시간의 원점이 통째로
+      //   앞당겨진다. 앵커는 열린 마이크에서만 잡고, 닫힌 쪽은 따로 센다.
+      _markVoicedIfLoud(bytes, gated: _micGated);
       // Half-duplex gate: while the beaver is speaking (or its audio tail is
       // still decaying), DROP the frame so the AI's voice picked up by the mic
       // is never echoed back to the server's STT (which caused the self-talk
       // loop on speakerphone). The recorder keeps running so the audio
       // session / AEC stays stable; we only skip forwarding.
-      if (_beaverSpeaking) return;
+      //
+      // 캐스케이드 barge-in 에서는 [_micGated] 가 항상 false 라 이 줄이 통과된다 —
+      // 마이크 상시 개방. 끼어들기 판정은 서버가 한다.
+      // [실험] 업링크만 뺀다 — 프레임은 이미 채널을 건너왔고(①), 레코더·AEC 도
+      // 그대로 돈다(②③). 여기서 버리면 빠지는 것은 ④ 소켓 전송뿐이다.
+      if (CascadeMicAlwaysGated.enabled) return;
+      if (_micGated) return;
       final ch = _channel;
-      if (ch != null) {
-        ch.sink.add(bytes);
+      // ⛔ 전환 중이면 소켓이 살아 있어도 프리버퍼다(qa-fable 2차) — fragment_saved 를
+      //   기다리는 동안 옛 소켓은 서버 펌프가 내려간 시체라, 여기로 보내면 첫 발화가
+      //   사라진다. 순서가 규칙이라 [micFrameRoute] 로 뺐다.
+      final route = micFrameRoute(
+        switching: _fragmentSwitch == _FragmentSwitch.switching ||
+            _fragmentSwitch == _FragmentSwitch.reconnecting,
+        socketOpen: ch != null,
+      );
+      if (route == MicFrameRoute.prebuffer) {
+        _micPrebuffer.push(bytes);
+      } else if (route == MicFrameRoute.socket) {
+        ch!.sink.add(bytes);
+        // ⭐ 업링크 누계 — `route_change.uplink_bytes` 의 기준값이다. **보낸 것만** 센다
+        //   (게이팅으로 버린 프레임은 서버가 받지 못했으므로 서버 카운터와 어긋난다).
+        _uplinkBytes += bytes.length;
         if (++_micFramesSent % 50 == 0) {
           _log('mic → sent $_micFramesSent frames (your voice flowing)');
         }
       }
-    });
+    }
+  }
 
+  /// 마이크를 열고 PCM16k 스트림을 돌려준다. 파일 녹음 실험이면 **null**.
+  ///
+  /// ## ⭐ 플랫폼마다 다른 플러그인을 쓴다 (2026-09-06)
+  ///
+  ///     안드로이드   `record`         전용 캡처 스레드 → 메인 루퍼를 안 막는다
+  ///     그 외        `flutter_sound`  기존 그대로
+  ///
+  /// ⚠ iOS 를 안 바꾼 이유가 있다 — 아래 [useVoiceProcessing] 의 헤드셋 분기는
+  ///   VoiceProcessingIO 를 직접 끄는 것이고, `record` 에는 **대응하는 스위치가 없다.**
+  ///   그걸 잃으면 AirPods 로 목소리가 안 잡히던 옛 결함이 되돌아온다. 그리고 지금
+  ///   고치려는 증상(영상 버벅임)은 안드로이드에서 잰 것이다 — 안 아픈 쪽을 같이
+  ///   수술할 이유가 없다.
+  Future<Stream<Uint8List>?> _openMicStream() async {
     // 마이크 열기 재시도: 잠금화면 accept 직후엔 (아직 잠금 해제/포그라운드 전환 중이거나)
     // 직전 CallKit 통화가 잡았던 오디오 세션(Android MODE_IN_COMMUNICATION·오디오 포커스)이
     // 아직 해제되기 전이라 AudioRecord 생성이 실패할 수 있다
@@ -1251,7 +2590,21 @@ class NormalCallController extends Notifier<CallState> {
     // recorder follows the session route and uses the BT mic. Voice processing is
     // only needed for the loudspeaker case (echo cancellation) — no headset there.
     var useVoiceProcessing = true;
-    if (!kIsWeb && defaultTargetPlatform == TargetPlatform.iOS) {
+    // [실험] AEC 만 뺀다 — 마이크 파이프라인 중 **무엇이** 플랫폼을 막는지 가른다.
+    if (CascadeMicNoAec.enabled) {
+      useVoiceProcessing = false;
+      _log('⚠ [실험] MIC_NO_AEC — 음성처리/에코제거를 끄고 연다. '
+          '에코가 안 걸리니 스피커폰에서 비버가 자기 목소리에 끊길 수 있다(계측 전용)');
+    }
+    final routeVp = _micRouteVoiceProcessing;
+    if (!CascadeMicNoAec.enabled && routeVp != null) {
+      // 통화 중 출력이 바뀌어 다시 여는 경우 — 「헤드셋이 붙어 있나」가 아니라 **지금 소리가
+      // 나가는 곳**으로 정한다. AirPods 를 낀 채 출력만 스피커로 고르면 헤드셋은 여전히
+      // 「연결됨」이지만 입력은 내장 마이크다(10-06 실기기 R7).
+      useVoiceProcessing = routeVp;
+    } else if (!CascadeMicNoAec.enabled &&
+        !kIsWeb &&
+        defaultTargetPlatform == TargetPlatform.iOS) {
       try {
         final headset = await _audioRouteChannel
             .invokeMethod<bool>('isHeadsetConnected');
@@ -1259,35 +2612,197 @@ class NormalCallController extends Notifier<CallState> {
       } catch (_) {}
     }
 
+    // [실험] 스트림 대신 파일로 녹음한다 — 프레임당 채널 메시지만 0 이 되고
+    // 레코더 스레드·AEC 는 그대로 돈다. ①과 ②를 가르는 유일한 자리다.
+    String? toFilePath;
+    if (CascadeMicToFile.enabled) {
+      try {
+        final dir = await getTemporaryDirectory();
+        toFilePath = '${dir.path}/mic_probe.pcm';
+        _micProbeFile = toFilePath;
+        _log('⚠ [실험] MIC_TO_FILE — 스트림 대신 파일로 녹음한다($toFilePath). '
+            '사람 목소리는 서버에 안 간다. MIC: 줄이 0건이어야 실험이 성립한다');
+      } catch (e) {
+        // ⛔ 조용히 스트림으로 돌아가면 **실험이 안 걸린 판을 걸린 줄 알고 읽는다.**
+        _log('⛔ [실험] MIC_TO_FILE 실패 — 임시 경로를 못 얻었다($e). '
+            '스트림으로 진행한다. **이 판의 곡선을 toFile 결과로 쓰지 마라**');
+        toFilePath = null;
+      }
+    }
+
+    final useRecord =
+        !kIsWeb && defaultTargetPlatform == TargetPlatform.android;
+
     Object? lastError;
     for (var attempt = 1; attempt <= _micOpenMaxAttempts; attempt++) {
-      final recorder = FlutterSoundRecorder();
-      _recorder = recorder;
       try {
-        await recorder.openRecorder();
-        await recorder.startRecorder(
-          toStream: controller.sink,
-          codec: Codec.pcm16,
-          sampleRate: 16000,
-          numChannels: 1,
-          enableVoiceProcessing: useVoiceProcessing,
-          enableEchoCancellation: true,
-        );
+        final stream = useRecord
+            ? await _openWithRecord(toFilePath)
+            : await _openWithFlutterSound(toFilePath, useVoiceProcessing);
         if (attempt > 1) _log('mic opened on retry (attempt $attempt)');
-        return; // 성공
+        return stream; // 성공
       } catch (e) {
         lastError = e;
         _log('mic open failed ($attempt/$_micOpenMaxAttempts): $e');
-        try {
-          await recorder.closeRecorder();
-        } catch (_) {}
-        _recorder = null;
+        // ⛔ 반쯤 열린 레코더를 그대로 두면 다음 시도가 «이미 잡혀 있다» 로 죽는다.
+        //   그때 나는 예외는 원인을 안 가리키므로 재시도가 통째로 무의미해진다.
+        await _closeMicRecorders();
         if (attempt < _micOpenMaxAttempts) {
           await Future<void>.delayed(_micOpenRetryDelay);
         }
       }
     }
     throw Exception('마이크를 열 수 없습니다(재시도 $_micOpenMaxAttempts회 실패): $lastError');
+  }
+
+  /// ⭐ 안드로이드 경로 — `record`. 캡처가 **전용 스레드**라 메인 루퍼를 안 막는다.
+  Future<Stream<Uint8List>?> _openWithRecord(String? toFilePath) async {
+    final recorder = rec.AudioRecorder();
+    _recRecorder = recorder;
+    // ⚠ `record` 는 자체 권한 판정을 갖는다. 통화 진입에서 이미 받아 뒀지만, 두 경로가
+    //   어긋나면 «권한은 있는데 녹음이 안 열린다» 가 되므로 여기서 한 번 더 확인한다.
+    if (!await recorder.hasPermission()) {
+      throw Exception('마이크 권한이 없습니다(record.hasPermission=false)');
+    }
+    final config = rec.RecordConfig(
+      encoder: rec.AudioEncoder.pcm16bits,
+      sampleRate: _micSampleRate,
+      numChannels: _micNumChannels,
+      // [실험] 둘 다 꺼야 의미가 있다 — 하나만 끄면 플랫폼 AEC 가 남는다.
+      echoCancel: !CascadeMicNoAec.enabled,
+      noiseSuppress: !CascadeMicNoAec.enabled,
+      androidConfig: rec.AndroidRecordConfig(
+        // [AEC] 재생 트랙과 **반드시 같은 플래그**를 본다 — 플랫폼 AEC 는 통화
+        // 다운링크를 참조해 업링크에서 빼는 구조라, 여기가 DEFAULT 면 참조할 짝이
+        // 안 생겨 아무 효과가 없다.
+        // ⛔ **`MIC_NO_AEC` 에 물리지 마라.** 옛 flutter_sound 경로는 이 값을 토글과
+        //   무관하게 늘 `voice_communication` 으로 뒀다(`HEAD:…:2310-2313`). 여기에
+        //   토글을 물리면 그 실험이 「AEC 를 뺐다」가 아니라 「AEC+NS+캡처소스를 뺐다」가
+        //   되어, 이미 내린 «③ AEC 무죄» 판정과 **다른 실험**이 된다.
+        audioSource: rec.AndroidAudioSource.voiceCommunication,
+        // ⛔⛔ 아래 셋은 **일부러 기본값**이다. 라우팅은 우리가 이미
+        //   `MainActivity.setVoiceCallMode` 에서 잡는다(MODE_IN_COMMUNICATION +
+        //   스피커폰). `record` 가 같은 것을 또 만지면 둘이 싸운다.
+        //   ⭐ `modeNormal` 이 «모드를 건드리지 않는다» 는 뜻인 것을 소스로 확인했다 —
+        //     `AudioSessionManager.kt:58  if (config.audioManagerMode != MODE_NORMAL)`.
+        //     ⇒ 우리가 세운 MODE_IN_COMMUNICATION 이 그대로 남는다. 바꾸지 마라.
+        audioManagerMode: rec.AudioManagerMode.modeNormal,
+        speakerphone: false,
+        // ⚠ 기본이 true 다(=SCO 를 켠다). 지금 flutter_sound 경로는 SCO 를 안 만지므로,
+        //   false 로 둬야 **오늘과 같은 라우팅**이다. 블루투스 헤드셋 마이크는 별건이다.
+        manageBluetooth: false,
+      ),
+      // ⛔⛔ 기본값 `pause` 를 그대로 두면 **알림음 하나에 마이크가 죽고 안 돌아온다.**
+      //   `AudioRecorder.kt:37-40` 이 포커스 상실에 `pauseRecording()` 을 부르는데,
+      //   재개는 `PAUSE_RESUME` 일 때만 한다 — `pause` 는 그 분기를 안 탄다.
+      //   ⇒ 남은 통화 내내 벙어리가 되고, 워치독은 6초 1회라 못 잡는다.
+      //   ⚠ 게다가 flutter_sound 는 오디오 포커스를 **한 번도 안 만졌다**(android 전체에
+      //     `requestAudioFocus` 0건) — 즉 이건 교체가 새로 들여오는 위험이다.
+      //   `none` 이면 `AudioSessionManager.kt:52` 의 가드에 걸려 포커스 요청 자체가
+      //   안 나간다 ⇒ 옛 거동과 같아진다. 통화 세션은 우리가 관리한다.
+      audioInterruption: rec.AudioInterruptionMode.none,
+    );
+    if (toFilePath != null) {
+      await recorder.start(config, path: toFilePath);
+      _log('mic: record(파일) — AEC=${!CascadeMicNoAec.enabled}');
+      return null; // 파일 녹음 실험 — Dart 로 프레임이 안 올라온다
+    }
+    final stream = await recorder.startStream(config);
+    // ⭐ 어느 플러그인으로 열렸는지 로그에 남긴다. ⚠ 프레임 크기가 flutter_sound 의
+    //   704B(=22ms) 와 다를 수 있어, 도착 간격 계측(_micGapSumUs)의 기준자가 바뀐다 —
+    //   이 줄이 없으면 다음 사람이 옛 눈금으로 새 로그를 읽는다.
+    _log('mic: record(스트림) — 전용 스레드. AEC=${!CascadeMicNoAec.enabled}, '
+        '${_micSampleRate}Hz/${_micNumChannels}ch');
+    // ⛔⛔ **이 플러그인은 캡처 실패를 던지지 않는다.** `RecordThread.kt:113-115` 가
+    //   작업 스레드 안에서 `catch (ex) { onFailure(ex) }` 로 삼키고 `finally` 에서
+    //   래치를 내리므로, `startStream()` 은 **성공으로 완료된다** —
+    //   "AudioFlinger could not create record track" 도, 미지원 샘플레이트도 예외 0건이다.
+    //   ⇒ 위 재시도 루프가 이 경로에선 **한 번도 안 걸린다.** 그 사실을 알고도 안 적으면
+    //     다음 사람이 「재시도 6회가 있으니 괜찮다」고 믿는다.
+    //   ⇒ 최소한 **보이게** 만든다. 실제 복구는 [_armMicWatchdog] 가 맡는다(프레임 0건 감지).
+    return stream.handleError((Object e, StackTrace _) {
+      _log('⛔ mic(record) 스트림 에러: $e — 워치독이 재시작을 맡는다');
+    });
+  }
+
+  /// 그 밖의 플랫폼(주로 iOS) — 기존 `flutter_sound` 경로 그대로.
+  Future<Stream<Uint8List>?> _openWithFlutterSound(
+    String? toFilePath,
+    bool useVoiceProcessing,
+  ) async {
+    // ⭐ 파일 녹음이면 컨트롤러를 **아예 안 만든다.** 만들어 두면 리스너가 영영 안 붙고,
+    //   그 컨트롤러의 close() 는 끝나지 않는다(위 [_closeMicRecorders] ① 참조).
+    final controller = toFilePath == null ? StreamController<Uint8List>() : null;
+    _micController = controller;
+    final recorder = FlutterSoundRecorder();
+    _recorder = recorder;
+    await recorder.openRecorder();
+    await recorder.startRecorder(
+      toFile: toFilePath,
+      toStream: controller?.sink,
+      codec: Codec.pcm16,
+      sampleRate: _micSampleRate,
+      numChannels: _micNumChannels,
+      enableVoiceProcessing: useVoiceProcessing,
+      // [실험] 둘 다 꺼야 의미가 있다 — 하나만 끄면 플랫폼 AEC 가 남는다.
+      enableEchoCancellation: !CascadeMicNoAec.enabled,
+      audioSource: AudioSource.defaultSource,
+    );
+    return controller?.stream;
+  }
+
+  /// 정리 한 단계가 매달릴 수 있는 최대 시간. 넘으면 포기하고 다음 단계로 간다.
+  static const Duration _micCloseTimeout = Duration(seconds: 2);
+
+  /// 살아 있는 레코더를 **둘 다** 닫는다(어느 쪽이 열렸는지 호출부가 몰라도 되게).
+  ///
+  /// ## ⛔ 여기서 무서운 것은 예외가 아니라 **멈춤**이다
+  ///
+  /// 예외는 로그라도 남는다. 매달리면 통화 종료가 통째로 멈추고 화면만 돈다. 실제로
+  /// 매달릴 수 있는 자리가 셋이다:
+  ///
+  ///   ① 리스너가 **한 번도 안 붙은** `StreamController.close()` — Dart 명세상
+  ///      **영원히 안 끝난다**(`dart-sdk/lib/async/stream_controller.dart:272-274`:
+  ///      "If no one listens to a non-broadcast stream … this future will never complete").
+  ///      마이크 열기가 실패한 경로가 정확히 그 상태다 — 리스너는 열린 **뒤에** 붙는다.
+  ///   ② `record` 의 `stop()` — `AudioRecorder.kt:56-65` 에 스레드가 루프를 빠져나왔지만
+  ///      `onStop()` 전인 창이 있고, 그 창에 들어오면 `stopCb` 가 영영 안 불린다.
+  ///   ③ 그 상태에서 `_safeCall` 세마포어가 잡힌 채라 뒤이은 `dispose()` 도 갇힌다.
+  ///
+  /// ⇒ 모든 단계에 시간 상한을 건다. **그리고 실패를 삼키되 남긴다** — `stop` 실패는
+  ///   «네이티브가 마이크를 아직 쥐고 있다»는 뜻이고, 그게 바로 다음 통화가 안 열리는
+  ///   이유다. 단서를 지우면 그때 원인을 못 찾는다.
+  ///
+  /// ⚠ 이 함수는 `_micSub` 를 취소하지 **않는다** — 호출부가 먼저 취소해야 한다.
+  Future<void> _closeMicRecorders() async {
+    Future<void> step(String what, Future<void> Function() op) async {
+      try {
+        await op().timeout(_micCloseTimeout);
+      } on TimeoutException {
+        _log('⚠ 마이크 정리 지연 — $what 이 ${_micCloseTimeout.inSeconds}초 안에 '
+            '안 끝났다. 포기하고 넘어간다(다음 통화가 안 열리면 이 줄이 단서다)');
+      } catch (e) {
+        _log('⚠ 마이크 정리 실패($what): $e');
+      }
+    }
+
+    final fs = _recorder;
+    _recorder = null;
+    if (fs != null) {
+      await step('flutter_sound.stop', () => fs.stopRecorder());
+      await step('flutter_sound.close', () => fs.closeRecorder());
+    }
+
+    final rr = _recRecorder;
+    _recRecorder = null;
+    if (rr != null) {
+      await step('record.stop', () => rr.stop());
+      await step('record.dispose', () => rr.dispose());
+    }
+
+    final controller = _micController;
+    _micController = null;
+    if (controller != null) await step('mic controller.close', controller.close);
   }
 
   // ── Mic capture watchdog ──────────────────────────────────────────────────
@@ -1298,33 +2813,68 @@ class NormalCallController extends Notifier<CallState> {
 
   /// Frames the recorder produced (counted before the half-duplex gate).
   int _micFramesReceived = 0;
+
+  /// [계측] 5초 창 동안 네이티브가 올려 준 마이크 프레임 건수·바이트.
+  /// 창마다 리셋된다(누계가 아니라 **추세**를 본다).
+  int _micRxWindow = 0, _micRxBytesWindow = 0;
+
+  /// [계측] 마이크 프레임 **도착 간격**. 2배 계단이 「같은 버퍼 두 번」인지
+  /// 「두 배 속도 캡처」인지 가른다 — 소리 내용과 무관해서 무음에서도 답이 나온다.
+  /// (내용 비교는 무음이면 100% 로 붙어 못 쓴다. 2026-08-14 실측으로 확인.)
+  int _micBackToBackWindow = 0; // 2ms 미만 간격 = 짝지어 도착
+  int _micGapSumUs = 0, _micGapCount = 0;
+  int _micPrevAtUs = 0;
+
+  /// [실험] MIC_TO_FILE 이 만든 녹음 파일 경로. 통화 종료 시 지운다.
+  String? _micProbeFile;
   Timer? _micWatchdogTimer;
-  bool _micRestarted = false;
+  int _micRestartCount = 0;
 
   /// How long a live recorder may produce nothing before it is presumed broken.
   /// Comfortably longer than the opening greeting's ramp-up.
   static const Duration _micWatchdogDelay = Duration(seconds: 6);
 
+  /// 워치독이 마이크를 다시 열어 보는 최대 횟수.
+  ///
+  /// ⛔ 예전엔 1회였다("never loop on a dead mic"). 그때는 `_openMicStream` 의 재시도
+  /// 6회가 앞을 막아 줬기 때문에 그걸로 충분했다. **`record` 에서는 그 재시도가 안 걸린다**
+  /// (캡처 실패를 안 던진다 — `_openWithRecord` 주석 참조) ⇒ 워치독이 **유일한 복구**다.
+  /// 1회로 두면 두 번 연속 실패한 통화는 5분 내내 무음이고, 화면·로그 어디에도 이유가 없다.
+  ///
+  /// ⚠ 그래도 무한은 아니다 — 정말 죽은 마이크에서 도는 것은 배터리만 먹는다.
+  static const int _micRestartMaxAttempts = 3;
+
   /// Arms the one-shot capture watchdog (see [_micFramesReceived]).
   void _armMicWatchdog() {
+    // [실험] 마이크를 일부러 안 열었거나 파일로 돌렸다 — "프레임이 0" 은 고장이 아니라
+    // **의도**다. 무장하면 6초 뒤 레코더를 다시 열어 실험 자체를 무효로 만든다.
+    if (CascadeMicOff.enabled || CascadeMicToFile.enabled) return;
     _micWatchdogTimer?.cancel();
     _micWatchdogTimer = Timer(_micWatchdogDelay, () async {
       _micWatchdogTimer = null;
-      if (_micFramesReceived > 0 || _micRestarted) return;
+      if (_micFramesReceived > 0) return;
+      if (_micRestartCount >= _micRestartMaxAttempts) {
+        _log('⛔ mic 이 $_micRestartMaxAttempts 회 재시작에도 프레임 0건 — 포기한다. '
+            '이 통화는 학습자 목소리 없이 진행된다');
+        return;
+      }
       final phase = state.phase;
       if (phase != CallPhase.inCall && phase != CallPhase.connecting) return;
-      _micRestarted = true; // one attempt only — never loop on a dead mic
-      _log('mic captured nothing in ${_micWatchdogDelay.inSeconds}s → reopening');
+      _micRestartCount++;
+      _log('mic captured nothing in ${_micWatchdogDelay.inSeconds}s → reopening '
+          '($_micRestartCount/$_micRestartMaxAttempts)');
       await _logNativeAudio('mic-watchdog/before-restart');
       final myGen = _gen;
       try {
         await _restartMic();
       } catch (e) {
         _log('mic reopen failed: $e');
-        return;
       }
       if (myGen != _gen) return;
       await _logNativeAudio('mic-watchdog/after-restart');
+      // ⭐ 다시 무장한다. 재시작이 **성공했는지는 프레임이 오는가로만** 알 수 있다 —
+      //   `record` 는 열기 실패를 안 던지므로 「예외가 없었다」가 「열렸다」를 뜻하지 않는다.
+      _armMicWatchdog();
     });
   }
 
@@ -1332,17 +2882,17 @@ class NormalCallController extends Notifier<CallState> {
   Future<void> _restartMic() async {
     await _micSub?.cancel();
     _micSub = null;
-    try {
-      await _recorder?.stopRecorder();
-    } catch (_) {}
-    try {
-      await _recorder?.closeRecorder();
-    } catch (_) {}
-    _recorder = null;
-    await _micController?.close();
-    _micController = null;
+    await _closeMicRecorders();
     await _startMic();
   }
+
+  /// 마이크 규격 — **한 곳에서만 정한다.**
+  ///
+  /// ⛔ 예전엔 `startRecorder(sampleRate: 16000, numChannels: 1)` 에만 있었고 `start` 페이로드는
+  /// 아무것도 안 보냈다. 서버는 기본값 16000 을 가정했고 **우연히 맞았을 뿐**이다.
+  /// 여기를 바꾸면 서버에 보내는 값도 같이 바뀐다 — 두 곳이 갈라지면 반드시 어긋난다.
+  static const int _micSampleRate = 16000;
+  static const int _micNumChannels = 1;
 
   /// 마이크 열기 최대 재시도 횟수(오디오 세션 해제 지연/포그라운드 전환 흡수).
   static const int _micOpenMaxAttempts = 6;
@@ -1373,11 +2923,71 @@ class NormalCallController extends Notifier<CallState> {
     if (data is String) {
       _handleControl(data);
     } else if (data is Uint8List) {
-      _feedPlayer(data);
+      _onWsAudio(data);
     } else if (data is List<int>) {
-      _feedPlayer(Uint8List.fromList(data));
+      _onWsAudio(Uint8List.fromList(data));
     }
   }
+
+  /// 인바운드 오디오의 첫 관문 — **취소된 턴의 잔여를 여기서 버린다.**
+  ///
+  /// [_feedPlayer] 안쪽이 아니라 이 자리인 이유: [_feedPlayerBody] 는 청크마다
+  /// [_gateMic] 을 호출해 턴을 "다시 연다"(`_beaverAudioActive=true`, `_turnEnded=false`).
+  /// 큐를 비우는 것만으로는 그 뒤 도착분을 막지 못하므로, 진입 자체를 차단해야 한다.
+  void _onWsAudio(Uint8List chunk) {
+    // [계측] 홀수 길이 = **서버 불변식 I6 위반**. 우리 큐는 다음 청크와 이어붙어 재생이
+    // 안 깨지므로 자연 신호가 없다 — 세지 않으면 아무도 모른다. 재생은 손대지 않는다.
+    // 첫 1건만 로그로 튀우고(로그 폭발 방지) 총계는 진행도 회신에 실어 서버로 보낸다.
+    if (chunk.length.isOdd) {
+      _oddFrames++;
+      if (_oddFrames == 1) {
+        _log('⚠ 홀수 길이 오디오 프레임 도착(${chunk.length}B) — 서버 I6 위반이다. '
+            '재생은 이어붙여 계속한다. 총계는 playback_progress.odd_frames 로 보낸다');
+      }
+    }
+    if (_cancelledResidual) {
+      _cancelledResidualBytes += chunk.length;
+      return;
+    }
+    _feedPlayer(_withPlaybackGain(chunk));
+  }
+
+  static final double _playbackGain = dbToGain(kCallPlaybackGainDb);
+
+  /// [A2] 통화 재생 음량 보정 — 서버 PCM 에 +[kCallPlaybackGainDb] 와 리미터를 건다
+  /// (10-03 사용자 「앱 수정 해」 · PM-DEC-352 · 근거와 한계는 `domain/pcm_gain.dart`).
+  ///
+  /// 바이트 수는 그대로다 — 재생 장부(played_server_bytes)·쿠션 계산은 안 바뀐다.
+  ///
+  /// ⛔ 이번 통화에 홀수 길이 프레임이 **한 번이라도** 왔으면 끝까지 끈다. 큐는 다음 청크와
+  ///   이어붙여 재생하지만, 청크 단위로 샘플을 읽는 여기서는 그 뒤로 바이트 짝이 어긋나
+  ///   상위·하위 바이트를 바꿔 읽게 된다 — 그러면 키우는 게 아니라 잡음을 만든다.
+  Uint8List _withPlaybackGain(Uint8List chunk) {
+    if (!kCallPlaybackGainOn ||
+        CallPlaybackGainOff.enabled ||
+        _oddFrames > 0 ||
+        !playbackGainApplies(_lastReportedRoute)) {
+      return chunk;
+    }
+    final n = chunk.length ~/ 2;
+    if (n == 0) return chunk;
+    // 소켓 버퍼는 짝수 오프셋이 보장되지 않는다 — Int16List 뷰 대신 바이트로 읽는다.
+    final src = ByteData.sublistView(chunk);
+    final samples = Int16List(n);
+    for (var i = 0; i < n; i++) {
+      samples[i] = src.getInt16(i * 2, Endian.little);
+    }
+    final out = applyPcmGain(samples, _playbackGain);
+    final bytes = ByteData(n * 2);
+    for (var i = 0; i < n; i++) {
+      bytes.setInt16(i * 2, out[i], Endian.little);
+    }
+    return bytes.buffer.asUint8List();
+  }
+
+  /// [계측] 취소 후 버린 잔여 바이트. 서버 페이서가 취소에 얼마나 빨리 반응하는지가
+  /// 이 숫자로 드러난다(클수록 서버가 늦게 멈춘 것).
+  int _cancelledResidualBytes = 0;
 
   /// Enqueues an inbound PCM24k chunk onto [_pcmQueue]. The plugin's feed
   /// callback ([_onFeed]) drains it; here we only gate the mic, reset the
@@ -1404,10 +3014,244 @@ class NormalCallController extends Notifier<CallState> {
   int _rxBytesTotal = 0; // 서버에서 받은 오디오(=재생돼야 할 진짜 양)
   int _fedAudBytes = 0; // 플러그인에 넣은 진짜 오디오
   int _fedSilFrames = 0; // 넣은 무음 전체
-  int _fedSilSpeakFrames = 0; // 그중 "비버 발화 중"에 넣은 것 = 진짜 구멍
+  int _fedSilSpeakFrames = 0; // 그중 "첫 소리 **뒤**, 발화 중"에 넣은 것 = 진짜 구멍
+  int _fedSilTurnWaitFrames = 0; // 그중 "턴은 열렸는데 첫 소리 전"에 넣은 것 = 턴 시작 대기
   int _fedSilPrebufFrames = 0; // 그중 프리버퍼 대기로 넣은 것 = 의도된 지연
 
+  /// 이번 턴에서 실오디오를 한 번이라도 피드했는가 — [_fedSilSpeakFrames] 와
+  /// [_fedSilTurnWaitFrames] 를 가르는 **유일한** 기준.
+  ///
+  /// ⛔ 왜 필요한가: [_beaverAudioActive] 는 `turn_start` 에서 켜지므로 **첫 소리가 나기
+  /// 전부터** 참이다. 그것만 보면 「턴 시작까지의 대기」가 「발화 중 끊김」으로 집계된다.
+  /// 2026-08-13 실측에서 관측한 919·999·1040·720·640ms 가 **전부 전자**였는데 후자로
+  /// 읽고 있었다. 둘은 처방이 다르다 — 전자는 첫 묶음 도착+쿠션, 후자는 서버 와이어공백
+  /// (그날 클라 735/1356/1221/1246ms 가 서버 0.73/1.36/1.22/1.24s 와 밀리초까지 맞았다).
+  bool _turnFirstAudioFed = false;
+
   static String _sec(num bytes) => (bytes / 48000.0).toStringAsFixed(1);
+
+  // ── 응답시간 계기 ────────────────────────────────────────────────────────
+  //
+  // ⛔ 이미 있는 `RESPONSE: user_turn_end → turn_start` 와 **다른 자다. 지우지 마라.**
+  //   `turn_start` 는 오디오 첫 바이트보다 **먼저** 오는 제어 메시지라(서버 불변식 I2),
+  //   그 값엔 **TTS 벤더·송출·지터 쿠션이 안 들어간다.**
+  //   실측 대조(2026-08-14, 서버측): `turn_start` 까지 중앙 1,500ms vs 실제 소리까지 3,370ms.
+  //   **두 배 이상 벌어진다.** 서버 내부 구간을 보려면 그 줄이, 사용자 체감을 보려면 이 줄이 필요하다.
+  //
+  // ⛔ 끝점을 「오디오 **도착**」으로 잡으면 안 된다. 그러면 쿠션이 지표에서 사라져
+  //   **쿠션 0 과 300 이 같아 보인다** — 지금 가리려는 게 정확히 그 차이다.
+
+  /// 이번 통화의 응답시간 표본(ms). 중앙값을 같이 찍는다 — 한 판의 튐에 속지 않으려고.
+  final List<int> _responseSamples = [];
+
+  /// 개발자 도구 카드에 띄우는 한 줄. 밖에서 USB 없이 읽으라고 화면에도 둔다.
+  static final ValueNotifier<String> responseSummary = ValueNotifier<String>('');
+
+  /// 첫 소리가 **들리는 시각**까지를 잰다.
+  ///
+  /// ## 어떻게 「들리는 시각」을 아는가
+  /// 지금 넣은 오디오는 **엔진에 이미 들어 있던 것이 다 나간 뒤**에 들린다. 그래서
+  ///     들리는 시각 = 피드한 시각 + (피드 **직전** 엔진 잔량)
+  /// 이다. 그 잔량은 안드로이드가 `feed` 응답으로 **직접 알려준다**(`reported` = 넣은 뒤 총량,
+  /// 거기서 방금 넣은 양을 빼면 직전 잔량). 그 경로면 **실측**이다.
+  ///
+  /// ⚠ 안드로이드가 값을 안 주면(iOS/web/구버전 플러그인) 우리 외삽치([_engineLevelFrames])로
+  ///   떨어진다. 그때는 **추정이라고 로그에 적는다** — 추정을 실측처럼 찍지 않는다.
+  ///
+  /// ⚠ 그리고 **메인 스레드가 막히면 이 값도 같이 는다.** 그건 결함이 아니라 우리가 재려는
+  ///   대상이다 — 같은 통화의 `Skipped frames`·`Davey!` 와 함께 읽어야 한다.
+  void _recordResponseTime(int sentAtMs, int? reported, int level, int take) {
+    var endedAt = _userTurnEndForAudioMs;
+    _userTurnEndForAudioMs = null;
+    // ⛔⛔ 이 자리가 **라이브에서 한 번도 안 돌던 이유**다 (2026-08-25 발견).
+    //   원점 `_userTurnEndForAudioMs` 는 `user_turn_end` 프레임에서만 채워지는데,
+    //   **그 프레임은 캐스케이드에만 있다.** 라이브에서는 영원히 null 이라 여기서 조용히
+    //   반환했고, 그래서 응답시간이 화면에도 서버에도 한 줄도 안 남았다. 로그가 조용한 것이
+    //   「빨라서」로 읽히던 그 함정 그대로다.
+    // ⇒ 라이브에서는 **로컬 VAD 의 마지막 유성 프레임**을 원점으로 쓴다. 서버가 「말이
+    //   끝났다」고 알려 주지 않으니, 말이 끝난 것을 아는 쪽은 여기뿐이다.
+    final bool localOrigin = endedAt == null;
+    if (localOrigin) {
+      final lastVoiced = _lastVoicedAtMs;
+      // 이 턴에 사용자가 입을 연 적이 없으면(첫 인사·자동 대화) 잴 대상이 아니다.
+      if (lastVoiced == 0 || _voicedAnchorConsumed == lastVoiced) return;
+      _voicedAnchorConsumed = lastVoiced;
+      _frozenFirstVoicedAtMs ??= _firstVoicedAtMs;
+      _firstVoicedAtMs = null;
+      endedAt = lastVoiced;
+    }
+
+    final fedFrames = take ~/ 2;
+    final int preDepthFrames;
+    final bool measured;
+    if (reported != null) {
+      final v = reported - fedFrames;
+      preDepthFrames = v < 0 ? 0 : v;
+      measured = true;
+    } else {
+      preDepthFrames = level < 0 ? 0 : level;
+      measured = false;
+    }
+    final responseMs = audibleResponseMs(
+      userTurnEndAtMs: endedAt,
+      fedAtMs: sentAtMs,
+      preDepthFrames: preDepthFrames,
+      sampleRate: _playbackSampleRate,
+    );
+    // 시계가 뒤로 간 경우(있으면 안 되지만) 음수를 표본에 넣지 않는다.
+    if (responseMs < 0) return;
+
+    _responseSamples.add(responseMs);
+    final sorted = [..._responseSamples]..sort();
+    final median = sorted[sorted.length ~/ 2];
+    final cushionMs = _cushionBytes ~/ 48;
+
+    // ⭐ **사장님이 체감하시는 원점**부터의 값. `user_turn_end` 는 서버가 「말 끝났다」고
+    //   알려 준 시각이라 그 앞의 침묵판정·전송·전사·대기(약 1.1초)가 빠져 있다.
+    // ⛔ 못 쟀으면 **-1**. 0 으로 채우면 「즉시였다」로 읽힌다 — 없음과 0 은 다르다.
+    final voicedAt = _frozenFirstVoicedAtMs;
+    _frozenFirstVoicedAtMs = null;
+    final audibleAtMs = endedAt + responseMs;
+    final speechToSoundMs = voicedAt == null ? -1 : audibleAtMs - voicedAt;
+
+    final line = '응답 ${responseMs}ms (말끝→첫소리 · 쿠션 ${cushionMs}ms) · '
+        '말시작→첫소리 ${speechToSoundMs < 0 ? "못잼" : "${speechToSoundMs}ms"} — '
+        '${_responseSamples.length}턴 중앙값 ${median}ms';
+    _log(measured ? line : '$line ⚠ 추정(네이티브 잔량 미제공)');
+    responseSummary.value = measured ? line : '$line ⚠ 추정';
+    _dg('audible1', {
+      'turn': _currentTurnId,
+      'ms': responseMs,
+      'cushion_ms': cushionMs,
+      'speech_ms': speechToSoundMs,
+      'origin': localOrigin ? 'vad' : 'server',
+      if (!measured) 'est': true,
+    });
+    _sendClientTiming(
+      // ⛔ **원점이 다르면 같은 이름으로 보내지 않는다.** 서버는 이 값을 자기 `첫소리`
+      //   기록에서 빼서 「클라 재생 몫」을 구하는데, 그 뺄셈은 두 값의 원점이 같을 때만
+      //   성립한다. 라이브의 로컬 VAD 원점을 `audible_ms` 로 실어 보내면 서버는 그것을
+      //   **모른 채** 빼서, 틀린 줄 모르는 숫자를 만든다 — 없는 것보다 나쁘다.
+      //   ⇒ 라이브에서는 -1(= 못 쟀음)을 보내고, 잰 값은 `speech_to_sound_ms` 로 간다.
+      //   그건 두 엔진에서 **정의가 같다**(로컬 VAD 첫 유성 → 첫 소리).
+      audibleMs: localOrigin ? -1 : responseMs,
+      cushionMs: cushionMs,
+      estimated: !measured,
+      speechToSoundMs: speechToSoundMs,
+    );
+  }
+
+  /// 프레임의 RMS 가 임계를 넘으면 「입을 열었다」로 기록한다.
+  ///
+  /// ⛔ **계측 전용이다.** 재생·마이크·턴 로직에 아무것도 안 건다.
+  /// ⛔ 초당 45~90회 도는 자리라 **산술만** 한다(할당·파싱 없음) — 여기서 비싸지면
+  ///   우리가 재려던 것을 우리가 흔든다.
+  void _markVoicedIfLoud(Uint8List bytes, {required bool gated}) {
+    final n = bytes.length ~/ 2;
+    if (n == 0) return;
+    // PCM16 LE. 352 샘플 × 32768² 는 int64 안에서 안전하다.
+    var sumSq = 0;
+    for (var i = 0; i + 1 < bytes.length; i += 2) {
+      var v = (bytes[i + 1] << 8) | bytes[i];
+      if (v >= 0x8000) v -= 0x10000; // 부호 확장
+      sumSq += v * v;
+    }
+    final rms = math.sqrt(sumSq / n) / 32768.0;
+    // 끊김 없는 조각 전환의 첫 증거 — **연속** 유성 프레임(한 프레임 기침·문소리는 안 침).
+    // gated·조용한 프레임도 넣는다: 연속을 끊는 것이 이 판정의 핵심이다.
+    // ⛔ `user_turn_end` 에 걸지 마라 — 라이브엔 그 프레임이 없다(양쪽 다 안 보낸다).
+    if (_fragmentSwitch == _FragmentSwitch.pending ||
+        _fragmentSwitch == _FragmentSwitch.pendingFinal) {
+      final first = _speechSincePending.onFrame(
+        loud: rms >= _voicedRmsThreshold,
+        gated: gated,
+      );
+      if (first) {
+        // 임계 조정 근거 — 몇 프레임 연속에서 섰나. 소음만이면 전사가 안 와 안 바뀐다.
+        _dg('switch_voiced', {'run': _speechSincePending.longestRun});
+        _log('조각 전환 대기 중 연속 유성 ${_speechSincePending.longestRun}프레임(로컬 VAD) '
+            '— 전사까지 오면 다음 turn_end 에서 전환');
+      }
+    }
+    if (rms < _voicedRmsThreshold) return;
+
+    final nowMs = DateTime.now().millisecondsSinceEpoch;
+    if (gated) {
+      // 마이크가 닫힌 동안의 큰 소리. 앵커는 **건드리지 않는다.**
+      // ⭐ 그래도 센다 — 이 값이 크면 「비버가 말하는 동안 학습자가 말을 걸고 있었다」는
+      //   뜻이고, 그건 「비버가 너무 길게 말한다」는 체감의 직접 증거다.
+      _gatedLoudFrames++;
+      return;
+    }
+    // 끊김 없는 조각 전환 — 5:00 뒤 사용자가 **실제로 말했다**(게이트 열린 채 유성 프레임).
+    // ⛔ `user_turn_end` 프레임에 걸지 마라: 그건 캐스케이드에만 있고 **라이브에서는
+    //   아무도 안 보낸다**(2026-08-25 주석·서버 protocol.py ClientDiag 독스트링). 거기
+    //   걸어 두면 라이브에서 전환이 영원히 안 일어난다. 말이 끝난 것을 아는 쪽은
+    //   이 로컬 VAD 뿐이다 — 응답시간 원점과 같은 근거.
+    // 충분히 조용했으면 **새 발화**의 시작으로 본다(웹 데모와 같은 규율).
+    if (_firstVoicedAtMs != null && nowMs - _lastVoicedAtMs > _voicedResetMs) {
+      // ⛔ **`t` 를 지금으로 찍지 마라.** 말이 끊긴 것은 `_lastVoicedAtMs` 이고 지금은
+      //   **다음 말이 시작된 시각**이다. 우리는 침묵이 400ms 넘어야 알 수 있으므로
+      //   여기서 소급해 기록한다. 실측 call 1207 에서 `voice_off t=92545` 다음 줄이
+      //   `voice_on t=92545` 로 **같은 시각**이었다 — 발화 사이 간격이 0으로 읽힌다.
+      _dg('voice_off',
+          {'dur_ms': _lastVoicedAtMs - (_firstVoicedAtMs ?? 0)},
+          _lastVoicedAtMs);
+      _firstVoicedAtMs = null;
+    }
+    if (_firstVoicedAtMs == null) {
+      _firstVoicedAtMs = nowMs;
+      _dg('voice_on');
+    }
+    _lastVoicedAtMs = nowMs;
+  }
+
+  /// 마이크가 닫힌 동안 임계를 넘은 프레임 수(5초 롤업에서 비우고 다시 센다).
+  int _gatedLoudFrames = 0;
+
+  /// 이 턴의 응답시간을 **서버로** 보낸다 — 턴당 1건.
+  ///
+  /// ## 왜 서버로 보내나 — 평균이 아니라 **뺄셈** 때문이다
+  /// 서버는 자기가 첫소리를 **언제 보냈는지** 알고, 클라는 **언제 실제로 들렸는지** 안다.
+  ///     클라 재생 몫 = 클라가 들은 시각 − 서버가 보낸 시각
+  /// 이 값을 지금까지 추정만 했고 한 번도 못 쟀다. 그래서 **턴 단위**로 보낸다 — 통화 끝에
+  /// 평균만 보내면 **짝을 못 맞춰 뺄셈이 성립하지 않는다.**
+  ///
+  /// ⛔ `turn_id` 는 **비버 턴 id**다(`turn_start` 로 받은 그것). 사용자 턴 id 를 실으면
+  ///   서버가 자기 `첫소리` 기록과 조인을 못 한다.
+  /// ⛔ **여기서 값을 다시 계산하지 않는다.** [_recordResponseTime] 이 뽑은 값을 그대로 싣는다 —
+  ///   두 곳에서 계산하면 언젠가 갈라지고, 갈라진 두 곳은 반드시 어긋난다.
+  /// ⛔ **전송 실패가 통화를 죽이면 안 된다.** 다만 **조용히 넘어가지도 않는다** — 못 보낸
+  ///   사실을 로그로 남긴다(오늘 여섯 번 밟은 「조용한 부재」 계열).
+  void _sendClientTiming({
+    required int audibleMs,
+    required int cushionMs,
+    required bool estimated,
+    required int speechToSoundMs,
+  }) {
+    final turnId = _currentTurnId;
+    if (turnId == null || turnId.isEmpty) {
+      // 서버가 조인할 키가 없으면 보내봐야 버려진다. 안 보내되 **왜 안 보냈는지** 남긴다.
+      _log('client_timing 미전송 — 비버 turn_id 가 없다(서버가 조인 못 함)');
+      return;
+    }
+    if (_channel == null) {
+      _log('client_timing 미전송 — 소켓이 닫혀 있다 (통화는 정상)');
+      return;
+    }
+    _send({
+      'type': 'client_timing',
+      'turn_id': turnId,
+      'audible_ms': audibleMs,
+      // 기존 자도 같이 보낸다 — 서버가 한 줄에서 두 구간을 비교할 수 있게.
+      'turn_start_ms': ?_turnStartDelayMs,
+      'cushion_ms': cushionMs,
+      'estimated': estimated,
+      // ⛔ 못 쟀으면 **-1**이다. 0 으로 채우지 않는다 — 서버가 「즉시였다」로 읽는다.
+      'speech_to_sound_ms': speechToSoundMs,
+    });
+    _turnStartDelayMs = null; // 턴당 1회. 다음 턴 값이 섞이지 않게 즉시 비운다.
+  }
 
   void _startInflateLog() {
     _inflateTimer?.cancel();
@@ -1416,17 +3260,85 @@ class NormalCallController extends Notifier<CallState> {
     _fedAudBytes = 0;
     _fedSilFrames = 0;
     _fedSilSpeakFrames = 0;
+    _fedSilTurnWaitFrames = 0;
     _fedSilPrebufFrames = 0;
     // 타이머 기반(청크 도착 기반 아님) — 오디오가 안 올 때도 균일하게 찍혀야 비교가 된다.
-    _inflateTimer = Timer.periodic(const Duration(seconds: 5), (_) {
+    _inflateTimer = Timer.periodic(const Duration(seconds: 5), (_) async {
+      // ⭐ [계측] **빈 채널 호출의 왕복**을 같이 잰다(2026-08-13).
+      //   실측: 네이티브 clear() 는 0~3ms 로 평평한데 Dart↔네이티브 왕복만 79→434ms 로
+      //   커진다. 그런데 `clear()` 하나만 보고 있으면 **`clear` 가 느린 것**과
+      //   **채널 전체가 밀리는 것**을 못 가른다. `ping` 은 네이티브에서 즉시 반환하므로,
+      //   이 값이 같이 우상향하면 원인은 채널 적체다(= feed 가 앞에 쌓인 것).
+      //
+      // ⛔ **진단이 원인을 만들면 안 된다.** 그래서 새 타이머를 안 만들고 이미 있는 5초
+      //   진단 타이머에 얹었다 — 같은 5초 창에서 feed 가 125회 도는데 여기에 1회를
+      //   더하는 것이라 0.8% 다. 별도 주기로 자주 던지면 재려던 적체를 우리가 키운다.
+      var pingMs = -1;
+      // ⭐⭐ [계측 2026-09-03] **안드로이드 메인 루퍼의 창 최대 지각(ms).**
+      //
+      //   ⛔ 왜 넣었나 — 우리는 5분 내내 **틀린 스레드를 재고 있었다.** 실측
+      //     (`통화로그.txt:3134`) 386초 지점에 `Choreographer: Skipped 139 frames`
+      //     (= 메인 2.3초 정지)가 찍힌 그 창에서 [_elLagMax] 는 **17ms** 였다.
+      //     두 값이 같은 스레드일 수 없다 ⇒ Dart 루프가 평평한 것은 메인의 무죄를
+      //     **한 번도 증명한 적이 없다.** 그런데 앱엔 메인을 재는 계기가 0개였다.
+      //
+      //   ⭐ 이 한 줄이 답할 질문: `빈채널왕복`(4ms→2,858ms, 지수 1.65)이 메인 적체를
+      //     그대로 받는가.
+      //         메인지각이 왕복을 따라간다 → 레코더가 메인을 물고 있다. 원인 확정
+      //         메인지각은 평평한데 왕복만 자란다 → 레코더 무죄. 엔진 메시징 쪽
+      //     ⚠ 판정선을 미리 못박는다: 300초 시점에서 두 값의 비가 0.8 이상이면 확정,
+      //       0.3 이하면 기각. 중간이면 판정 보류하고 표본을 더 모은다.
+      var mainLateMs = -1;
+      if (_pcmActive) {
+        final sw = Stopwatch()..start();
+        try {
+          final pong = await FlutterPcmSound.ping();
+          pingMs = sw.elapsedMilliseconds;
+          final v = pong?['main_late_ms'];
+          if (v is int) mainLateMs = v;
+        } catch (_) {
+          // 구버전 플러그인 — 계측만 없다.
+        }
+      }
+      // ⭐ [계측] 주기 롤업 + **직렬화·전송이 일어나는 유일한 자리**다.
+      //   핫패스(초당 45~90회)에서 JSON 을 만들면 재려던 지연을 우리가 만든다. 그래서
+      //   이미 도는 5초 타이머에 얹는다 — 새 타이머를 만들지 않는 것이 규율이다.
+      //   ⛔ 여기 [_diag.flush] 는 스스로 「마이크가 닫혀 있는가」를 보고 판단한다.
+      //     비버가 말하는 동안 업링크는 완전히 비어 있어, 그 창에 보내면 마이크 프레임을
+      //     **단 하나도 밀지 않는다.**
+      _dg('win', {
+        'ping_ms': pingMs,
+        // ⭐ 서버로도 보낸다 — 로그캣이 없는 판에서도 대조할 수 있어야 한다.
+        'main_late_ms': mainLateMs,
+        'q': _queueLen,
+        'cushion_ms': _cushionBytes ~/ 48,
+        'gated_loud': _gatedLoudFrames,
+        'mk_wait': _pendingMarkers.length,
+      });
+      _gatedLoudFrames = 0;
+      _diag.flush();
       final elapsedMs = DateTime.now().millisecondsSinceEpoch - _callT0Ms;
       final fedBytes = _fedAudBytes + _fedSilFrames * 2;
       final pct = elapsedMs > 0 ? (fedBytes / 48000.0 * 1000 / elapsedMs * 100) : 0;
       _log('INFLATE: elapsed ${(elapsedMs / 1000).toStringAsFixed(1)}s, '
           'rx ${_sec(_rxBytesTotal)}s, fedAud ${_sec(_fedAudBytes)}s, '
-          'fedSil ${_sec(_fedSilFrames * 2)}s '
-          '(speaking ${_sec(_fedSilSpeakFrames * 2)}s, prebuf ${_sec(_fedSilPrebufFrames * 2)}s), '
-          'fed/elapsed ${pct.toStringAsFixed(0)}%, queue ${_queueLen}B');
+          // ⚠ 라벨을 바꿨다(2026-08-12). 예전 `speaking` 은 **"비버가 말한 시간"으로
+          //   읽혔지만** 실제로는 *무음 중* "비버 발화 중에 넣은 것"이다 = 진짜 구멍.
+          //   나머지(턴 사이 keep-alive)를 같이 찍어 셋의 합이 fedSil 임을 드러낸다 —
+          //   두 항목만 보이면 "둘이 fedSil 과 안 맞는다"로 오해한다.
+          // ⭐ 2026-08-13: `발화중구멍` 에서 **턴시작대기**를 갈라냈다. 예전 값은 둘의 합이라
+          //   **새 지표와 같은 표에 놓으면 안 된다.**
+          'fedSil ${_sec(_fedSilFrames * 2)}s(무음주입: 발화중구멍 '
+          '${_sec(_fedSilSpeakFrames * 2)}s + 턴시작대기 '
+          '${_sec(_fedSilTurnWaitFrames * 2)}s + 프리버퍼대기 '
+          '${_sec(_fedSilPrebufFrames * 2)}s + 턴사이 '
+          '${_sec((_fedSilFrames - _fedSilSpeakFrames - _fedSilTurnWaitFrames - _fedSilPrebufFrames) * 2)}s), '
+          'fed/elapsed ${pct.toStringAsFixed(0)}%, queue ${_queueLen}B'
+          // 통로와 무관하게 찍는다 — 사장님 증상은 **라이브 5분**이다. 캐스케이드에서만
+          // 재면 반쪽이라, 같은 줄에서 두 통로를 같은 방식으로 본다.
+          '${pingMs >= 0 ? ', 빈채널왕복 ${pingMs}ms' : ''}'
+          // ⭐ 두 숫자를 **같은 줄에** 둔다 — 나란히 있어야 눈으로 대조가 된다.
+          '${mainLateMs >= 0 ? ', 메인지각 ${mainLateMs}ms' : ''}');
       // [계측] 푸시 모델이 버티고 있는지 한 줄로 가른다: engineMin 이 낮으면 native 가
       // 말랐다는 뜻(목표 상향), 높은데도 버벅이면 Dart 큐/서버 쪽이다.
       final minMs = _engineMinFrames == 1 << 30
@@ -1436,12 +3348,75 @@ class NormalCallController extends Notifier<CallState> {
           'min ${minMs}ms (low ${_engineLowFrames * 1000 ~/ _playbackSampleRate}ms / '
           'target ${_engineTargetFrames * 1000 ~/ _playbackSampleRate}ms)');
       _engineMinFrames = 1 << 30; // 창마다 리셋 — 통화 전체 최저가 아니라 추세를 본다
+
+      // ⭐ [계측] 채널 처리량 — **도착률 vs 처리율**(2026-08-13).
+      //   가설: 처리율이 도착률보다 낮으면 부하가 일정해도 밀린 양이 누적돼 지연이
+      //   선형으로 자란다. 그 가설이 맞다면 `미완`(보냄-완료)이 시간에 따라 벌어져야
+      //   한다. 안 벌어지는데 왕복만 자라면 적체는 **채널 밖**(플랫폼 스레드)에 있다.
+      //   두 경우의 처방이 정반대라, 이 한 줄이 없으면 수술 대상을 못 고른다.
+      //
+      //   `보냄/초`·`건당B` 는 조각 크기를 키우는 값싼 처방(②)의 사전 실측이기도 하다.
+      final ch = FlutterPcmSound.channelWindow();
+      final per = ch.sent > 0 ? ch.bytes ~/ ch.sent : 0;
+      _log('CHAN: 보냄 ${ch.sent}건(${(ch.sent / 5).toStringAsFixed(1)}/s, '
+          '${(ch.bytes / 5 / 1024).toStringAsFixed(1)}KB/s, 건당 ${per}B) '
+          '완료 ${ch.done}건, 미완 ${ch.inflight}(창최대 ${ch.inflightMax}), '
+          'rtt avg ${ch.rttAvgMs.toStringAsFixed(1)}ms / max ${ch.rttMaxMs}ms, '
+          '역방향이벤트 ${ch.events}건');
+      // ⭐ 마이크는 **다른 채널**(flutter_sound)이라 위 계량기가 못 센다. 같은 창에서
+      //   따로 찍어야 "우리 것만 셌다" 함정을 피한다. 묶기 실험의 눈금이기도 하다.
+      _log('MIC: 수신 $_micRxWindow건(${(_micRxWindow / 5).toStringAsFixed(1)}/s, '
+          '건당 ${_micRxWindow > 0 ? _micRxBytesWindow ~/ _micRxWindow : 0}B, '
+          '${(_micRxBytesWindow / 5 / 1024).toStringAsFixed(1)}KB/s)'
+          // ⭐ 2배 계단의 성격을 가르는 값. 한 프레임 = 704B = 22ms 가 기준자다.
+          //   짝도착 40% 이상 + 평균 간격 ~11ms → **같은 버퍼가 두 번**
+          //   짝도착 ~0%   + 평균 간격 ~11ms → **두 배 속도 캡처**
+          ', 짝도착 $_micBackToBackWindow건'
+          '(${_micRxWindow > 0 ? (_micBackToBackWindow * 100 ~/ _micRxWindow) : 0}%)'
+          ', 평균간격 ${_micGapCount > 0 ? (_micGapSumUs / _micGapCount / 1000).toStringAsFixed(1) : "-"}ms');
+      _micRxWindow = 0;
+      _micRxBytesWindow = 0;
+      _micBackToBackWindow = 0;
+      _micGapSumUs = 0;
+      _micGapCount = 0;
     });
   }
 
   void _stopInflateLog() {
     _inflateTimer?.cancel();
     _inflateTimer = null;
+  }
+
+  /// [계측] 비버 턴이 열리는 순간의 **잔류 백로그**. 스트림 인플레이션 판별용.
+  ///
+  /// 왜 하필 턴 경계인가 — 정상 동작에서 버스트로 도착한 오디오는 그 턴 안에 다 재생되고,
+  /// 다음 턴이 열릴 땐 큐도 엔진도 비어 있다(마이크 재개방 조건 자체가 [_audioDrained]
+  /// 라서 구조적으로 보장된다). 그러니 이 시점의 잔류는 **정의상 이전 턴이 못 따라간 양**
+  /// 이다. 서버 누적 송출량이 실시간 레이트를 넘으면 이 값이 턴마다 커진다.
+  ///
+  /// 60초 폭주 가드([_maxQueueBytes])는 이걸 못 잡는다 — 백로그가 10초, 20초로 자라도
+  /// 아무 말 없이 있다가 60초에 가서 15초치를 통째로 버린다. 여기서는 **드롭하지 않고
+  /// 드러내기만 한다**(2단계 방어는 실측 후 별도 판단).
+  void _logTurnBoundaryBacklog() {
+    final queueMs = _queueLen * 1000 ~/ (_playbackSampleRate * 2);
+    final engineMs = _engineLevelFrames * 1000 ~/ _playbackSampleRate;
+    final backlogMs = queueMs + engineMs;
+
+    if (_prevTurnBacklogMs >= 0 && backlogMs > _prevTurnBacklogMs) {
+      _backlogRiseStreak++;
+    } else {
+      _backlogRiseStreak = 0;
+    }
+    _prevTurnBacklogMs = backlogMs;
+
+    // 연속 증가가 이어지면 버스트가 아니라 인플레이션이다. 임계는 낮게 잡아도 된다 —
+    // 로그일 뿐이고, 놓치는 것보다 시끄러운 게 낫다.
+    final verdict = _backlogRiseStreak >= 3
+        ? ' ⚠ INFLATION? $_backlogRiseStreak턴 연속 증가 '
+            '— 서버 누적 송출량 > 실시간 레이트 의심'
+        : '';
+    _log('TURN-BACKLOG: ${backlogMs}ms '
+        '(queue ${queueMs}ms + engine ${engineMs}ms)$verdict');
   }
 
   void _startEventLoopProbe() {
@@ -1505,14 +3480,23 @@ class NormalCallController extends Notifier<CallState> {
   void _feedPlayerBody(Uint8List chunk) {
     // Ground truth for "did the server go quiet mid-utterance": the gap between
     // inbound chunks. The playback-side starve clock can't answer that — a long
-    // enough hole trips the idle-ungate, `_beaverSpeaking` flips to false, and the
+    // enough hole trips the idle-ungate, `_beaverAudioActive` flips to false, and the
     // resumption then looks like a brand-new turn. Measured here (before
     // [_gateMic] clears `_turnEnded`) it survives all of that.
     final nowMs = DateTime.now().millisecondsSinceEpoch;
     final prevChunkMs = _lastChunkAtMs;
-    if (prevChunkMs != null && !_turnEnded && nowMs - prevChunkMs >= 250) {
+    // ⛔ `_turnFirstAudioFed` 를 같이 본다. `turn_start` 프레임이 이 줄보다 **먼저**
+    //   도착해 [_gateMic] 이 `_turnEnded=false` 로 돌려놓기 때문에, 그것만으로는
+    //   **턴 사이 침묵**(학습자가 말하는 9~21초)이 「발화 중 구멍」으로 찍힌다.
+    //   실측 call 1207: `turn_start` 와 `SERVER GAP 21238ms mid-utterance` 가 **같은
+    //   시각**에 나란히 찍혔다. 그 21초는 사용자가 말하던 시간이다.
+    //   ⇒ 「발화 중」은 **이 턴에 이미 소리가 나간 뒤**라야 성립한다.
+    if (prevChunkMs != null &&
+        !_turnEnded &&
+        _turnFirstAudioFed &&
+        nowMs - prevChunkMs >= 250) {
       _log('SERVER GAP ${nowMs - prevChunkMs}ms mid-utterance '
-          '(mic was ${_beaverSpeaking ? "closed" : "OPEN"})');
+          '(mic was ${_micGated ? "closed" : "OPEN"})');
     }
     _lastChunkAtMs = nowMs;
     // Beaver audio is arriving → gate the mic (covers the opening greeting even
@@ -1557,6 +3541,23 @@ class NormalCallController extends Notifier<CallState> {
       _log('resync: queue ${len}B > cap ${_maxQueueBytes}B → dropped ${drop}B');
       _maybeCompact();
     }
+
+    // ⭐ **새 오디오가 들어왔으니 지금 바로 한 번 밀어 본다(2026-08-15).**
+    //
+    // 푸시 타이머는 40ms 주기라, 쿠션 게이트가 열리는 순간과 다음 틱 사이에 **평균 20ms,
+    // 최대 40ms** 를 논다. 그게 매 턴 첫 소리에 그대로 더해진다.
+    //
+    // 주기를 20ms 로 줄이는 안 대신 **이쪽을 골랐다**: 주기를 줄이면 아무것도 안 바뀐
+    // 틱까지 두 배로 돌아 **플랫폼 채널 왕복이 늘어난다.** 이 프로젝트에서 채널 적체는
+    // 이미 한 번 범인이었다(2026-08-14, 재생 채널을 백그라운드 큐로 옮긴 그 건).
+    // ⇒ **바뀐 순간에만** 부른다.
+    //
+    // ⛔ 공짜로 도는 게 아니라 **거의 즉시 반환한다**: [_pump] 는 재진입 가드
+    //   (`if (_feeding) return`)와 저수위 검사(`level < _engineLowFrames`)를 먼저 본다.
+    //   엔진이 차 있으면 채널을 한 번도 안 두드린다.
+    // ⚠ 소켓 수신 경로에서 부르므로 **await 하지 않는다** — 여기서 기다리면 다음 청크 수신이
+    //   그만큼 밀린다.
+    unawaited(_pump());
   }
 
   /// Starts the push loop. From here on Dart decides when the engine gets fed;
@@ -1627,10 +3628,21 @@ class NormalCallController extends Notifier<CallState> {
           // The server had gone quiet mid-utterance and has now resumed. This gap
           // IS the glitch the user hears — measure it, don't just note that it
           // happened. Anything under [_prebufferFlush] would have been absorbed.
+          //
+          // ⛔ 두 가지를 한 이름으로 부르면 안 된다(2026-08-13 실측으로 드러났다).
+          //   [_beaverAudioActive] 는 `turn_start` 에서 켜지므로 **첫 소리가 나기 전부터**
+          //   켜져 있다. 그래서 예전엔 「턴 시작까지의 대기」가 「발화 중 끊김」으로
+          //   집계됐다 — 그날 관측한 919·999·1040·720·640ms 가 **전부 전자**였다.
+          //   둘은 처방이 다르다(전자는 첫 묶음 도착+쿠션, 후자는 서버 와이어공백).
           _starveAtMs = null;
           _resumeFlushed = false;
-          _log('audio resumed after '
-              '${DateTime.now().millisecondsSinceEpoch - starvedAt}ms gap (starved)');
+          final gapMs = DateTime.now().millisecondsSinceEpoch - starvedAt;
+          // ⛔ 두 구멍을 **한 이름으로 부르지 않는다**(바로 위 주석의 그 사고). 처방이 다르다.
+          _dg(_turnFirstAudioFed ? 'gap_mid' : 'gap_head',
+              {'turn': _currentTurnId, 'ms': gapMs});
+          _log(_turnFirstAudioFed
+              ? 'audio resumed after ${gapMs}ms gap (발화중구멍)'
+              : 'audio resumed after ${gapMs}ms gap (턴시작대기 — 이 턴의 첫 소리)');
         }
         if (_lastFeedSilent != false) {
           _log('feed AUDIO (queue ${avail}B, engine '
@@ -1647,8 +3659,26 @@ class NormalCallController extends Notifier<CallState> {
           if (take > _feedChunkBytes) take = _feedChunkBytes;
           if (take > whole) take = whole;
           _fedAudBytes += take; // [계측]
+          // [계측] 이 턴의 **첫 실오디오**. 이 뒤부터 넣는 무음이 「발화 중 구멍」이고,
+          // 이 앞은 「턴 시작 대기」다. 이 한 줄이 두 지표를 가른다.
+          final isFirstOfTurn = !_turnFirstAudioFed;
+          _turnFirstAudioFed = true;
+          // 원장: 이건 **서버발** 오디오다. 진행도 보고가 이 기록에 걸려 있다.
+          _ledger.recordFeed(frames: take ~/ 2, server: true);
           final sentAtMs = DateTime.now().millisecondsSinceEpoch;
+          final gen = _clearGen; // ⚠ 아래 await 동안 barge-in 이 끼어들 수 있다
           final reported = await FlutterPcmSound.feed(_takeArray(take));
+          if (gen != _clearGen) {
+            // 이 피드가 날아가 있는 사이 [_clearPlayback] 이 돌았다. 여기서 앵커와
+            // 꼬리를 쓰면 방금 리셋한 값을 **취소된 턴의 값으로 되살린다** —
+            // `_audioTailUntilMs` 가 부활하면 [_audioDrained] 가 최대 2.5초 막히고
+            // (C-3 재발), 앵커가 부활하면 다음 턴 첫 오디오가 늦는다(C-5 재발).
+            _log('feed raced clear — 앵커/꼬리 갱신 건너뜀');
+            return;
+          }
+          // ⭐ [계측] **응답시간** — 이 턴의 첫 소리가 **실제로 들리는 시각**까지.
+          //   데모(`/__cascadedemo`)와 **글자 그대로 같은 정의**여야 나란히 놓을 수 있다.
+          if (isFirstOfTurn) _recordResponseTime(sentAtMs, reported, level, take);
           // Android reports its depth; elsewhere fall back to our own arithmetic
           // so iOS/web keep working unchanged.
           _anchorEngine(reported ?? (level + take ~/ 2), sentAtMs);
@@ -1676,24 +3706,50 @@ class NormalCallController extends Notifier<CallState> {
           // mid-utterance only added ~450ms of dead air per resumption without
           // removing a single dropout, because the holes being ridden out are
           // multi-second server gaps, not jitter a cushion can cover.
-          if (!_beaverSpeaking) _playing = false;
+          if (!_beaverAudioActive) _playing = false;
           // Only a mid-utterance drain is a glitch; a drained queue between turns
           // is normal, so don't start the stall clock for it.
-          // ⚠ `_beaverSpeaking` 만으로 판정하면 안 된다 — [_audioDrained] 여야 한다.
+          // ⚠ `_beaverAudioActive` 만으로 판정하면 안 된다 — [_audioDrained] 여야 한다.
           //   푸시 모델에서는 [_pump] 가 매 틱 Dart 큐를 통째로 엔진에 밀어넣으므로
           //   **큐가 비어 있는 게 정상 상태**다(측정: INFLATE 창 대부분이 queue 0B).
           //   큐 빔만 보고 세면 엔진이 1.8초를 물고 멀쩡히 재생 중인데도 굶었다고
           //   집계돼, 쿠션이 상한까지 못 박히고 감쇠가 영영 안 걸린다.
           //   실측(5분 통화, 2026-08-02): 판정 26회 중 실제로 들린 끊김은 8회.
           //   나머지 18회가 가짜였고 쿠션은 72초 만에 1800ms 상한에 고정됐다.
-          if (_beaverSpeaking && _audioDrained) {
+          //
+          // ⛔ **그때 [_audioDrained] 로 막은 것만으로는 부족했다(2026-08-15).**
+          //   턴의 **양 끝**이 아직 샜다. 둘 다 「굶주림」이 아니다:
+          //     ① 턴 **시작** — 서버는 `turn_start` 를 첫 오디오보다 **먼저** 보낸다
+          //        (서버 불변식 I2). 그 사이 [_pump] 가 돌면 큐가 빈 게 당연한데
+          //        굶었다고 센다 ⇒ **매 턴 가짜 확정** ⇒ 턴마다 +150ms, 20초면 상한 1200ms,
+          //        감쇠는 영영 안 걸린다.
+          //     ② 턴 **끝** — `turn_end` 는 「서버가 이 턴 오디오를 다 보냈다」는 뜻이다.
+          //        그 뒤 큐가 마르는 건 턴이 정상적으로 끝나는 것이지 끊김이 아니다.
+          //        게다가 그 상태에서는 위 `ready` 가 `_turnEnded` 로 **쿠션을 이미 우회**하므로
+          //        쿠션을 키워도 아무것도 못 막는다.
+          //   ⭐ ①의 판별식은 **이 함수가 이미 갖고 있었다** — 무음 집계(아래)가
+          //     `_turnFirstAudioFed` 로 「턴 시작 대기」와 「발화 중 구멍」을 가른다.
+          //     계측에는 붙여 놓고 **쿠션 판정에는 안 붙어 있었다.** 그 의도를 완성한다.
+          //   ⚠ 진짜 발화 중 끊김은 여전히 잡힌다 — 그때는 서버가 아직 보내는 중이라
+          //     `_turnEnded` 가 false 이고, 첫 소리는 이미 났으므로 `_turnFirstAudioFed` 가 true 다.
+          //   실측 배경(서버 로그 턴 단위 조인, 2026-08-15): 웹 클라몫 중앙 303ms(쿠션 300 고정)
+          //     vs 앱 중앙 520ms — **앱의 클라몫이 쿠션을 그대로 따라갔다.**
+          if (_beaverAudioActive &&
+              _audioDrained &&
+              _turnFirstAudioFed &&
+              !_turnEnded) {
             if (_starveAtMs == null) {
               // First starve of this turn: the cushion was too small for the
               // deficit this call is running, so widen it for the turns ahead.
               _starveAtMs = DateTime.now().millisecondsSinceEpoch;
+              _dg('underrun', {'turn': _currentTurnId, 'cushion_ms': _cushionBytes ~/ 48});
               if (!_turnStarved) {
                 _turnStarved = true;
-                if (_cushionBytes < _cushionMaxBytes) {
+                if (_cushionGrowthOff) {
+                  // 성장을 껐다. **굶었다는 사실 자체는 그대로 센다** — 그게 이 실험의
+                  // 측정값이다(쿠션을 안 키우면 끊김이 얼마나 늘어나는가).
+                  _log('cushion 성장 OFF — 굶었지만 ${_cushionBytes * 1000 ~/ 48000}ms 유지');
+                } else if (_cushionBytes < _cushionMaxBytes) {
                   _cushionBytes += _cushionStepBytes;
                   if (_cushionBytes > _cushionMaxBytes) {
                     _cushionBytes = _cushionMaxBytes;
@@ -1712,9 +3768,9 @@ class NormalCallController extends Notifier<CallState> {
             _resumeFlushed = false;
           }
           if (_lastFeedSilent != true) {
-            if (_beaverSpeaking) _dbgStarveCount++; // DEBUG(audio-glitch)
+            if (_beaverAudioActive) _dbgStarveCount++; // DEBUG(audio-glitch)
             _log('feed silence — queue empty'
-                '${_beaverSpeaking ? ' WHILE beaver speaking (starved! #$_dbgStarveCount)' : ''}');
+                '${_beaverAudioActive ? ' WHILE beaver speaking (starved! #$_dbgStarveCount)' : ''}');
             _lastFeedSilent = true;
           }
           // Idle-ungate countdown (covers a missed turn_end so the mic can't
@@ -1732,13 +3788,24 @@ class NormalCallController extends Notifier<CallState> {
           _fedSilFrames += silFrames;
           if (whole >= 2) {
             _fedSilPrebufFrames += silFrames;
-          } else if (_beaverSpeaking) {
-            _fedSilSpeakFrames += silFrames;
+          } else if (_beaverAudioActive) {
+            // ⛔ 첫 소리 전이면 「턴 시작 대기」다 — **발화 중 구멍이 아니다.**
+            //   [_beaverAudioActive] 가 `turn_start` 에서 켜지기 때문에 예전엔 둘이
+            //   한 통에 들어갔다. 처방이 달라 갈라야 한다(2026-08-13).
+            if (_turnFirstAudioFed) {
+              _fedSilSpeakFrames += silFrames;
+            } else {
+              _fedSilTurnWaitFrames += silFrames;
+            }
           }
+          // 원장: 이건 **우리가 만든 필러**다. 서버는 이걸 "들은 양"으로 세면 안 된다.
+          _ledger.recordFeed(frames: silFrames, server: false);
           final sentAtMs = DateTime.now().millisecondsSinceEpoch;
+          final gen = _clearGen; // 오디오 분기와 같은 이유 — 위 주석 참조
           final reported = await FlutterPcmSound.feed(
-            PcmArrayInt16.zeros(count: silFrames),
+            _silenceArray(silFrames),
           );
+          if (gen != _clearGen) return;
           _anchorEngine(reported ?? (level + silFrames), sentAtMs);
         }
       }
@@ -1759,15 +3826,43 @@ class NormalCallController extends Notifier<CallState> {
   /// The server's little-endian PCM16 passes straight through: mobile targets
   /// are little-endian (host), which is what the native player expects.
   /// Caller guarantees `byteCount <= _queueLen`.
+  /// 오디오 피드용 스크래치. **호출마다 새로 만들지 않는다.**
+  ///
+  /// ⛔ 예전엔 `Uint8List(byteCount)` 를 매번 만들었다 — 최대 72KB × 초당 25회 =
+  ///   **초당 1.8MB 를 GC 에 던진다.** 5분 통화면 수백 MB 다.
+  /// ⭐ 재사용이 안전한 이유 두 가지:
+  ///   ① `MethodChannel.invokeMethod` 는 인자를 **동기적으로** 인코딩한 뒤 await 한다 —
+  ///      즉 우리가 다시 쓰기 전에 이미 채널 메시지로 복사돼 있다.
+  ///   ② 그래도 겹칠 일이 없다: [_pump] 가 `_feeding` 으로 재진입을 막는다(한 번에 하나).
+  ///   그리고 네이티브는 코덱이 디코드한 **자기 배열**(`byte[]`)을 들고 있다 — Dart 메모리를
+  ///   참조하지 않는다(Android `feed` 의 `call.argument("buffer")` 확인).
+  final Uint8List _feedScratch = Uint8List(_feedChunkBytes);
+
+  /// 무음 피드용 스크래치 — **0 으로만 채워지므로 내용이 바뀔 일이 없다.**
+  /// 최대 크기로 한 번 잡고 필요한 만큼만 뷰로 넘긴다.
+  final Uint8List _silenceScratch = Uint8List(_silenceTargetFrames * 2);
+
+  /// 무음 [frames] 개. 새로 할당하지 않는다.
+  PcmArrayInt16 _silenceArray(int frames) {
+    final want = frames * 2;
+    // 방어: 목표보다 큰 요청이 오면(설정이 바뀌면) 그때만 새로 만든다.
+    if (want > _silenceScratch.lengthInBytes) {
+      return PcmArrayInt16.zeros(count: frames);
+    }
+    return PcmArrayInt16(bytes: ByteData.sublistView(_silenceScratch, 0, want));
+  }
+
   PcmArrayInt16 _takeArray(int byteCount) {
-    final out = Uint8List(byteCount);
+    final out = _feedScratch;
     out.setRange(0, byteCount, _pcmQueue, _pcmHead);
     _pcmHead += byteCount;
     _maybeCompact();
     // Drive the avatar mouth from the samples about to play (matches what's
     // heard; the queue buffers ahead so arrival-time RMS would lead the audio).
     _updateAvatarLevel(out, byteCount);
-    return PcmArrayInt16(bytes: out.buffer.asByteData());
+    // ⚠ **부분 뷰**를 넘긴다. 전체를 넘기면 요청보다 긴 오디오가 나간다 —
+    //   `FlutterPcmSound.pcmBytesOf` 가 offset/length 를 존중하도록 같이 고쳤다.
+    return PcmArrayInt16(bytes: ByteData.sublistView(out, 0, byteCount));
   }
 
   /// Rewinds the indices once the queue is fully consumed. That is the only
@@ -1807,6 +3902,7 @@ class NormalCallController extends Notifier<CallState> {
       final cnt = end - i;
       final rms = cnt > 0 ? math.sqrt(sumSq / cnt) : 0.0;
       _envQueue.add(_levelFromRms(rms));
+      _envAdded++; // 마커 위치의 기준 — 이 인덱스에 자막·표정을 꽂는다
       i = end;
     }
     // Runaway guard. ⚠ 홀드백 자체가 최대 2.5초(엔진 목표)라 3초 캡은 여유가
@@ -1814,7 +3910,8 @@ class NormalCallController extends Notifier<CallState> {
     // 립싱크가 **조용히** 어긋난다. 엔진 목표 + take 상한 위로 잡는다.
     final cap = 4000 ~/ _envStepMs;
     if (_envQueue.length > cap) {
-      _envQueue.removeRange(0, _envQueue.length - cap);
+      // 잘려 나간 만큼도 '지나간' 것으로 센다. 안 그러면 마커가 영영 안 터진다.
+      _dropEnvelopeFront(_envQueue.length - cap);
     }
     // Zero-crossing rate → vowel shape (whole chunk is fine for this).
     final zcr = n > 1 ? zc / (n - 1) : 0.0;
@@ -1848,7 +3945,10 @@ class NormalCallController extends Notifier<CallState> {
         final lead = holdMs ~/ _envStepMs;
         if (_envQueue.length > lead) {
           avatarLevel.value = _envQueue.removeAt(0);
-        } else if (!_beaverSpeaking) {
+          _envPlayed++;
+          _fireDueMarkers();
+          _advanceReveal();
+        } else if (!_beaverAudioActive) {
           avatarLevel.value = 0.0;
         } else {
           // Brief gap mid-turn: ease shut rather than snapping.
@@ -1900,15 +4000,38 @@ class NormalCallController extends Notifier<CallState> {
   }
 
   void _gateMic() {
-    if (!_beaverSpeaking) {
-      _log('mic GATED — beaver speaking (your mic paused)');
+    final freshTurn = !_beaverAudioActive;
+    if (freshTurn) {
       _turnStarved = false; // fresh turn: it hasn't starved yet
+      // 새 턴은 아직 첫 소리를 안 냈다 → 지금부터 넣는 무음은 「턴 시작 대기」다.
+      _turnFirstAudioFed = false;
+      // 새 턴 = 진행도 원장의 기준선. 턴 경계에서는 엔진이 비어 있는 게 계약이라
+      // (재개방 조건이 [_audioDrained]) 여기서 비우면 이후 산출값이 곧
+      // **이번 턴의** 재생량이 된다.
+      _ledger.reset();
     }
     _micGateTimer?.cancel();
     _micGateTimer = null;
     _turnEnded = false;
-    _beaverSpeaking = true;
+    _beaverAudioActive = true;
     avatarSpeaking.value = true;
+    // ⛔ **게이트를 세운 뒤에 찍는다.** 예전엔 이 로그가 위 `if` 블록 안에 있었는데,
+    //   그 자리에서는 `_beaverAudioActive` 가 **아직 false** 라 [_micGated] 가 언제나
+    //   false 를 돌려줬다 ⇒ 마이크가 닫히는 바로 그 순간에 **"열려 있다"고 찍었다.**
+    //   실측 call 1206·1207 에서 6턴 전부 "mic stays open (barge-in)" 이었는데
+    //   같은 통화의 `mic OPEN — your turn` 이 그 뒤에 나온다(= 닫혀 있었다는 증거).
+    //   ⚠ 이 파일 주석이 2026-08-12 에 **정확히 같은 병**을 경고해 뒀다("진단이 실제
+    //     상태를 안 본다"). 그때 고친 것은 판정 대상이었고, 판정 **시점**은 남아 있었다.
+    // ⭐ 닫혔으면 **무엇이 막았는지**까지 찍는다 — AEC·서버 정책·통로를 가르려면 필요하다.
+    if (freshTurn) {
+      _log(_micGated
+          ? 'mic GATED — ${micGateReason(
+              channelGates: _channelMode.gatesMic,
+              serverMicAlwaysOpen: _serverMicAlwaysOpen,
+            )}'
+          : 'beaver turn OPEN — mic stays open (barge-in)');
+      _dg('mic_gate', {'gated': _micGated, 'turn': _currentTurnId});
+    }
     // 비버가 말하기 시작했다 → 대기 상태를 기본으로 되돌린다. 말이 끝나 idle 이
     // 다시 보일 때 「듣는 중」이나 「생각 중」이 남아 있으면 대사와 어긋난다.
     _listenTimer?.cancel();
@@ -1920,7 +4043,7 @@ class NormalCallController extends Notifier<CallState> {
   /// the playback queue to be empty, then waits a [_micHangover] tail (so the
   /// speaker's decaying audio isn't recaptured) before actually ungating.
   void _tryUngateMic() {
-    if (!_beaverSpeaking) return;
+    if (!_beaverAudioActive) return;
     if (!_turnEnded) return;
     // ⚠ Dart 큐가 아니라 [_audioDrained]. 큐가 비어도 엔진에 최대 2.5초가 남아 있고,
     //   그때 마이크를 열면 스피커에서 나오는 비버 목소리를 그대로 되먹는다.
@@ -1936,11 +4059,14 @@ class NormalCallController extends Notifier<CallState> {
       _micGateTimer = null;
       _gateSafetyTimer?.cancel();
       _gateSafetyTimer = null;
-      _beaverSpeaking = false;
+      _beaverAudioActive = false;
       avatarSpeaking.value = false;
       avatarLevel.value = 0.0;
+      // ⛔ 이 턴 재생이 끝났다 — 남은 마커는 다음 턴으로 넘기지 않는다.
+      _flushOrphanMarkers('turn_end+drained');
       _decayCushion();
       _log('mic OPEN — your turn (turn_end + drained)');
+      _scheduleAutoTalk();
     });
   }
 
@@ -1951,20 +4077,633 @@ class NormalCallController extends Notifier<CallState> {
   /// most once per empty period (the `!= null` guard stops re-arming every
   /// silence callback); a fresh inbound chunk in [_feedPlayer] cancels it.
   void _armIdleUngate() {
-    if (!_beaverSpeaking) return;
+    if (!_beaverAudioActive) return;
     if (_gateSafetyTimer != null) return; // already counting this empty period
     _gateSafetyTimer = Timer(_gateSafetyWindow, () {
       _gateSafetyTimer = null;
-      if (_beaverSpeaking && _audioDrained) {
+      if (_beaverAudioActive && _audioDrained) {
         _micGateTimer?.cancel();
         _micGateTimer = null;
-        _beaverSpeaking = false;
+        _beaverAudioActive = false;
         avatarSpeaking.value = false;
         avatarLevel.value = 0.0;
+        _flushOrphanMarkers('idle drained');
         _decayCushion();
         _log('mic OPEN — your turn (idle drained)');
+        _scheduleAutoTalk();
       }
     });
+  }
+
+  // ── dev 자동 대화 ─────────────────────────────────────────────────────────
+
+  /// 비버 발화가 **완전히 끝난 뒤** 다음 문장을 예약한다.
+  ///
+  /// ⛔ 고정 주기로 쏘지 않는다. 여기(턴 종료 + 오디오 배수 + 행오버)에만 거는 이유는,
+  ///   비버 말과 겹치면 **대기열·취소 경로가 섞여 무엇을 재는지 흐려지기** 때문이다.
+  ///   발화 종료 지점이 두 곳(행오버 / idle-ungate)이라 양쪽에서 부르고, 이미 예약된
+  ///   게 있으면 갈아끼운다 — 두 경로가 같은 종료를 두 번 알릴 수 있다.
+  void _scheduleAutoTalk() {
+    if (!CascadeAutoTalk.enabled) return;
+    final started = _autoTalkStartedAt;
+    if (started == null) return; // 이 통화에서 시작하지 않았다
+    _autoTalkTimer?.cancel();
+
+    final elapsed = DateTime.now().difference(started);
+    if (elapsed >= CascadeAutoTalk.duration) {
+      _log('[auto] ${elapsed.inSeconds}초 경과 — 스스로 끊는다 '
+          '(문장 $_autoTalkSent개)');
+      unawaited(hangUp());
+      return;
+    }
+
+    final wait = CascadeAutoTalk.gapFor(_autoTalkSent);
+    _autoTalkTimer = Timer(wait, _sendAutoTalk);
+  }
+
+  /// 문장 하나를 서버에 주입한다(`__test_say`).
+  ///
+  /// ⛔ **재생 경로를 건드리지 않는다** — 송신만 한다. 재생이 측정 대상이다.
+  void _sendAutoTalk() {
+    _autoTalkTimer = null;
+    if (!CascadeAutoTalk.enabled) return;
+    // ⛔ **조용한 실패 금지.** 소켓이 없으면 훅이 안 나간 것이고, 그러면 통화가 조용히
+    //   멈춰 6분을 못 채운다. 그때 "왜 안 돌지"를 로그 없이 찾게 두지 않는다.
+    if (_channel == null) {
+      _log('⚠ [auto] 소켓이 없어 문장을 못 보냈다 — 자동 대화가 여기서 멈춘다');
+      return;
+    }
+    final text = CascadeAutoTalk.lineAt(_autoTalkSent);
+    _autoTalkSent++;
+    _send({'type': '__test_say', 'text': text});
+    final elapsed = _autoTalkStartedAt == null
+        ? Duration.zero
+        : DateTime.now().difference(_autoTalkStartedAt!);
+    _log('[auto] #$_autoTalkSent (${elapsed.inSeconds}초) → "$text"');
+  }
+
+  /// 통화가 열린 뒤 자동 대화를 켠다(첫 문장은 비버 인사가 끝나면 나간다).
+  void _startAutoTalkIfEnabled() {
+    if (!CascadeAutoTalk.enabled) return;
+    _autoTalkStartedAt = DateTime.now();
+    _autoTalkSent = 0;
+    _log('[auto] 자동 대화 ON — 발화 종료마다 문장을 던진다. '
+        '${CascadeAutoTalk.duration.inMinutes}분 뒤 스스로 끊는다. '
+        '⚠ STT 는 안 탄다 — **끊김 곡선 전용**이고 응답시간 측정용이 아니다');
+  }
+
+  // ── barge-in: 취소 처리 ────────────────────────────────────────────────────
+
+  /// 서버가 비버 턴을 끊었다(`audio_cancel`). 재생을 즉시 죽이고, 어디까지 들렸는지
+  /// 회신한다.
+  ///
+  /// **순서가 곧 정확도다.** 진행도를 먼저 확정하고 나서 버려야 한다 — 큐와 엔진을
+  /// 비운 뒤에 읽으면 "남아 있던 양"을 알 수 없어 재생량이 부풀려진다.
+  Future<void> _onAudioCancel(Map<String, dynamic> msg) async {
+    // 서버가 `audio_cancel` 에 turn_id 를 필수로 싣는다. 그래도 파싱은 방어적으로 —
+    // 타입이 다르거나 빠진 프레임에 죽지 않는다([_handleControl] 전반의 스타일).
+    // ⚠ `as String?` 는 방어가 아니다: 값이 int 면 그대로 TypeError 를 던져 WS 스트림
+    //   핸들러까지 올라간다. 타입 검사로 받아야 한다.
+    // ⏱ "취소 수신 → 실제 무음" 의 시작점. **핸들러 첫 줄**이다(WS 프레임 수신 직후).
+    //    단조 시계를 쓴다 — 벽시계는 통화 중 시각 동기화로 튈 수 있고, 그러면 지연이
+    //    음수로 나오거나 수백 ms 뛴다.
+    final stopWatch = Stopwatch()..start();
+
+    final rawTurnId = msg['turn_id'];
+    final turnId = (rawTurnId is String ? rawTurnId : null) ?? _currentTurnId;
+
+    // ① 잔여 바이너리 차단을 먼저 세운다. clear() 를 await 하는 동안에도 소켓은
+    //    계속 들어오므로, 여기서 안 막으면 그 사이 도착분이 큐에 다시 쌓인다.
+    _cancelledResidual = true;
+    _cancelledResidualBytes = 0;
+
+    // ② `audio_cancel` 은 **그 턴의 종결을 겸한다** — 서버는 별도 `turn_end` 를
+    //    보내지 않는다. 그러니 `turn_end` 를 훅하는 자리에 이것도 같이 건다.
+    //    안 걸면 [_tryUngateMic] 과 [_maybeFinishClosing] 이 둘 다 막힌다.
+    //
+    //    ⚠ await **전**에 세운다. 뒤로 미루면 그 사이 도착한 다음 턴의 [_gateMic] 이
+    //      `_turnEnded=false` 로 돌려놓은 것을 다시 true 로 덮어써서, 새 턴이
+    //      "이미 끝난 턴"으로 취급된다(쿠션 우회 + 조기 ungate).
+    _turnEnded = true;
+
+    // ③ 재생 폐기 + 진행도 확정 (폐기 프레임 수가 진행도 계산의 ground truth 다).
+    //    Dart 측 상태 리셋은 [_clearPlayback] 안에서 **await 이전에** 끝난다.
+    final outcome = await _clearPlayback();
+
+    // ⏱ 끝점. 여기서 네이티브 폐기가 끝났고, 거기에 **HAL 잔량**을 더해야 스피커가
+    //    실제로 조용해지는 시점이 된다 — flush 는 AudioTrack 버퍼만 비우고, 이미
+    //    믹서/HAL 로 넘어간 오디오는 그대로 울린다.
+    stopWatch.stop();
+    final clientStopMs = stopWatch.elapsedMilliseconds + outcome.halResidualMs;
+
+    _tryUngateMic();
+    _maybeFinishClosing();
+
+    // 라우트는 **측정마다** 읽는다. 통화 중에도 바뀌므로(이어폰을 뽑으면) 세션 값으로는
+    // 그 턴의 맥락을 못 말한다.
+    // ⚠ stopWatch 를 멈춘 **뒤에** 읽는다 — 이 왕복이 client_stop_ms 에 섞이면
+    //   측정하려던 지연이 오염된다. 대신 이 왕복만큼 서버가 보는 rtt_ms 가 늘어난다.
+    final route = await AudioRouteProbe.currentRoute();
+
+    // ④ 회신. 서버가 패딩 원장을 갖고 있고 24kHz PCM16 = 48000B/s 고정이라,
+    //    바이트 → ms 와 "대사냐 패딩이냐"의 판정은 서버 몫이다.
+    if (turnId == null) {
+      // 서버 계약상 올 수 없는 경우. 조용히 빠뜨리면 서버가 어느 턴인지 못 맞추므로
+      // 반드시 드러낸다.
+      _log('⚠ audio_cancel 에 turn_id 가 없다 — 상관 불가');
+    }
+    // ⛔ **서버로는 안 보낸다.** 서버가 09-23(C14 · `70e20e2`)에 `playback_progress` 를
+    //   지웠다 — 보내면 모르는 제어 메시지로 경고 로그만 남는다(QA F038 · 09-26 사용자 결정
+    //   「송신만 끊기」). 디버그 취소 리그([debugOutboundSink])만 같은 Map 을 받아 잰다.
+    //
+    // `source` 를 항상 'native' 로 박으면 안 된다. 네이티브 폐기량을 못 받아 추정치로
+    // 떨어졌는데 'native' 라고 하면 외삽값(±50~150ms)이 실측으로 읽힌다.
+    final progress = <String, dynamic>{
+      'type': 'playback_progress',
+      'turn_id': ?turnId,
+      'played_server_bytes': outcome.playedServerBytes,
+      'source': outcome.fromNative ? 'native' : 'estimate',
+      'sampled_at': 'stop',
+      'client_stop_ms': clientStopMs,
+      'stop_measure': outcome.stopMeasure,
+      'platform': AudioRouteProbe.platformName,
+      // ⭐ 서버 불변식 I6 의 **외부 감시자**(백엔드 요청, 2026-08-12). 0 이 아니면 서버 버그다.
+      //   서버 모델(`ClientPlaybackProgress`)에 `extra="forbid"` 가 없어 모르는 필드는
+      //   무시된다(pydantic v2 기본 `ignore`) — 확인하고 넣었다. 즉 서버가 이 필드를
+      //   받기 전에 보내도 진행도 회신 자체가 깨지지 않는다.
+      'odd_frames': _oddFrames,
+      // 빈 문자열 = **못 읽음**. 'speaker' 로 추측해 채우지 않는다 — 그러면 서버가
+      // 측정 실패와 스피커폰을 구분하지 못한다.
+      'audio_route': route,
+    };
+    if (kDebugMode) debugOutboundSink?.call(progress);
+    _log('audio_cancel → cleared, played_server_bytes=${outcome.playedServerBytes} '
+        'turn=$turnId source=${outcome.fromNative ? 'native' : 'estimate'} '
+        'client_stop=${clientStopMs}ms '
+        'stop_measure=${outcome.stopMeasure} '
+        'route=${route.isEmpty ? '(못 읽음)' : route} '
+        // ⭐ [진단] `폐기` 를 **왕복 / 네이티브 내부**로 쪼개고 쿠션을 같이 찍는다
+        //   (2026-08-13). 통화가 길수록 client_stop 이 커지는데(186→413ms) 어디가
+        //   커지는지 못 갈랐다. 네이티브가 평평한데 폐기만 크면 스레드 스케줄링이고,
+        //   같이 크면 pause/flush 다. 쿠션은 "굶어서 커진 쿠션 탓"이라는 가설의 재료다.
+        '(폐기 ${stopWatch.elapsedMilliseconds}ms'
+        '${outcome.nativeMs >= 0 ? '[네이티브 ${outcome.nativeMs}ms]' : ''}'
+        ' + HAL 잔량 ${outcome.halResidualMs}ms'
+        '${outcome.halResidualKnown ? '' : ' ⚠미측정'}'
+        '${outcome.writeInFlight ? ' ⚠write 진행 중 — 회수 대기분 있음' : ''}'
+        ' 쿠션 ${_cushionBytes ~/ 48}ms)');
+  }
+
+  /// 재생 파이프라인을 즉시 비우고, **이번 턴에 실제로 스피커로 나간 서버발 바이트**를
+  /// 돌려준다.
+  ///
+  /// 버퍼는 3단이다 — ①Dart 링버퍼 ②네이티브 대기 큐 ③오디오 트랙 내부. ①은 여기서,
+  /// ②③은 네이티브 `clear()` 가 지운다. 트랙 자체는 살려 둔다: `release()` 로 죽이면
+  /// 재기동에 120ms 정착 대기가 붙고, 무음 keep-alive 가 끊겨 AudioFlinger 가 트랙을
+  /// idle 로 빼면 재활성화에 ~130ms 가 더 든다.
+  Future<_ClearOutcome> _clearPlayback() async {
+    // ⚠ Dart 측 리셋은 **전부 await 이전에** 끝낸다. 뒤로 미루면 플랫폼채널 왕복
+    //   (5~15ms) 동안 [_pump] 가 한두 틱 돌아 방금 지운 값을 되살린다.
+    //   [_clearGen] 은 그래도 남는 창(피드가 이미 날아가 있는 경우)을 막는다 —
+    //   [_pump] 가 await 후 이 값을 비교해 앵커/꼬리 갱신을 건너뛴다.
+    _clearGen++;
+
+    // ① Dart 링버퍼.
+    _pcmHead = 0;
+    _pcmTail = 0;
+
+    // 상태 리셋 — 여기를 빠뜨리면 barge-in 이 다음 턴을 망가뜨린다.
+    //
+    // ⚠ `_audioTailUntilMs`: 마지막 실오디오가 스피커에서 끝날 **미래 시각**이 박혀
+    //   있다. 폐기했는데 이 값이 남으면 [_audioDrained] 가 최대 엔진 깊이(~2.5초)
+    //   동안 false 라, 통화 종료 배수([_maybeFinishClosing])가 그만큼 멈춘다.
+    _audioTailUntilMs = 0;
+    // ⚠ starve 오집계 차단: 큐를 인위적으로 비운 것이라 "굶주림"이 아니다. 그냥 두면
+    //   [_pump] 다음 틱이 이걸 starve 로 세서 쿠션을 +150ms 올리고, `_turnStarved` 가
+    //   서면 그 턴은 감쇠도 못 받는다 → barge-in 이 잦을수록 쿠션이 상한(1.2s)에 머물러
+    //   **모든 턴 시작이 느려진다.**
+    _turnStarved = false;
+    _starveAtMs = null;
+    _resumeFlushed = false;
+    // 취소 뒤 이어지는 턴도 「첫 소리 전」부터 다시 센다 — 안 되돌리면 다음 턴의 시작
+    // 대기가 「발화 중 구멍」으로 집계된다(barge-in 이 잦을수록 그 오염이 커진다).
+    _turnFirstAudioFed = false;
+    // ⛔ 끼어들어 끊은 턴은 응답시간 표본이 아니다. 안 지우면 **취소된 턴의 말끝**부터
+    //   다음 턴 첫 소리까지가 응답시간으로 잡혀 값이 통째로 부풀린다.
+    _userTurnEndForAudioMs = null;
+    // 굳혀 둔 발화 시작 시각도 같은 이유로 버린다.
+    _frozenFirstVoicedAtMs = null;
+    // 취소된 턴의 `turn_start` 지연도 다음 턴에 실리면 안 된다.
+    _turnStartDelayMs = null;
+    // 다음 턴은 쿠션을 다시 쌓아야 한다(취소로 끊긴 재생을 이어가는 게 아니다).
+    _playing = false;
+    _prebufferFlushTimer?.cancel();
+    _prebufferFlushTimer = null;
+    // ⚠ 엔진 앵커: 네이티브는 비었는데 앵커가 취소 직전 값을 물고 있으면
+    //   [_engineLevelFrames] 가 과대 보고돼 [_pump] 가 "아직 충분하다"고 판단하고
+    //   다음 턴 첫 오디오를 안 밀어 넣는다.
+    //   [_anchorEngine] 을 쓰지 않고 직접 넣는 이유: 그쪽은 `_engineMinFrames` 도 같이
+    //   깎는데, 인위적으로 비운 0 이 "엔진이 말랐다"는 진단 지표로 잡히면 안 된다.
+    _engineAnchorFrames = 0;
+    _engineAnchorMs = DateTime.now().millisecondsSinceEpoch;
+    // 취소된 오디오의 입모양이 다음 턴에 남으면 안 된다.
+    // ⛔ **반드시 [_clearEnvelope] 를 쓴다.** 예전엔 `_envQueue.clear()` 였고 그래서
+    //   `_envPlayed` 가 안 올라가, 취소할 때마다 이후 자막이 영구히 늦어졌다.
+    _clearEnvelope();
+    // ⛔ 큐에 꽂아 둔 **미발화 마커**도 같이 버린다. 안 지우면 다음 턴에 지난 턴
+    //   표정·자막이 뜬다(그 오디오는 이미 폐기됐다).
+    _pendingMarkers.clear();
+    // 진행 중이던 드러내기도 멈춘다 — 남은 글자가 새면 안 들은 말이 자막에 남는다.
+    _resetReveal();
+    _lastFeedSilent = null;
+
+    // 쿠션(`_cushionBytes`)은 건드리지 않는다 — 통화가 실제로 겪은 지터의 추정치라
+    // 취소와 무관하다.
+
+    // ② ③ 네이티브. 반환된 폐기 프레임 수가 "아직 안 나간 양"의 실측값이다.
+    final res = await PcmPlaybackControl.clear();
+
+    final int remainingFrames;
+    if (res.framesDiscarded != null) {
+      remainingFrames = res.framesDiscarded!;
+    } else {
+      // 폴백: 네이티브가 아직 폐기량을 안 준다(iOS 카운터 이전 / clear 미구현).
+      // [_engineLevelFrames] 는 **외삽**이라 정확도가 떨어진다 — 숨기지 않고 찍는다.
+      remainingFrames = _engineLevelFrames;
+      _log('⚠ clear(): 네이티브 폐기량 없음 '
+          '(ok=${res.ok}) → 엔진 추정치 $remainingFrames 프레임으로 폴백. '
+          '진행도 정확도 하락(±50~150ms)');
+    }
+    if (!res.ok) {
+      // Dart 큐만 비워진 상태 = 스피커에서는 계속 나온다. 조용히 넘어가면
+      // "끊었는데 안 끊긴다"로만 보이므로 반드시 드러낸다.
+      _log('⚠ clear(): 네이티브 미지원 — 엔진 잔량이 그대로 재생된다 '
+          '(플러그인 clear() 구현 전)');
+    }
+
+    final playedFrames = _ledger.playedServerFrames(remainingFrames);
+
+    // 원장은 진행도를 뽑은 **뒤에** 연다. 엔진이 비었다고 확신할 수 있는 지점이라야
+    // 꼬리 계산이 맞다 — `turn_start` 는 그런 지점이 아니다(이전 턴 잔량이 남아 있을
+    // 수 있다).
+    _ledger.reset();
+
+    return _ClearOutcome(
+      playedServerBytes: playedFrames * 2, // 입력 프레임(PCM16 mono) → 바이트
+      fromNative: res.framesDiscarded != null,
+      halResidualMs: res.halResidualMs,
+      halResidualKnown: res.halResidualKnown,
+      writeInFlight: res.writeInFlight,
+      nativeMs: res.nativeMs,
+    );
+  }
+
+  /// 감정 라벨 → [avatarEmotion] 코드. **모르는 값은 0(neutral)** 이다.
+  ///
+  /// ⚠ **실측(2026-08-12 실기기 첫 통화): 영문 슬러그로 온다**(`happy`). 한글 수용은
+  ///   그대로 둔다 — 서버가 라벨을 바꿔도 조용히 무표정이 되지 않게 하는 보험이다.
+  /// ⛔ 화이트리스트로 막지 않는다 — 모르는 값이 오면 표정을 안 바꿀 뿐, 자막까지 버리면 안 된다.
+  ///
+  /// ⭐ `neutral` 을 **명시 case 로** 둔다. [knownLabel] 과 짝이다 — 둘 다 0 을 돌려주지만
+  ///   «서버가 무표정을 지시했다」와 「우리가 못 읽어서 버렸다」는 **뜻이 다르다.** 예전엔
+  ///   둘이 같은 `default` 로 떨어져 구분이 안 됐고, 그래서 서버가 새 라벨을 보내기
+  ///   시작해도 **아무도 모르는 채 표정만 사라진다.**
+  ///   2026-08-15 실측에서 서버가 보낸 값은 `neutral`(19건)·`angry`(5건) 둘뿐이었다.
+  ///   나머지 자산 3종(happy·surprised·sad)이 안 쓰이는 이유가 「서버가 안 보내서」인지
+  ///   「우리가 못 읽어서」인지 가릴 수단이 없으면 이 판정은 영원히 안 끝난다.
+  static int emotionCode(String? raw) {
+    switch ((raw ?? '').trim().toLowerCase()) {
+      case 'neutral':
+      case 'none':
+      case '중립':
+      case '무표정':
+        return 0;
+      case 'happy':
+      case '기쁨':
+      case '행복':
+        return 1;
+      case 'surprised':
+      case 'surprise':
+      case '놀람':
+        return 2;
+      case 'sad':
+      case '슬픔':
+        return 3;
+      case 'angry':
+      case '화남':
+      case '분노':
+        return 4;
+      // ⭐ 박장대소. `happy` 와 **다른 축**이다 — 미소가 아니라 터져 나오는 웃음이다.
+      case 'laugh':
+      case 'laughing':
+      case '폭소':
+      case '박장대소':
+        return 5;
+      default:
+        return 0; // 모르는 값 — 표정을 안 바꾼다. [knownLabel] 이 이 경우를 드러낸다
+    }
+  }
+
+  /// 이 라벨을 **우리가 읽을 수 있는가.** [emotionCode] 와 짝이다.
+  ///
+  /// ⛔ 표정을 막는 용도가 아니다. 모르는 값도 통과시키고 표정만 안 바꾼다(위 참조).
+  ///   이건 **로그에 드러내기 위한** 판정이다 — 서버가 어휘를 넓혔는데 우리가 조용히
+  ///   버리고 있는 상태를 통화 로그 한 줄로 잡는다.
+  static bool knownLabel(String? raw) {
+    final v = (raw ?? '').trim().toLowerCase();
+    if (v.isEmpty) return false;
+    return emotionCode(v) != 0 ||
+        const {'neutral', 'none', '중립', '무표정'}.contains(v);
+  }
+
+  /// `sentence` — 구간 자막·표정 마커. **오디오 직전에 인밴드로** 온다.
+  ///
+  /// ⛔ 여기서 화면을 바꾸지 않는다. 이 구간의 오디오는 아직 안 들린다(우리는 최대 1.2초를
+  ///   앞당겨 엔진에 넣는다). 도착 시점에 자막을 바꾸면 **소리보다 그만큼 앞서 간다.**
+  ///   입모양과 같은 봉투 큐에 **위치로 꽂아** 두고, 재생이 그 지점에 닿을 때 터뜨린다.
+  void _onSentenceMarker(Map<String, dynamic> msg) {
+    // 취소 잔여 구간의 마커는 오디오와 **같이** 버린다(그 오디오는 이미 폐기됐다).
+    if (_cancelledResidual) {
+      _log('sentence 무시 — 취소 잔여 구간');
+      return;
+    }
+    _sentenceCount++;
+    final text = (msg['text'] as String?)?.trim() ?? '';
+    final rawEmotion = msg['emotion'] as String?;
+    final seqRaw = msg['seq'];
+    final seq = seqRaw is int ? seqRaw : -1;
+    final sbRaw = msg['server_bytes'];
+    _pendingMarkers.add((
+      turnId: (msg['turn_id'] as String?) ?? '',
+      at: _envAdded,
+      text: text,
+      emotion: emotionCode(rawEmotion),
+      seq: seq,
+      // ⭐ **버리지 않는다.** 다음 마커와의 차분이 이 구간의 **정확한 오디오 길이**다
+      //   (24kHz·16bit = 48,000 B/s 고정). 타자기 속도가 여기서 나온다.
+      serverBytes: sbRaw is int ? sbRaw : -1,
+    ));
+    // ⭐ 마커 **도착**. 아래 [_log] 와 같은 사실을 적지만 운명이 다르다 — 저건 릴리즈에서
+    //   사라지고 이건 서버로 간다. 「감정이 도착은 했나」를 실기기에서 가르는 유일한 줄이다.
+    _dg('mk_rx', {
+      'seq': seq,
+      'emo': rawEmotion,
+      if (!knownLabel(rawEmotion)) 'unknown': true,
+      // ⭐ **마커가 실린 턴**(서버가 정한 것)과 **지금 열려 있는 턴**을 같이 남긴다.
+      //   둘이 다르면 그 마커는 자기 턴이 아닌 곳에서 발화된다 — 그게 「표정이 한 턴
+      //   늦는가」의 유일한 판정 근거다. 지금까지 둘 다 안 남겨 판정할 수 없었다.
+      'turn': msg['turn_id'],
+      'cur': _currentTurnId,
+      'at': _envAdded,
+      'played': _envPlayed,
+      'wait': _pendingMarkers.length,
+    });
+    // [진단] 첫 실기기 통화에서 **서버 탓 / 앱 탓**을 가르는 줄이다.
+    // 이 줄이 0건이면 서버가 안 보낸 것이고, 있는데 화면이 비면 앱 문제다.
+    // ⭐ 모르는 라벨을 **로그에 드러낸다.** 표정은 그대로 무표정으로 두되(위 규약),
+    //   서버가 어휘를 넓혔는데 우리가 조용히 버리는 상태를 여기서 잡는다.
+    _log('sentence #$_sentenceCount seq=$seq emotion=$rawEmotion'
+        '${knownLabel(rawEmotion) ? '' : ' ⛔모르는라벨'} '
+        'text="${text.length > 10 ? '${text.substring(0, 10)}…' : text}" '
+        '위치=$_envAdded(재생 $_envPlayed) 대기=${_pendingMarkers.length}');
+
+    // `server_bytes` 교차검증 — 없어도 동작한다. 어긋나면 드러낸다.
+    //
+    // ⚠ **단위를 맞춘 뒤에 비교한다.** 서버는 턴마다 0 부터 세고(그래서 턴 첫 마커의
+    //   `server_bytes` 는 0 이다) 우리 원장은 통화 누적이다. 예전엔 그대로 뺐고, 그러니
+    //   통화가 길어질수록 무조건 벌어져 **매 턴 경고가 떴다** — 경고가 상시가 되면
+    //   진짜 어긋남을 못 본다. 여기서 턴 원점([_turnServerBytesBase])을 뺀다.
+    final sb = msg['server_bytes'];
+    if (sb is int) {
+      var ours = _ledger.fedServerFrames * 2 - _turnServerBytesBase;
+      var diff = sb - ours;
+      // ⭐ 자가치유(bt-back 제안). 원점을 `turn_start` 에서 잡는 게 정확하지만, 그 프레임을
+      //   못 보면(취소 경로·유실) 원점이 낡은 채 남아 이후 **모든 턴**이 어긋난다.
+      //   우리가 이 턴에 서버보다 **많이** 먹였다는 건 물리적으로 불가능하므로
+      //   (서버가 보낸 것만 먹인다), 크게 음수면 원점이 낡은 것이다 → 다시 잡는다.
+      if (diff < -_serverBytesTolerance) {
+        _turnServerBytesBase = _ledger.fedServerFrames * 2 - sb;
+        _log('server_bytes 원점 재설정 — turn_start 를 못 본 것으로 본다 '
+            '(서버=$sb, 새 원점=$_turnServerBytesBase)');
+        ours = sb;
+        diff = 0;
+      }
+      if (diff.abs() > _serverBytesTolerance) {
+        _log('⚠ server_bytes 불일치: 서버=$sb 우리턴원장=$ours 차이=${diff}B '
+            '(${diff ~/ 48}ms) — 원장 절단 기준이 어긋난다 '
+            '(턴원점=$_turnServerBytesBase, 통화누적=${_ledger.fedServerFrames * 2})');
+      }
+    }
+  }
+
+  /// 이 비버 턴이 시작될 때의 원장 누적치(바이트). `turn_start` 에서 찍는다.
+  ///
+  /// ⚠ 0 으로 두면 통화 첫 턴만 맞고 그다음부터 전부 어긋난다 — 그게 실측된 증상이다.
+  int _turnServerBytesBase = 0;
+
+  /// 허용 오차(바이트). 한 청크(약 0.5초) 정도의 어긋남은 도착 순서 차이로 정상이다.
+  static const int _serverBytesTolerance = 48 * 500;
+
+  /// 재생이 마커 위치에 닿았다 — 이제 화면을 바꾼다.
+  void _fireDueMarkers() {
+    while (_pendingMarkers.isNotEmpty && _pendingMarkers.first.at <= _envPlayed) {
+      _applyMarker(_pendingMarkers.removeAt(0), due: true);
+    }
+  }
+
+  /// 턴이 완전히 끝났는데 **아직 안 터진** 마커를 지금 비운다.
+  ///
+  /// ## ⛔⛔ 왜 필요한가 — 안 비우면 마커가 **다음 턴으로 새어 나간다**
+  ///
+  /// 마커는 시각이 아니라 **봉투 번호**(`at`)에 꽂히고 `_envPlayed >= at` 에서 터진다.
+  /// 그런데 `_envPlayed` 는 **턴마다 0으로 안 돌아간다.** 그래서 그 턴 재생이 `at` 에
+  /// 못 미친 채 끝나면 마커는 그대로 매달려 있다가, **다음 턴 오디오**가 그 번호를
+  /// 지날 때 터진다 — 엉뚱한 문장 위에서.
+  ///
+  /// 실측(call 1224, 2026-08-27 사장님 실기기):
+  ///
+  ///     74.95  mk_rx   seq=3 happy  at=1469  played=1465   ← 4칸(≈100ms) 모자랐다
+  ///     75.04  turn_end                                     ← 그 턴은 여기서 끝
+  ///     83.28  mk_fire seq=3        cur=918dcec5b5d7        ⛔ 8.3초 뒤 **다음 턴**
+  ///     85.25  vid_emo code=1(happy)                        ⛔ 엉뚱한 대사 위에 웃음
+  ///
+  /// 같은 통화에서 한 번 더 났고, 그때는 **두 개가 같은 밀리초에** 터져 앞의 `sad` 가
+  /// 뒤의 `happy` 에 즉시 덮여 사실상 안 보였다(seq6·seq7, 둘 다 `at=2625`).
+  ///
+  /// ⭐ **터뜨린다, 버리지 않는다.** `at` 과 `played` 의 차이는 대개 100ms 안쪽이라
+  ///   그 오디오는 **실제로 재생됐다** — 계상만 몇 칸 뒤처진 것이다. 버리면 그 조각의
+  ///   자막이 영영 안 뜬다. 감정 쪽은 이 시점에 이미 `_talking` 이 풀리므로
+  ///   [SyncAvatar] 가 알아서 안 그린다(`_syncEmotionLayer` 의 `!_talking` 갈래).
+  void _flushOrphanMarkers(String why) {
+    if (_pendingMarkers.isEmpty) return;
+    _dg('mk_orphan', {
+      'n': _pendingMarkers.length,
+      'why': why,
+      'played': _envPlayed,
+      'at': _pendingMarkers.first.at,
+      'turn': _pendingMarkers.first.turnId,
+    });
+    while (_pendingMarkers.isNotEmpty) {
+      _applyMarker(_pendingMarkers.removeAt(0), due: false);
+    }
+  }
+
+  /// 마커 하나를 화면에 반영한다. [_fireDueMarkers] 와 [_flushOrphanMarkers] 가 공유한다.
+  ///
+  /// ⛔ 본체를 하나로 둔다 — 예전에 같은 규칙을 두 곳에 나눠 적었다가 한쪽만 고쳐진
+  ///   사고를 이 파일에서만 두 번 겪었다(봉투 계상·디코더 셈).
+  void _applyMarker(
+    ({
+      int at,
+      String text,
+      int emotion,
+      int seq,
+      int serverBytes,
+      String turnId,
+    }) m, {
+    required bool due,
+  }) {
+    {
+      // ⚠ **구간 ≠ 문장이다.** 코드스위칭 문장은 언어별로 쪼개져 마커가 2~3개 온다
+      //   (실측: "Hey! How's your" / "한국어" / "study today?"). LLM 이 끊는 게 아니라
+      //   **TTS 가 언어별로 나눈다**(목소리가 언어마다 다르다).
+      //   와이어에는 문장 경계가 없으므로 **턴을 단위로** 누적한다.
+      if (m.text.isNotEmpty) {
+        // ⭐ **앞 조각이 아직 다 안 드러났으면 즉시 마저 채운다.**
+        //   뒤로 밀리면 자막이 소리보다 **늦어진다** — 앞서는 것만큼 나쁘다.
+        _revealed = _revealTarget.length;
+        _revealTarget =
+            _revealTarget.isEmpty ? m.text : '$_revealTarget ${m.text}';
+        _revealPerTick = _revealRateFor(m.text, m.serverBytes, _pendingMarkers);
+        _revealAccum = 0;
+        // 이 구간의 실측(글자↔바이트)을 다음 추정 재료로 남긴다.
+        if (m.serverBytes >= 0 && _pendingMarkers.isNotEmpty) {
+          final nb = _pendingMarkers.first.serverBytes;
+          if (nb > m.serverBytes) {
+            _revealCharsSum += m.text.length;
+            _revealBytesSum += nb - m.serverBytes;
+          }
+        }
+      }
+      // ⛔ 감정은 **상태를 안 든다.** 서버가 매 마커에 이어붙인 결과를 이미 실어 준다.
+      //   직전 값을 기억하면 `audio_cancel` 로 마커를 버릴 때 감정이 어긋난다.
+      // ⭐ **발화 시점**을 남긴다. `mk_rx`(도착) · `mk_fire`(발화) · `vid_emo`(화면)
+      //   셋을 나란히 놓아야 지연이 어디서 생기는지 갈린다 — 도착이 늦은 건지,
+      //   재생 위치를 기다린 건지, 디코더를 여느라 늦은 건지.
+      _dg('mk_fire', {
+        'seq': m.seq,
+        'emo': m.emotion,
+        'turn': m.turnId,
+        'cur': _currentTurnId,
+        'talking': _beaverAudioActive,
+        if (!due) 'orphan': true,
+      });
+      avatarEmotion.value = m.emotion;
+    }
+  }
+
+  /// 이 조각을 **틱당 몇 글자씩** 드러낼지.
+  ///
+  /// ⭐ 다음 마커가 이미 대기 중이면 그 위치가 **이 조각의 오디오 길이**를 말해 준다
+  ///   (마커는 오디오보다 먼저 도착한다). 그러면 추정이 아니라 **실제 길이에 맞춘다** —
+  ///   글자가 조각의 소리와 정확히 같이 끝난다.
+  ///
+  /// 없을 때만 언어별 기본값을 쓴다. 근거는 실측 말하기 속도다:
+  ///   한국어 6.3~8.5 자/초(중앙 7.7) · 영어 19.6 자/초.
+  ///   봉투 틱이 25ms = 40틱/초 이므로 한국어 ≈0.19, 영문 ≈0.49 자/틱.
+  /// ⚠ 한글 1글자(음절)가 영문 3~4글자 소리다 — 같은 속도를 쓰면 한글이 소리보다 훨씬
+  ///   빨리 끝난다. 그래서 **한글이 섞여 있으면 느린 쪽**을 쓴다.
+  double _revealRateFor(
+    String text,
+    int myServerBytes,
+    List<
+            ({int at, String text, int emotion, int seq, int serverBytes,
+              String turnId})>
+        pending,
+  ) {
+    // ① 다음 마커가 큐에 있으면 **차분이 곧 이 구간의 길이**다(추정 아님).
+    //    실기기 로그가 이게 대부분 가능함을 보여 준다 — 우리가 최대 1.2초를 앞당겨
+    //    엔진에 넣으므로 마커는 재생보다 앞서 쌓인다(`대기=2` 가 그 증거).
+    var spanBytes = -1;
+    if (pending.isNotEmpty && myServerBytes >= 0) {
+      final nb = pending.first.serverBytes;
+      if (nb > myServerBytes) spanBytes = nb - myServerBytes;
+    }
+    return revealRatePerTick(
+      text: text,
+      spanBytes: spanBytes,
+      // ② 없으면(턴의 마지막 구간) **이 턴의 실측 비율**로 추정한다.
+      charsPerByte: _revealBytesSum > 0 ? _revealCharsSum / _revealBytesSum : 0,
+    );
+  }
+
+  /// 재생이 한 틱 나아갔다 — 그만큼 글자를 드러낸다.
+  ///
+  /// ⛔ **벽시계 타이머로 하지 않는다.** `Timer` 로 돌리면 재생이 멈춰도 자막이 계속
+  ///   흐르고, 그게 지금 고치려는 어긋남과 **같은 종류**다. 이 함수는 봉투 큐가 실제로
+  ///   한 칸 빠질 때만 불린다(= 소리가 그만큼 났을 때만).
+  void _advanceReveal() {
+    if (_revealTarget.isEmpty || _revealed >= _revealTarget.length) return;
+    _revealAccum += _revealPerTick;
+    var next = _revealed;
+    while (_revealAccum >= 1.0 && next < _revealTarget.length) {
+      next++;
+      _revealAccum -= 1.0;
+    }
+    if (next != _revealed) {
+      _revealed = next;
+      // 이 경로는 `substring` 이라 **원래부터 통째 교체**다 — 이전 턴 대사가 남아 있어도
+      // 첫 글자가 드러나는 순간 갈아치운다. 플래그만 내려 두면 나중에 오는
+      // `output_transcript` 델타가 누적으로 붙는다(교체는 이미 끝났으므로).
+      _subtitleReplaceOnNext = false;
+      state = state.copyWith(beaverSubtitle: _revealTarget.substring(0, _revealed));
+    }
+  }
+
+  /// 드러내기 상태를 통째로 비운다(턴 시작 · 취소 · 통화 종료).
+  void _resetReveal() {
+    _revealTarget = '';
+    _revealed = 0;
+    _revealAccum = 0;
+    _revealPerTick = 0.49;
+    _revealCharsSum = 0;
+    _revealBytesSum = 0;
+  }
+
+  /// `ready` — 이 세션이 **어떤 정책으로 도는지**를 서버가 알려준다. 서버가 이긴다.
+  ///
+  /// ⚠ 와이어 키는 **snake_case** 다. `cascade_protocol.py:254-264` 에 alias 도
+  ///   alias_generator 도 없고, 서버 자신의 데모 화면(`cascade_demo.html`)도
+  ///   `bargein_confirm`/`turn_silence_ms` 로 읽는다 — 1차 자료로 확인했다.
+  ///   camelCase 도 같이 받는 이유: 나중에 서버가 alias 를 붙여도 **조용히 무동작**이
+  ///   되지 않게. 이 종류의 어긋남은 에러가 안 나서 제일 늦게 발견된다.
+  void _applyServerReady(Map<String, dynamic> msg) {
+    bool? readBool(String snake, String camel) {
+      final v = msg[snake] ?? msg[camel];
+      return v is bool ? v : null;
+    }
+
+    int? readInt(String snake, String camel) {
+      final v = msg[snake] ?? msg[camel];
+      return v is int ? v : null;
+    }
+
+    final open = readBool('mic_always_open', 'micAlwaysOpen');
+    if (open != null) _serverMicAlwaysOpen = open;
+    final confirm = msg['bargein_confirm'] ?? msg['bargeinConfirm'];
+    if (confirm is String) _serverBargeinConfirm = confirm;
+    final silence = readInt('turn_silence_ms', 'turnSilenceMs');
+    if (silence != null) _serverTurnSilenceMs = silence;
+
+    // ⭐ 마이크가 열렸는지/닫혔는지를 **결과로** 찍는다. 예전엔 클라 컴파일 스위치가
+    //   서버 요청을 거부할 수 있었고, 그 거부가 로그에 없으면 "서버는 상시개방인데 왜
+    //   barge-in 이 한 번도 안 되나"를 아무도 못 찾았다(양쪽 다 자기 설정대로 돌고 있다고
+    //   믿는다). 그 스위치는 없앴지만 **결과를 찍는 규율은 남긴다.**
+    _log('ready: engine=${msg['engine']} 통로=${_channelMode.name} '
+        'mic_always_open=$_serverMicAlwaysOpen '
+        'bargein_confirm=$_serverBargeinConfirm '
+        'turn_silence_ms=$_serverTurnSilenceMs '
+        '→ 마이크 ${_micGated ? '게이팅' : '상시개방'}');
   }
 
   /// Parses and dispatches a control JSON frame from the server.
@@ -1983,24 +4722,195 @@ class NormalCallController extends Notifier<CallState> {
       case 'call_started':
         final cid = msg['character_id'];
         if (cid is int) state = state.copyWith(characterId: cid);
+        // ⭐ 서버가 정한 **이 통화의 코스**(커리큘럼 2단계). `auto` 로 걸면 버튼 값이
+        //   없으니 여기서만 알 수 있고, 명시 버튼(expression/freetalk)이어도 **서버가
+        //   정본**이라 오면 덮어쓴다. 힌트 UI 가림·결과 화면 배지가 [CallState.course]
+        //   를 보므로 이 줄이 빠지면 auto 통화는 코스 없는 통화로 그려진다.
+        //   옛 서버·일반·레벨테스트는 키 자체가 없다 → 그대로 둔다(버튼 값 유지).
+        {
+          final course = CallCourse.fromWire(msg['course']);
+          if (course != null) {
+            state = state.copyWith(course: course);
+            _log('call_started: course=${course.wireValue}'
+                '${_callCourse == CallCourse.auto ? ' (auto → 서버 결정)' : ''}');
+          } else if (msg.containsKey('course')) {
+            _log('⚠ call_started: course=${msg['course']} ⛔모르는값 — 코스 없음으로 둔다');
+          }
+        }
+        // ⭐ 서버는 **이 통화의 call_id 를 여기서 이미 알려준다.** 그런데 클라는
+        //   `character_id` 만 읽고 이 값을 버리고 있었다(2026-08-24 실기기 로그:
+        //   `{"type":"call_started","character_id":1,"call_id":"1182"}`).
+        //
+        //   그 결과 구간을 이어갈 때 실을 id 가 없어서, `GET /calls` 를 폴링해
+        //   "기준값보다 큰 첫 id" 로 **되짚어야** 했다([_recoverSegmentCallId]).
+        //   서버가 정답을 주고 있는데 추측으로 되짚고 있었던 셈이다 — 그 추측은
+        //   기준값 캡처가 소켓과 경주해서 **질 수 있고**, 지면 조용히 틀린다.
+        //
+        //   이제 이 값을 쓴다. 되짚기는 이 필드를 안 주는 서버를 위한 **예비**로만 남는다.
+        // GA4 — 코스가 정해진 뒤에 보낸다(course 파라미터).
+        _gaCallStarted();
+        _serverCallId = normalizeCallId(msg['call_id']);
+        if (_serverCallId != null) {
+          // ⭐ **상태에도 싣는다.** 지금까지 [CallState.callId] 는 `call_ended` 로만
+          //   채워졌고, 클라가 먼저 끊는 경로(수동 종료·구간 경계)에서는 늘 null 이라
+          //   요약 화면이 `GET /calls` 를 최대 5회 폴링해 되짚어야 했다
+          //   (`call_finish.dart` `_recoverCallId`). 서버가 시작할 때 알려 주므로
+          //   그 폴링이 필요 없어진다 — 그 코드는 `callId == null` 일 때만 도는
+          //   구조라 **지우지 않아도 저절로 안 돈다**(구버전 서버용 폴백으로 남는다).
+          state = state.copyWith(callId: _serverCallId);
+
+          // ⭐ **이어졌는지 판별한다.** 백엔드: 「이어졌는지는 `call_started` 의
+          //   `call_id` 가 그대로인지로 판별하세요 — 번호가 바뀌었으면 새 통화입니다.」
+          //
+          //   ⛔ 사용자에게 알리지 않는다. 통화 자체는 정상으로 돌고, 「비버가 기억을
+          //     못 합니다」를 팝업으로 알리는 건 더 나쁘다. 이건 **개발자가 원인을
+          //     5초 만에 찾게** 하는 장치다 — 이 줄이 없어서 며칠을 헤맸다.
+          final asked = _askedContinueId;
+          if (asked != null && asked != _serverCallId) {
+            _log('⛔ 이어하기 실패 — $asked 로 이어달라 했는데 새 통화 $_serverCallId '
+                '가 열렸다. 서버 사유는 셋 중 하나다(본인 통화 아님 / 유효시간 5분 '
+                '초과 / 조각 상한 소진). 비버는 앞 대화를 기억하지 못한다');
+          } else if (asked != null) {
+            _log('✅ 이어하기 성공 — 같은 통화 $_serverCallId 로 이어졌다');
+          } else {
+            _log('call_started: 이 통화의 call_id=$_serverCallId');
+          }
+        }
+        // ⭐ 계측을 켜고 끄는 주인은 **서버**다. 앱 재배포 없이 끌 수 있어야 한다.
+        // ⛔ 여기서 [CallDiagSink.start] 를 부르지 마라 — 앵커는 통화 리셋에서 잡는다
+        //   (그 이유는 그 자리 주석에). 여기서 다시 잡으면 이 프레임 **전** 구간이 지워진다.
+        // ⚠ 병합(2026-09-04): 위 이어하기 판별과 **같은 자리**를 각자 건드려 충돌했다.
+        //   둘은 하는 일이 다르다 — 저쪽은 call_id 로 «이어졌는가»를 가르고, 이쪽은
+        //   서버가 지시한 계측 등급을 받는다. 그래서 **둘 다 남긴다.**
+        //   ⛔ `state.callId` 대입이 위에서 이미 일어난다(`_serverCallId`). 여기서 또
+        //     대입하면 같은 값을 두 번 쓰는 것이라 뺐다 — 출처가 하나여야 한다.
+        final diagLevel = msg['diag'];
+        if (diagLevel is String && diagLevel.isNotEmpty) _diag.level = diagLevel;
+        _dg('call_started', {'call': _serverCallId, 'ch': cid});
+        // [진단] 캐스케이드가 이걸 보내기 시작했는지 실기기에서 가리는 줄이다
+        // (00155-br2). 안 오면 화면이 대표 캐릭터로 폴백하는데, 그건 **조용히**
+        // 일어나서 로그가 없으면 "왜 다른 얼굴이지"를 못 찾는다.
+        _log('call_started: character_id=$cid name=${msg['name'] ?? '(없음)'}');
+        // 조각 번호(S4, Optional). 있으면 «마지막 조각» 판정을 서버 값으로 한다.
+        {
+          final fi = msg['fragment_index'];
+          final mf = msg['max_fragments'];
+          if (fi is int && mf is int) {
+            _serverFragmentIndex = fi;
+            _serverMaxFragments = mf;
+            _log('call_started: fragment $fi/$mf');
+          }
+          // 서버 `premium` 브랜치(09-23) §4 — **이 조각이** 쓸 수 있는 초. 조각마다 새로 온다.
+          // ⛔ 안 오면 null 로 되돌린다 — 앞 조각 값이 남으면 구서버·면제(admin) 통화가 엉뚱한
+          //   시점에 끊긴다. 키 없음 = 예산 대상 아님 → 종전 5분 경계.
+          final rs = msg['remaining_s'];
+          if (rs is num) {
+            _fragmentEndSec = state.elapsedSec + rs.toInt();
+            _budgetFinal = rs < kServerFragmentCapSec;
+            _log('call_started: remaining_s=$rs → 이 조각 끝 ${_fragmentEndSec}s'
+                '${_budgetFinal ? ' (하루 예산이 이 조각에서 끝난다 — 마지막 조각)' : ''}');
+          } else {
+            _fragmentEndSec = null;
+            _budgetFinal = false;
+          }
+        }
+        // 끊김 없는 전환의 새 소켓이 열렸다 — 기다리던 쪽을 깨운다.
+        if (!(_fragmentReady?.isCompleted ?? true)) _fragmentReady!.complete(true);
         break;
 
+      case 'fragment_saved':
+        // 끊김 없는 조각 전환 — 우리가 보낸 `fragment_end` 에 서버가 조각 저장(마지막
+        // 판정 LLM ≤2s + 꼬리)을 **끝냈다**고 답한 것. 이 뒤에 서버가 소켓을 닫는다.
+        // QA(2026-09-14): 300ms 만 기다리고 재연결하니 조각2 가 조각1 꼬리를 못 보고
+        // 통과 항목을 다시 냈다(실측 1447: 1,626ms). 그래서 이 프레임을 기다린다.
+        {
+          final id = normalizeCallId(msg['call_id']);
+          final fi = msg['fragment_index'];
+          _log('fragment_saved: call_id=$id fragment=${fi ?? '?'}');
+          if (!(_fragmentSaved?.isCompleted ?? true)) _fragmentSaved!.complete(id);
+        }
+
       case 'turn_start':
+        // [계측] 사용자 발화 끝 → 비버 턴 시작까지. 사장님이 「응답이 느리다」고 하신
+        // 그 구간이다. 클라가 **프레임을 받은 시각**으로만 잰다(서버 내부 분해는 서버 몫).
+        {
+          var endedAt = _userTurnEndAtMs;
+          // ⛔ 실기기 실측(call 1206, 6턴)에서 이 값이 **전부 -1** 로 왔다. 원인은
+          //   `audible` 쪽과 **같은 뿌리**다 — `_userTurnEndAtMs` 도 `user_turn_end`
+          //   프레임에서만 채워지는데 라이브엔 그 프레임이 없다. 어제 audible 만
+          //   로컬 VAD 로 돌려놓고 이 줄을 같이 고치지 않아 반만 살아났다.
+          if (endedAt == null) {
+            final v = _lastVoicedAtMs;
+            // 같은 발화로 두 턴을 재지 않는다(비버가 연속으로 두 턴을 여는 경우).
+            if (v != 0 && v != _turnStartVoicedUsed) {
+              _turnStartVoicedUsed = v;
+              endedAt = v;
+            }
+          }
+          if (endedAt != null) {
+            _userTurnEndAtMs = null;
+            final d = DateTime.now().millisecondsSinceEpoch - endedAt;
+            _turnStartDelayMs = d;
+            _log('RESPONSE: user_turn_end → turn_start ${d}ms');
+          }
+          _dg('turn_start', {'turn': msg['turn_id'], 'delay_ms': _turnStartDelayMs ?? -1});
+        }
+        // 새 비버 턴이 열렸다 = 취소 잔여 구간의 끝. 서버 불변식상 여기부터 도착하는
+        // 오디오는 이 턴의 것이다.
+        if (_cancelledResidual) {
+          _log('turn_start → 잔여 폐기 종료 (버린 양 ${_cancelledResidualBytes}B '
+              '= ${(_cancelledResidualBytes / 48000).toStringAsFixed(2)}s)');
+          _cancelledResidual = false;
+          _cancelledResidualBytes = 0;
+        }
+        // 서버는 `turn_start`/`turn_end`/`output_transcript` 에 turn_id 를 예전부터
+        // 필수로 싣고 있었다(protocol.py). 클라가 안 읽고 있었을 뿐이다.
+        // 진행도 회신([_onAudioCancel])이 이 값을 쓴다.
+        final rawTurnId = msg['turn_id'];
+        _currentTurnId = rawTurnId is String ? rawTurnId : null;
+        // ⭐ 이 턴의 원장 원점. 서버의 `server_bytes` 는 **턴마다 0 부터** 세고 우리
+        //   원장은 **통화 누적**이라, 빼지 않으면 통화가 길어질수록 차이가 벌어져
+        //   매 턴 "불일치" 가 뜬다(실측 2026-08-13: 서버=0 우리원장=435,840).
+        //   교차검증이 **항상 울리면 아무것도 검증하지 못한다.**
+        _turnServerBytesBase = _ledger.fedServerFrames * 2;
+        _logTurnBoundaryBacklog();
         if (state.phase == CallPhase.connecting) {
           state = state.copyWith(phase: CallPhase.inCall);
           _startElapsedTimer();
         }
         // New beaver turn → start a fresh subtitle line. The server streams the
         // line token-by-token via `output_transcript`, so the line must be
-        // cleared here (not overwritten per token) and then accumulated below.
         // Also clear any stale hint: a new turn means the prior question is
         // answered (matches the server "new question cancels previous").
-        state = state.copyWith(beaverSubtitle: '', hint: null);
-        // New line → reset the avatar expression to neutral; it re-classifies as
-        // the line streams in below. 문장 버퍼도 함께 비운다(직전 턴의 미완 조각이
-        // 다음 턴 첫 문장에 섞이면 엉뚱한 표정이 나온다).
-        avatarEmotion.value = 0;
-        _emo.reset();
+        // 소리가 나기 시작했다 = 더 이상 '준비 중'이 아니다.
+        //
+        // ⛔ **자막은 여기서 안 지운다(2026-08-15, 사장님 지시).**
+        //   `turn_start` 는 서버 불변식 I2 상 **첫 오디오 바이트보다 먼저** 온다.
+        //   실측: `turn_start` ~1.0초 / 첫 소리 ~2.35초 ⇒ 여기서 지우면 **약 1.3초 동안
+        //   화면이 완전히 빈다.** 사장님은 화면을 보며 스피커폰으로 쓰신다 — 그 구간이
+        //   「자막이 사라졌다」로 보인다. (체감은 STT 탓 같지만 트리거는 여기다.)
+        // ⇒ 지우기를 **새 대사가 실제로 화면에 처음 쓰이는 순간**으로 미룬다. 그 자리에서
+        //   이전 대사를 통째로 갈아치우므로 **비는 순간이 0** 이다.
+        //
+        // ⚠ [_resetReveal] 은 그대로 둔다 — 그건 **드러내기 버퍼**를 비울 뿐 화면(state)을
+        //   건드리지 않는다. 안 비우면 다음 턴 글자가 지난 턴 버퍼에 이어붙는다(:3629 원주석).
+        _resetReveal();
+        // 다음에 화면에 처음 쓰는 쪽이 **누적이 아니라 교체**를 하도록 표시해 둔다.
+        _subtitleReplaceOnNext = true;
+        state = state.copyWith(hint: null, beaverPreparing: false);
+        // ⛔⛔ **여기서 표정을 리셋하지 않는다**(2026-08-20 사장님 결정).
+        //
+        //   서버 계약은 "표정이 **바뀔 때만** 마커를 보낸다 — 안 보내면 이전 표정이
+        //   그대로 유지된다" 이다(서버 `_FACE_TOOL_RULE`, 그리고 마커 중복 억제가
+        //   그 전제 위에 서 있다). 그런데 예전 이 자리는 **턴마다 neutral 로 되돌렸다.**
+        //   ⇒ 비버가 계속 기쁜 상태면 서버는 `happy` 를 다시 안 보내고(중복), 클라는
+        //     리셋해 버려서 **웃음이 조용히 사라졌다.** 두 계약이 정면으로 어긋났다.
+        //
+        //   ⚠ 대가: 표정이 턴을 넘어 **유지**되므로, 서버가 `neutral` 을 안 불러 주면
+        //     계속 웃는 상태가 될 수 있다. 그건 서버 프롬프트가 "평소로 돌아오면
+        //     neutral 을 불러라"로 받는다 — 실측(call 1117)에서 모델이 스스로
+        //     neutral → happy → neutral 을 불렀다.
+        //   ⛔ 되돌리려거든 서버의 중복 억제부터 함께 봐라. 한쪽만 바꾸면 다시 어긋난다.
         // Beaver turn begins → gate the mic until the turn ends + audio drains.
         _gateMic();
       case 'output_transcript':
@@ -2011,16 +4921,22 @@ class NormalCallController extends Notifier<CallState> {
         {
           final delta = msg['text'] as String?;
           if (delta != null && delta.isNotEmpty) {
-            final line = state.beaverSubtitle + delta;
+            // ⭐ **이 턴 첫 델타면 교체, 그 뒤부터 누적.** 이어붙이기만 두면 이전 턴 대사
+            //   뒤에 이번 턴 대사가 그대로 붙는다 — 「지우기 제거」만으론 안 되는 이유다.
+            final line =
+                _subtitleReplaceOnNext ? delta : state.beaverSubtitle + delta;
+            _subtitleReplaceOnNext = false;
             state = state.copyWith(beaverSubtitle: line);
-            // 표정은 **문장이 끝날 때 그 문장만** 보고 정한다.
+            // ⛔⛔ **클라가 표정을 추측하지 않는다**(2026-08-20 사장님 지시:
+            //   "클라에서 임의로 만든 규칙은 다 버려, 서버에서 준 것만 그대로 넣어").
             //
-            // 이전 구현은 토큰마다 **누적 문자열 전체**를 재검사하고, 한 번 잡힌 값을
-            // 턴이 끝날 때까지 고정했다. 그래서 문장 첫머리의 우연한 단어 하나가 턴
-            // 전체의 표정을 결정했고, 실기기에서 "표정이 대사와 전혀 안 맞는다"로
-            // 나타났다(2026-08-02). 립싱크 플랜 §6의 「턴 단위 갱신」 규약 위반이다.
-            final next = _emo.feed(delta);
-            if (next != null) avatarEmotion.value = next;
+            //   예전엔 키워드 사전으로 대사를 훑어 감정을 정했다. 그 추측이 실기기에서
+            //   "표정이 대사와 전혀 안 맞는다"를 만들었고(2026-08-02), 그 뒤 서버 값이
+            //   있으면 꺼지도록 게이트(`_serverEmotionSeen`)를 달아 두 소스가 공존했다.
+            //   ⇒ 이제 서버가 `set_face` 로 정답을 준다. 추측기는 **지운다** —
+            //     두 소스가 있으면 어느 쪽이 이겼는지 로그로도 못 가른다.
+            //   ⚠ 서버 마커가 없는 구간은 **직전 표정이 유지된다**(위 turn_start 주석).
+            //     추측으로 메우지 않는다. 비어 있는 게 틀린 것보다 낫다.
           }
         }
       case 'input_transcript':
@@ -2029,7 +4945,21 @@ class NormalCallController extends Notifier<CallState> {
         // the user starts speaking.
         {
           final delta = msg['text'] as String?;
+          // 끊김 없는 전환의 두 번째 증거 — 학습자 전사가 왔다(소음이면 안 온다).
+          // 3.1 은 이 조각이 응답 turn_end 직전에 올 수 있어 판정은 turn_end 에서 한다.
+          if (_fragmentSwitch == _FragmentSwitch.pending ||
+              _fragmentSwitch == _FragmentSwitch.pendingFinal) {
+            _speechSincePending.onTranscript(delta);
+          }
           if (delta != null && delta.isNotEmpty) {
+            // [계측] 이 사용자 턴의 **첫 전사 델타**가 도착한 시각. `user_turn_start`
+            // 부터의 간격이 곧 「내 말이 글자로 뜨기까지」다 — 자동 대화(`__test_say`)
+            // 로는 이 경로가 아예 안 돌아서 오늘까지 한 번도 못 쟀다.
+            final startedAt = _userTurnStartAtMs;
+            if (startedAt != null && _userFirstTranscriptAtMs == null) {
+              _userFirstTranscriptAtMs = DateTime.now().millisecondsSinceEpoch;
+              _log('USER-TURN: 첫 전사 ${_userFirstTranscriptAtMs! - startedAt}ms');
+            }
             state = state.copyWith(userSubtitle: state.userSubtitle + delta);
             _markUserSpeaking(); // 듣는 얼굴로 — idle 슬롯 교체
           }
@@ -2038,45 +4968,187 @@ class NormalCallController extends Notifier<CallState> {
         // Beaver turn finished generating. Clear the gate only once the
         // playback queue has also drained (+ hangover); see [_tryUngateMic].
         _turnEnded = true;
+        _dg('turn_end', {'turn': _currentTurnId, 'mk_wait': _pendingMarkers.length});
         // The beaver is done and the user is about to speak → start a fresh user
         // subtitle line so their next utterance accumulates from empty.
         state = state.copyWith(userSubtitle: '');
         _tryUngateMic();
+        // 끊김 없는 조각 전환 — 5:00 뒤 «사용자 발화 → 이 응답» 이 끝났다. 재생 큐는
+        // 그대로 두고 소켓만 갈아 끼운다(pending) / 응답까지 하고 끝낸다(pendingFinal).
+        // 판정은 여기서 — 전사가 turn_end 직전에 도착해도(3.1) 순서 문제가 없다.
+        if (_speechSincePending.confirmed) {
+          if (_fragmentSwitch == _FragmentSwitch.pending) {
+            unawaited(_performSeamlessSwitch());
+          } else if (_fragmentSwitch == _FragmentSwitch.pendingFinal) {
+            unawaited(_finishFinalFragment());
+          }
+        }
+      case 'audio_cancel':
+        // barge-in: 사용자가 끼어들어 서버가 이 턴을 끊었다. 별도 `turn_end` 는 오지
+        // 않는다 — 이 메시지가 턴 종결을 겸한다.
+        unawaited(_onAudioCancel(msg));
+      case 'user_turn_start':
+        // ⚠ 서버→클라 **통지**다(UI 표시용). 클라에 VAD 는 없고 턴 판정은 전적으로
+        //   서버가 한다. 그러니 재생·마이크 로직을 여기에 걸지 않는다 — 자막만 만진다.
+        // [계측] 이 사용자 턴의 원점. 아래 두 값이 여기서 시작한다.
+        _userTurnStartAtMs = DateTime.now().millisecondsSinceEpoch;
+        _userFirstTranscriptAtMs = null;
+        state = state.copyWith(userSubtitle: '');
+      case 'user_turn_end':
+        // 통지만. 자막 라인은 다음 `user_turn_start` 에서 새로 연다.
+        // [계측] 발화 길이와, 전사가 끝까지 못 따라왔는지를 한 줄로 남긴다.
+        {
+          final nowMs = DateTime.now().millisecondsSinceEpoch;
+          final startedAt = _userTurnStartAtMs;
+          final firstAt = _userFirstTranscriptAtMs;
+          if (startedAt != null) {
+            _log('USER-TURN 종료: 발화 ${nowMs - startedAt}ms, '
+                // ⛔ 「전사 0건」을 「STT 가 죽었다」로 읽지 않게 **없음**을 명시한다.
+                //   자동 대화 판에서는 이 경로가 아예 안 돈다.
+                '첫 전사 ${firstAt == null ? "없음" : "${firstAt - startedAt}ms"}');
+          }
+          _userTurnEndAtMs = nowMs;
+          _userTurnEndForAudioMs = nowMs;
+          // ⭐ 이 발화의 시작 시각을 **굳힌다.** 안 굳히면 그 뒤 400ms 리셋이나 다음 숨소리에
+          //   쓸려서, 첫 소리가 날 때쯤엔 엉뚱한 값이 되어 있다.
+          _frozenFirstVoicedAtMs = _firstVoicedAtMs;
+          _firstVoicedAtMs = null;
+          _userTurnStartAtMs = null;
+          // 끊김 없는 전환: 5:00 뒤 사용자 발화가 끝났다 — 이 발화의 응답 turn_end 에서
+          // 소켓을 갈아 끼운다. ⚠ 이 프레임은 **캐스케이드에만** 온다. 라이브는
+          // [_markVoicedIfLoud](로컬 VAD)가 같은 표시를 세운다 — 그쪽이 제품 경로다.
+          if (_fragmentSwitch == _FragmentSwitch.pending ||
+              _fragmentSwitch == _FragmentSwitch.pendingFinal) {
+            _speechSincePending
+              ..onVoiced()
+              ..onTranscript('user_turn_end');
+          }
+        }
       case 'call_ended':
-        final id = msg['call_id'];
+        // ⛔ **빈 문자열은 id 가 아니다.** 서버는 통화 행이 없을 때 `call_id` 를 null 이
+        //   아니라 **`""`** 로 보낸다(`cascade_session.py:3198`:
+        //   `ServerCallEnded(call_id=str(self._call_id or ""))`).
+        //   그대로 받으면 `id?.toString()` 이 `""` 를 통과시켜 **우리가 id 를 가졌다고 믿는다.**
+        //   그러면 통화 종료 화면의 복구 폴링(`_recoverCallId`)이 안 돌고 빈 id 로 분석을 친다 —
+        //   **복구가 가장 필요한 경우(행이 없다)에 정확히 복구가 죽는다.** null 보다 나쁘다.
+        // ⭐ 통로로 가르지 않는다. 한 자리에서 막아 두면 라이브 서버가 언젠가 같은 값을
+        //   보내도 안 깨진다. 공백만 있는 값도 같이 없는 것으로 본다.
+        final id = normalizeCallId(msg['call_id']);
         // Server-initiated close is expected; the socket's onDone must not be
         // treated as an unexpected drop.
         _expectClose = true;
         state = state.copyWith(
           phase: CallPhase.ending,
-          callId: id?.toString(),
+          callId: id,
           hint: null,
         );
-        _log('call_ended id=$id → draining closing line');
+        _flushDiagSummary();
+        _gaCallEnded();
+        _log('call_ended id=${id ?? '(없음 — 종료 화면이 복구 폴링으로 되짚는다)'} '
+            '→ draining closing line');
         _scheduleClosingDrain();
       case 'error':
+        // ⛔ **조용히 삼키지 마라.** 지금까지 이 프레임은 스낵바로만 떴고 logcat 에는
+        //   한 줄도 안 남았다 — 통화가 죽었는데 로그에는 죽은 이유가 없었다
+        //   (2026-08-13 에뮬: `Invalid value: 'en-US'` 가 토스트로만 보였다).
+        //   여기 문자열은 **서버가 준 그대로**다. 앱이 만든 문구가 아니다.
+        _log('⛔ 서버 error 프레임 — code=${msg['code'] ?? '(없음)'} '
+            'message=${msg['message'] ?? '(없음)'} '
+            '기타키=${msg.keys.where((k) => k != 'type' && k != 'code' && k != 'message').toList()}');
+        // 서버 `premium` 브랜치(09-23)의 두 거절 코드는 앱 문구로 바꾼다 — 사용자가 다음에
+        // 할 일이 코드마다 다르다. 둘 다 recoverable=false 라 **재시도하지 않는다**(error
+        // 단계는 재연결 경로를 타지 않는다). 나머지 코드는 종전대로 서버 문구 그대로.
         state = state.copyWith(
           phase: CallPhase.error,
-          errorMsg: (msg['message'] as String?) ?? _l10n.callErrorGeneric,
+          errorMsg: serverErrorMessage(msg, _l10n),
         );
         unawaited(_teardown(keepError: true));
       case 'hint':
         // Dynamic example-answer hint for the beaver's question turn. Additive:
         // unknown to older builds (harmlessly ignored). Replaces any prior hint.
-        final hint = HintData.fromJson(msg);
-        if (hint != null) state = state.copyWith(hint: hint);
+        // ⛔ **버리면 왜 버렸는지 찍는다.** 서버는 보냈는데 앱에 아무 흔적도 없던
+        //   통화가 있었다(2026-08-12) — 받아도 안 남고 버려도 안 남아 **판정 자체가
+        //   불가능**했다. 조용한 실패를 없애는 게 이 로그의 목적이다.
+        {
+          final parsed = HintData.parse(msg);
+          final hint = parsed.hint;
+          if (hint != null) {
+            _hintCount++;
+            state = state.copyWith(hint: hint);
+            _log('hint[turn=${hint.turnId}]: ${hint.examples.length}개 수신');
+          } else {
+            _hintDropped++;
+            _log('⚠ hint 버림 — ${parsed.drop} (turn=${msg['turn_id']})');
+          }
+        }
       case 'teaching_plan':
-        final raw = msg['items'];
-        if (raw is List) {
-          final items = raw
-              .whereType<Map<String, dynamic>>()
-              .map(TeachingItem.fromJson)
-              .whereType<TeachingItem>()
-              .toList(growable: false);
-          state = state.copyWith(teachingPlan: items);
+        // ⚠ 여기도 같은 모양이다 — `whereType` 두 번이 **조용히** 걸러낸다.
+        //   버린 게 있을 때만 찍는다(정상은 요약 카운터로 충분하다 — 로그 폭탄 금지).
+        {
+          final raw = msg['items'];
+          if (raw is List) {
+            final items = raw
+                .whereType<Map<String, dynamic>>()
+                .map(TeachingItem.fromJson)
+                .whereType<TeachingItem>()
+                .toList(growable: false);
+            if (items.length != raw.length) {
+              _log('⚠ teaching_plan 일부 버림 — ${raw.length}개 중 '
+                  '${items.length}개만 살았다');
+            }
+            state = state.copyWith(teachingPlan: items);
+          } else {
+            _log('⚠ teaching_plan 버림 — items 가 배열이 아님(${raw.runtimeType})');
+          }
         }
       case 'pong':
-        break;
+        // ⭐ 서버가 자기 벽시계를 같이 준다(`ServerPong.s`). 없으면 클라 계측이 **기기
+        //   시계 위에만** 놓여, 서버 로그와 나란히 놓고 빼는 순간 기기 시계 오차가
+        //   그대로 「지연」으로 둔갑한다. 왕복의 절반을 편도로 보는 통상 근사.
+        {
+          final sv = msg['s'];
+          final sentAt = _pingSentAtMs;
+          if (sv is int && sentAt != null) {
+            final now = DateTime.now().millisecondsSinceEpoch;
+            final rttMs = now - sentAt;
+            final offset = sv + rttMs ~/ 2 - now;
+            _diag.serverClockOffsetMs = offset;
+            _dg('clock', {'rtt_ms': rttMs, 'off_ms': offset});
+          }
+          _pingSentAtMs = null;
+        }
+
+      // ── 캐스케이드 통로 전용 프레임 ─────────────────────────────────────────
+      case 'sentence':
+        _onSentenceMarker(msg);
+      case 'ready':
+        _applyServerReady(msg);
+      case 'beaver_preparing':
+        // 서버가 LLM/TTS 를 도는 중 — **설명되지 않는 침묵**을 막기 위한 통지다.
+        // UI 는 아직 없다. 상태에만 얹어 두고(화면은 나중), 로그로 단계를 남긴다.
+        {
+          final stage = msg['stage'] as String? ?? '';
+          final idx = msg['index'];
+          final total = msg['total'];
+          final elapsed = msg['elapsed_ms'];
+          state = state.copyWith(beaverPreparing: true);
+          _log('beaver_preparing: $stage '
+              '${idx is int && total is int && total > 0 ? '$idx/$total ' : ''}'
+              '${elapsed is int ? '+${elapsed}ms' : ''}');
+        }
+      case 'stt_rollover':
+        // STT 내부 스트림 교체(구글은 5분 상한이 있다). 재생·턴에는 영향이 없지만,
+        // **지연이 튀었을 때 롤오버 때문이었는지**를 사후에 가르려면 클라 로그에도 있어야 한다.
+        {
+          final reason = msg['reason'] as String? ?? '';
+          final gap = msg['gap_ms'];
+          _log('stt_rollover: reason=$reason '
+              '${gap is int ? 'gap=${gap}ms' : ''} — 다음 턴부터 새 스트림');
+        }
+      case '__test_cancel_report':
+        // dev 왕복 계측 회신(가짜 비버 취소). 앱 UI 는 없다 — 로그로만 받는다.
+        _log('__test_cancel_report: $msg');
+
       default:
         break;
     }
@@ -2153,6 +5225,12 @@ class NormalCallController extends Notifier<CallState> {
 
   /// Socket closed by the server (incl. 1008 auth reject) (§8-6).
   void _onWsDone() {
+    // 끊김 없는 전환의 새 소켓이 call_started 전에 닫혔다 — 실패로 셈하고 재시도/폴백.
+    // 통화를 죽이면 안 된다(재생·마이크는 살아 있고 사용자는 아무것도 못 봤다).
+    if (_fragmentSwitch == _FragmentSwitch.reconnecting) {
+      if (!(_fragmentReady?.isCompleted ?? true)) _fragmentReady!.complete(false);
+      return;
+    }
     final phase = state.phase;
     if (phase == CallPhase.connecting) {
       // Closed before we ever went live → treat as auth/connection error.
@@ -2177,6 +5255,12 @@ class NormalCallController extends Notifier<CallState> {
 
   /// Transport-level error (§8-6).
   void _onWsError(Object error) {
+    // 끊김 없는 전환의 새 소켓 오류 — 위 [_onWsDone] 과 같은 이유로 재시도 쪽에 넘긴다.
+    if (_fragmentSwitch == _FragmentSwitch.reconnecting) {
+      _log('조각 재연결 소켓 오류: $error');
+      if (!(_fragmentReady?.isCompleted ?? true)) _fragmentReady!.complete(false);
+      return;
+    }
     // Expected close (hang-up / call_ended / teardown) — the exit is already
     // being driven; a trailing error frame must not clobber it.
     if (_expectClose) return;
@@ -2188,6 +5272,16 @@ class NormalCallController extends Notifier<CallState> {
       unawaited(_finishClosing());
       return;
     }
+    // Mid-call transport error (wifi off, wifi↔LTE handover) — recover like
+    // [_onWsDone]'s mid-call drop. Tearing down into `error` sent the user home
+    // with a snackbar: no rating, no analysis, though the server already had
+    // the call id and today's budget was spent (QA F010, 09-26). [hangUp] sets
+    // `_expectClose`, so an onDone that follows this error is absorbed there.
+    if (state.phase == CallPhase.inCall) {
+      _log('ws error during inCall → recovering to wrap-up: $error');
+      unawaited(hangUp());
+      return;
+    }
     state = state.copyWith(
       phase: CallPhase.error,
       errorMsg: _l10n.callNetworkError,
@@ -2197,6 +5291,11 @@ class NormalCallController extends Notifier<CallState> {
 
   /// Encodes and sends a control JSON frame if the socket is open.
   void _send(Map<String, dynamic> msg) {
+    // ⚠ 소켓 null 체크 **앞**이다. 디버그 리그는 소켓 없이 돌기 때문에 여기서 못
+    //   가로채면 제어 프레임이 조용히 사라진다. 가로채는 건 서버가 받게 될 것과 **같은
+    //   Map** 이어야 하므로 가공하지 않고 그대로 넘긴다. (`playback_progress` 는 서버에서
+    //   지워져 이 길을 안 타고 리그로만 직접 간다 — QA F038.)
+    if (kDebugMode) debugOutboundSink?.call(msg);
     final ch = _channel;
     if (ch == null) return;
     try {
@@ -2219,13 +5318,757 @@ class NormalCallController extends Notifier<CallState> {
   /// Toggles whether the hint card is shown. UI preference only.
   void setHintOn(bool value) => state = state.copyWith(hintOn: value);
 
+  /// 라이브 통화의 **음소거**를 켜고 끈다.
+  ///
+  /// 세션은 유지하고 업링크 프레임만 버린다([_micGated]). 레코더를 닫지 않는 이유는
+  /// 오디오 세션·AEC 를 흔들지 않기 위해서다 — 통화 중 세션을 여닫으면 라우트가 튄다.
+  ///
+  /// 캐스케이드에서는 아무 일도 하지 않는다.
+  void setMicMuted(bool value) {
+    if (state.channel.isCascade) return;
+    if (state.micMuted == value) return;
+    state = state.copyWith(micMuted: value);
+    _log('mic ${value ? "음소거" : "해제"} (live)');
+  }
+
   /// Starts the UI elapsed-time ticker.
+  ///
+  /// 이 자가 구간 경계도 본다 — [elapsedSec] 은 **구간을 건너서 누적**되므로
+  /// (통화 화면의 시계는 총 통화 시간을 보여야 한다) 경계는
+  /// `(segmentsUsed + 1) × 5분` 이다.
   void _startElapsedTimer() {
     _elapsedTimer?.cancel();
     _elapsedTimer = Timer.periodic(const Duration(seconds: 1), (_) {
-      state = state.copyWith(elapsedSec: state.elapsedSec + 1);
+      final elapsed = state.elapsedSec + 1;
+      state = state.copyWith(elapsedSec: elapsed);
+      _checkSegmentBoundary(elapsed);
     });
   }
+
+  /// 이 통화에 5분 구간 상한을 적용해야 하는가.
+  ///
+  /// ⛔ **캐스케이드와 자동대화는 뺀다.** 둘 다 측정용이고, 캐스케이드 리그는
+  ///   단일 세션 12분을 일부러 채워 끊김 곡선을 잰다
+  ///   (`CascadeAutoTalk.duration` = 12분, 7분에서 올린 값). 여기에 5분 게이트를
+  ///   걸면 **그 계측이 통째로 죽는다.** 제품 규칙은 라이브 통화의 것이다.
+  bool get _segmentLimitApplies =>
+      state.channel == CallChannel.live && !CascadeAutoTalk.enabled;
+
+  /// 1초마다 불린다 — 구간 경계에 닿았으면 [_reachSegmentEnd] 로 넘긴다.
+  void _checkSegmentBoundary(int elapsedSec) {
+    if (!_segmentLimitApplies) return;
+    if (_continuing) return;
+    // 통화가 이미 끝나가는 중이면 끼어들지 않는다.
+    if (state.phase != CallPhase.inCall) return;
+    // 이미 전환 대기·진행 중이면 다시 판정하지 않는다(경계는 한 번만 넘는다).
+    if (_fragmentSwitch != _FragmentSwitch.none) return;
+    final action = fragmentBoundaryAction(
+      elapsedSec: elapsedSec,
+      segmentsUsed: state.segmentsUsed,
+      paidAccess: _paidNow,
+      seamlessEligible: seamlessEligibleCourse(state.course),
+      maxFragments: _maxFragments,
+      fragmentEndSec: _fragmentEndSec,
+      budgetFinal: _budgetFinal,
+    );
+    switch (action) {
+      case FragmentBoundaryAction.none:
+        return;
+      case FragmentBoundaryAction.sheet:
+        // Free · 전환 대상이 아닌 코스 — 종전 그대로(픽셀·프레임 동일).
+        unawaited(_reachSegmentEnd());
+      case FragmentBoundaryAction.seamless:
+        _fragmentSwitch = _FragmentSwitch.pending;
+        _speechSincePending.reset();
+        _log('조각 ${state.segmentsUsed + 1} 5:00 도달 — 끊김 없는 전환 대기 '
+            '(다음 «사용자 발화 → turn_end» 에 소켓만 교체, 시트 없음, 타이머 누적)');
+      case FragmentBoundaryAction.finalClose:
+        _fragmentSwitch = _FragmentSwitch.pendingFinal;
+        _speechSincePending.reset();
+        _log('마지막 조각 ${state.segmentsUsed + 1} 상한 도달 — 다음 «사용자 발화 → '
+            'turn_end» 에 응답까지 하고 종료(재연결 없음)');
+    }
+  }
+
+  /// 경계 판정용 유료 여부 — 플랜 흉내 > 풀린 서버 값 > 캐시된 구독 상태.
+  bool get _paidNow => _planOverride != null
+      ? _planOverride != PlanOverride.free
+      : (_paidResolved ?? ref.read(subscriptionStatusProvider).grantsPaidAccess);
+
+  /// 이 통화의 조각 상한 — 서버 `call_started.max_fragments` 가 있으면 그것.
+  ///
+  /// [isFinalFragment] 와 짝: 서버가 `fragment_index` 를 주면 그쪽이 정본이다.
+  int get _maxFragments {
+    final fi = _serverFragmentIndex;
+    final mf = _serverMaxFragments;
+    if (fi != null && mf != null) {
+      // 서버 번호 기준으로 «지금 조각이 몇 번째인지» 를 로컬 카운트에 맞춘다:
+      // 로컬 segmentsUsed+1 == 서버 fragment_index 여야 한다. 어긋나면 서버를 믿고
+      // 상한을 그만큼 당겨 잡는다(재연결 없이 끝내는 쪽 = 안전).
+      final local = state.segmentsUsed + 1;
+      return mf - (fi - local);
+    }
+    return CallAllowance.segmentsFor(paidAccess: _paidNow);
+  }
+
+  /// 구간 하나를 다 썼다. **이 구간의 세션을 닫고** 사용자에게 물을지 정한다.
+  ///
+  /// 세션을 여기서 닫는 이유는 [CallPhase.awaitingContinue] 에 적어 두었다 —
+  /// 사용자가 고민하는 동안 붙들어 봐야 인프라가 끊는다.
+  // ── 끊김 없는 조각 전환 ───────────────────────────────────────────────────
+
+  /// 소켓**만** 닫는다 — 재생 큐·엔벨로프·마이크 레코더·오디오 세션·타이머는 그대로(F2).
+  ///
+  /// [_teardown] 은 통화를 통째로 내리는 함수라 여기 못 쓴다: 재생을 release 하면 비버의
+  /// 마지막 문장이 끊기고, 레코더를 닫으면 오디오 세션·AEC 가 흔들려 라우트가 튄다.
+  /// 서버는 소켓이 닫히면 `_ClientDisconnect` 로 조각을 저장·요약한다(기존 경로).
+  Future<void> _closeSocketOnly() async {
+    _keepaliveTimer?.cancel();
+    _keepaliveTimer = null;
+    await _wsSub?.cancel();
+    _wsSub = null;
+    try {
+      await _channel?.sink.close(1000);
+    } catch (_) {}
+    _channel = null;
+  }
+
+  /// `fragment_end` 를 보내고 서버의 `fragment_saved` 를 기다린 뒤 소켓을 정리한다.
+  ///
+  /// 반환: 서버가 알려 준 저장된 call_id(다음 조각의 `continues_call_id`). 구서버·타임아웃
+  /// 이면 null — 호출자가 종전 폴백(close + 300ms)으로 간다.
+  /// ⚠ `fragment_end` 를 보낸 통화엔 서버가 `call_ended` 를 보내지 않는다 — 종료는 우리가
+  ///   끈다(마지막 조각은 [_finishFinalFragment] 의 드레인 경로).
+  Future<String?> _endFragmentAndWaitSaved() async {
+    if (_channel == null) return null;
+    final waiter = _fragmentSaved = Completer<String?>();
+    final wait = FragmentSavedWait();
+    _send(const {'type': 'fragment_end'});
+    _log('fragment_end 송신 — 서버 저장 완료(fragment_saved) 대기(상한 ${_fragmentSavedTimeout.inSeconds}s)');
+    try {
+      final saved = await waiter.future.timeout(
+        _fragmentSavedTimeout,
+        onTimeout: () {
+          wait.timeout();
+          return null;
+        },
+      );
+      if (!wait.isSettled) wait.complete(saved); // 서버 답 또는 teardown 의 접기(null)
+    } finally {
+      if (identical(_fragmentSaved, waiter)) _fragmentSaved = null;
+    }
+    if (wait.timedOut) {
+      // 구서버·지연 — 종전 폴백을 탄다. 이 수가 쌓이면 상한이나 서버 저장을 봐야 한다.
+      _fragmentSavedTimeouts++;
+      _dg('fragment_saved_timeout', {'n': _fragmentSavedTimeouts});
+      _log('⚠ fragment_saved 타임아웃(${_fragmentSavedTimeout.inSeconds}s) — 종전 폴백 '
+          '(이 통화 $_fragmentSavedTimeouts회)');
+    }
+    // 서버가 닫았든(saved) 안 닫았든(구서버) 우리 쪽 구독·keepalive 는 여기서 정리한다.
+    await _closeSocketOnly();
+    return wait.savedId;
+  }
+
+  /// 새 조각의 소켓을 연다 — [_connect] 의 소켓 부분만. 성공 = `call_started` 수신.
+  ///
+  /// 오디오·마이크·상태는 건드리지 않는다. start 프레임은 같은 코스·플랜·과제에
+  /// `continues_call_id` + `silent_resume:true` 를 얹는다(F4).
+  Future<bool> _openFragmentSocket({required String carriedCallId}) async {
+    final token = Supabase.instance.client.auth.currentSession?.accessToken;
+    if (token == null || token.isEmpty) {
+      _log('⛔ 조각 재연결 — 토큰 없음');
+      return false;
+    }
+    // ⛔ P1-B(QA 2026-09-14): 순서가 생명이다. 예전엔 `_channel = channel` → listen →
+    //   `await _aecHint()`(플랫폼 왕복) → start 였다. 그 await 동안 게이트가 열려 있으면
+    //   마이크 콜백이 `_channel.sink.add(바이너리)` 를 **start 보다 먼저** 보내고, 서버
+    //   start 창(6프레임)이 바이너리를 세어 «start 없는 새 통화» 로 떨어진다 — 짧은
+    //   응답(«Right.») 뒤엔 게이트가 이미 열려 있어 거의 매번 났다.
+    //   ⇒ ① aecHint 는 채널을 만들기 **전**에 받는다 ② `_channel` 대입은 start 를
+    //     보낸 **뒤**다 — 그 사이 마이크 프레임은 `_channel == null` 이라 프리버퍼로
+    //     가고, call_started 뒤 flush 되어 start 다음에 도착한다.
+    final aec = await _aecHint();
+    if (_gen != _genAtSwitchStart) return false;
+    final ready = _fragmentReady = Completer<bool>();
+    _expectClose = false;
+    _serverCallId = null;
+    _continuesCallId = carriedCallId;
+    _askedContinueId = carriedCallId;
+    try {
+      final url = callStreamWsUrl(token: token, cascade: _channelMode.isCascade);
+      final channel = WebSocketChannel.connect(Uri.parse(url));
+      _wsSub = channel.stream.listen(
+        _onWsData,
+        onDone: _onWsDone,
+        onError: _onWsError,
+        cancelOnError: false,
+      );
+      final startFrame = buildStartFrame(
+        aec: aec,
+        sampleRate: _micSampleRate,
+        numChannels: _micNumChannels,
+        inboundCallId: _inboundCallId,
+        continuesCallId: carriedCallId,
+        assignmentId: _assignmentId,
+        callType: _callCourse?.wireValue,
+        forceCourse: _forceCourse,
+        planOverride: _planOverride?.wireValue,
+        silentResume: true,
+        // 첫 조각에서 읽어 둔 값 — 이 프레임은 소켓의 **첫** 프레임이라 여기서 await 하지 않는다.
+        tz: _deviceTz,
+        tzOffsetMin: DeviceTimezone.offsetMinutes(),
+      );
+      _log('조각 재연결 start 송신: $startFrame');
+      channel.sink.add(jsonEncode(startFrame)); // ← 이 소켓의 **첫** 프레임이어야 한다
+      _channel = channel; // 이제부터 마이크가 이 소켓으로 간다(start 뒤)
+      final ok = await ready.future.timeout(
+        _fragmentReadyTimeout,
+        onTimeout: () => false,
+      );
+      if (ok) _startKeepalive();
+      return ok;
+    } catch (e) {
+      _log('⛔ 조각 재연결 예외: $e');
+      return false;
+    } finally {
+      if (identical(_fragmentReady, ready)) _fragmentReady = null;
+      _continuesCallId = null;
+    }
+  }
+
+  /// 5:00 뒤 «사용자 발화 → 비버 응답 turn_end» — 재생은 그대로, 소켓만 뒤에서 교체한다.
+  ///
+  /// 계획 §2. 사용자는 아무것도 못 본다: 다이얼로그 0 · 재생 끊김 0 · 타이머 누적.
+  /// 새 소켓의 비버는 먼저 말하지 않는다(서버 `silent_resume`). 재생이 끝나 마이크가
+  /// 열렸는데 소켓이 아직이면 [_micPrebuffer] 가 받았다가 여기서 흘린다.
+  /// 2회 실패면 기존 «이어하기» 시트로 폴백(§5) — 사용자에게 버튼을 준다.
+  Future<void> _performSeamlessSwitch() async {
+    if (_fragmentSwitch != _FragmentSwitch.pending) return;
+    if (state.phase != CallPhase.inCall) return;
+    _fragmentSwitch = _FragmentSwitch.switching;
+    _speechSincePending.reset();
+    final gen = _genAtSwitchStart = _gen;
+    final endedFragment = state.segmentsUsed + 1;
+    // ① 서버에 «이 조각 끝» 을 알리고 저장 완료(`fragment_saved`)를 기다린다. 재생은
+    //    그대로 돈다. 서버는 저장 뒤 소켓을 닫는다 — 그 close 는 기대된 것이다.
+    //    구서버(프레임을 모름)면 3초 안에 답이 없으니 종전처럼 close + 300ms.
+    _expectClose = true;
+    final saved = await _endFragmentAndWaitSaved();
+    if (_gen != gen) return; // 그새 끊었다
+    final carried = saved ?? _serverCallId ?? state.callId;
+    _log('조각 $endedFragment 종료 — 소켓 닫음(재생 큐 유지 · call_id=$carried · '
+        '저장 확인 ${saved != null ? "받음" : "없음→폴백 300ms"})');
+    // 조각 수는 여기서 올린다 — 다음 경계가 (n+1)×5분이 되게. elapsedSec 은 안 건드린다.
+    state = state.copyWith(segmentsUsed: endedFragment);
+    if (carried == null) {
+      _log('⛔ 이어갈 call_id 가 없다 — 시트로 폴백');
+      await _fallbackToSheet();
+      return;
+    }
+    _fragmentSwitch = _FragmentSwitch.reconnecting;
+    if (saved == null) {
+      // 구서버 폴백 — 저장 시간을 조금이라도 준다(계획 §2 의 원안).
+      await Future<void>.delayed(_fragmentCloseSettle);
+    }
+    if (_gen != gen) return;
+    _switchAttempts = 0;
+    while (_switchAttempts < 2) {
+      _switchAttempts++;
+      final ok = await _openFragmentSocket(carriedCallId: carried);
+      if (_gen != gen) return;
+      if (ok) {
+        _fragmentSwitch = _FragmentSwitch.none;
+        _flushMicPrebuffer();
+        _log('✅ 조각 ${endedFragment + 1} 열림 — 끊김 없는 전환 완료'
+            '(시도 $_switchAttempts회)');
+        return;
+      }
+      _log('⚠ 조각 재연결 실패 ($_switchAttempts/2)');
+      await _closeSocketOnly();
+    }
+    await _fallbackToSheet();
+  }
+
+  /// 프리버퍼를 순서대로 흘린다(F3).
+  ///
+  /// ⛔ 지금의 [_micGated] 를 **보지 않는다.** 버퍼의 프레임은 잡을 때 게이트가 열려
+  ///   있던 것이다 — flush 시점 게이트로 다시 거르면 비버가 막 말을 시작한 순간 사용자의
+  ///   첫 문장이 통째로 사라진다(codex 리뷰 2026-09-14). [MicPrebuffer.takeForFlush]
+  ///   에 게이트 입력이 없는 것이 그 규칙의 구조다.
+  void _flushMicPrebuffer() {
+    if (_micPrebuffer.isEmpty) return;
+    final ch = _channel;
+    final pending = _micPrebuffer.length;
+    final frames = _micPrebuffer.takeForFlush(socketOpen: ch != null);
+    if (ch == null) {
+      _log('프리버퍼 $pending프레임 버림 (소켓 없음)');
+      return;
+    }
+    var bytes = 0;
+    for (final f in frames) {
+      ch.sink.add(f);
+      bytes += f.length;
+    }
+    _uplinkBytes += bytes;
+    _micFramesSent += frames.length;
+    _log('프리버퍼 flush — ${frames.length}프레임 ${bytes}B '
+        '(${(bytes / 32000).toStringAsFixed(2)}초, 상한 초과 버림 ${_micPrebuffer.droppedFrames})');
+  }
+
+  /// 재연결 2회 실패 — 기존 «이어하기» 시트로 내려간다(사용자에게 버튼).
+  ///
+  /// 이 자리는 소켓이 이미 없다. [_reachSegmentEnd] 는 세션을 내리고 시트 상태를
+  /// 만드는데, 그 함수의 앞부분(유료 판정·teardown)을 그대로 타면 된다 — segmentsUsed 는
+  /// 이미 올렸으므로 되돌려 넘긴다(그 함수가 +1 한다).
+  Future<void> _fallbackToSheet() async {
+    _fragmentSwitch = _FragmentSwitch.none;
+    _micPrebuffer.clear();
+    if (state.phase != CallPhase.inCall) return;
+    _log('끊김 없는 전환 실패 → 기존 이어하기 시트로 폴백');
+    state = state.copyWith(segmentsUsed: state.segmentsUsed - 1);
+    await _reachSegmentEnd();
+  }
+
+  /// 마지막 조각(15:00) — 사용자 발화의 응답까지 재생하고 끝낸다. 재연결 없음.
+  ///
+  /// `call_ended` 와 같은 길로 보낸다: 소켓을 닫고 ending 으로 넘겨 재생을 다 비운 뒤
+  /// 결과 화면([_scheduleClosingDrain] → [_finishClosing]). 작별 인사 없음(사장님 결정 6).
+  Future<void> _finishFinalFragment() async {
+    if (_fragmentSwitch != _FragmentSwitch.pendingFinal) return;
+    if (state.phase != CallPhase.inCall) return;
+    // 대기 동안 경계 판정·재진입을 막는다(switching). 재생은 그대로 돈다.
+    _fragmentSwitch = _FragmentSwitch.switching;
+    _speechSincePending.reset();
+    final gen = _gen;
+    _log('마지막 조각 응답 끝 — fragment_end 로 저장을 끝낸 뒤 재생을 비우고 결과 화면(재연결 없음)');
+    _expectClose = true;
+    // ⛔ **직렬화**(codex 2차): 드레인은 `fragment_saved` 수신 **또는** 타임아웃 뒤에 시작한다.
+    //   먼저 시작하면 오디오 큐가 비어 있을 때 300ms 뒤 _teardown 이 이 대기를 접고
+    //   소켓을 닫아 계약이 어긋난다(서버는 disconnect 로도 저장하니 데이터는 안 잃지만).
+    //   재생 중이면 어차피 겹친다 — 사용자 체감은 같다.
+    final saved = await _endFragmentAndWaitSaved();
+    if (_gen != gen) return; // 그새 끊었다 — hangUp 이 마무리한다
+    if (saved != null) _log('마지막 조각 저장 확인: call_id=$saved');
+    _fragmentSwitch = _FragmentSwitch.none;
+    // 서버는 이 통화에 `call_ended` 를 안 보내므로 종료는 여기서 우리가 끈다.
+    final id = saved ?? _serverCallId ?? state.callId;
+    state = state.copyWith(phase: CallPhase.ending, callId: id, hint: null);
+    _flushDiagSummary();
+    _gaCallEnded();
+    _scheduleClosingDrain();
+  }
+
+  Future<void> _reachSegmentEnd() async {
+    if (state.phase != CallPhase.inCall) return;
+    // 다음 1초 틱이 또 들어오지 못하게 **먼저** 막는다. `await` 가 여러 번 들어가는
+    // 경로라, 이걸 뒤로 미루면 경계에서 이 함수가 두 번 돈다.
+    _continuing = true;
+    try {
+      // ⭐ 플랜 흉내(QA) 통화면 유료 여부도 **그 플랜**으로 본다(Free 만 무료). 이 값은
+      //   서버가 답을 안 줄 때의 이어가기 폴백이면서, 시트의 모양(paidCallTime — Free 면
+      //   구독 유도)을 정한다. 서버 판정(resume-status ?plan_override=)과 같은 기준이어야
+      //   화면과 서버가 한 통화에서 다른 플랜을 말하지 않는다.
+      final paid = _planOverride != null
+          ? _planOverride != PlanOverride.free
+          : await (_paidAccess ??= _resolvePaidAccess());
+      if (state.phase != CallPhase.inCall) return;
+
+      final used = state.segmentsUsed + 1;
+
+      // ⛔ **이어갈 수 있는지는 서버가 정한다.** 판정을 [_teardown] **뒤로** 미룬 이유는
+      //   서버가 이 조각을 마감한 뒤라야 `fragment_count` 가 맞기 때문이다. 아래를 보라.
+
+      // 요약 화면이 읽어야 하는 값들은 [_teardown] 이 지우므로 먼저 붙잡는다
+      // ([_hangUp] 과 같은 이유·같은 방식).
+      final preservedCallId = state.callId;
+      final preservedElapsed = state.elapsedSec;
+      final preservedBaseline = state.baselineCallId;
+      final preservedCharacter = state.characterId;
+      final preservedChannel = state.channel;
+      // 코스도 시트 동안 유지한다 — 안 하면 5분 시트가 떠 있는 사이 화면 밑에서
+      // 힌트 토글이 다시 나타난다(코스 통화엔 힌트가 없다).
+      final preservedCourse = state.course;
+      final preservedPlan = state.planOverride; // 시트 동안 영상/음성 모양을 유지한다
+
+      // [_teardown] 은 CallKit 통화를 끝내고, 그 `ACTION_CALL_ENDED` 가 코디네이터를
+      // 거쳐 [hangUp] 으로 되돌아올 수 있다(잠금화면 통화). 그 사이 사용자가 끊었다면
+      // 결정 대기 상태로 덮어써서는 안 된다 — 끝난 통화가 다시 살아난 것처럼 보인다.
+      // [_hangUp] 이 올리는 [_gen] 이 그 외부 신호다.
+      final gen = _gen;
+      _expectClose = true;
+      // ⭐ CallKit 콜은 **살려 둔다** — 대화는 아직 안 끝났다. 이걸 끊으면 그 ENDED 가
+      //   코디네이터를 거쳐 [hangUp] 으로 돌아와, 바로 아래 가드가 **우리가 끊은 것을
+      //   사용자가 끊은 것으로** 읽고 시트를 못 띄운다(iOS 잠금화면 통화가 5분에 죽던
+      //   원인). 살려 두면 잠금화면 UI·오디오 세션도 시트를 보는 동안 유지된다.
+      await _teardown(keepCallkitCall: true);
+      if (_gen != gen) {
+        _log('구간 종료 중 통화가 끊겼다 — 결정 대기로 덮지 않는다');
+        return;
+      }
+
+      // ⭐ 방금 끝난 구간의 `call_id` 를 **지금부터** 되짚기 시작한다.
+      //
+      //   이 경계에서는 클라가 먼저 소켓을 닫으므로 `call_ended` 가 오지 않고,
+      //   그래서 [preservedCallId] 는 **거의 항상 null 이다**([_hangUp] 의 같은 주석).
+      //   그 상태로 다음 구간을 열면 `continues_call_id` 가 **필드째 빠져서**
+      //   서버는 이어가기인 줄 모르고 새 대화를 시작한다 — 비버가 방금 한 얘기를
+      //   잊는 증상이 정확히 이것이다(사장님 실기기 2026-08-24).
+      //
+      //   `await` 하지 않는 이유: 값은 사용자가 「계속」을 누른 **뒤에야** 필요하다.
+      //   시트를 보는 동안(결제면 수십 초) 미리 돌려 두면 대기가 0 이 된다.
+      // 서버가 `call_started` 로 id 를 줬다면 되짚을 게 없다 — 정답을 이미 갖고 있다.
+      if (_serverCallId == null && preservedCallId == null) {
+        _pendingSegmentCallId = _recoverSegmentCallId(preservedBaseline, gen);
+      }
+
+      // ⭐ **이어갈 수 있는지 서버에 묻는다.** 여기가 오늘(2026-08-24) 하루를 태운
+      //   구멍이다 — 앱은 「나는 Pro」라고 믿고 「Keep going?」 을 띄웠는데 서버는
+      //   Free 로 보고 조용히 새 통화로 떨어뜨렸다. 에러가 안 나서 화면상으로는
+      //   멀쩡히 이어진 것처럼 보이고 비버만 앞 대화를 잊었다.
+      //
+      // ⛔ [_teardown] **뒤에** 묻는 이유: 서버는 소켓이 닫혀야 이 조각을 마감한다.
+      //   먼저 물으면 `fragment_count` 가 하나 모자란 답이 와서, 상한에 닿았는데도
+      //   「이어갈 수 있다」로 읽는다.
+      //
+      // 못 받으면 로컬 계산으로 내려간다 — 서버가 구버전이거나 네트워크가 나가도
+      // 통화를 막지 않는다. **상한이 두 벌이 되는 게 아니라 1차/2차가 된다.**
+      final segmentId = _serverCallId ?? preservedCallId;
+      final resume = await _askResumeStatus(segmentId);
+      final canExtend = resume?.canResume ??
+          CallAllowance.canExtend(segmentsUsed: used, paidAccess: paid);
+      _log('구간 $used 끝 — 이어가기 ${canExtend ? "가능" : "불가"} '
+          '(판정=${resume != null ? "서버 $resume" : "로컬(유료=$paid)"})');
+
+      // 상한 소진 + 유료 → 시트를 띄우지 않는다. 누를 수 없는 버튼을 보여 줄 이유가
+      // 없다. **무료는 다르다** — 5분에 끝나도 구독 유도 시트를 봐야 한다.
+      //
+      // ⛔ 여기서 [hangUp] 을 부르면 안 된다. [_teardown] 이 이미 돌아 phase 가
+      //   `idle` 이라 [_hangUp] 이 **early-return 하고 `ended` 를 세우지 않는다** —
+      //   그러면 요약 화면이 안 열리고 통화가 허공에서 끝난다. 그래서 [_hangUp] 의
+      //   꼬리와 같은 모양으로 상태를 직접 만든다.
+      if (!canExtend && paid) {
+        _log('구간 $used 소진 — 시트 없이 종료');
+        // ⛔ **여기서는 CallKit 콜을 끝내야 한다.** 위 [_teardown] 이 `keepCallkitCall`
+        //   로 살려 뒀는데, 이 갈래는 대화가 진짜로 끝나는 자리다. 안 끝내면 통화는
+        //   끝났는데 잠금화면에 통화 UI 가 타이머를 돌리며 남는다.
+        await _endCallkitCall();
+        state = CallState(
+          phase: CallPhase.ended,
+          callId: segmentId,
+          elapsedSec: preservedElapsed,
+          baselineCallId: preservedBaseline,
+          // 화면이 종료 화면 전에 「통화를 마칠게요」 시트를 띄운다(P19).
+          endedAtCap: true,
+        );
+        return;
+      }
+
+      state = CallState(
+        phase: CallPhase.awaitingContinue,
+        callId: preservedCallId,
+        elapsedSec: preservedElapsed,
+        baselineCallId: preservedBaseline,
+        characterId: preservedCharacter,
+        channel: preservedChannel,
+        course: preservedCourse,
+        planOverride: preservedPlan,
+        segmentsUsed: used,
+        paidCallTime: paid,
+      );
+    } finally {
+      _continuing = false;
+    }
+  }
+
+  /// 「이 통화를 이어갈 수 있나」를 서버에 **한 번** 묻는다. 못 받으면 null.
+  ///
+  /// 짧은 상한을 건다 — 이 답을 기다리는 동안 사용자는 **소리도 화면 변화도 없는**
+  /// 상태로 앉아 있다(구간이 방금 끊겼다). 서버가 굼뜨면 로컬 계산으로 내려가는 편이
+  /// 낫다. 오래 기다려서 얻는 정확도보다 침묵이 더 비싸다.
+  Future<CallResumeStatus?> _askResumeStatus(String? callId) async {
+    final id = callId == null ? null : int.tryParse(callId);
+    if (id == null) return null;
+    try {
+      return await ref
+          .read(normalcallRepositoryProvider)
+          // ⭐ override 로 시작한 통화면 이어하기 판정도 그 플랜 기준(Free 1 / Pro·Max 3
+          //   조각)으로 받는다. 안 실으면 서버가 구독 플랜으로 답해 화면 시트와 조각2
+          //   start(plan_override 재전송)가 어긋난다. admin 만 유효, 배포 전엔 무시된다.
+          .getResumeStatus(id, planOverride: _planOverride?.wireValue)
+          .timeout(_resumeAskTimeout);
+    } catch (e) {
+      _log('resume-status 못 받음($e) — 로컬 판정으로 간다');
+      return null;
+    }
+  }
+
+  /// 이어가기 판정을 기다리는 상한. 넘으면 로컬 계산으로 내려간다.
+  static const Duration _resumeAskTimeout = Duration(seconds: 3);
+
+  /// 다음 조각에 넘길 **요약이 준비될 때까지** 기다린다(`ready`).
+  ///
+  /// 백엔드: 「`ready` 가 true 가 된 뒤에 이어하면 비버가 앞 내용을 제대로 기억합니다.
+  /// false 인데 이어해도 동작은 합니다 — 서버가 그 자리에서 요약을 만듭니다. 다만
+  /// 통화 시작이 그만큼 늦습니다.」
+  ///
+  /// ⛔ **잠금이 아니다.** 상한을 넘으면 그냥 이어간다. 여기서 무한정 기다리면
+  ///   누를 수 있는 버튼을 눌렀는데 통화가 안 열리는 상태가 된다.
+  ///
+  /// 대개 즉시 끝난다 — 구간이 끝나고 사용자가 시트를 보는 동안(결제면 수십 초)
+  /// 서버가 이미 만들어 뒀기 때문이다(백엔드: 보통 1~2초).
+  Future<void> _waitResumeReady(String? callId) async {
+    final id = callId == null ? null : int.tryParse(callId);
+    if (id == null) return;
+    final repo = ref.read(normalcallRepositoryProvider);
+    final deadline = DateTime.now().add(_resumeReadyTimeout);
+    var asked = 0;
+    while (DateTime.now().isBefore(deadline)) {
+      asked++;
+      CallResumeStatus? s;
+      try {
+        s = await repo.getResumeStatus(id).timeout(_resumeAskTimeout);
+      } catch (_) {
+        return; // 못 물어보면 그냥 이어간다
+      }
+      if (s == null) return;
+      if (s.ready) {
+        if (asked > 1) _log('요약 준비됨 ($asked회 물어봄)');
+        return;
+      }
+      await Future<void>.delayed(_resumeReadyPoll);
+    }
+    _log('⚠ 요약이 아직 안 됐다 — 그대로 이어간다 (첫 말이 늦을 수 있다)');
+  }
+
+  /// `ready` 를 기다리는 상한과 간격.
+  static const Duration _resumeReadyTimeout = Duration(seconds: 6);
+  static const Duration _resumeReadyPoll = Duration(milliseconds: 500);
+
+  /// 방금 끝난 구간의 `call_id` 를 되짚는 중인 작업. [continueCall] 이 받아 간다.
+  ///
+  /// ⚠ **예비 경로다.** 서버가 `call_started` 로 id 를 주면([_serverCallId]) 이건 아예
+  ///   안 돈다. 그 필드를 안 주는 서버에서만 쓰인다.
+  Future<int?>? _pendingSegmentCallId;
+
+  /// 이번 연결에서 **이어달라고 요청한** 직전 조각의 id. 이어하기 성패 판별용이다.
+  ///
+  /// [_continuesCallId] 와 따로 두는 이유는 그 값이 [continueCall] 의 `finally` 에서
+  /// 곧 비워지는데 `call_started` 는 그보다 늦게 올 수 있어서다.
+  String? _askedContinueId;
+
+  /// 서버가 `call_started` 로 알려준 **이 구간의** `call_id`.
+  ///
+  /// 구간을 이어갈 때 `continues_call_id` 로 실을 정답이다. 되짚기와 달리 추측이
+  /// 아니고 즉시 확정된다. 새 구간을 열 때마다 그 구간의 값으로 덮인다.
+  String? _serverCallId;
+
+  /// 소켓을 닫아 버려 `call_ended` 를 못 받은 구간의 `call_id` 를 서버에서 되짚는다.
+  ///
+  /// `GET /calls` 의 최신 id 가 [baseline] 보다 크면 그게 방금 끝난 그 구간이다
+  /// ([_captureBaselineCallId] 가 **구간을 열 때마다** 직전 최신 id 를 잡아 두므로
+  /// 이 비교가 성립한다). 서버가 행을 마감하는 데 시간이 걸려 몇 번 재시도한다 —
+  /// `call_finish.dart` 의 `_recoverCallId` 와 같은 방식·같은 이유다.
+  ///
+  /// 되짚지 못하면 null 을 돌려주고 **통화는 그대로 이어간다.** 맥락 없이 이어질 뿐
+  /// 통화를 막을 일은 아니다. 다만 조용히 지나가지 않게 로그를 남긴다 — 이 실패가
+  /// 곧 "비버가 기억 못 한다" 로 보이는데, 로그가 없으면 원인이 안 드러난다.
+  Future<int?> _recoverSegmentCallId(int? baseline, int gen) async {
+    // ⛔ 무엇도 밖으로 던지지 않는다. 이 Future 는 **아무도 안 기다릴 수 있다** —
+    //   사용자가 시트에서 「통화 종료」를 고르면 [_hangUp] 이 참조를 버린다. 그때
+    //   예외가 새면 미처리 비동기 에러가 된다. 되짚기 실패는 통화를 막을 일이 아니다.
+    int? found;
+    try {
+      found = await const SegmentCallIdRecovery().run(
+        baseline: baseline,
+        latestCallId: ref.read(normalcallRepositoryProvider).latestCallId,
+        // 그 사이 사용자가 끊었으면 되짚을 이유가 없다.
+        cancelled: () => _gen != gen,
+      );
+    } catch (e) {
+      _log('⚠ 구간 call_id 되짚기가 던졌다: $e');
+      return null;
+    }
+    if (found == null) {
+      _log('⚠ 구간 call_id 를 못 되짚었다 (기준 ${baseline ?? '(없음)'}) '
+          '— 맥락 없이 이어진다');
+    } else {
+      _log('구간 call_id 되짚음: $found (기준 ${baseline ?? '(없음)'})');
+    }
+    return found;
+  }
+
+  /// 「Keep talking」 — 다음 5분 구간을 연다.
+  ///
+  /// 새 세션이지만 **같은 대화의 계속**이다. 직전 구간의 `call_id` 를 서버에 넘겨
+  /// 맥락을 이어받게 한다([_continuesCallId] 참조).
+  ///
+  /// 아무 것도 하지 않는 경우:
+  /// - [CallPhase.awaitingContinue] 가 아닐 때(이미 끊었거나 이미 이어감)
+  /// - 상한을 다 썼을 때 — 화면이 버튼을 안 보여 주지만, 여기서도 막는다
+  ///   (화면 하나가 실수해도 15분을 넘기면 안 된다)
+  Future<void> continueCall() async {
+    if (state.phase != CallPhase.awaitingContinue) return;
+    if (_continuing) return;
+    final used = state.segmentsUsed;
+    if (!CallAllowance.canExtend(
+        segmentsUsed: used, paidAccess: state.paidCallTime)) {
+      _log('continueCall 무시 — 상한을 이미 다 썼다 (구간 $used)');
+      // ⛔ 여기서도 CallKit 콜을 끝낸다. [_reachSegmentEnd] 가 경계에서 콜을 살려 두므로
+      //   ("대화가 아직 안 끝났다"), 이어가지 **않기로 확정된** 이 갈래에서 놓아 주지
+      //   않으면 잠금화면에 통화 UI 가 타이머를 돌리며 남는다.
+      await _endCallkitCall();
+      return;
+    }
+    _continuing = true;
+    try {
+      // 직전 구간을 서버에 알린다 — 서버는 이 id 의 대화를 요약해 새 세션에 넣는다.
+      //
+      // ⛔ `state.callId` 만 보면 **거의 항상 null 이다.** 이 경계에서는 클라가 먼저
+      //   소켓을 닫아 `call_ended` 가 오지 않기 때문이다. 그래서 [_reachSegmentEnd] 가
+      //   미리 띄워 둔 되짚기([_recoverSegmentCallId])를 여기서 받는다. 시트를 보는
+      //   동안 이미 돌았으므로 보통 즉시 끝난다.
+      // 되짚기는 `GET /calls` 를 타서 int 로 오고, `call_ended` 로 오는 id 는 문자열이다
+      // (`ServerCallEnded(call_id=str(...))`). 소켓 계약이 문자열이므로 그쪽에 맞춘다.
+      // (`Future<int?>?` 를 그대로 await 하면 정적 타입이 `Object?` 로 뭉개져서 지역으로 푼다.)
+      final pending = _pendingSegmentCallId;
+      _pendingSegmentCallId = null;
+      // 우선순위: 서버가 준 값 → `call_ended` 로 온 값 → 되짚은 값.
+      // 앞의 둘은 **확정된 사실**이고 마지막만 추측이다.
+      var carriedId = _serverCallId ?? state.callId;
+      // 되짚기는 **필요할 때만** 기다린다. 앞에서 이미 정해졌다면 폴링을 붙들 이유가
+      // 없다(최대 3초를 공짜로 버리게 된다).
+      if (carriedId == null && pending != null) {
+        carriedId = (await pending)?.toString();
+      }
+      _continuesCallId = carriedId;
+      // 되짚는 사이 사용자가 끊었을 수 있다(폴링이 최대 3초다).
+      if (state.phase != CallPhase.awaitingContinue) {
+        _log('되짚는 사이 통화가 끝났다 — 다음 구간을 열지 않는다');
+        return;
+      }
+      // 서버가 앞 조각 요약을 다 만든 뒤에 열어야 비버가 제대로 기억한다.
+      // 대개 이미 끝나 있어 즉시 통과한다(시트를 보는 시간이 그 시간이다).
+      await _waitResumeReady(carriedId);
+      if (state.phase != CallPhase.awaitingContinue) {
+        _log('요약을 기다리는 사이 통화가 끝났다 — 다음 구간을 열지 않는다');
+        return;
+      }
+      // [_connect] 가 상태를 새 통화 것으로 갈아엎기 전에 붙잡는다([CallState] 는
+      // 불변이라 참조만 들고 있으면 된다).
+      final carried = state;
+      _log('구간 ${used + 1} 시작 — 직전 call_id=${_continuesCallId ?? '(없음)'} '
+          'inbound=${_inboundCallId ?? '(없음)'}');
+
+      // ⛔ [_inboundCallId] 를 **반드시 다시 싣는다.** null 을 주면 `?` 스프레드가
+      //   필드를 통째로 빼고, 서버는 알람을 되짚지 못해 대표 캐릭터로 떨어진다 —
+      //   이어간 순간 상대가 바뀐다(그 필드 문서 참조). 수신통화가 아니면 원래
+      //   null 이라 종전과 같다.
+      //
+      // ⭐ CallKit 콜도 **그대로 이어받는다**(iOS 잠금화면). 새 콜을 만들지 않고 살려 둔
+      //   콜을 계속 쓴다 — 잠금 중 오디오 세션·백그라운드 실행·잠금화면 UI 가 전부 그
+      //   콜에 딸려 있어서, 여기서 놓으면 2구간이 무음이 된다.
+      //   [_callkitOwnedAudio] 를 그대로 넘기는 이유: [_startAudio] 가
+      //   `_callkitOwnedAudio && await _isCallKitAudioActive()` 로 **시스템이 세션을
+      //   아직 들고 있는지 검증**한다. 살아 있으면 우리가 덮어쓰지 않고, 죽었으면
+      //   직접 켠다. 안드로이드는 둘 다 null/false 라 종전과 같다.
+      final ok = await _connect(
+        callUuid: _callUuid,
+        inboundCallId: _inboundCallId,
+        callkitOwnedAudio: _callkitOwnedAudio,
+        callChannel: carried.channel,
+        keepCallkitCall: true,
+        // ⛔ [_inboundCallId] 와 같은 이유로 **반드시 다시 싣는다.** 빠지면 2구간부터
+        //   서버가 이 통화를 과제로 안 보고 언어·길이·재료가 전부 되돌아간다.
+        assignmentId: _assignmentId,
+        // ⛔ 코스도 **반드시 다시 싣는다.** 빠지면 2구간부터 표현학습·프리토킹이
+        //   평소 통화로 되돌아간다 — `assignment_id` 가 정확히 이렇게 샜다(2026-09-06).
+        callCourse: _callCourse,
+        forceCourse: _forceCourse,
+        // ⛔ 플랜 강제도 다시 싣는다 — 안 그러면 2구간부터 구독 플랜 엔진으로 되돌아간다.
+        planOverride: _planOverride,
+      );
+      if (!ok) {
+        _log('⛔ 다음 구간 연결 실패 — 통화를 끝낸다');
+        await hangUp();
+        return;
+      }
+      // 누적 시계·구간 수를 되살린다. [_connect] 가 새 통화로 보고 0 부터 시작하므로,
+      // 이걸 빠뜨리면 **통화가 영원히 끝나지 않는다**(매 구간 5분이 새로 주어진다).
+      //
+      // ⛔ [CallState.baselineCallId] 는 **일부러 안 되살린다.** 새 구간은 서버에
+      //    새 행을 만들고, [_captureBaselineCallId] 가 이 구간용 기준값을 새로 잡는다.
+      //    옛 값을 얹으면 그 캡처와 경합하고, 수동 종료 시 복구 폴링이
+      //    "기준값보다 큰 첫 id" 로 **직전 구간의 행**을 집을 수 있다.
+      //
+      // 캐릭터도 되살린다 — 서버의 `call_started` 가 곧 덮어쓰지만, 그 프레임이
+      // 오기 전까지 화면의 아바타·이름이 빈다(같은 상대와 계속 말하는 중인데).
+      state = state.copyWith(
+        elapsedSec: carried.elapsedSec,
+        segmentsUsed: carried.segmentsUsed,
+        paidCallTime: carried.paidCallTime,
+        characterId: carried.characterId,
+      );
+      await _startAudio();
+    } finally {
+      _continuing = false;
+      _continuesCallId = null;
+    }
+  }
+
+  /// 결제 퍼널이 닫힌 뒤 — **이어갈지 끝낼지**를 여기서 하나로 판정한다.
+  ///
+  /// 5분 시트의 「Subscribe and keep talking」 은 통화를 끊지 않고 결제 화면을
+  /// 통화 화면 **위에** 얹는다(`call.dart`). 그 화면이 닫히면 결제를 했는지 취소했는지
+  /// 모르는 채 여기로 돌아오는데, 굳이 구분해 넘겨받지 않는다 — **구독 상태를 다시
+  /// 읽으면 그게 답이다.** 성공/취소/실패/뒤로가기가 전부 같은 길로 들어와 같은
+  /// 질문 하나로 갈린다.
+  ///
+  /// 반환값은 **통화가 이어졌는가** — 화면이 결제 완료를 알릴지 정하는 데 쓴다.
+  ///
+  /// ⛔ [_paidAccess] 캐시를 **반드시 버린다.** 그 값은 통화를 시작할 때 굳은 것이라
+  ///   무료 회원이면 `false` 다. 안 버리면 방금 결제한 사람에게도 그 `false` 가
+  ///   답해서, [continueCall] 이 `canExtend(1, false)` → 거부로 통화를 끝낸다.
+  ///   **이어지지 않는 원인이 정확히 여기다.**
+  Future<bool> resumeAfterPaywall() async {
+    if (state.phase != CallPhase.awaitingContinue) return false;
+    _paidAccess = null;
+    final paid = await (_paidAccess ??= _resolvePaidAccess());
+    // 결제를 기다리는 동안 사용자가 직접 끊었을 수 있다(잠금화면 통화 포함).
+    if (state.phase != CallPhase.awaitingContinue) return false;
+    if (!paid) {
+      _log('결제 후에도 유료가 아니다 — 통화를 끝낸다');
+      await hangUp();
+      return false;
+    }
+    _log('결제 확인 — 구간 ${state.segmentsUsed + 1} 로 이어간다');
+    // [continueCall] 의 상한 판정이 이 값을 읽는다. 굳혀 두지 않으면 이어가더라도
+    // 다음 경계에서 다시 무료로 판정돼 5분 만에 잘린다.
+    state = state.copyWith(paidCallTime: true);
+    await continueCall();
+    return state.phase != CallPhase.ended && state.phase != CallPhase.error;
+  }
+
+  /// 다음 `start` 프레임에 실을 **직전 구간의 call_id**.
+  ///
+  /// 서버는 이 id 의 대화를 읽어 요약해 새 세션에 주입한다 — 그래야 비버가 앞
+  /// 구간을 기억한다. 클라가 요약을 만들어 보내지 않는 이유: 요약은 통화 종료 후
+  /// 분석이 만들고 그 대기가 **최대 60초**라(`analysis_loading.dart`), 「Keep talking」
+  /// 을 누른 사용자를 대화 중간에 1분 세우게 된다. 서버는 이미 대화 원본을 갖고 있다
+  /// (`GET /calls/{id}/raw`).
+  ///
+  /// ✅ **서버가 이 필드를 받는다**(2026-08-21 확인). 앞 구간의 대화를 압축해 새
+  ///   세션에 주입해 주므로 비버가 이어서 말한다.
+  ///
+  /// ⛔ **받는 쪽이 준비됐다고 계약이 성립한 게 아니다 — 보내는 쪽이 비어 있었다.**
+  ///   이 값은 [CallState.callId] 에서 오는데, 그건 `call_ended` 프레임에서만 채워진다.
+  ///   구간 경계는 **클라가 먼저 소켓을 닫아서** 그 프레임이 오지 않는다. 그래서
+  ///   여기가 늘 null 이었고, `start` 에서 `?` 로 **필드째 빠져** 서버는 이어가기인 줄
+  ///   몰랐다. 화면상 통화는 멀쩡히 이어지는데 비버만 처음부터 다시 인사했다
+  ///   (사장님 실기기 2026-08-24). 지금은 [_recoverSegmentCallId] 가 되짚어 채운다.
+  ///
+  /// ⛔ 그러니 **이 값이 채워지는지를 실기기 로그로 확인하고 손대라.** null 이어도
+  ///   통화는 정상으로 보이기 때문에, 화면만 봐서는 고장을 알 수 없다.
+  String? _continuesCallId;
 
   /// Starts the application keepalive: a periodic `ping` so the socket always
   /// has recent client→server traffic (the server replies `pong`, already
@@ -2233,6 +6076,7 @@ class NormalCallController extends Notifier<CallState> {
   void _startKeepalive() {
     _keepaliveTimer?.cancel();
     _keepaliveTimer = Timer.periodic(_keepaliveInterval, (_) {
+      _pingSentAtMs = DateTime.now().millisecondsSinceEpoch;
       _send({'type': 'ping'});
     });
   }
@@ -2241,7 +6085,36 @@ class NormalCallController extends Notifier<CallState> {
   ///
   /// When [keepError] is true the phase is left untouched (an error phase was
   /// already set by the caller); otherwise it resets to [CallPhase.idle].
-  Future<void> _teardown({bool keepError = false}) async {
+  /// 이 세션을 떠받치던 CallKit 콜을 끝낸다. 없으면 아무 일도 안 한다.
+  ///
+  /// `_callUuid` 를 **먼저** 비우는 이유: 이 호출이 돌려주는 `ACTION_CALL_ENDED` 가
+  /// 다시 이쪽으로 들어와도 두 번 끝내지 않게 한다.
+  ///
+  /// ⚠ 그건 **컨트롤러 안에서만** 그렇다. `IncomingCallCoordinator` 는 자기
+  /// `_activeUuid` 를 따로 들고 있어서 이 ENDED 를 **사용자의 종료로 읽고**
+  /// [hangUp] 을 부른다(iOS). 그래서 대화가 계속돼야 하는 자리에서는 이 함수를
+  /// 아예 부르지 않는다 — [_teardown] 의 `keepCallkitCall` 을 보라.
+  Future<void> _endCallkitCall() async {
+    final callUuid = _callUuid;
+    _callUuid = null;
+    if (callUuid == null) return;
+    try {
+      await FlutterCallkitIncoming.endCall(callUuid);
+    } catch (_) {
+      // Already gone (user pressed End on the lock screen) — nothing to do.
+    }
+  }
+
+  Future<void> _teardown({
+    bool keepError = false,
+    bool keepCallkitCall = false,
+  }) async {
+    // ⛔ **아래 리셋들보다 먼저** 붙잡는다. 요약 줄이 실제로 쓴 통로를 말해야 하는데,
+    //   리셋이 통로를 기본값으로 되돌리므로 나중에 읽으면 거짓이 된다(실기기 확인).
+    final endedChannel = _channelMode;
+    // 오류로 끊긴 통화도 GA4 에는 끝난 통화다. 구간 경계([keepCallkitCall])는 대화가
+    // 이어지므로 세지 않는다. 정상 종료 경로는 이미 보냈으면 여기서 no-op 이다.
+    if (!keepCallkitCall) _gaCallEnded();
     // End the CallKit call backing this session, first thing — every exit path
     // funnels through here (hang-up, server `call_ended`, ws error, next call's
     // teardown-before-connect), and the call is kept alive for the whole
@@ -2251,15 +6124,17 @@ class NormalCallController extends Notifier<CallState> {
     // Safe on the [_connect] path too: _callUuid is still the PREVIOUS call's at
     // that point (it is assigned after this teardown), so a stale call gets
     // cleaned up rather than the new one.
-    final callUuid = _callUuid;
-    _callUuid = null; // cleared first: the ENDED event this triggers is a no-op
-    if (callUuid != null) {
-      try {
-        await FlutterCallkitIncoming.endCall(callUuid);
-      } catch (_) {
-        // Already gone (user pressed End on the lock screen) — nothing to do.
-      }
-    }
+    //
+    // ⛔ **[keepCallkitCall] 이면 손대지 않는다 — 5분 구간 경계다.** CallKit 콜은
+    //   「대화」를 뜻하지 「소켓」을 뜻하지 않는다(바로 위 주석의 "whole conversation"
+    //   이 그 말이다). 구간 경계는 소켓 사건이지 대화의 끝이 아닌데, 여기서 끊으면
+    //   iOS 잠금화면 통화가 **5분에 통째로 죽었다**:
+    //     이 endCall → `ACTION_CALL_ENDED` → 코디네이터가 **사용자의 종료로 읽고**
+    //     [hangUp] → `_gen++` → [_reachSegmentEnd] 가 자기 가드에 걸려 시트를 못 띄움.
+    //   덤으로 잠금 중 오디오 세션·백그라운드 실행이 그 콜에 딸려 있어, 이어가도
+    //   2구간이 무음이었다.
+    //   (안드로이드는 `_callUuid` 가 늘 null 이라 이 분기와 무관하다.)
+    if (!keepCallkitCall) await _endCallkitCall();
 
     _elapsedTimer?.cancel();
     _elapsedTimer = null;
@@ -2267,7 +6142,12 @@ class NormalCallController extends Notifier<CallState> {
     _keepaliveTimer = null;
     _envTimer?.cancel();
     _envTimer = null;
-    _envQueue.clear();
+    _clearEnvelope();
+    // ⛔ 큐에 꽂아 둔 **미발화 마커**도 같이 버린다. 안 지우면 다음 턴에 지난 턴
+    //   표정·자막이 뜬다(그 오디오는 이미 폐기됐다).
+    _pendingMarkers.clear();
+    // 진행 중이던 드러내기도 멈춘다 — 남은 글자가 새면 안 들은 말이 자막에 남는다.
+    _resetReveal();
     _drainScheduled = false;
     _closingStableTimer?.cancel();
     _closingStableTimer = null;
@@ -2279,13 +6159,68 @@ class NormalCallController extends Notifier<CallState> {
     _lastChunkAtMs = null;
     _logAnchorMs = null;
     _audioTailUntilMs = 0;
+    // barge-in 상태 — 다음 통화로 새어 나가면 첫 인사가 폐기된다.
+    _cancelledResidual = false;
+    _cancelledResidualBytes = 0;
+    _currentTurnId = null;
+    _ledger.reset();
+    _prevTurnBacklogMs = -1;
+    _backlogRiseStreak = 0;
+    // 통로도 통화 스코프다. 남겨 두면 캐스케이드 통화 뒤의 다음 통화가 (호출부가
+    // 값을 안 주는 경로로 들어왔을 때) 게이팅 없이 열린다 — AEC 실측 전엔 그게
+    // 자기-대화 루프다. [_connect] 가 이 teardown **뒤에** 새 값을 넣는다.
+    _channelMode = CallChannel.defaultChannel;
+    _fragmentSwitch = _FragmentSwitch.none;
+    _speechSincePending.reset();
+    _micPrebuffer.clear();
+    _serverFragmentIndex = null;
+    _serverMaxFragments = null;
+    _fragmentEndSec = null;
+    _budgetFinal = false;
+    _switchAttempts = 0;
+    if (!(_fragmentReady?.isCompleted ?? true)) _fragmentReady!.complete(false);
+    _fragmentReady = null;
+    if (!(_fragmentSaved?.isCompleted ?? true)) _fragmentSaved!.complete(null);
+    _fragmentSaved = null;
+    _fragmentSavedTimeouts = 0;
+    // 서버가 준 세션 정책도 통화 스코프다. 남기면 다음 통화가 **이전 서버 답**으로
+    // 마이크를 연다 — 그 통화의 서버는 다르게 말했을 수 있다.
+    _serverMicAlwaysOpen = false;
+    _serverBargeinConfirm = '';
+    _serverTurnSilenceMs = 0;
+    // ⭐ [진단] 통화 한 건의 **경계 판정용 한 줄**. 첫 실기기 통화에서 자막이 안 뜨면
+    //   여기부터 본다:
+    //     sentence=0        → **서버가 안 보냈다**(앱은 받을 준비가 돼 있었다)
+    //     sentence>0, 자막 X → **앱 문제**(위치 발화·자막 배선을 본다)
+    //     odd_frames>0      → **서버 불변식 I6 위반**(0 이 정상)
+    _log(buildCallSummaryLine(
+      sentences: _sentenceCount,
+      pendingMarkers: _pendingMarkers.length,
+      oddFrames: _oddFrames,
+      // ⚠ 함수 **진입 시점에 붙잡아 둔** 값이다. 여기서 `_channelMode` 를 읽으면
+      //   이미 기본값으로 되돌아간 뒤라 `live` 가 찍힌다(실기기에서 그렇게 나왔다).
+      channel: endedChannel,
+      hints: _hintCount,
+      hintsDropped: _hintDropped,
+    ));
+    _oddFrames = 0;
+    _pendingMarkers.clear();
+    _envAdded = 0;
+    _envPlayed = 0;
+    _autoTalkTimer?.cancel();
+    _autoTalkTimer = null;
+    _autoTalkStartedAt = null;
+    _autoTalkSent = 0;
+    _sentenceCount = 0;
+    _hintCount = 0;
+    _hintDropped = 0;
 
     // Reset the half-duplex mic gate + its timers so a new call starts ungated.
     _micGateTimer?.cancel();
     _micGateTimer = null;
     _gateSafetyTimer?.cancel();
     _gateSafetyTimer = null;
-    _beaverSpeaking = false;
+    _beaverAudioActive = false;
     avatarSpeaking.value = false;
     avatarLevel.value = 0.0;
     avatarEmotion.value = 0;
@@ -2293,26 +6228,40 @@ class NormalCallController extends Notifier<CallState> {
     _listenTimer?.cancel();
     _listenTimer = null;
     avatarIdleKind.value = kIdleWait;
-    _emo.reset();
     _turnEnded = false;
     _micFramesSent = 0;
+    _uplinkBytes = 0;
+    _turnServerBytesBase = 0; // 원장도 통화마다 리셋된다 — 원점만 남으면 다음 통화가 어긋난다
+    _lastReportedRoute = '';
+    AudioRouteProbe.setRouteChangeListener(null);
     _micWatchdogTimer?.cancel();
     _micWatchdogTimer = null;
+    _micRouteReopenTimer?.cancel();
+    _micRouteReopenTimer = null;
+    _micRouteVoiceProcessing = null;
     _micFramesReceived = 0;
-    _micRestarted = false;
+    _micRestartCount = 0;
 
     // Stop the mic first so no more bytes flow into a closing socket.
     await _micSub?.cancel();
     _micSub = null;
-    try {
-      await _recorder?.stopRecorder();
-    } catch (_) {}
-    try {
-      await _recorder?.closeRecorder();
-    } catch (_) {}
-    _recorder = null;
-    await _micController?.close();
-    _micController = null;
+    await _closeMicRecorders();
+    // [실험] 계측용 녹음 파일은 남기지 않는다 — 6분치 PCM 이 통화마다 쌓인다.
+    // 크기를 찍는 이유: 레코더가 **실제로 돌았는지**의 증거다(파일이 0B 면 ②③ 유지라는
+    // 실험의 전제가 깨진 것이고, 그러면 곡선을 읽으면 안 된다).
+    final probe = _micProbeFile;
+    if (probe != null) {
+      _micProbeFile = null;
+      try {
+        final f = File(probe);
+        final size = await f.length();
+        await f.delete();
+        _log('[실험] MIC_TO_FILE 파일 삭제 — ${size ~/ 1024}KB '
+            '(=${(size / 32000).toStringAsFixed(1)}초치. 통화 길이와 비슷해야 한다)');
+      } catch (e) {
+        _log('⚠ [실험] 녹음 파일 정리 실패: $e');
+      }
+    }
 
     // Stop in-call audio routing: remove the native route-change observer and
     // clear the speaker override so the session doesn't stay forced to the
@@ -2357,6 +6306,16 @@ class NormalCallController extends Notifier<CallState> {
     }
     _pcmSetup = false;
     _feeding = false;
+
+    // [AEC] 통화 용도 모드를 되돌린다. **우리가 켠 경우에만** — 안 켠 모드를 NORMAL 로
+    // 돌리면 시스템 통화(수신전화)가 잡고 있던 모드를 밟는다. 재생 트랙을 release 한
+    // 뒤에 되돌려야 라우팅이 트랙보다 먼저 바뀌어 마지막 소리가 리시버로 새지 않는다.
+    if (_voiceModeSet) {
+      _voiceModeSet = false;
+      final diag = await AudioRouteProbe.setVoiceCallMode(false);
+      _log('AEC: 통화 용도 오디오 OFF → $diag');
+    }
+
     _pcmQueue = Uint8List(_pcmQueueInitialBytes);
     _pcmHead = 0;
     _pcmTail = 0;
@@ -2399,4 +6358,149 @@ class NormalCallController extends Notifier<CallState> {
       }
     }
   }
+
+  // ── 취소 배관 리그 전용 표면 (디버그 빌드 전용) ─────────────────────────────
+  //
+  // `audio_cancel` 배관을 실기기에서 재려면 서버가 취소를 쏴 줘야 하는데, 서버 dev
+  // 훅이 배포 전이다. 그래서 프레임을 **클라 안에서** 주입한다.
+  //
+  // 이게 유효한 측정인 이유: 재려는 값 `client_stop_ms`(취소 수신 → 실제 무음)는
+  // 전부 클라 내부 구간이다. 서버가 기여하는 건 RTT 뿐이고 그건 이번 측정 대상이
+  // 아니다. 즉 로컬 주입으로 나오는 숫자는 대용품이 아니라 진짜다.
+  //
+  // ⛔ 리그가 [_clearPlayback] 이나 [_onAudioCancel] 을 직접 부르면 안 된다. 그러면
+  //   실제로는 안 도는 경로를 검증한 게 된다. 진입은 [debugInjectWsFrame] 하나뿐이다.
+
+  /// [디버그 전용] 소켓으로 나가려던 제어 프레임을 가로챈다.
+  ///
+  /// 리그에는 소켓이 없어 [_send] 가 조용히 빠진다. 여기로 받아야 `playback_progress`
+  /// 페이로드를 **서버가 받게 될 모습 그대로** 화면에 찍을 수 있다.
+  static void Function(Map<String, dynamic> msg)? debugOutboundSink;
+
+  /// [디버그 전용] 소켓이 받은 것처럼 프레임을 밀어 넣는다.
+  ///
+  /// [_onWsData] 는 소켓이 닿는 유일한 관문이다. 여기로만 들어가면 파싱·디스패치·
+  /// 게이팅·원장·`clear()`·회신 구성까지 한 줄도 우회하지 않는다.
+  /// [data] 는 제어 JSON 문자열이거나 PCM24k 바이너리([Uint8List]).
+  void debugInjectWsFrame(dynamic data) {
+    assert(kDebugMode, 'debug 전용 진입점이 릴리즈 경로에서 불렸다');
+    _onWsData(data);
+  }
+
+  /// [디버그 전용] 소켓·마이크·권한 없이 **재생 파이프라인만** 개통한다.
+  ///
+  /// [voiceCallAudio] 로 AEC 전/후를 **리빌드 없이** 전환한다 — 컴파일 플래그
+  /// (`ANDROID_VOICE_AUDIO`)에 묶으면 리그가 한 빌드에서 전/후를 못 재고, 그러면
+  /// 두 측정 사이에 빌드가 끼어 "무엇 때문에 달라졌는지"를 못 가린다.
+  Future<void> debugOpenPlayback({bool voiceCallAudio = false}) async {
+    assert(kDebugMode, 'debug 전용 진입점이 릴리즈 경로에서 불렸다');
+    await _openPlayback(voiceCallAudio: voiceCallAudio);
+  }
+
+  /// [디버그 전용] 리그 종료. 소켓/마이크가 애초에 없어도 [_teardown] 은 안전하다
+  /// (전부 null 가드). 엔진 release 까지 여기서 끝낸다.
+  Future<void> debugClosePlayback() => _teardown();
+
+  /// [디버그 전용] 리그가 보는 계측 카운터 묶음.
+  ///
+  /// - `cancelledResidualBytes` — 취소 이후 폐기한 잔여. 서버 불변식("취소~다음
+  ///   `turn_start` 사이 오디오는 버린다")이 실제로 지켜지는지 리그가 이걸로 판정한다.
+  /// - `queuedBytes` — Dart 링버퍼 잔량. **락업 검출량이다.** 네이티브가 in-flight 를
+  ///   부풀린 채 굳으면 [_engineLevelFrames] 가 계속 높게 나오고 [_pump] 의
+  ///   `level < _engineLowFrames` 가 영영 거짓이 되어 이 값이 단조 증가한다.
+  ///   사람 귀 대신 이걸 본다.
+  /// - `engineLevelFrames` — 엔진 잔량 **추정**(외삽). 큐가 안 빠질 때 원인이 엔진
+  ///   과대보고인지 가르는 보조 지표다.
+  ///
+  /// getter 3개가 아니라 메서드 하나인 이유: riverpod_lint 의
+  /// `avoid_public_notifier_properties` 는 Notifier 의 공개 상태를 `state` 로만
+  /// 노출하라고 요구한다. 이건 상태가 아니라 계측 훅이라 `state` 에 넣을 것도 아니고,
+  /// 그렇다고 린트를 무시로 덮는 것보다 애초에 프로퍼티가 아닌 게 맞다.
+  ({int cancelledResidualBytes, int queuedBytes, int engineLevelFrames})
+      debugCounters() => (
+            cancelledResidualBytes: _cancelledResidualBytes,
+            queuedBytes: _queueLen,
+            engineLevelFrames: _engineLevelFrames,
+          );
 }
+
+/// [NormalCallController._clearPlayback] 의 결과 — `playback_progress` 페이로드의 재료.
+///
+/// 값 하나가 아니라 묶음인 이유는 **출처와 한계를 같이 실어야** 하기 때문이다.
+/// 서버는 이 보고로 대화 이력의 절단 지점을 정하는데, 추정치를 실측으로 착각하면
+/// 사용자가 듣지도 않은 문장이 "들은 것"으로 박힌다.
+class _ClearOutcome {
+  const _ClearOutcome({
+    required this.playedServerBytes,
+    required this.fromNative,
+    required this.halResidualMs,
+    required this.halResidualKnown,
+    required this.writeInFlight,
+    this.nativeMs = -1,
+  });
+
+  /// 이번 턴에 실제로 스피커로 나간 **서버발** 바이트(클라 필러 무음 제외).
+  final int playedServerBytes;
+
+  /// 위 값이 네이티브 실측 잔량으로 계산됐는가. false 면 Dart 외삽 폴백이라
+  /// `source: 'estimate'` 로 보고해야 한다.
+  final bool fromNative;
+
+  /// flush 이후에도 HAL/믹서에 남아 계속 울리는 잔량(ms).
+  final int halResidualMs;
+
+  /// 위 값이 측정된 것인가. false 면 0 은 "없음"이 아니라 **모름**이다.
+  final bool halResidualKnown;
+
+  /// 폐기 시점에 재생 스레드가 실오디오 write() 안에 있었는가 — 그 데이터는 우리 flush
+  /// 뒤에 트랙으로 들어가 잠깐 더 울린다.
+  final bool writeInFlight;
+
+  /// 네이티브 `clear()` **내부** 소요(ms). -1 = 미보고.
+  final int nativeMs;
+
+  /// `client_stop_ms` 가 **무엇을 잰 값인지** 와이어에 명시한다.
+  ///
+  /// - `hal_drained` — 하드웨어 잔량까지 빠져 **실제로 조용해진 시각**. 서버가 합격
+  ///   판정(50~120ms)에 그대로 쓴다
+  /// - `clear_returned` — flush 반환까지만. 실제 무음은 이보다 **늦으므로 하한**이다
+  ///
+  /// 둘을 가르는 조건이 두 개인 이유:
+  ///   ① HAL 잔량을 못 쟀으면(getTimestamp 미가용·iOS) 애초에 하드웨어 구간이 빠져 있다
+  ///   ② 쟀더라도 그 순간 실오디오 write 가 진행 중이었으면, 그 데이터가 flush 뒤에
+  ///      들어가 재생 스레드가 회수할 때까지 소리가 남는다. 회수는 clear() 반환 뒤라
+  ///      값에 못 담는다 — 그래서 하한으로 낮춘다
+  ///
+  /// ⚠ `hal_drained` 로 보내면 서버가 합격 판정에 그대로 쓴다. 애매하면 낮추는 쪽이 맞다.
+  String get stopMeasure =>
+      (halResidualKnown && !writeInFlight) ? 'hal_drained' : 'clear_returned';
+}
+
+/// 끊김 없는 조각 전환 상태(F1). 화면에 안 나간다 — 시트는 Free 만.
+enum _FragmentSwitch {
+  none,
+
+  /// 5:00 지남 — 다음 «사용자 발화 → turn_end» 를 기다린다.
+  pending,
+
+  /// 마지막 조각 5:00 지남 — 다음 «사용자 발화 → turn_end» 에 종료.
+  pendingFinal,
+
+  /// turn_end 받고 소켓을 닫는 중.
+  switching,
+
+  /// 새 소켓을 여는 중(call_started 대기).
+  reconnecting,
+}
+
+/// WS `error` 프레임 → 화면 문구.
+///
+/// 서버 `premium` 브랜치(09-23)의 두 거절 코드는 앱 문구로 바꾼다 — 사용자가 다음에 할 일이
+/// 코드마다 다르다(오늘은 끝 / 다른 통화를 먼저 끊기). 나머지는 서버 문구 그대로다.
+@visibleForTesting
+String serverErrorMessage(Map<String, dynamic> msg, AppLocalizations l10n) =>
+    switch (msg['code']) {
+      'DAILY_LIMIT' => l10n.callDailyLimit,
+      'ALREADY_IN_CALL' => l10n.callAlreadyInCall,
+      _ => (msg['message'] as String?) ?? l10n.callErrorGeneric,
+    };

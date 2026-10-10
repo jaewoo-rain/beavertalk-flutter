@@ -24,6 +24,15 @@ class PronScoreDto {
   }
 
   /// Accepts int/double/null from JSON, normalizing to a 0-based [int].
+  /// 채점 결과가 **없으면** null — `evaluation` 이 없거나 `total_score` 가 숫자가 아닐 때.
+  ///
+  /// 0 으로 채우지 않는다. 「채점하지 못함」과 「0점」은 다른 사실이다(09-24 사장님 · 서버 요청서 3).
+  /// 화면은 null 이면 기존 「점수 없음」(빈 게이지 · -%)으로 그린다.
+  static PronScoreDto? tryFromJson(Map<String, dynamic>? json) {
+    if (json == null || json['total_score'] is! num) return null;
+    return PronScoreDto.fromJson(json);
+  }
+
   static int _toInt(Object? value) {
     if (value is num) return value.round();
     return 0;
@@ -64,6 +73,36 @@ class CharScoreDto {
       );
 }
 
+/// Wire model for one entry of `phoneme_misses`.
+///
+/// 서버가 이 배열을 안 보내면 앱은 빈 목록으로 읽고 종전대로 동작한다 — 이 필드는
+/// **선택**이다.
+class PhonemeMissDto {
+  const PhonemeMissDto({
+    required this.charIndex,
+    required this.expected,
+    this.actual,
+  });
+
+  final int charIndex;
+  final String expected;
+  final String? actual;
+
+  factory PhonemeMissDto.fromJson(Map<String, dynamic> json) {
+    return PhonemeMissDto(
+      charIndex: PronScoreDto._toInt(json['char_index']),
+      expected: (json['expected'] as String?) ?? '',
+      actual: json['actual'] as String?,
+    );
+  }
+
+  PhonemeMiss toEntity() => PhonemeMiss(
+        charIndex: charIndex,
+        expected: expected,
+        actual: (actual?.isEmpty ?? true) ? null : actual,
+      );
+}
+
 /// Wire model for `POST /sentences/{id}/reviews/audio` (ReviewFeedback,
 /// snake_case payload).
 class ReviewFeedbackDto {
@@ -75,6 +114,7 @@ class ReviewFeedbackDto {
     this.voiceUrl,
     required this.evaluation,
     required this.charScores,
+    this.phonemeMisses = const <PhonemeMissDto>[],
   });
 
   final int reviewId;
@@ -82,23 +122,36 @@ class ReviewFeedbackDto {
   final String? koreanSentence;
   final String? nativeSentence;
   final String? voiceUrl;
-  final PronScoreDto evaluation;
+  final PronScoreDto? evaluation;
   final List<CharScoreDto> charScores;
+  final List<PhonemeMissDto> phonemeMisses;
 
   factory ReviewFeedbackDto.fromJson(Map<String, dynamic> json) {
+    // 서버가 실채점 대신 스텁(60~100 가짜 점수)을 냈다(F100 · 서버 §3). 점수·글자 판정을
+    // 버려 「채점 못 함」 과 같이 그린다 — 가짜 점수가 실력처럼 보이고 평균에 섞였다.
+    final isStub = json['is_stub'] == true;
     final evaluation =
-        (json['evaluation'] as Map<String, dynamic>?) ?? const {};
-    final charScores = (json['char_scores'] as List<dynamic>?) ?? const [];
+        isStub ? null : json['evaluation'] as Map<String, dynamic>?;
+    final charScores = isStub
+        ? const <dynamic>[]
+        : (json['char_scores'] as List<dynamic>?) ?? const [];
+    final misses = isStub
+        ? const <dynamic>[]
+        : (json['phoneme_misses'] as List<dynamic>?) ?? const [];
     return ReviewFeedbackDto(
       reviewId: (json['review_id'] as num?)?.toInt() ?? 0,
       sentenceId: (json['sentence_id'] as num?)?.toInt() ?? 0,
       koreanSentence: json['korean_sentence'] as String?,
       nativeSentence: json['native_sentence'] as String?,
       voiceUrl: json['voice_url'] as String?,
-      evaluation: PronScoreDto.fromJson(evaluation),
+      evaluation: PronScoreDto.tryFromJson(evaluation),
       charScores: charScores
           .whereType<Map<String, dynamic>>()
           .map(CharScoreDto.fromJson)
+          .toList(),
+      phonemeMisses: misses
+          .whereType<Map<String, dynamic>>()
+          .map(PhonemeMissDto.fromJson)
           .toList(),
     );
   }
@@ -109,7 +162,8 @@ class ReviewFeedbackDto {
         korean: koreanSentence,
         native: nativeSentence,
         voiceUrl: voiceUrl,
-        evaluation: evaluation.toEntity(),
+        evaluation: evaluation?.toEntity(),
         charScores: charScores.map((c) => c.toEntity()).toList(),
+        phonemeMisses: phonemeMisses.map((m) => m.toEntity()).toList(),
       );
 }

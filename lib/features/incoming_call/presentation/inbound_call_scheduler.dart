@@ -88,11 +88,7 @@ class InboundCallScheduler {
 
     // 이미 통화 중이면 새 전화를 띄우지 않는다.
     final phase = ref.read(normalCallControllerProvider).phase;
-    if (phase == CallPhase.connecting ||
-        phase == CallPhase.inCall ||
-        phase == CallPhase.ending) {
-      return;
-    }
+    if (phase.isBusy) return;
 
     // 캐시된 알람 목록(없으면 이번 tick은 로드만 유도하고 종료).
     // `.value`는 로드 실패(예: 알람 조회 401) 시 에러를 **재던져** 20초마다

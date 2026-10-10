@@ -40,6 +40,66 @@ abstract final class AppIcons {
     );
   }
 
+  /// 듀오톤 아이콘 — **색을 입히지 않는다.** 두 색이 SVG 에 박혀 있다(Figma `duo-*`,
+  /// 고정 팔레트 · 양 모드 공통). [_glyph] 처럼 srcIn 으로 칠하면 한 색으로 뭉개진다.
+  static Widget _duo(String name, double size) => SvgPicture.asset(
+        'assets/icons/$name.svg',
+        width: size,
+        height: size,
+        fit: BoxFit.contain,
+      );
+
+  /// `duo-homework` (`6246:1532`) — 홈 숙제 배너 앞 아이콘.
+  static Widget duoHomework({double size = 24}) => _duo('duo-homework', size);
+
+  /// `duo-heart` (`6195:29828`) — 페이월 이탈 방지 창(`Dialog/Confirm-Icon`) 머리 아이콘, 화면에서 48.
+  /// SVG 는 Figma Size=24 를 그대로 내보낸 것(app designer 세션, 09-24).
+  static Widget duoHeart({double size = 48}) => _duo('duo-heart', size);
+
+  /// `duo-return` (`6195:29896`, Size=36 원본) — 윈백 오퍼 시트 머리 아이콘, 화면에서 56.
+  /// 원시색 고정(#DCEBFF 원 · #3182F6 획). SVG 는 app designer 세션 내보내기(09-26).
+  static Widget duoReturn({double size = 56}) => _duo('duo-return', size);
+
+  /// Premium 혜택 줄 아이콘 4종 — Figma `Paywall/Benefit`(`6198:1999`) 의 20 크기.
+  /// `duo-video`(`6195:1517`) · `duo-chart`(`6195:1553`) · `duo-target`(`6195:1582`) ·
+  /// `duo-bubble`(`6195:29871`).
+  static Widget duoVideo({double size = 20}) => _duo('duo-video', size);
+  static Widget duoChart({double size = 20}) => _duo('duo-chart', size);
+  static Widget duoTarget({double size = 20}) => _duo('duo-target', size);
+  static Widget duoBubble({double size = 20}) => _duo('duo-bubble', size);
+
+  /// `duo-preparing`(`6326:40983`) — 분석 준비 중(비버가 표현 카드를 만드는 중).
+  /// 분석 대기 화면의 BabaNote 36 · Expressions 80.
+  static Widget duoPreparing({double size = 36}) => _duo('duo-preparing', size);
+
+  /// `duo-check`(`6195:1655`) — 분석 준비 단계 「완료」.
+  static Widget duoCheck({double size = 20}) => _duo('duo-check', size);
+
+  /// `ai-sparkle`(`3443:1393`) — 분석 준비 단계 「진행 중」. 한 색 글리프.
+  static Widget aiSparkle({double size = 20, required Color color}) =>
+      _glyph('ai-sparkle', size, color);
+
+  /// `native` (`6177:27891`, 분석 카드 인스턴스 Size=16 `6177:27890`) — 현지인 표현 라벨.
+  ///
+  /// 다른 duo 와 달리 **토큰으로 칠한다** — 두 층이 `Primary/Normal-24`(말풍선) ·
+  /// `Primary/Normal`(핀)이라 모드마다 색이 다르다(Dark `#00FFB2` · Light `#007A55`).
+  /// 색을 SVG 에 박으면 한쪽 모드에서 어긋나서 두 층을 따로 srcIn 으로 입힌다.
+  static Widget duoNative({
+    double size = 16,
+    required Color bubble,
+    required Color pin,
+  }) =>
+      SizedBox(
+        width: size,
+        height: size,
+        child: Stack(
+          children: [
+            _glyph('native-bubble', size, bubble),
+            _glyph('native-pin', size, pin),
+          ],
+        ),
+      );
+
   // ── Navigation / chrome ──────────────────────────────────────
   static Widget close({double size = 24, required Color color}) =>
       _glyph('close', size, color);
@@ -66,6 +126,27 @@ abstract final class AppIcons {
   static Widget settings({double size = 24, required Color color}) =>
       _glyph('settings', size, color);
 
+  // ── 숙제 과제 유형 ────────────────────────────────────────────
+  // 세 아이콘 모두 Figma ` ┗ Icon` 페이지의 Size=24 변이를 그대로 내보낸 것이다.
+  // 숙제 상세의 과제 카드가 유형을 이 셋으로 구분한다.
+
+  /// `sound-wave` (`5261:1431`) — 발음 과제.
+  ///
+  /// 발음용 아이콘을 새로 그리지 않았다 — 이미 음성 파형이라 새로 만들면
+  /// 라이브러리에 같은 뜻의 글리프가 둘이 된다.
+  static Widget soundWave({double size = 24, required Color color}) =>
+      _glyph('sound-wave', size, color);
+
+  /// `chat` (`5700:31203`) — 회화 과제. 2026-09-01 신규 제작 후 승격.
+  static Widget chat({double size = 24, required Color color}) =>
+      _glyph('chat', size, color);
+
+  /// `book` (`5700:31239`) — 워크북 과제. 2026-09-01 신규 제작 후 승격.
+  ///
+  /// `edit` 는 이 라이브러리에서 연필이 아니라 ⇄ 교환 글리프라 대체가 안 된다.
+  static Widget book({double size = 24, required Color color}) =>
+      _glyph('book', size, color);
+
   // ── Status / feedback ────────────────────────────────────────
   static Widget check({double size = 24, required Color color}) =>
       _glyph('check', size, color);
@@ -88,6 +169,16 @@ abstract final class AppIcons {
   /// distinct from the single [thumbsUp] used for the middle rating.
   static Widget thumbsUpDouble({double size = 24, required Color color}) =>
       _glyph('thumbs-up-double', size, color);
+  /// `heart-eyes` — the top call rating (Figma `call_finish__rating`
+  /// `6249:13158`), replacing [thumbsUpDouble] there.
+  static Widget heartEyes({double size = 24, required Color color}) =>
+      _glyph('heart-eyes', size, color);
+  /// `flame-fill` (`6231:1510`) — 연속 학습일 불꽃(홈 `Chip-Streak`).
+  static Widget flameFill({double size = 24, required Color color}) =>
+      _glyph('flame-fill', size, color);
+  /// `clock` — 할인 배너의 남은 시간(`Banner-Promo`).
+  static Widget clock({double size = 24, required Color color}) =>
+      _glyph('clock', size, color);
   static Widget flag({double size = 24, required Color color}) =>
       _glyph('flag', size, color);
 

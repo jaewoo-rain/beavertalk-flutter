@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
 import '../../components/atoms/checkbox.dart';
 import '../../components/icons/app_icons.dart';
+import '../../components/layout/need_based_rows.dart';
 import '../../components/icons/brand_icons.dart';
 import '../../components/molecules/input_field.dart';
 import '../../components/molecules/password_eye_toggle.dart';
@@ -16,6 +18,7 @@ import '../../l10n/app_localizations.dart';
 import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
+import 'social_sign_in.dart';
 
 /// Auth — email/password login form. Figma `screen/auth_login_form`
 /// (`2117:19780`).
@@ -37,7 +40,8 @@ class LoginFormScreen extends ConsumerStatefulWidget {
   ConsumerState<LoginFormScreen> createState() => _LoginFormScreenState();
 }
 
-class _LoginFormScreenState extends ConsumerState<LoginFormScreen> {
+class _LoginFormScreenState extends ConsumerState<LoginFormScreen>
+    with SocialSignInMixin {
   String _email = '';
   String _password = '';
   bool _obscurePassword = true; // password hidden by default
@@ -68,9 +72,6 @@ class _LoginFormScreenState extends ConsumerState<LoginFormScreen> {
     }
   }
 
-  /// Social login is not wired yet → opens the signup flow placeholder.
-  void _socialLogin() => Navigator.pushNamed(context, Routes.signup);
-
   /// Opens the find-password flow.
   void _findPassword() => Navigator.pushNamed(context, Routes.passwordMethod);
 
@@ -86,125 +87,130 @@ class _LoginFormScreenState extends ConsumerState<LoginFormScreen> {
         children: [
           Gnb.main(title: l10n.loginLogIn, onBack: () => Navigator.pop(context)),
           Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(AppSpacing.s20,
-                  AppSpacing.s24, AppSpacing.s20, AppSpacing.s24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // ── Email field ─────────────────────────────────────────
-                  _FieldLabel(l10n.fieldEmailLabel),
-                  const SizedBox(height: AppSpacing.s8),
-                  InputField(
-                    value: _email,
-                    onChanged: (v) => setState(() => _email = v),
-                    hintText: l10n.emailHint,
-                    keyboardType: TextInputType.emailAddress,
-                    leftIcon:
-                        MailIcon(size: 20, color: context.c.labelNormal),
-                  ),
-                  const SizedBox(height: AppSpacing.s20),
-                  // ── Password field ──────────────────────────────────────
-                  _FieldLabel(l10n.fieldPasswordLabel),
-                  const SizedBox(height: AppSpacing.s8),
-                  InputField(
-                    value: _password,
-                    onChanged: (v) => setState(() => _password = v),
-                    hintText: l10n.passwordHint,
-                    obscureText: _obscurePassword,
-                    leftIcon:
-                        AppIcons.lock(size: 20, color: context.c.labelNormal),
-                    rightIcon: PasswordEyeToggle(
-                      obscured: _obscurePassword,
-                      onTap: () => setState(
-                          () => _obscurePassword = !_obscurePassword),
+            child: ContentColumn(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.only(top: AppSpacing.s24, bottom: AppSpacing.s24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // ── Email field ─────────────────────────────────────────
+                    _FieldLabel(l10n.fieldEmailLabel),
+                    const SizedBox(height: AppSpacing.s8),
+                    InputField(
+                      value: _email,
+                      onChanged: (v) => setState(() => _email = v),
+                      hintText: l10n.emailHint,
+                      keyboardType: TextInputType.emailAddress,
+                      leftIcon:
+                          MailIcon(size: 20, color: context.c.labelNormal),
                     ),
-                  ),
-                  const SizedBox(height: AppSpacing.s20),
-                  // ── Save-id checkbox + find-password link ───────────────
-                  Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: AppSpacing.s8),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        // DS checkbox box only; label rendered externally so it
-                        // keeps the Figma grey (AppCheckbox forces a white label).
-                        // Flexible: with spaceBetween, this Row has no flex of its
-                        // own, so a long localized "Remember me" label could
-                        // otherwise overflow against the forgot-password link.
-                        Flexible(
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              AppCheckbox(
-                                value: _saveId,
-                                onChanged: (v) => setState(() => _saveId = v),
-                                size: AppCheckboxSize.size20,
-                              ),
-                              const SizedBox(width: AppSpacing.s8),
-                              Flexible(
-                                child: GestureDetector(
-                                  onTap: () =>
-                                      setState(() => _saveId = !_saveId),
-                                  child: Text(
-                                    l10n.loginRememberMe,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: AppType.label1.r.copyWith(
-                                        color: context.c.labelNormal),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(width: AppSpacing.s8),
-                        Flexible(
-                          child: GestureDetector(
-                            onTap: _findPassword,
-                            child: Text(
-                              l10n.loginForgotPassword,
-                              textAlign: TextAlign.right,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: AppType.label1.r
-                                  .copyWith(color: context.c.labelNormal),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  // ── Inline error (login failure) ────────────────────────
-                  if (_error != null) ...[
                     const SizedBox(height: AppSpacing.s20),
-                    Padding(
-                      padding:
-                          const EdgeInsetsDirectional.only(start: AppSpacing.s4),
-                      child: Text(
-                        _error!,
-                        style: AppType.label2.r
-                            .copyWith(color: context.c.accentForegroundRed),
+                    // ── Password field ──────────────────────────────────────
+                    _FieldLabel(l10n.fieldPasswordLabel),
+                    const SizedBox(height: AppSpacing.s8),
+                    InputField(
+                      value: _password,
+                      onChanged: (v) => setState(() => _password = v),
+                      hintText: l10n.passwordHint,
+                      obscureText: _obscurePassword,
+                      leftIcon:
+                          AppIcons.lock(size: 20, color: context.c.labelNormal),
+                      rightIcon: PasswordEyeToggle(
+                        obscured: _obscurePassword,
+                        onTap: () => setState(
+                            () => _obscurePassword = !_obscurePassword),
                       ),
                     ),
+                    const SizedBox(height: AppSpacing.s20),
+                    // ── Save-id checkbox + find-password link ───────────────
+                    Padding(
+                      padding:
+                          const EdgeInsets.symmetric(horizontal: AppSpacing.s8),
+                      // 「아이디 저장」 · 「비밀번호 찾기」 — `LabelValueRow`(09-24). 옛 `Flexible` 둘은
+                      // 폭을 반반으로 갈라, 짧은 쪽이 남긴 폭을 긴 번역이 못 쓰고 일찍 줄을 바꿨다.
+                      child: LabelValueRow(
+                        // DS checkbox box only; label rendered externally so it
+                        // keeps the Figma grey (AppCheckbox forces a white label).
+                        label: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            AppCheckbox(
+                              value: _saveId,
+                              onChanged: (v) => setState(() => _saveId = v),
+                              size: AppCheckboxSize.size20,
+                            ),
+                            const SizedBox(width: AppSpacing.s8),
+                            Flexible(
+                              child: GestureDetector(
+                                onTap: () =>
+                                    setState(() => _saveId = !_saveId),
+                                child: Text(
+                                  l10n.loginRememberMe,
+                                  // 조작 라벨은 자르지 않는다 — 무엇을
+                                  // 켜고 끄는지 모르게 된다. 한 줄에서
+                                  // 「비밀번호 찾기」와 폭을 다투는 자리라
+                                  // 로케일이 길면 바로 잘렸다(전수감사).
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: AppType.label1.r.copyWith(
+                                      color: context.c.labelNormal),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        value: GestureDetector(
+                          onTap: _findPassword,
+                          child: Text(
+                            l10n.loginForgotPassword,
+                            textAlign: TextAlign.right,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: AppType.label1.r
+                                .copyWith(color: context.c.labelNormal),
+                          ),
+                        ),
+                      ),
+                    ),
+                    // ── Inline error (login failure) ────────────────────────
+                    if (_error != null) ...[
+                      const SizedBox(height: AppSpacing.s20),
+                      Padding(
+                        padding:
+                            const EdgeInsetsDirectional.only(start: AppSpacing.s4),
+                        child: Text(
+                          _error!,
+                          style: AppType.label2.r
+                              .copyWith(color: context.c.accentForegroundRed),
+                        ),
+                      ),
+                    ],
+                    const SizedBox(height: AppSpacing.s60),
+                    // ── Login (primary) ─────────────────────────────────────
+                    Button(
+                      type: BtnType.primaryFill,
+                      size: BtnSize.s60,
+                      text: _submitting ? l10n.loginLoggingIn : l10n.loginLogIn,
+                      disabled: _submitting,
+                      onPressed: _login,
+                    ),
+                    const SizedBox(height: AppSpacing.s48),
+                    // ── Social sign-in row ──────────────────────────────────
+                    _SocialButtonRow(
+                      onKakao: kakaoSignIn,
+                      onGoogle: googleSignIn,
+                      onFacebook: facebookSignIn,
+                      onApple: appleSignIn,
+                      kakaoBusy: kakaoBusy,
+                      googleBusy: googleBusy,
+                      facebookBusy: facebookBusy,
+                      appleBusy: appleBusy,
+                    ),
+                    const SizedBox(height: AppSpacing.s24),
+                    // ── Signup prompt ───────────────────────────────────────
+                    Center(child: _SignupPrompt(onSignup: _goSignup)),
                   ],
-                  const SizedBox(height: AppSpacing.s60),
-                  // ── Login (primary) ─────────────────────────────────────
-                  Button(
-                    type: BtnType.primaryFill,
-                    size: BtnSize.s60,
-                    text: _submitting ? l10n.loginLoggingIn : l10n.loginLogIn,
-                    disabled: _submitting,
-                    onPressed: _login,
-                  ),
-                  const SizedBox(height: AppSpacing.s48),
-                  // ── Social sign-in row ──────────────────────────────────
-                  _SocialButtonRow(onPressed: _socialLogin),
-                  const SizedBox(height: AppSpacing.s24),
-                  // ── Signup prompt ───────────────────────────────────────
-                  Center(child: _SignupPrompt(onSignup: _goSignup)),
-                ],
+                ),
               ),
             ),
           ),
@@ -235,31 +241,54 @@ class _FieldLabel extends StatelessWidget {
   }
 }
 
-/// Three equal-width social sign-in buttons (Kakao / Google / Apple).
+/// Four equal-width social sign-in buttons (Kakao / Google / Facebook / Apple),
+/// the same order as the signup footer. Each runs the login screen's sign-in
+/// ([SocialSignInMixin]) — it used to open the signup screen instead
+/// (09-29 · QA F117). Facebook was missing here only (PM-DEC-429).
 class _SocialButtonRow extends StatelessWidget {
-  const _SocialButtonRow({required this.onPressed});
+  const _SocialButtonRow({
+    required this.onKakao,
+    required this.onGoogle,
+    required this.onFacebook,
+    required this.onApple,
+    required this.kakaoBusy,
+    required this.googleBusy,
+    required this.facebookBusy,
+    required this.appleBusy,
+  });
 
-  /// Tapped on any social button (all mocked as success).
-  final VoidCallback onPressed;
+  final VoidCallback onKakao;
+  final VoidCallback onGoogle;
+  final VoidCallback onFacebook;
+  final VoidCallback onApple;
+  final bool kakaoBusy;
+  final bool googleBusy;
+  final bool facebookBusy;
+  final bool appleBusy;
 
   @override
   Widget build(BuildContext context) {
-    Widget social(Widget icon) => Expanded(
+    Widget social(Widget icon, VoidCallback onPressed, bool busy) => Expanded(
           child: Button(
-            type: BtnType.secondaryOutline,
+            // 채움형 — Figma 인스턴스가 채움을 덮어써 둔 모양 그대로(09-26 secondaryOutline 이
+            // 테두리형이 되면서 옮김).
+            type: BtnType.secondaryFill,
             size: BtnSize.s60,
             text: '',
             leftIcon: icon,
+            disabled: busy,
             onPressed: onPressed,
           ),
         );
     return Row(
       children: [
-        social(const KakaoIcon(size: 24)),
+        social(const KakaoIcon(size: 24), onKakao, kakaoBusy),
         const SizedBox(width: AppSpacing.s12),
-        social(const GoogleIcon(size: 24)),
+        social(const GoogleIcon(size: 24), onGoogle, googleBusy),
         const SizedBox(width: AppSpacing.s12),
-        social(AppleIcon(size: 24, color: context.c.labelStrong)),
+        social(const FacebookIcon(size: 24), onFacebook, facebookBusy),
+        const SizedBox(width: AppSpacing.s12),
+        social(AppleIcon(size: 24, color: context.c.labelStrong), onApple, appleBusy),
       ],
     );
   }

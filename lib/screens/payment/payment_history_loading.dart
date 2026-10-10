@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../app/adaptive.dart';
 import '../../components/atoms/skeleton.dart';
+import '../../components/molecules/segmented_tabs.dart';
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_color_tokens.dart';
 import '../../theme/app_radius.dart';
@@ -37,15 +39,13 @@ class PaymentHistoryLoading extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const SizedBox(height: AppSpacing.s24),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
+            ContentColumn(
               child: _summaryCard(context, l10n),
             ),
             const SizedBox(height: AppSpacing.s8),
             _filterRow(context, l10n),
             const SizedBox(height: AppSpacing.s12),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
+            ContentColumn(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -98,40 +98,28 @@ class PaymentHistoryLoading extends StatelessWidget {
         ),
       );
 
-  /// The filter chips — static labels, so shown for real (unselected). Mirrors
-  /// `payment_history.dart`'s `_filterRow`/`_chip`.
+  /// The filter chips — static labels, so shown for real. Mirrors
+  /// `payment_history.dart`'s `_filterRow`: 같은 [TabPill], 기본 필터 「전체」가 선택된 모양
+  /// (불러온 뒤 첫 화면과 같아야 칩이 튀지 않는다 · 09-26 Tab/Pill 전환).
   Widget _filterRow(BuildContext context, AppLocalizations l10n) {
     final labels = [
       l10n.filterAll,
       l10n.filterSubscription,
       l10n.filterCharacter,
     ];
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.s20,
-        vertical: 14,
-      ),
-      child: Row(
-        children: [
-          for (var i = 0; i < labels.length; i++) ...[
-            if (i > 0) const SizedBox(width: AppSpacing.s12),
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.s16,
-                vertical: AppSpacing.s12,
-              ),
-              decoration: BoxDecoration(
-                color: context.c.backgroundNormalAlternative,
-                borderRadius: BorderRadius.circular(AppRadius.sm),
-              ),
-              child: Text(
-                labels[i],
-                style: AppType.label1.sb.copyWith(color: context.c.labelNormal),
-              ),
-            ),
+    // 칩 줄도 본문 컬럼 선에서 시작한다(정본 `Top Navigation` 은 x=105).
+    return ContentColumn(
+      padding: const EdgeInsets.symmetric(vertical: 14),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: [
+            for (var i = 0; i < labels.length; i++) ...[
+              if (i > 0) const SizedBox(width: AppSpacing.s12),
+              TabPill(label: labels[i], selected: i == 0),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }

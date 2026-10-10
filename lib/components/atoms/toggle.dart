@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../theme/app_color_tokens.dart';
+import '../../theme/app_motion.dart';
 // accentLime 만 raw: Accent/Foreground/Lime 이 로컬(#58CF04)과 라이브러리(#429E00)로
 // 갈려 있고 이 토글이 무는 건 라이브러리 쪽이다. 디자인 확정 전까지 토큰화 보류.
 import '../../theme/app_typography.dart';
@@ -29,6 +30,7 @@ import '../../theme/app_typography.dart';
 ///
 /// When [label] is non-null it is shown to the right with an 8px gap, using
 /// Label 1 Regular in white.
+
 class AppToggle extends StatelessWidget {
   /// Creates a pill toggle.
   const AppToggle({
@@ -82,10 +84,14 @@ class AppToggle extends StatelessWidget {
       thumbColor = context.c.staticWhite;
     }
 
+    // 트랙 색은 예전에 즉시 튀었다 — 썸만 미끄러지고 배경은 한 프레임에 갈리니
+    // 전환이 끊겨 보였다. 슬라이드와 **같은 180ms·easeInOut** 로 묶어 둔다.
     final Widget track = SizedBox(
       width: _trackW,
       height: _trackH,
-      child: DecoratedBox(
+      child: AnimatedContainer(
+        duration: AppMotion.medium,
+        curve: AppMotion.toggle,
         decoration: BoxDecoration(
           color: trackColor,
           borderRadius: BorderRadius.circular(_trackH / 2),
@@ -93,12 +99,14 @@ class AppToggle extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(_inset),
           child: AnimatedAlign(
-            duration: const Duration(milliseconds: 180),
-            curve: Curves.easeInOut,
+            duration: AppMotion.medium,
+            curve: AppMotion.toggle,
             alignment: value
                 ? AlignmentDirectional.centerEnd
                 : AlignmentDirectional.centerStart,
-            child: Container(
+            child: AnimatedContainer(
+              duration: AppMotion.medium,
+              curve: AppMotion.toggle,
               width: _thumb,
               height: _thumb,
               decoration: BoxDecoration(

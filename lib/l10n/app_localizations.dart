@@ -178,6 +178,18 @@ abstract class AppLocalizations {
   /// **'Something went wrong during the call.'**
   String get callErrorGeneric;
 
+  /// Server refused the call: daily time budget used up (WS error code DAILY_LIMIT).
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve used up today\'s learning time.'**
+  String get callDailyLimit;
+
+  /// Server refused the call: another call of this member is live (WS error code ALREADY_IN_CALL). Do not retry.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re already on a call.'**
+  String get callAlreadyInCall;
+
   /// No description provided for @callNetworkError.
   ///
   /// In en, this message translates to:
@@ -237,6 +249,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'How was your call?'**
   String get callRatingPrompt;
+
+  /// Body of the call-rating bottom sheet shown on the call-finished screen, under callRatingPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Your rating helps us talk better next time.'**
+  String get callRatingBody;
+
+  /// Primary button of the call-rating sheet: sends the chosen rating.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit'**
+  String get callRatingSubmit;
+
+  /// Secondary button of the call-rating sheet: closes it without rating.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get callRatingSkip;
 
   /// Lowest call rating choice (thumbs-down).
   ///
@@ -364,6 +394,42 @@ abstract class AppLocalizations {
   /// **'Alarms'**
   String get alarms;
 
+  /// Title of the add-alarm sheet (Figma etc_alarm__add).
+  ///
+  /// In en, this message translates to:
+  /// **'Add alarm'**
+  String get alarmAdd;
+
+  /// Title of the same sheet when editing an existing alarm.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit alarm'**
+  String get alarmEdit;
+
+  /// Repeat summary when all 7 days are on.
+  ///
+  /// In en, this message translates to:
+  /// **'Every day'**
+  String get alarmEveryDay;
+
+  /// Repeat summary when Monday-Friday are on.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekdays'**
+  String get alarmWeekdays;
+
+  /// Repeat summary when Saturday and Sunday are on.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekends'**
+  String get alarmWeekend;
+
+  /// Repeat summary when no day is on.
+  ///
+  /// In en, this message translates to:
+  /// **'Never'**
+  String get alarmNoRepeat;
+
   /// No description provided for @addSchedule.
   ///
   /// In en, this message translates to:
@@ -417,6 +483,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Call partner'**
   String get callPartner;
+
+  /// Alarm call-mode card subtitle under Learn (Figma Card-CallMode 6179:4647).
+  ///
+  /// In en, this message translates to:
+  /// **'Practice curriculum expressions'**
+  String get alarmModeLearnSub;
+
+  /// Alarm call-mode card subtitle under Free talk.
+  ///
+  /// In en, this message translates to:
+  /// **'Talk about anything'**
+  String get alarmModeChatSub;
 
   /// No description provided for @quickStart.
   ///
@@ -508,23 +586,95 @@ abstract class AppLocalizations {
   /// **'Conversation'**
   String get conversation;
 
-  /// No description provided for @review.
-  ///
-  /// In en, this message translates to:
-  /// **'Review'**
-  String get review;
-
-  /// No description provided for @pronunciationChallenge.
-  ///
-  /// In en, this message translates to:
-  /// **'Pronunciation Challenge'**
-  String get pronunciationChallenge;
-
   /// No description provided for @newExpressions.
   ///
   /// In en, this message translates to:
   /// **'New Expressions'**
   String get newExpressions;
+
+  /// Analysis waiting state, in place of the partner's note: the call is being reviewed. Figma analysis__preparing BabaNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Looking back on today\'s call.'**
+  String get analysisPrepNote;
+
+  /// Caption under analysisPrepNote: the partner's note will appear in this spot.
+  ///
+  /// In en, this message translates to:
+  /// **'A note will appear here shortly'**
+  String get analysisPrepNoteHint;
+
+  /// Analysis waiting card title (in place of the expression cards). Centered, may wrap. Figma analysis__preparing Card/Preparing.
+  ///
+  /// In en, this message translates to:
+  /// **'The beaver is turning today\'s expressions into cards'**
+  String get analysisPrepTitle;
+
+  /// Line under analysisPrepTitle: the cards replace this card as soon as they are ready.
+  ///
+  /// In en, this message translates to:
+  /// **'They\'ll show up right here when ready.'**
+  String get analysisPrepSub;
+
+  /// Waiting card step 1 label: saving the conversation.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving the conversation'**
+  String get analysisPrepStepSave;
+
+  /// Waiting card step 2 label: making the expression cards.
+  ///
+  /// In en, this message translates to:
+  /// **'Making expression cards'**
+  String get analysisPrepStepCards;
+
+  /// Waiting card step state: finished.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get analysisPrepStateDone;
+
+  /// Waiting card step state: in progress.
+  ///
+  /// In en, this message translates to:
+  /// **'In progress'**
+  String get analysisPrepStateWorking;
+
+  /// Waiting card step state: not started yet (the previous step is still running).
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting'**
+  String get analysisPrepStateWaiting;
+
+  /// 통화 결과 화면의 「이번 통화에서 쓴 표현」 섹션 제목. 학습자가 대화 중 스스로 꺼내 쓴 커리큘럼 항목을 모은 칸이며, 물어보거나 고쳐 받은 「새로 배운 표현」과 다르다.
+  ///
+  /// In en, this message translates to:
+  /// **'Expressions you used'**
+  String get usedExpressions;
+
+  /// 표현학습 통화 결과 화면의 「이번에 배운 표현 N개」 섹션 제목. 그 통화에서 드릴한 표현과 퀴즈 결과를 모은 칸이다. quiz_items 가 비어 있지 않을 때만 그린다.
+  ///
+  /// In en, this message translates to:
+  /// **'Expressions you learned {count}'**
+  String quizExpressionsCount(int count);
+
+  /// 표현학습 결과 배지 — 이 통화의 퀴즈를 통과한 표현(passed=true).
+  ///
+  /// In en, this message translates to:
+  /// **'Got it'**
+  String get quizPassed;
+
+  /// 표현학습 결과 배지 — 이 통화의 퀴즈에서 틀린 표현(failed=true).
+  ///
+  /// In en, this message translates to:
+  /// **'Review again'**
+  String get quizFailed;
+
+  /// 표현학습 결과 배지 — 드릴은 했지만 아직 퀴즈를 안 본 표현(passed=false·failed=false). 틀린 것이 아니다. 다음 통화 맨 앞으로 이어진다.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue next time'**
+  String get quizPending;
 
   /// No description provided for @analysisResult.
   ///
@@ -543,6 +693,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Practice'**
   String get practice;
+
+  /// Label on the native-speaker pair card under a learned expression (Figma Card-Native 6177:28979). Short: what locals actually say.
+  ///
+  /// In en, this message translates to:
+  /// **'Native'**
+  String get analysisNativeLabel;
 
   /// No description provided for @recentScore.
   ///
@@ -615,54 +771,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Cancel'**
   String get cancel;
-
-  /// No description provided for @selectTime.
-  ///
-  /// In en, this message translates to:
-  /// **'Select time'**
-  String get selectTime;
-
-  /// No description provided for @getStarted.
-  ///
-  /// In en, this message translates to:
-  /// **'Get Started'**
-  String get getStarted;
-
-  /// No description provided for @permissionTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Allow permissions\nfor a smooth experience'**
-  String get permissionTitle;
-
-  /// No description provided for @permissionSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Required permissions are essential to use the service.'**
-  String get permissionSubtitle;
-
-  /// No description provided for @permissionMicTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Microphone (required)'**
-  String get permissionMicTitle;
-
-  /// No description provided for @permissionMicDesc.
-  ///
-  /// In en, this message translates to:
-  /// **'Needed to talk with the AI in English.'**
-  String get permissionMicDesc;
-
-  /// No description provided for @permissionNotifTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Notifications (optional)'**
-  String get permissionNotifTitle;
-
-  /// No description provided for @permissionNotifDesc.
-  ///
-  /// In en, this message translates to:
-  /// **'We\'ll send learning reminders and call schedules.'**
-  String get permissionNotifDesc;
 
   /// No description provided for @micPermissionNeededTitle.
   ///
@@ -952,23 +1060,155 @@ abstract class AppLocalizations {
   /// **'End Session'**
   String get endLearning;
 
-  /// No description provided for @navCalendar.
-  ///
-  /// In en, this message translates to:
-  /// **'Calendar'**
-  String get navCalendar;
-
   /// No description provided for @navCall.
   ///
   /// In en, this message translates to:
   /// **'Call'**
   String get navCall;
 
-  /// No description provided for @navStats.
+  /// Home learning-status block: the course label for an expression-drill session. Sits next to the unit badge.
   ///
   /// In en, this message translates to:
-  /// **'Stats'**
-  String get navStats;
+  /// **'Expressions'**
+  String get homeCourseExpression;
+
+  /// Home learning-status block: the course label for a free-conversation session. Sibling of `homeCourseExpression`.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation'**
+  String get homeCourseFreetalk;
+
+  /// Home learning-status block, third line: how many expressions remain before free talk unlocks.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} expressions left until conversation'**
+  String homeExpressionsLeft(int count);
+
+  /// Home learning-status block, third line in free-talk mode. Replaces the countdown once free talk is unlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Use what you learned and talk freely'**
+  String get homeFreetalkNote;
+
+  /// Home, Talk mode: second line of the status block (free conversation, no curriculum).
+  ///
+  /// In en, this message translates to:
+  /// **'What happened today?'**
+  String get homeTalkTitle;
+
+  /// Home, Talk mode: third line of the status block.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat freely and learn as you go.'**
+  String get homeTalkNote;
+
+  /// Accessible label of the Learn segment in the home mode toggle (icon-only).
+  ///
+  /// In en, this message translates to:
+  /// **'Learn'**
+  String get homeModeLearn;
+
+  /// Accessible label of the Talk segment in the home mode toggle (icon-only).
+  ///
+  /// In en, this message translates to:
+  /// **'Talk'**
+  String get homeModeTalk;
+
+  /// Accessible label of the home streak chip; the chip itself shows only the number.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1-day streak} other{{count}-day streak}}'**
+  String homeStreakDays(int count);
+
+  /// Title of the learning-calendar screen (Figma streak_calendar).
+  ///
+  /// In en, this message translates to:
+  /// **'Learning calendar'**
+  String get streakCalendarTitle;
+
+  /// Unit shown next to the big streak number (the number is rendered separately, larger). Unit only, no number.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{day in a row} other{days in a row}}'**
+  String streakDaysUnit(int count);
+
+  /// Line under the big streak number on the learning calendar: the user's longest streak ever, in days. Figma streak_calendar Hero/Best.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Best streak: {count} day} other{Best streak: {count} days}}'**
+  String streakBest(int count);
+
+  /// Metric tile label: total call time this month.
+  ///
+  /// In en, this message translates to:
+  /// **'Call time'**
+  String get streakMetricCallTime;
+
+  /// Metric tile label: expressions learned this month (server sentences).
+  ///
+  /// In en, this message translates to:
+  /// **'Expressions'**
+  String get streakMetricLearned;
+
+  /// Metric tile label: words the learner spoke this month (approximate, server words).
+  ///
+  /// In en, this message translates to:
+  /// **'Words spoken'**
+  String get streakMetricWords;
+
+  /// Metric tile value: a count with thousands separator. Add a counter word only if the language needs one (ko 개).
+  ///
+  /// In en, this message translates to:
+  /// **'{count}'**
+  String streakCountValue(int count);
+
+  /// Metric tile value: minutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 min} other{{count} min}}'**
+  String streakMinutes(int count);
+
+  /// Shown under the calendar when the selected day has no calls.
+  ///
+  /// In en, this message translates to:
+  /// **'No calls on this day.'**
+  String get streakNoCallsThatDay;
+
+  /// Home learning-status badge when the member has no level yet. Neutral tone, unlike the unit code badge.
+  ///
+  /// In en, this message translates to:
+  /// **'Level pending'**
+  String get homeLevelPending;
+
+  /// Home learning-status block, second line when no level is assigned.
+  ///
+  /// In en, this message translates to:
+  /// **'You don\'t have a level yet'**
+  String get homeNoLevelTitle;
+
+  /// Home learning-status block, third line when no level is assigned — how to get one.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish your first call to get one'**
+  String get homeNoLevelNote;
+
+  /// Home learning-status badge when the member's learning language has no curriculum yet (/cur/me available=false). Neutral tone.
+  ///
+  /// In en, this message translates to:
+  /// **'Coming soon'**
+  String get homeCurriculumPendingBadge;
+
+  /// Home learning-status block, second line when the learning language has no curriculum yet. {language} is the language's own name (e.g. English, 日本語).
+  ///
+  /// In en, this message translates to:
+  /// **'{language} curriculum is on its way'**
+  String homeCurriculumPendingTitle(String language);
+
+  /// Home learning-status block, third line when the learning language has no curriculum yet — what the call will do instead.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ll practice general expressions on your calls'**
+  String get homeCurriculumPendingNote;
 
   /// No description provided for @myPage.
   ///
@@ -993,6 +1233,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Change Avatar'**
   String get changeAvatar;
+
+  /// Secondary action of the character purchase-success sheet: make the new character the active one.
+  ///
+  /// In en, this message translates to:
+  /// **'Use now'**
+  String get avatarUseNow;
+
+  /// Banner shown above the purchase button when the store purchase failed (Figma iap_result__fail).
+  ///
+  /// In en, this message translates to:
+  /// **'The purchase didn\'t go through'**
+  String get avatarPurchaseFailed;
+
+  /// Floating discount banner title on the partner-change screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Today only · {percent}% off'**
+  String avatarPromoTitle(int percent);
+
+  /// Countdown under the discount banner title; time is HH:MM:SS.
+  ///
+  /// In en, this message translates to:
+  /// **'{time} left'**
+  String avatarPromoLeft(String time);
+
+  /// Countdown when a day or more is left.
+  ///
+  /// In en, this message translates to:
+  /// **'{days}d {time} left'**
+  String avatarPromoLeftDays(int days, String time);
 
   /// No description provided for @avatarIntro.
   ///
@@ -1066,12 +1336,6 @@ abstract class AppLocalizations {
   /// **'Manage Subscription'**
   String get subscriptionManage;
 
-  /// No description provided for @changePlan.
-  ///
-  /// In en, this message translates to:
-  /// **'Change Plan'**
-  String get changePlan;
-
   /// No description provided for @cancelSubscription.
   ///
   /// In en, this message translates to:
@@ -1108,29 +1372,11 @@ abstract class AppLocalizations {
   /// **'View Billing History'**
   String get viewBillingHistory;
 
-  /// No description provided for @keepUsingPro.
-  ///
-  /// In en, this message translates to:
-  /// **'Keep Using Pro'**
-  String get keepUsingPro;
-
-  /// No description provided for @proMembership.
-  ///
-  /// In en, this message translates to:
-  /// **'Pro Membership'**
-  String get proMembership;
-
-  /// No description provided for @pricePerMonth.
+  /// Subscription price line. {price} is the store-formatted, storefront-local price string (StoreKit displayPrice / Play formattedPrice) and already carries its own currency symbol - never prefix or append one in a translation.
   ///
   /// In en, this message translates to:
   /// **'{price} / mo'**
   String pricePerMonth(String price);
-
-  /// No description provided for @benefitUnlimitedCalls.
-  ///
-  /// In en, this message translates to:
-  /// **'Unlimited calls'**
-  String get benefitUnlimitedCalls;
 
   /// No description provided for @benefitDetailedAnalysis.
   ///
@@ -1171,13 +1417,13 @@ abstract class AppLocalizations {
   /// No description provided for @challengeIntro.
   ///
   /// In en, this message translates to:
-  /// **'Pronounce each card in the zone correctly in Korean to clear it.\nNo mic? You can also play by tapping the screen.'**
+  /// **'Read each word aloud as it comes at you, for 30 seconds.\nNo mic? Tap to play instead.'**
   String get challengeIntro;
 
   /// No description provided for @challengeStart.
   ///
   /// In en, this message translates to:
-  /// **'Start Camera & Mic'**
+  /// **'Start'**
   String get challengeStart;
 
   /// No description provided for @challengePermissionNote.
@@ -1195,7 +1441,7 @@ abstract class AppLocalizations {
   /// No description provided for @challengeLoadingNote.
   ///
   /// In en, this message translates to:
-  /// **'Downloading the Korean speech model (~82MB) on first run.\nPlease wait a moment.'**
+  /// **'Getting the camera and microphone ready.'**
   String get challengeLoadingNote;
 
   /// No description provided for @challengeSttFallback.
@@ -1402,6 +1648,12 @@ abstract class AppLocalizations {
   /// **'Your Korean accent sounds'**
   String get accentSoundsLike;
 
+  /// Caption shared with the accent card image. {country} is the top accent nationality, already in the UI language.
+  ///
+  /// In en, this message translates to:
+  /// **'I\'m learning Korean with BeaverTalk — my Korean accent sounds like {country}! 🦫 Come find your accent and learn with me: https://beavertalk.im'**
+  String accentShareText(String country);
+
   /// No description provided for @hintLabel.
   ///
   /// In en, this message translates to:
@@ -1492,11 +1744,11 @@ abstract class AppLocalizations {
   /// **'Home'**
   String get home;
 
-  /// No description provided for @callNow.
+  /// Primary button on the screen right after sign-up (Figma onborading_done 3360:48). A new member has no level, so this call is routed to the level test. Verb phrase, same wording as takeLevelTest (Figma, owner decision 2026-09-24).
   ///
   /// In en, this message translates to:
-  /// **'Call now'**
-  String get callNow;
+  /// **'Take level test'**
+  String get onboardingLevelTestCta;
 
   /// No description provided for @pronunciation.
   ///
@@ -1515,12 +1767,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Rhythm'**
   String get rhythm;
-
-  /// No description provided for @analysisTimeout.
-  ///
-  /// In en, this message translates to:
-  /// **'This is taking longer than expected. Please try again in a moment.'**
-  String get analysisTimeout;
 
   /// No description provided for @analysisFailed.
   ///
@@ -1606,6 +1852,12 @@ abstract class AppLocalizations {
   /// **'Apple sign-in failed.'**
   String get loginAppleSignInFailed;
 
+  /// No description provided for @loginFacebookSignInFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Facebook sign-in failed.'**
+  String get loginFacebookSignInFailed;
+
   /// No description provided for @loginKakaoSignInFailed.
   ///
   /// In en, this message translates to:
@@ -1623,6 +1875,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Continue with Google'**
   String get loginContinueWithGoogle;
+
+  /// No description provided for @loginContinueWithFacebook.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue with Facebook'**
+  String get loginContinueWithFacebook;
 
   /// No description provided for @loginContinueWithApple.
   ///
@@ -1978,16 +2236,10 @@ abstract class AppLocalizations {
   /// **'Last payment'**
   String get lastPayment;
 
-  /// Note paragraph on the change-plan and cancel subscription sheets.
-  ///
-  /// In en, this message translates to:
-  /// **'You can keep using Pro benefits until {date}, after which your plan switches to Free automatically.'**
-  String subscriptionSwitchNote(String date);
-
   /// Free plan benefit line on the change-plan sheet.
   ///
   /// In en, this message translates to:
-  /// **'1 call a day · 5 min limit'**
+  /// **'5 minutes of calls a day'**
   String get freePlanCallLimit;
 
   /// Free plan benefit line on the change-plan sheet.
@@ -2013,12 +2265,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No payments yet'**
   String get noPayments;
-
-  /// Shown when the server reports has_more but load-more isn't wired.
-  ///
-  /// In en, this message translates to:
-  /// **'Older payments aren\'t shown yet'**
-  String get morePaymentsExist;
 
   /// Month-group heading for payments whose payment_date is null.
   ///
@@ -2224,23 +2470,65 @@ abstract class AppLocalizations {
   /// **'Retake level test'**
   String get retakeLevelTest;
 
+  /// No description provided for @levelTestOncePerDay.
+  ///
+  /// In en, this message translates to:
+  /// **'You can take the level test once a day. Try again tomorrow.'**
+  String get levelTestOncePerDay;
+
+  /// Confirm dialog before retaking the level test (server 09-24: progress resets to the first lesson of the measured level).
+  ///
+  /// In en, this message translates to:
+  /// **'Retake the level test?'**
+  String get levelRetakeTitle;
+
+  /// Body of the retake confirm. Must say progress resets even if the level stays the same; learned items and call history are kept.
+  ///
+  /// In en, this message translates to:
+  /// **'If you retake it, your progress goes back to the first lesson of that level — even if you get the same level. Your learned expressions and call history stay.'**
+  String get levelRetakeBody;
+
+  /// Primary (top) button — cancel the retake and keep progress.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep my progress'**
+  String get levelRetakeKeep;
+
+  /// Secondary (bottom) button — go ahead with the retake.
+  ///
+  /// In en, this message translates to:
+  /// **'Retake test'**
+  String get levelRetakeConfirm;
+
   /// CTA on the pronunciation card - open the latest call analysis.
   ///
   /// In en, this message translates to:
   /// **'Practice pronunciation'**
   String get practicePronunciation;
 
-  /// No description provided for @priceChangedTitle.
+  /// Call analysis screen study card, shown once the call's pronunciation study has been finished (every base sentence scored). Opens that call's pronunciation report. PM-DEC-427
   ///
   /// In en, this message translates to:
-  /// **'Price changed'**
-  String get priceChangedTitle;
+  /// **'See learning results'**
+  String get learnResultView;
 
-  /// No description provided for @priceChangedBody.
+  /// Pronunciation report screen button that reopens the study flow from the first sentence of the same call. PM-DEC-427
   ///
   /// In en, this message translates to:
-  /// **'This item is now {price}. Would you like to continue?'**
-  String priceChangedBody(String price);
+  /// **'Learn again'**
+  String get learnAgain;
+
+  /// One line under the inactive score gauge when the call has learned sentences but none practiced yet (Figma screen/analysis__no_score 4867:7359). Scores come only from practicing sentences.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice the sentences to get your pronunciation score'**
+  String get analysisNoScoreReview;
+
+  /// One line under the inactive score gauge when the call produced no learned sentences at all (Figma screen/analysis__no_expressions 4849:8823).
+  ///
+  /// In en, this message translates to:
+  /// **'No sentences to score'**
+  String get analysisNoScoreEmpty;
 
   /// Billing list group title - in-app rail rows (spec section 5). English copy is final; do not localize away from the confirmed wording.
   ///
@@ -2254,16 +2542,10 @@ abstract class AppLocalizations {
   /// **'In the store'**
   String get billingGroupInTheStore;
 
-  /// Billing slot 1 label on a paid plan.
-  ///
-  /// In en, this message translates to:
-  /// **'Change plan'**
-  String get billingChangePlan;
-
   /// Billing slot 1 label on every non-paid state.
   ///
   /// In en, this message translates to:
-  /// **'Compare all plans'**
+  /// **'Compare plans'**
   String get billingCompareAllPlans;
 
   /// Billing slot 2 - character one-off purchase (in-house PG rail).
@@ -2277,6 +2559,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Restore purchases'**
   String get billingRestorePurchases;
+
+  /// In-the-store group - opens the platform offer-code redemption sheet. The app-side half of every console-issued discount.
+  ///
+  /// In en, this message translates to:
+  /// **'Redeem a code'**
+  String get billingRedeemCode;
 
   /// Billing slot 4.
   ///
@@ -2350,7 +2638,7 @@ abstract class AppLocalizations {
   /// **'Subscription'**
   String get subscriptionTitle;
 
-  /// GNB title of the trial-expired notice screen (4514:5179).
+  /// GNB title of the trial-expired notice screen (6527:4210).
   ///
   /// In en, this message translates to:
   /// **'Plans'**
@@ -2371,19 +2659,49 @@ abstract class AppLocalizations {
   /// No description provided for @planMax.
   ///
   /// In en, this message translates to:
-  /// **'Max'**
+  /// **'Premium'**
   String get planMax;
+
+  /// Premium benefit bullet (Figma plans_compare / paywall_premium). No 'unlimited' — Premium is 15 minutes of calls a day in total, any number of calls (decision 2026-09-23).
+  ///
+  /// In en, this message translates to:
+  /// **'15 minutes of video calls a day'**
+  String get premiumBulletVideo;
+
+  /// Premium benefit bullet (paywall, plans compare, purchase success, winback offer). PM-DEC-178: unlimited pronunciation scoring in review. ko/en written directly; the other 28 locales passed the 43 AI review (2026-09-30, 9 minor fixes applied) — AI review, not native.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlimited pronunciation scoring during review'**
+  String get premiumBulletAnalysis;
+
+  /// Premium benefit bullet: weak-sound drills matched to the learner's native language.
+  ///
+  /// In en, this message translates to:
+  /// **'Weak-sound drills for your language'**
+  String get premiumBulletWeakSounds;
+
+  /// Footnote on paywall/plans: characters are not included in Premium.
+  ///
+  /// In en, this message translates to:
+  /// **'Characters are sold separately. The ones you buy stay yours.'**
+  String get noteCharactersSeparate;
+
+  /// CTA on the limit paywall (reached by using up the free daily call time).
+  ///
+  /// In en, this message translates to:
+  /// **'Get Premium'**
+  String get ctaGetPremium;
 
   /// Plan-card title while inside the Max trial.
   ///
   /// In en, this message translates to:
-  /// **'Max trial'**
+  /// **'Premium trial'**
   String get planMaxTrial;
 
   /// Plan-card subtitle on the Free state. Confirmed copy; do not reword.
   ///
   /// In en, this message translates to:
-  /// **'\$0.00 — one call a day'**
+  /// **'Free — 5 minutes of calls a day'**
   String get freePlanPriceLine;
 
   /// Plan-card subtitle for a monthly paid plan. 'per month' is mandated wording (spec 6-4 forbids 'a month').
@@ -2401,13 +2719,13 @@ abstract class AppLocalizations {
   /// No description provided for @todaysCalls.
   ///
   /// In en, this message translates to:
-  /// **'Today\'s calls'**
+  /// **'Today\'s call time'**
   String get todaysCalls;
 
   /// No description provided for @callsUsedOfLimit.
   ///
   /// In en, this message translates to:
-  /// **'{used} of {limit} used'**
+  /// **'{used} of {limit} min used'**
   String callsUsedOfLimit(int used, int limit);
 
   /// No description provided for @firstPaymentLabel.
@@ -2440,28 +2758,16 @@ abstract class AppLocalizations {
   /// **'{plan} ends'**
   String planEndsLabel(String plan);
 
-  /// No description provided for @bannerGoUnlimitedTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Go unlimited with Pro'**
-  String get bannerGoUnlimitedTitle;
-
-  /// No description provided for @bannerGoUnlimitedSub.
-  ///
-  /// In en, this message translates to:
-  /// **'Unlimited calls · 15 minutes each · {price} per month'**
-  String bannerGoUnlimitedSub(String price);
-
   /// No description provided for @bannerMaxUpsellTitle.
   ///
   /// In en, this message translates to:
-  /// **'Turn on video with Max'**
+  /// **'Get face to face with Premium'**
   String get bannerMaxUpsellTitle;
 
   /// No description provided for @bannerMaxUpsellSub.
   ///
   /// In en, this message translates to:
-  /// **'Face-to-face calls · {price} per month'**
+  /// **'Video calls · 15 minutes a day · {price} per month'**
   String bannerMaxUpsellSub(String price);
 
   /// No description provided for @bannerAnnualSwitchTitle.
@@ -2469,12 +2775,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Switch to annual'**
   String get bannerAnnualSwitchTitle;
-
-  /// No description provided for @bannerAnnualSwitchSub.
-  ///
-  /// In en, this message translates to:
-  /// **'{yearly} per year · {perMonth} per month'**
-  String bannerAnnualSwitchSub(String yearly, String perMonth);
 
   /// No description provided for @bannerPaymentFailedTitle.
   ///
@@ -2485,7 +2785,7 @@ abstract class AppLocalizations {
   /// No description provided for @bannerPaymentFailedSub.
   ///
   /// In en, this message translates to:
-  /// **'Update payment in the store to keep Pro'**
+  /// **'Update payment in the store to keep Premium'**
   String get bannerPaymentFailedSub;
 
   /// No description provided for @bannerPausedTitle.
@@ -2512,12 +2812,6 @@ abstract class AppLocalizations {
   /// **'Payment method, plan changes, and cancellation are handled by the store.'**
   String get noteStoreHandled;
 
-  /// No description provided for @noteFairUse.
-  ///
-  /// In en, this message translates to:
-  /// **'Unlimited use is subject to our fair use policy.'**
-  String get noteFairUse;
-
   /// No description provided for @noteTrialEnds.
   ///
   /// In en, this message translates to:
@@ -2533,7 +2827,7 @@ abstract class AppLocalizations {
   /// No description provided for @noteHold.
   ///
   /// In en, this message translates to:
-  /// **'Pro is paused until the payment goes through. Your characters and progress are safe.'**
+  /// **'Premium is paused until the payment goes through. Your characters and progress are safe.'**
   String get noteHold;
 
   /// No description provided for @noteEnding.
@@ -2545,7 +2839,7 @@ abstract class AppLocalizations {
   /// No description provided for @trialExpiredTitle.
   ///
   /// In en, this message translates to:
-  /// **'Your Max trial ended'**
+  /// **'Your Premium trial ended'**
   String get trialExpiredTitle;
 
   /// No description provided for @trialExpiredSub.
@@ -2566,53 +2860,17 @@ abstract class AppLocalizations {
   /// **'Current Plan'**
   String get currentPlanTitle;
 
-  /// No description provided for @badgeRecommended.
-  ///
-  /// In en, this message translates to:
-  /// **'Recommended'**
-  String get badgeRecommended;
-
   /// No description provided for @perMonthUnit.
   ///
   /// In en, this message translates to:
   /// **'per month'**
   String get perMonthUnit;
 
-  /// No description provided for @planTaglinePro.
-  ///
-  /// In en, this message translates to:
-  /// **'Unlimited calls. 15 minutes each.'**
-  String get planTaglinePro;
-
-  /// No description provided for @planTaglineMax.
-  ///
-  /// In en, this message translates to:
-  /// **'Now you can see them.'**
-  String get planTaglineMax;
-
   /// No description provided for @planTaglineFree.
   ///
   /// In en, this message translates to:
-  /// **'One call a day. On the house.'**
+  /// **'5 minutes of calls a day. On the house.'**
   String get planTaglineFree;
-
-  /// No description provided for @bulletProCalls.
-  ///
-  /// In en, this message translates to:
-  /// **'Voice calls, as often as you want'**
-  String get bulletProCalls;
-
-  /// No description provided for @bulletProLength.
-  ///
-  /// In en, this message translates to:
-  /// **'15 minutes a call'**
-  String get bulletProLength;
-
-  /// No description provided for @bulletProScoring.
-  ///
-  /// In en, this message translates to:
-  /// **'Pronunciation scored letter by letter'**
-  String get bulletProScoring;
 
   /// No description provided for @bulletProCorrections.
   ///
@@ -2620,71 +2878,17 @@ abstract class AppLocalizations {
   /// **'Corrections aimed at your native language'**
   String get bulletProCorrections;
 
-  /// No description provided for @bulletProBeaverCalls.
-  ///
-  /// In en, this message translates to:
-  /// **'Beaver calls you first'**
-  String get bulletProBeaverCalls;
-
-  /// No description provided for @bulletMaxVideo.
-  ///
-  /// In en, this message translates to:
-  /// **'Face-to-face video calls'**
-  String get bulletMaxVideo;
-
-  /// No description provided for @bulletMaxEverything.
-  ///
-  /// In en, this message translates to:
-  /// **'Everything in Pro'**
-  String get bulletMaxEverything;
-
-  /// No description provided for @bulletMaxCharacters.
-  ///
-  /// In en, this message translates to:
-  /// **'Every character, unlimited'**
-  String get bulletMaxCharacters;
-
-  /// No description provided for @bulletMaxStudyBook.
-  ///
-  /// In en, this message translates to:
-  /// **'A study book matched to where you are'**
-  String get bulletMaxStudyBook;
-
-  /// No description provided for @bulletMaxWeeklyReport.
-  ///
-  /// In en, this message translates to:
-  /// **'A weekly report on how your sound is changing'**
-  String get bulletMaxWeeklyReport;
-
   /// No description provided for @bulletFreeCall.
   ///
   /// In en, this message translates to:
-  /// **'One 5-minute voice call a day'**
+  /// **'5 minutes of voice calls a day'**
   String get bulletFreeCall;
-
-  /// No description provided for @bulletFreeCheck.
-  ///
-  /// In en, this message translates to:
-  /// **'One pronunciation check a day'**
-  String get bulletFreeCheck;
-
-  /// No description provided for @bulletFreeAccent.
-  ///
-  /// In en, this message translates to:
-  /// **'Unlimited accent checks'**
-  String get bulletFreeAccent;
 
   /// No description provided for @bulletFreeCharacter.
   ///
   /// In en, this message translates to:
-  /// **'One character to start'**
+  /// **'Two characters to start'**
   String get bulletFreeCharacter;
-
-  /// No description provided for @ctaGoUnlimited.
-  ///
-  /// In en, this message translates to:
-  /// **'Go unlimited'**
-  String get ctaGoUnlimited;
 
   /// No description provided for @ctaTurnOnVideo.
   ///
@@ -2695,7 +2899,7 @@ abstract class AppLocalizations {
   /// No description provided for @noteCallLength.
   ///
   /// In en, this message translates to:
-  /// **'Calls are 15 minutes each.'**
+  /// **'Premium: 15 minutes of calls a day — call as often as you like within that.'**
   String get noteCallLength;
 
   /// No description provided for @paywallProTitle1.
@@ -2710,41 +2914,23 @@ abstract class AppLocalizations {
   /// **'who\'s up at 3 a.m.'**
   String get paywallProTitle2;
 
-  /// No description provided for @paywallProSub.
-  ///
-  /// In en, this message translates to:
-  /// **'Unlimited calls. 15 minutes each. All year.'**
-  String get paywallProSub;
-
   /// Hot-entry paywall headline - one line, no story (spec 8-1).
   ///
   /// In en, this message translates to:
-  /// **'Pro removes the limit.'**
+  /// **'Premium gives you 15 minutes of calls a day.'**
   String get paywallLimitHeadline;
 
   /// No description provided for @limitBannerCallTitle.
   ///
   /// In en, this message translates to:
-  /// **'That was today\'s call'**
+  /// **'You\'ve used today\'s call time'**
   String get limitBannerCallTitle;
 
   /// No description provided for @limitBannerCallSub.
   ///
   /// In en, this message translates to:
-  /// **'Free gives you one call a day'**
+  /// **'Free gives you 5 minutes of calls a day'**
   String get limitBannerCallSub;
-
-  /// No description provided for @limitBannerCheckTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'That was today\'s check'**
-  String get limitBannerCheckTitle;
-
-  /// No description provided for @limitBannerCheckSub.
-  ///
-  /// In en, this message translates to:
-  /// **'Free gives you one check a day'**
-  String get limitBannerCheckSub;
 
   /// No description provided for @bulletProCharactersForever.
   ///
@@ -2755,14 +2941,14 @@ abstract class AppLocalizations {
   /// No description provided for @paywallMaxTitle.
   ///
   /// In en, this message translates to:
-  /// **'Now you can see them.'**
+  /// **'Now you can talk face to face over video.'**
   String get paywallMaxTitle;
 
-  /// No description provided for @paywallMaxSub.
+  /// Paywall header second line (P12). Shown only when the store price is in USD. $25 is a fixed USD fact.
   ///
   /// In en, this message translates to:
-  /// **'Video calls, every character, and a study book made for where you are.'**
-  String get paywallMaxSub;
+  /// **'One hour with a tutor costs \$25. A month of Premium costs {price}.'**
+  String paywallTutorCompare(String price);
 
   /// No description provided for @planMonthly.
   ///
@@ -2812,11 +2998,41 @@ abstract class AppLocalizations {
   /// **'{price} per month · cancel anytime in the store'**
   String ctaCaptionMax(String price);
 
+  /// Disclosure under the paywall CTA when the annual plan is selected (App Review 3.1.2: price and billing period must match the selection).
+  ///
+  /// In en, this message translates to:
+  /// **'{price} per year · cancel anytime in the store'**
+  String ctaCaptionMaxYearly(String price);
+
   /// No description provided for @ctaCaptionMaxTrial.
   ///
   /// In en, this message translates to:
   /// **'7 days free, then {price} per month · cancel anytime in the store'**
   String ctaCaptionMaxTrial(String price);
+
+  /// Paywall/success caption when the yearly plan starts with the store free-trial offer. {price} is the store-formatted yearly price.
+  ///
+  /// In en, this message translates to:
+  /// **'7 days free, then {price} per year · cancel anytime in the store'**
+  String ctaCaptionMaxYearlyTrial(String price);
+
+  /// Character bundle sheet title (Figma BottomSheet/CharacterBundle 6438:4772): the three paid characters bought together.
+  ///
+  /// In en, this message translates to:
+  /// **'All three at once'**
+  String get bundleTitle;
+
+  /// Discount badge on the bundle sheet. {percent} is an integer computed from the store prices.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}% off'**
+  String bundleOffBadge(int percent);
+
+  /// Link under the single-character Buy button that opens the bundle sheet. {price} is the store-formatted bundle price with its own currency symbol.
+  ///
+  /// In en, this message translates to:
+  /// **'Get all three for {price}'**
+  String bundleLinkLabel(String price);
 
   /// No description provided for @ctaCaptionAutoRenew.
   ///
@@ -2836,12 +3052,6 @@ abstract class AppLocalizations {
   /// **'Privacy'**
   String get footerPrivacy;
 
-  /// No description provided for @noteMaxCharacters.
-  ///
-  /// In en, this message translates to:
-  /// **'Characters unlocked by Max are available while your subscription is active. Characters you bought stay yours.'**
-  String get noteMaxCharacters;
-
   /// No description provided for @processingTitle.
   ///
   /// In en, this message translates to:
@@ -2857,37 +3067,13 @@ abstract class AppLocalizations {
   /// No description provided for @successProTitle.
   ///
   /// In en, this message translates to:
-  /// **'You\'re on Pro.'**
+  /// **'You\'re on Premium.'**
   String get successProTitle;
-
-  /// No description provided for @successProSub.
-  ///
-  /// In en, this message translates to:
-  /// **'Unlimited calls, starting right now.'**
-  String get successProSub;
-
-  /// No description provided for @successProBenefit1.
-  ///
-  /// In en, this message translates to:
-  /// **'Call as often as you want — 15 minutes a call'**
-  String get successProBenefit1;
-
-  /// No description provided for @successProBenefit2.
-  ///
-  /// In en, this message translates to:
-  /// **'Unlimited pronunciation checks'**
-  String get successProBenefit2;
-
-  /// No description provided for @successProBenefit3.
-  ///
-  /// In en, this message translates to:
-  /// **'Every character, plus one-off purchases'**
-  String get successProBenefit3;
 
   /// No description provided for @successMaxTitle.
   ///
   /// In en, this message translates to:
-  /// **'You can see them now.'**
+  /// **'Now you can see each other.'**
   String get successMaxTitle;
 
   /// No description provided for @successMaxSub.
@@ -2895,30 +3081,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Video calls are on. Tap the video button in any call.'**
   String get successMaxSub;
-
-  /// No description provided for @successMaxBenefit1.
-  ///
-  /// In en, this message translates to:
-  /// **'Face-to-face video calls'**
-  String get successMaxBenefit1;
-
-  /// No description provided for @successMaxBenefit2.
-  ///
-  /// In en, this message translates to:
-  /// **'Every character, unlimited and new ones first'**
-  String get successMaxBenefit2;
-
-  /// No description provided for @successMaxBenefit3.
-  ///
-  /// In en, this message translates to:
-  /// **'A study book matched to where you are'**
-  String get successMaxBenefit3;
-
-  /// No description provided for @ctaStartACall.
-  ///
-  /// In en, this message translates to:
-  /// **'Start a call'**
-  String get ctaStartACall;
 
   /// No description provided for @ctaStartAVideoCall.
   ///
@@ -2931,12 +3093,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'See your subscription'**
   String get ctaSeeYourSubscription;
-
-  /// No description provided for @successProCaption.
-  ///
-  /// In en, this message translates to:
-  /// **'{price} is charged monthly until you cancel. Manage or cancel anytime in the store.'**
-  String successProCaption(String price);
 
   /// No description provided for @successMaxCaption.
   ///
@@ -2968,142 +3124,10 @@ abstract class AppLocalizations {
   /// **'Nothing was charged.'**
   String get plansErrorCaption;
 
-  /// No description provided for @changePlanTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Change Plan'**
-  String get changePlanTitle;
-
-  /// No description provided for @moveToMaxTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Move to Max'**
-  String get moveToMaxTitle;
-
-  /// No description provided for @maxPriceShort.
-  ///
-  /// In en, this message translates to:
-  /// **'{price} / mo'**
-  String maxPriceShort(String price);
-
-  /// No description provided for @moveToMaxCardSub.
-  ///
-  /// In en, this message translates to:
-  /// **'Face-to-face video calls · every character · a study book made for you'**
-  String get moveToMaxCardSub;
-
-  /// No description provided for @whatHappensNow.
-  ///
-  /// In en, this message translates to:
-  /// **'What happens now'**
-  String get whatHappensNow;
-
-  /// No description provided for @maxStartsLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Max starts'**
-  String get maxStartsLabel;
-
-  /// No description provided for @immediately.
-  ///
-  /// In en, this message translates to:
-  /// **'Immediately'**
-  String get immediately;
-
-  /// No description provided for @unusedProTime.
-  ///
-  /// In en, this message translates to:
-  /// **'Unused Pro time'**
-  String get unusedProTime;
-
-  /// No description provided for @creditedTowardMax.
-  ///
-  /// In en, this message translates to:
-  /// **'Credited toward Max'**
-  String get creditedTowardMax;
-
-  /// No description provided for @nextPaymentMaxValue.
-  ///
-  /// In en, this message translates to:
-  /// **'{price} · {date}'**
-  String nextPaymentMaxValue(String price, String date);
-
-  /// No description provided for @nextPaymentProValue.
-  ///
-  /// In en, this message translates to:
-  /// **'{price} · {date}'**
-  String nextPaymentProValue(String price, String date);
-
-  /// No description provided for @ctaSwitchToMax.
-  ///
-  /// In en, this message translates to:
-  /// **'Switch to Max'**
-  String get ctaSwitchToMax;
-
-  /// No description provided for @upgradeCaption.
-  ///
-  /// In en, this message translates to:
-  /// **'Your new plan starts right away. Unused Pro time is credited, never charged twice.'**
-  String get upgradeCaption;
-
-  /// No description provided for @moveToProTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Move to Pro'**
-  String get moveToProTitle;
-
-  /// No description provided for @moveToProSub.
-  ///
-  /// In en, this message translates to:
-  /// **'Nothing changes today. Max runs to the end of the month you already paid for.'**
-  String get moveToProSub;
-
-  /// No description provided for @maxRunsUntil.
-  ///
-  /// In en, this message translates to:
-  /// **'Max runs until'**
-  String get maxRunsUntil;
-
-  /// No description provided for @proStarts.
-  ///
-  /// In en, this message translates to:
-  /// **'Pro starts'**
-  String get proStarts;
-
-  /// No description provided for @whatYouKeep.
-  ///
-  /// In en, this message translates to:
-  /// **'What you keep'**
-  String get whatYouKeep;
-
-  /// No description provided for @keepBenefitCalls.
-  ///
-  /// In en, this message translates to:
-  /// **'Unlimited voice calls, 15 minutes each'**
-  String get keepBenefitCalls;
-
-  /// No description provided for @keepBenefitCharacters.
-  ///
-  /// In en, this message translates to:
-  /// **'Characters you bought stay yours forever'**
-  String get keepBenefitCharacters;
-
-  /// No description provided for @downgradeWarning.
-  ///
-  /// In en, this message translates to:
-  /// **'Video calls and Max-only characters turn off on {date}.'**
-  String downgradeWarning(String date);
-
-  /// No description provided for @ctaSwitchToPro.
-  ///
-  /// In en, this message translates to:
-  /// **'Switch to Pro'**
-  String get ctaSwitchToPro;
-
   /// No description provided for @ctaKeepMax.
   ///
   /// In en, this message translates to:
-  /// **'Keep Max'**
+  /// **'Keep Premium'**
   String get ctaKeepMax;
 
   /// No description provided for @winbackSkip.
@@ -3115,13 +3139,13 @@ abstract class AppLocalizations {
   /// No description provided for @winbackTitle.
   ///
   /// In en, this message translates to:
-  /// **'Your Pro plan ended'**
+  /// **'Your Premium plan ended'**
   String get winbackTitle;
 
   /// No description provided for @winbackSub.
   ///
   /// In en, this message translates to:
-  /// **'You\'re on Free now — one call a day.'**
+  /// **'You\'re on Free now — 5 minutes of calls a day.'**
   String get winbackSub;
 
   /// No description provided for @winbackQuestion.
@@ -3193,7 +3217,7 @@ abstract class AppLocalizations {
   /// No description provided for @ovRestoreSuccessTitle.
   ///
   /// In en, this message translates to:
-  /// **'Pro is back'**
+  /// **'Premium is back'**
   String get ovRestoreSuccessTitle;
 
   /// No description provided for @ovRestoreSuccessBody.
@@ -3226,6 +3250,18 @@ abstract class AppLocalizations {
   /// **'This subscription is already active on a different BeaverTalk account.'**
   String get ovRestoreOtherBody;
 
+  /// Restore result when characters (not a subscription) came back (QA F097). {count} is how many characters came back (1 = singular, QA F110).
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Your character is back} other{Your characters are back}}'**
+  String ovRestoreCharactersTitle(int count);
+
+  /// Restore result when only character receipts came back and they belong to another BeaverTalk account.
+  ///
+  /// In en, this message translates to:
+  /// **'This character was bought on another account'**
+  String get ovRestoreCharacterOtherTitle;
+
   /// No description provided for @ctaSignInThatAccount.
   ///
   /// In en, this message translates to:
@@ -3241,7 +3277,7 @@ abstract class AppLocalizations {
   /// No description provided for @ovCharacterOfferTitle.
   ///
   /// In en, this message translates to:
-  /// **'Not ready for Pro?'**
+  /// **'Not ready for Premium?'**
   String get ovCharacterOfferTitle;
 
   /// No description provided for @ovCharacterOfferBody.
@@ -3259,7 +3295,7 @@ abstract class AppLocalizations {
   /// No description provided for @rowFromPrice.
   ///
   /// In en, this message translates to:
-  /// **'from {price}'**
+  /// **'{price} each'**
   String rowFromPrice(String price);
 
   /// No description provided for @rowYoursForever.
@@ -3337,7 +3373,7 @@ abstract class AppLocalizations {
   /// No description provided for @rowProRunsUntil.
   ///
   /// In en, this message translates to:
-  /// **'Pro runs until'**
+  /// **'Premium runs until'**
   String get rowProRunsUntil;
 
   /// No description provided for @ctaSwitchToYearly.
@@ -3361,7 +3397,7 @@ abstract class AppLocalizations {
   /// No description provided for @ovAnnualSwitchBody.
   ///
   /// In en, this message translates to:
-  /// **'You\'ve been on Pro for two months. The yearly plan works out cheaper.'**
+  /// **'The yearly plan works out cheaper than paying monthly.'**
   String get ovAnnualSwitchBody;
 
   /// No description provided for @rowYouSave.
@@ -3463,7 +3499,7 @@ abstract class AppLocalizations {
   /// No description provided for @ovTrialEndingBody.
   ///
   /// In en, this message translates to:
-  /// **'Max keeps running unless you cancel. Here is what happens.'**
+  /// **'Premium keeps running unless you cancel. Here is what happens.'**
   String get ovTrialEndingBody;
 
   /// No description provided for @rowTrialEnds.
@@ -3493,7 +3529,7 @@ abstract class AppLocalizations {
   /// No description provided for @ovTrialStartTitle.
   ///
   /// In en, this message translates to:
-  /// **'7 days of Max, free'**
+  /// **'7 days of Premium, free'**
   String get ovTrialStartTitle;
 
   /// No description provided for @ovTrialStartBody.
@@ -3517,7 +3553,7 @@ abstract class AppLocalizations {
   /// No description provided for @ovOtoBody.
   ///
   /// In en, this message translates to:
-  /// **'Good call — unlimited calls are on right now. The same Pro costs less if you pay yearly.'**
+  /// **'Good call. The same Premium costs less if you pay yearly.'**
   String get ovOtoBody;
 
   /// No description provided for @ovFailedDeclinedTitle.
@@ -3562,10 +3598,46 @@ abstract class AppLocalizations {
   /// **'We couldn\'t reach the store. Nothing was charged.'**
   String get ovFailedStoreBody;
 
+  /// Purchase sheet - the store took the payment but our server has not confirmed it yet (QA F005). Must NOT say the card was declined or that nothing was charged.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment received'**
+  String get ovVerifyingTitle;
+
+  /// Body of ovVerifyingTitle. The quoted button name must match billingRestorePurchases.
+  ///
+  /// In en, this message translates to:
+  /// **'We\'re still confirming it with the store. It\'ll turn on shortly — if it doesn\'t, tap “Restore purchases”.'**
+  String get ovVerifyingBody;
+
+  /// Purchase sheet - the store reported the payment as pending (slow card, cash payment). QA F004.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment pending'**
+  String get ovPendingTitle;
+
+  /// Body of ovPendingTitle. Tells the member they can leave the screen.
+  ///
+  /// In en, this message translates to:
+  /// **'The store hasn\'t finished the payment yet. It\'ll turn on once it\'s done — you can leave this screen.'**
+  String get ovPendingBody;
+
+  /// Purchase sheet - the store judged the receipt invalid (server INVALID_RECEIPT). QA F028.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t confirm this purchase'**
+  String get ovRejectedTitle;
+
+  /// Body of ovRejectedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'The store didn\'t confirm this payment, so nothing was applied. If you were charged, please contact us.'**
+  String get ovRejectedBody;
+
   /// No description provided for @ovAlreadyTitle.
   ///
   /// In en, this message translates to:
-  /// **'You\'re already on Pro'**
+  /// **'You\'re already on Premium'**
   String get ovAlreadyTitle;
 
   /// No description provided for @ovAlreadyBody.
@@ -3589,7 +3661,7 @@ abstract class AppLocalizations {
   /// No description provided for @subCancelBody.
   ///
   /// In en, this message translates to:
-  /// **'Pro runs until {date}. After that you move to Free.'**
+  /// **'Premium runs until {date}. After that you move to Free.'**
   String subCancelBody(String date);
 
   /// No description provided for @subWhatYouLose.
@@ -3598,29 +3670,17 @@ abstract class AppLocalizations {
   /// **'What you lose'**
   String get subWhatYouLose;
 
-  /// No description provided for @benefitCalls15.
-  ///
-  /// In en, this message translates to:
-  /// **'Unlimited calls, 15 minutes each'**
-  String get benefitCalls15;
-
-  /// No description provided for @benefitScoring.
+  /// Cancel/resubscribe sheet row - a Premium benefit (letter-level pronunciation scoring).
   ///
   /// In en, this message translates to:
   /// **'Pronunciation scored letter by letter'**
   String get benefitScoring;
 
-  /// No description provided for @benefitEveryCharacter.
+  /// Cancel/resubscribe sheet row - a Premium benefit (full analysis: every metric, every sentence).
   ///
   /// In en, this message translates to:
-  /// **'Every character, unlimited'**
-  String get benefitEveryCharacter;
-
-  /// No description provided for @ctaKeepPro.
-  ///
-  /// In en, this message translates to:
-  /// **'Keep Pro'**
-  String get ctaKeepPro;
+  /// **'Every metric, every sentence'**
+  String get benefitEveryMetric;
 
   /// No description provided for @subPaymentTitle.
   ///
@@ -3631,7 +3691,7 @@ abstract class AppLocalizations {
   /// No description provided for @subPaymentBody.
   ///
   /// In en, this message translates to:
-  /// **'We could not take the payment. Pro keeps running during the grace period.'**
+  /// **'We could not take the payment. Premium keeps running during the grace period.'**
   String get subPaymentBody;
 
   /// No description provided for @subHowToFix.
@@ -3667,7 +3727,7 @@ abstract class AppLocalizations {
   /// No description provided for @subResubBody.
   ///
   /// In en, this message translates to:
-  /// **'Pro ends on {date}. Turn auto-renew back on and nothing changes.'**
+  /// **'Premium ends on {date}. Turn auto-renew back on and nothing changes.'**
   String subResubBody(String date);
 
   /// No description provided for @subWhatYouKeep.
@@ -3685,7 +3745,7 @@ abstract class AppLocalizations {
   /// free_limit call sheet. Source: pre-neutralization backup doc - reconfirm against Figma host section (04_tonghwa).
   ///
   /// In en, this message translates to:
-  /// **'That\'s today\'s call'**
+  /// **'You\'ve used today\'s call time'**
   String get flTodayTitle;
 
   /// No description provided for @flTodayBody.
@@ -3693,30 +3753,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Pick up where you left off — right now.'**
   String get flTodayBody;
-
-  /// No description provided for @flCheckTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'That\'s today\'s check'**
-  String get flCheckTitle;
-
-  /// No description provided for @flCheckBody.
-  ///
-  /// In en, this message translates to:
-  /// **'One check a day on Free. Pro makes it unlimited.'**
-  String get flCheckBody;
-
-  /// No description provided for @flBenefitCalls.
-  ///
-  /// In en, this message translates to:
-  /// **'Unlimited calls with Pro · 15 minutes each'**
-  String get flBenefitCalls;
-
-  /// No description provided for @flBenefitChecks.
-  ///
-  /// In en, this message translates to:
-  /// **'Unlimited pronunciation checks with Pro'**
-  String get flBenefitChecks;
 
   /// No description provided for @flCaption.
   ///
@@ -3826,29 +3862,41 @@ abstract class AppLocalizations {
   /// **'You can try again'**
   String get iapFailBody;
 
-  /// No description provided for @paywallLeaveTitle.
+  /// Paywall exit guard (Figma paywall_exit_guard 6192:29141, Dialog/Confirm-Icon) title.
   ///
   /// In en, this message translates to:
-  /// **'If you leave now, you won\'t be subscribed'**
-  String get paywallLeaveTitle;
+  /// **'You can keep using Free'**
+  String get paywallGuardTitle;
 
-  /// No description provided for @paywallLeaveBody.
+  /// Paywall exit guard body. Free plan = 5 minutes of calls a day in total (decision 2026-09-23).
   ///
   /// In en, this message translates to:
-  /// **'Your benefits unlock right after checkout. You can come back anytime from My Page.'**
-  String get paywallLeaveBody;
+  /// **'You still get 5 minutes of calls a day.'**
+  String get paywallGuardBody;
 
-  /// No description provided for @ctaKeepLooking.
+  /// Paywall exit guard lower button — closes the dialog (Figma BACK).
   ///
   /// In en, this message translates to:
-  /// **'Keep looking'**
-  String get ctaKeepLooking;
+  /// **'Maybe later'**
+  String get ctaMaybeLater;
 
-  /// No description provided for @ctaLeaveAnyway.
+  /// Gold badge on the win-back offer sheet (Figma BottomSheet/Winback 6438:4129). No price is shown: the store decides the offer and eligibility.
   ///
   /// In en, this message translates to:
-  /// **'Leave anyway'**
-  String get ctaLeaveAnyway;
+  /// **'50% off your first month'**
+  String get winbackOfferBadge;
+
+  /// Win-back offer sheet title, shown after a lapsed member picks 'Too expensive' in the exit survey.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome back'**
+  String get winbackOfferTitle;
+
+  /// Win-back offer primary button - opens the store's subscription page, where the store applies its own win-back offer.
+  ///
+  /// In en, this message translates to:
+  /// **'Get 50% off'**
+  String get ctaGetHalfOff;
 
   /// No description provided for @iapCharacterSuccessTitle.
   ///
@@ -3928,12 +3976,6 @@ abstract class AppLocalizations {
   /// **'Take level test'**
   String get takeLevelTest;
 
-  /// Hint under the pronunciation gauge when there is no score yet.
-  ///
-  /// In en, this message translates to:
-  /// **'Review to see your pronunciation score'**
-  String get reviewToSeeScore;
-
   /// Pronunciation challenge - restart the run from the result screen.
   ///
   /// In en, this message translates to:
@@ -3943,7 +3985,7 @@ abstract class AppLocalizations {
   /// Pronunciation challenge difficulty - slow.
   ///
   /// In en, this message translates to:
-  /// **'Slow'**
+  /// **'Easy'**
   String get difficultySlow;
 
   /// Pronunciation challenge difficulty - normal.
@@ -3955,14 +3997,1454 @@ abstract class AppLocalizations {
   /// Pronunciation challenge difficulty - fast.
   ///
   /// In en, this message translates to:
-  /// **'Fast'**
+  /// **'Hard'**
   String get difficultyFast;
 
   /// Pronunciation challenge - label above the difficulty toggle.
   ///
   /// In en, this message translates to:
-  /// **'Difficulty'**
+  /// **'Choose a difficulty'**
   String get difficultyLabel;
+
+  /// Call header status - the call is live. Sibling of `connecting`.
+  ///
+  /// In en, this message translates to:
+  /// **'Connected'**
+  String get connected;
+
+  /// Characters unlocked by the member's Max subscription but NOT bought. Used twice: the section heading on the change-avatar screen, and the status chip on the avatar detail screen. Must never read as ownership - the access ends when the subscription does.
+  ///
+  /// In en, this message translates to:
+  /// **'Included with your plan'**
+  String get unlockedWithMax;
+
+  /// Title of the sheet shown when a FREE member hits the 5-minute call limit. The call is over; there is no extend option.
+  ///
+  /// In en, this message translates to:
+  /// **'Your free call has ended'**
+  String get fcEndedTitle;
+
+  /// Body of the free 5-minute limit sheet. Two lines separated by a newline.
+  ///
+  /// In en, this message translates to:
+  /// **'Free calls last up to 5 minutes\nSubscribe to keep talking for longer'**
+  String get fcEndedBody;
+
+  /// Primary CTA on the free 5-minute limit sheet. Opens the paywall.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscribe and keep talking'**
+  String get ctaSubscribeKeepTalking;
+
+  /// Title of the sheet shown to a PAID member every 5 minutes, asking whether to continue. Up to 15 minutes total.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep going?'**
+  String get kgTitle;
+
+  /// Body of the paid continue sheet. Two lines separated by a newline.
+  ///
+  /// In en, this message translates to:
+  /// **'Calls continue in short stretches.\nWe\'ll check in again each time.'**
+  String get kgBody;
+
+  /// Premium 15-minute end sheet title - the last call allowed today.
+  ///
+  /// In en, this message translates to:
+  /// **'Let\'s wrap up for today.'**
+  String get pcEndedTitleToday;
+
+  /// Premium 15-minute end sheet body - the last call today; come back tomorrow.
+  ///
+  /// In en, this message translates to:
+  /// **'Review what we talked about, and call me again tomorrow!'**
+  String get pcEndedBodyToday;
+
+  /// Premium 15-minute end sheet title - more calls remain today.
+  ///
+  /// In en, this message translates to:
+  /// **'Let\'s wrap up this call.'**
+  String get pcEndedTitle;
+
+  /// Premium 15-minute end sheet body - more calls remain today (no 'tomorrow').
+  ///
+  /// In en, this message translates to:
+  /// **'Review what we talked about, and call me again!'**
+  String get pcEndedBody;
+
+  /// Primary CTA on the paid continue sheet. Opens the next 5-minute segment.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep talking'**
+  String get ctaKeepTalking;
+
+  /// Mode sheet - heading. Asks how the learner wants to talk in this call.
+  ///
+  /// In en, this message translates to:
+  /// **'How do you want to talk?'**
+  String get callModeSheetTitle;
+
+  /// Mode sheet - subheading. The choice applies to the current call immediately.
+  ///
+  /// In en, this message translates to:
+  /// **'Applies to this call right away'**
+  String get callModeSheetSubtitle;
+
+  /// Mode sheet - the Free Talk mode name (streaming conversation, no corrections).
+  ///
+  /// In en, this message translates to:
+  /// **'Free talk'**
+  String get callModeFreeTalk;
+
+  /// Mode sheet - one-line description of Free Talk.
+  ///
+  /// In en, this message translates to:
+  /// **'Just talk — no corrections'**
+  String get callModeFreeTalkDesc;
+
+  /// Mode sheet - confirm button, and the label of the call header button that opens the sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Change mode'**
+  String get callModeChange;
+
+  /// Mode sheet - dismiss button. Closes without changing the mode.
+  ///
+  /// In en, this message translates to:
+  /// **'Not now'**
+  String get callModeKeep;
+
+  /// End-call dialog - heading.
+  ///
+  /// In en, this message translates to:
+  /// **'End this call?'**
+  String get callExitTitle;
+
+  /// End-call dialog - body. Warns the call is still counted against the daily quota.
+  ///
+  /// In en, this message translates to:
+  /// **'Time you\'ve talked so far still counts toward today'**
+  String get callExitSubtitle;
+
+  /// End-call dialog - stay in the call.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep talking'**
+  String get callExitKeep;
+
+  /// End-call dialog - confirm hanging up.
+  ///
+  /// In en, this message translates to:
+  /// **'End call'**
+  String get callExitConfirm;
+
+  /// Live call - accessibility label for the mic button when the mic is open.
+  ///
+  /// In en, this message translates to:
+  /// **'Mute'**
+  String get callMicMute;
+
+  /// Live call - accessibility label for the mic button when muted.
+  ///
+  /// In en, this message translates to:
+  /// **'Unmute'**
+  String get callMicUnmute;
+
+  /// Study call - accessibility label for the hold-to-talk button.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold to talk'**
+  String get callPushToTalk;
+
+  /// Five-minute sheet (free) - heading when the free call time is used up.
+  ///
+  /// In en, this message translates to:
+  /// **'Your free call has ended'**
+  String get callFreeEndedTitle;
+
+  /// Five-minute sheet (free) - primary action, opens the paywall.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscribe and keep talking'**
+  String get callFreeEndedCta;
+
+  /// Five-minute sheet (paid) - heading of the continue check-in.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep going?'**
+  String get callKeepGoingTitle;
+
+  /// Five-minute sheet (paid) - body explaining calls run in 5-minute stretches.
+  ///
+  /// In en, this message translates to:
+  /// **'Calls continue in 5-minute stretches. We\'ll check in again each time.'**
+  String get callKeepGoingSubtitle;
+
+  /// No description provided for @articulationSelectedWord.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected word'**
+  String get articulationSelectedWord;
+
+  /// No description provided for @articulationYouSaid.
+  ///
+  /// In en, this message translates to:
+  /// **'You said'**
+  String get articulationYouSaid;
+
+  /// No description provided for @articulationTargetSound.
+  ///
+  /// In en, this message translates to:
+  /// **'Target'**
+  String get articulationTargetSound;
+
+  /// Entry affordance that opens the AI-content report screen. Shown on the call-finish screen and in the records list.
+  ///
+  /// In en, this message translates to:
+  /// **'Report'**
+  String get reportEntry;
+
+  /// Title bar of the report screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Report'**
+  String get reportTitle;
+
+  /// Heading above the reason list. Asks what went wrong.
+  ///
+  /// In en, this message translates to:
+  /// **'What was the problem?'**
+  String get reportPrompt;
+
+  /// Sub-copy under the heading. Explains that the report is about the AI character's content and that every report is reviewed.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell us what the AI character said that made you uncomfortable. We review every report.'**
+  String get reportGuide;
+
+  /// Report reason: sexual content.
+  ///
+  /// In en, this message translates to:
+  /// **'Sexual content'**
+  String get reportReasonSexual;
+
+  /// Report reason: hateful or discriminatory speech.
+  ///
+  /// In en, this message translates to:
+  /// **'Hate or discrimination'**
+  String get reportReasonHate;
+
+  /// Report reason: violent or threatening content.
+  ///
+  /// In en, this message translates to:
+  /// **'Violent or threatening content'**
+  String get reportReasonViolence;
+
+  /// Report reason: content that encourages self-harm.
+  ///
+  /// In en, this message translates to:
+  /// **'Encourages self-harm'**
+  String get reportReasonSelfHarm;
+
+  /// Report reason: false or misleading information.
+  ///
+  /// In en, this message translates to:
+  /// **'False information'**
+  String get reportReasonMisinfo;
+
+  /// Report reason: anything not covered by the other options.
+  ///
+  /// In en, this message translates to:
+  /// **'Something else'**
+  String get reportReasonOther;
+
+  /// Placeholder of the optional free-text field on the report screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe what happened (optional)'**
+  String get reportDetailHint;
+
+  /// Primary button that submits the report.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit report'**
+  String get reportSubmit;
+
+  /// Headline of the in-app confirmation shown after a report is accepted.
+  ///
+  /// In en, this message translates to:
+  /// **'Your report has been received'**
+  String get reportDoneTitle;
+
+  /// Body of the confirmation. States that the report will be reviewed.
+  ///
+  /// In en, this message translates to:
+  /// **'We\'ll review it and take action if needed. Thank you for helping keep BeaverTalk safe.'**
+  String get reportDoneBody;
+
+  /// Snackbar shown when submitting the report fails and the user should retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t submit your report. Please try again.'**
+  String get reportFailed;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Homework'**
+  String get hwTitle;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your class code'**
+  String get hwJoinCodeTitle;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'It is the 6-character code from your teacher'**
+  String get hwJoinCodeSubtitle;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Class code'**
+  String get hwJoinCodeLabel;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'The code is not case-sensitive'**
+  String get hwJoinCodeHelp;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Is this the right class?'**
+  String get hwJoinConfirmTitle;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'If not, check the code again'**
+  String get hwJoinConfirmSubtitle;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Institution'**
+  String get hwJoinFieldInstitution;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Teacher'**
+  String get hwJoinFieldTeacher;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Learners'**
+  String get hwJoinFieldLearners;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Term'**
+  String get hwJoinFieldTerm;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'The class name is exactly as your teacher wrote it. We do not translate it.'**
+  String get hwJoinConfirmNote;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Yes, that is it'**
+  String get hwJoinConfirmYes;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Re-enter code'**
+  String get hwJoinConfirmRetry;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'What name will you use in class?'**
+  String get hwJoinProfileTitle;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Your teacher matches this with the roster'**
+  String get hwJoinProfileSubtitle;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get hwJoinNameLabel;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'It can differ from your app name'**
+  String get hwJoinNameHelp;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Student ID (optional)'**
+  String get hwJoinStudentNoLabel;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Your teacher uses it to match the roster'**
+  String get hwJoinStudentNoHelp;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'What your teacher sees'**
+  String get hwJoinConsentTitle;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'You must agree to join the class'**
+  String get hwJoinConsentSubtitle;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Shared with your teacher'**
+  String get hwJoinConsentSharedHeading;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Class name and student ID'**
+  String get hwJoinConsentShared1;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Whether you did the homework'**
+  String get hwJoinConsentShared2;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Sentences passed and missed'**
+  String get hwJoinConsentShared3;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Assignment call length and summary'**
+  String get hwJoinConsentShared4;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Not shared'**
+  String get hwJoinConsentNotSharedHeading;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Email and phone number'**
+  String get hwJoinConsentNotShared1;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'App name, profile and character'**
+  String get hwJoinConsentNotShared2;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Nationality and first language'**
+  String get hwJoinConsentNotShared3;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Calls and study outside the class'**
+  String get hwJoinConsentNotShared4;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Subscription and payment details'**
+  String get hwJoinConsentNotShared5;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'I agree to the above'**
+  String get hwJoinConsentAgree;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Agree and join'**
+  String get hwJoinConsentCta;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'You joined {className}'**
+  String hwJoinDoneTitle(String className);
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'{count} assignments are waiting'**
+  String hwJoinDoneSubtitle(int count);
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'No assignments yet'**
+  String get hwJoinDoneNoAssignment;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Next due'**
+  String get hwJoinDoneNextDue;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Your class name'**
+  String get hwJoinDoneRosterName;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'See homework'**
+  String get hwJoinDoneCta;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'We could not find that code'**
+  String get hwJoinErrorNotFound;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Please check the six digits again.'**
+  String get hwJoinErrorNotFoundBody;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'That code has expired'**
+  String get hwJoinErrorExpired;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Ask your teacher for a new code.'**
+  String get hwJoinErrorExpiredBody;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'The class is full'**
+  String get hwJoinErrorFull;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Please let your teacher know.'**
+  String get hwJoinErrorFullBody;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Could not join. Please try again in a moment.'**
+  String get hwJoinFailed;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'In progress'**
+  String get hwSectionInProgress;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Upcoming'**
+  String get hwSectionUpcoming;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get hwSectionDone;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Leave the class'**
+  String get hwLeaveClassLink;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'No homework yet'**
+  String get hwListEmptyTitle;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'It will show up here when your teacher assigns it.'**
+  String get hwListEmptyBody;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load your homework.'**
+  String get hwListFailed;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get hwRetry;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get hwBadgeDone;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Not submitted'**
+  String get hwBadgeOverdue;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Not submitted, {days}d late'**
+  String hwBadgeOverdueDays(int days);
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'D-{days}'**
+  String hwBadgeDday(int days);
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Due today'**
+  String get hwBadgeDueToday;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Pronunciation'**
+  String get hwActivitySpeaking;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation'**
+  String get hwActivityConversation;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Workbook'**
+  String get hwActivityWorkbook;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Chapter {chapter}'**
+  String hwChapterLabel(String chapter);
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Check your pronunciation score'**
+  String get hwTaskSpeakingDesc;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Use what you learned in a real talk'**
+  String get hwTaskConversationDesc;
+
+  /// Homework detail, conversation card. Shown once the conversation is done — it can only be done once per assignment, so the button is disabled and this line says why.
+  ///
+  /// In en, this message translates to:
+  /// **'You can do the conversation once per homework.'**
+  String get hwConversationOnce;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Practice by writing in the workbook'**
+  String get hwTaskWorkbookDesc;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
+  String get hwCtaStudy;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'See result'**
+  String get hwCtaResult;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Download'**
+  String get hwCtaDownload;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'You have not done the speaking task yet'**
+  String get hwSpeakingNoScore;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'The workbook file is not available yet.'**
+  String get hwWorkbookUnavailable;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'This assignment is closed. You can no longer submit.'**
+  String get hwDetailClosed;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Leave the class?'**
+  String get hwLeaveTitle;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Your teacher will no longer see your homework results.'**
+  String get hwLeaveBody;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Leave'**
+  String get hwLeaveConfirm;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Stay'**
+  String get hwLeaveCancel;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Could not leave the class.'**
+  String get hwLeaveFailed;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'My class'**
+  String get hwMyClass;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'You have not joined a class'**
+  String get hwClassEmptyTitle;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the code your teacher gave you'**
+  String get hwClassEmptySubtitle;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Enter class code'**
+  String get hwClassEmptyCta;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get hwClassContinueCta;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'{count} assignments are due tomorrow'**
+  String hwHomeBannerDueTomorrow(int count);
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'You have {count} unsubmitted assignments'**
+  String hwHomeBannerOverdue(int count);
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'The sentences for this assignment are not available yet.'**
+  String get hwSpeakingUnavailable;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Closed'**
+  String get hwBadgeClosed;
+
+  /// Homework copy
+  ///
+  /// In en, this message translates to:
+  /// **'{passed} of {total} sentences passed'**
+  String hwSpeakingProgress(int passed, int total);
+
+  /// Countdown label above the previewed first word.
+  ///
+  /// In en, this message translates to:
+  /// **'First word'**
+  String get challengeFirstWord;
+
+  /// No description provided for @challengeSeeAnalysis.
+  ///
+  /// In en, this message translates to:
+  /// **'See results'**
+  String get challengeSeeAnalysis;
+
+  /// No description provided for @challengePaused.
+  ///
+  /// In en, this message translates to:
+  /// **'Paused'**
+  String get challengePaused;
+
+  /// No description provided for @challengePausedNote.
+  ///
+  /// In en, this message translates to:
+  /// **'The timer and the recording both stopped.'**
+  String get challengePausedNote;
+
+  /// No description provided for @challengeTimeLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'Time left'**
+  String get challengeTimeLeft;
+
+  /// No description provided for @challengeScoreLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Score'**
+  String get challengeScoreLabel;
+
+  /// No description provided for @challengeResume.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume'**
+  String get challengeResume;
+
+  /// No description provided for @challengeBlockedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Can\'t use the camera'**
+  String get challengeBlockedTitle;
+
+  /// No description provided for @challengeBlockedNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn on camera and mic access in Settings.'**
+  String get challengeBlockedNote;
+
+  /// No description provided for @challengeGoBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Go back'**
+  String get challengeGoBack;
+
+  /// No description provided for @challengeOpenSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Settings'**
+  String get challengeOpenSettings;
+
+  /// No description provided for @saveDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved to your gallery'**
+  String get saveDone;
+
+  /// No description provided for @saveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save'**
+  String get saveFailed;
+
+  /// No description provided for @saveDeniedNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo access is required'**
+  String get saveDeniedNote;
+
+  /// CallKit incoming-call caller name when the server sends no character name.
+  ///
+  /// In en, this message translates to:
+  /// **'Beaver Tutor'**
+  String get callIncomingCallerFallback;
+
+  /// CallKit incoming-call handle line (what the call is about).
+  ///
+  /// In en, this message translates to:
+  /// **'Korean call'**
+  String get callIncomingHandle;
+
+  /// Missed-call notification title, ticker, subtitle and Android channel name.
+  ///
+  /// In en, this message translates to:
+  /// **'Missed call'**
+  String get callMissedTitle;
+
+  /// Android notification channel description for missed calls.
+  ///
+  /// In en, this message translates to:
+  /// **'Tells you when you miss a call from Beaver.'**
+  String get callMissedChannelDescription;
+
+  /// Missed-call notification body.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} tried to call you'**
+  String callMissedBody(String name);
+
+  /// Caller name used when no character name is known.
+  ///
+  /// In en, this message translates to:
+  /// **'Beaver'**
+  String get callBeaverFallbackName;
+
+  /// Rationale shown before asking for notification permission.
+  ///
+  /// In en, this message translates to:
+  /// **'Notification access is needed to receive calls.'**
+  String get callNotifPermissionRationale;
+
+  /// Shown when notification permission was denied.
+  ///
+  /// In en, this message translates to:
+  /// **'Please allow notifications in Settings.'**
+  String get callNotifPermissionRequired;
+
+  /// Call screen - speech bubble above the hint button, shown when the learner taps it during an Expressions-course call. The server sends no hints in that course, so the button stays visible but explains why it does nothing. Name the course with the same word as homeCourseExpression (the home course label) - not a word for 'study'.
+  ///
+  /// In en, this message translates to:
+  /// **'Hints aren\'t available in Study'**
+  String get callHintLockedTitle;
+
+  /// No description provided for @wsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Weak sounds'**
+  String get wsTitle;
+
+  /// No description provided for @wsToList.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to list'**
+  String get wsToList;
+
+  /// No description provided for @wsNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get wsNext;
+
+  /// No description provided for @wsRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get wsRetry;
+
+  /// No description provided for @wsDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get wsDone;
+
+  /// No description provided for @wsContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep going'**
+  String get wsContinue;
+
+  /// No description provided for @wsQuit.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave'**
+  String get wsQuit;
+
+  /// No description provided for @wsRetryLater.
+  ///
+  /// In en, this message translates to:
+  /// **'Please try again in a moment.'**
+  String get wsRetryLater;
+
+  /// No description provided for @wsMissingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t find that sound'**
+  String get wsMissingTitle;
+
+  /// No description provided for @wsMissingBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Please choose it from the list again.'**
+  String get wsMissingBody;
+
+  /// No description provided for @wsListLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load the list'**
+  String get wsListLoadFailed;
+
+  /// No description provided for @wsLessonLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load the lesson'**
+  String get wsLessonLoadFailed;
+
+  /// No description provided for @wsNationalTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Weak sounds for your accent'**
+  String get wsNationalTitle;
+
+  /// No description provided for @wsNationalPending.
+  ///
+  /// In en, this message translates to:
+  /// **'We\'ll fill this in once your accent is analyzed'**
+  String get wsNationalPending;
+
+  /// No description provided for @wsNationalPicked.
+  ///
+  /// In en, this message translates to:
+  /// **'Chosen from your accent analysis'**
+  String get wsNationalPicked;
+
+  /// No description provided for @wsNationalEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Make a few more calls and we\'ll analyze your accent.'**
+  String get wsNationalEmptyBody;
+
+  /// No description provided for @wsMineTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'My weak sounds'**
+  String get wsMineTitle;
+
+  /// No description provided for @wsMineSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sounds measured in your recent calls'**
+  String get wsMineSubtitle;
+
+  /// No description provided for @wsMineEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Call and review, and your weak sounds will build up.'**
+  String get wsMineEmptyBody;
+
+  /// No description provided for @wsNoDataYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No data yet'**
+  String get wsNoDataYet;
+
+  /// No description provided for @wsGoToCall.
+  ///
+  /// In en, this message translates to:
+  /// **'Start a call'**
+  String get wsGoToCall;
+
+  /// No description provided for @wsRule.
+  ///
+  /// In en, this message translates to:
+  /// **'Rule'**
+  String get wsRule;
+
+  /// No description provided for @wsRecommended.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended'**
+  String get wsRecommended;
+
+  /// No description provided for @wsNotMeasured.
+  ///
+  /// In en, this message translates to:
+  /// **'Not measured'**
+  String get wsNotMeasured;
+
+  /// No description provided for @wsStepUnderstand.
+  ///
+  /// In en, this message translates to:
+  /// **'Learn'**
+  String get wsStepUnderstand;
+
+  /// No description provided for @wsStepWords.
+  ///
+  /// In en, this message translates to:
+  /// **'Words'**
+  String get wsStepWords;
+
+  /// No description provided for @wsStepSentence.
+  ///
+  /// In en, this message translates to:
+  /// **'Sentence'**
+  String get wsStepSentence;
+
+  /// No description provided for @wsStepTest.
+  ///
+  /// In en, this message translates to:
+  /// **'Test'**
+  String get wsStepTest;
+
+  /// No description provided for @wsQuitTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop practicing?'**
+  String get wsQuitTitle;
+
+  /// No description provided for @wsQuitBody.
+  ///
+  /// In en, this message translates to:
+  /// **'If you leave now, this practice won\'t be saved.'**
+  String get wsQuitBody;
+
+  /// No description provided for @wsHowToSound.
+  ///
+  /// In en, this message translates to:
+  /// **'How to make the sound'**
+  String get wsHowToSound;
+
+  /// No description provided for @wsPracticeWords.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice words'**
+  String get wsPracticeWords;
+
+  /// No description provided for @wsPracticeSentence.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice the sentence'**
+  String get wsPracticeSentence;
+
+  /// Weak-sound learning, end of the word (08) and sentence (13) practice: restarts the same practice from the first item. Figma 「한 번 더 하기」 (owner decision 2026-09-24).
+  ///
+  /// In en, this message translates to:
+  /// **'One more time'**
+  String get wsPracticeAgain;
+
+  /// No description provided for @wsStartTest.
+  ///
+  /// In en, this message translates to:
+  /// **'Take the final test'**
+  String get wsStartTest;
+
+  /// No description provided for @wsThisSentence.
+  ///
+  /// In en, this message translates to:
+  /// **'This sentence'**
+  String get wsThisSentence;
+
+  /// No description provided for @wsNoScoreNote.
+  ///
+  /// In en, this message translates to:
+  /// **'This step isn\'t scored. Just say it along.'**
+  String get wsNoScoreNote;
+
+  /// No description provided for @wsListen.
+  ///
+  /// In en, this message translates to:
+  /// **'Listen carefully'**
+  String get wsListen;
+
+  /// No description provided for @wsSayNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Now say it'**
+  String get wsSayNow;
+
+  /// No description provided for @wsPracticeDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice complete'**
+  String get wsPracticeDone;
+
+  /// No description provided for @wsPaused.
+  ///
+  /// In en, this message translates to:
+  /// **'Paused'**
+  String get wsPaused;
+
+  /// No description provided for @wsAudioFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load the audio. Read it aloud from the text.'**
+  String get wsAudioFailed;
+
+  /// No description provided for @wsReadAloud.
+  ///
+  /// In en, this message translates to:
+  /// **'Read the sentence below aloud'**
+  String get wsReadAloud;
+
+  /// No description provided for @wsTapToStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to start'**
+  String get wsTapToStart;
+
+  /// No description provided for @wsTapWhenDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap when you\'re done'**
+  String get wsTapWhenDone;
+
+  /// No description provided for @wsScoring.
+  ///
+  /// In en, this message translates to:
+  /// **'Scoring'**
+  String get wsScoring;
+
+  /// No description provided for @wsMicFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t open the microphone.'**
+  String get wsMicFailed;
+
+  /// E6 mic-permission sheet body on the weak-sound final test. Title reuses micPermissionNeededTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'This test is read aloud, so it needs the microphone. Turn on microphone access in Settings.'**
+  String get wsMicPermissionBody;
+
+  /// No description provided for @wsNoSound.
+  ///
+  /// In en, this message translates to:
+  /// **'We didn\'t hear anything. Try again?'**
+  String get wsNoSound;
+
+  /// No description provided for @wsScoreFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Scoring failed. Please try again.'**
+  String get wsScoreFailed;
+
+  /// No description provided for @wsSomethingWrong.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong.'**
+  String get wsSomethingWrong;
+
+  /// No description provided for @wsLearnDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Lesson complete'**
+  String get wsLearnDone;
+
+  /// No description provided for @wsRetest.
+  ///
+  /// In en, this message translates to:
+  /// **'Test again'**
+  String get wsRetest;
+
+  /// No description provided for @wsFirstMeasure.
+  ///
+  /// In en, this message translates to:
+  /// **'First measurement'**
+  String get wsFirstMeasure;
+
+  /// No description provided for @wsFinalTest.
+  ///
+  /// In en, this message translates to:
+  /// **'Final test'**
+  String get wsFinalTest;
+
+  /// No description provided for @wsPoints.
+  ///
+  /// In en, this message translates to:
+  /// **'{score} pts'**
+  String wsPoints(int score);
+
+  /// No description provided for @wsBeforePoints.
+  ///
+  /// In en, this message translates to:
+  /// **'Before {score} pts'**
+  String wsBeforePoints(int score);
+
+  /// No description provided for @wsGoalPoints.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal {score} pts'**
+  String wsGoalPoints(int score);
+
+  /// No description provided for @wsGoalPrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal · {desc}'**
+  String wsGoalPrefix(String desc);
+
+  /// No description provided for @wsAccentOf.
+  ///
+  /// In en, this message translates to:
+  /// **'{country} accent'**
+  String wsAccentOf(String country);
+
+  /// No description provided for @wsWordsRepeated.
+  ///
+  /// In en, this message translates to:
+  /// **'Repeated {count} words'**
+  String wsWordsRepeated(int count);
+
+  /// No description provided for @wsChunksRepeated.
+  ///
+  /// In en, this message translates to:
+  /// **'Repeated {count} chunks'**
+  String wsChunksRepeated(int count);
+
+  /// No description provided for @wsStartRecommended.
+  ///
+  /// In en, this message translates to:
+  /// **'Start with the recommended sound'**
+  String get wsStartRecommended;
+
+  /// No description provided for @wsStartRecommendedWith.
+  ///
+  /// In en, this message translates to:
+  /// **'Start with {label}'**
+  String wsStartRecommendedWith(String label);
+
+  /// Unit shown next to a pronunciation score, e.g. the "pts" in "84 pts". Rendered in a smaller style beside the number.
+  ///
+  /// In en, this message translates to:
+  /// **'pts'**
+  String get wsPointsUnit;
+
+  /// Button on the accent card in My Page that opens weak-sound practice.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice weak sounds'**
+  String get wsEnterFromMypage;
+
+  /// No description provided for @wsGoalOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal {score}'**
+  String wsGoalOnly(int score);
+
+  /// No description provided for @wsSoundOf.
+  ///
+  /// In en, this message translates to:
+  /// **'{label} sound'**
+  String wsSoundOf(String label);
+
+  /// No description provided for @wsResultTip.
+  ///
+  /// In en, this message translates to:
+  /// **'{desc}. Picture this shape when it comes up in a call.'**
+  String wsResultTip(String desc);
+
+  /// No description provided for @wsNationalSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sounds {country} speakers often get wrong'**
+  String wsNationalSubtitle(String country);
+
+  /// No description provided for @wsRetryPackLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice sounds you often missed'**
+  String get wsRetryPackLabel;
+
+  /// No description provided for @wsRetryPackTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 sound you often missed this session} other{{count} sounds you often missed this session}}'**
+  String wsRetryPackTitle(int count);
+
+  /// No description provided for @wsRetryPackBody.
+  ///
+  /// In en, this message translates to:
+  /// **'We gathered the sounds you missed twice or more. Practice each in 4 steps.'**
+  String get wsRetryPackBody;
+
+  /// No description provided for @wsRetryPackCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice them all'**
+  String get wsRetryPackCta;
+
+  /// No description provided for @wsRetryListTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sounds you often missed'**
+  String get wsRetryListTitle;
+
+  /// No description provided for @wsRetryListSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Sounds from this session'**
+  String get wsRetryListSection;
+
+  /// No description provided for @wsRetryListSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Sounds you missed twice or more this session'**
+  String get wsRetryListSub;
+
+  /// No description provided for @wsRetryListSubWithCall.
+  ///
+  /// In en, this message translates to:
+  /// **'Sounds you missed twice or more in the call “{title}”'**
+  String wsRetryListSubWithCall(String title);
+
+  /// No description provided for @wsRetryListAllDone.
+  ///
+  /// In en, this message translates to:
+  /// **'You practiced all the sounds'**
+  String get wsRetryListAllDone;
+
+  /// No description provided for @wsRetryBackToReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to report'**
+  String get wsRetryBackToReport;
 }
 
 class _AppLocalizationsDelegate

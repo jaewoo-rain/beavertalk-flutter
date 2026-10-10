@@ -1,3 +1,19 @@
+import java.io.FileInputStream
+import java.util.Properties
+
+// 업로드 키스토어 설정. `android/key.properties` 는 저장소에 들어가지 않는다
+// (`android/.gitignore` + 루트 `.gitignore` 이중으로 막는다).
+//
+// ⚠ 키스토어와 비밀번호를 잃으면 **앱 업데이트가 영구 불가**하다. 첫 업로드
+//    전에 이 PC 밖에 백업할 것.
+val keystorePropertiesFile = rootProject.file("key.properties")
+val keystoreProperties = Properties().apply {
+    if (keystorePropertiesFile.exists()) {
+        FileInputStream(keystorePropertiesFile).use { load(it) }
+    }
+}
+val hasUploadKeystore = keystorePropertiesFile.exists()
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -41,11 +57,33 @@ android {
         versionName = flutter.versionName
     }
 
+    signingConfigs {
+        create("release") {
+            if (hasUploadKeystore) {
+                storeFile = keystoreProperties["storeFile"]?.let { rootProject.file(it) }
+                storePassword = keystoreProperties["storePassword"] as String?
+                keyAlias = keystoreProperties["keyAlias"] as String?
+                keyPassword = keystoreProperties["keyPassword"] as String?
+            }
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            // 키스토어가 있으면 업로드 키로 서명한다.
+            //
+            // 없으면 디버그 키로 떨어진다 — `flutter run --release` 같은 로컬
+            // 확인을 막지 않기 위해서다. ⚠ 그 산출물은 **Play 에 올릴 수 없다**
+            // (업로드 자체가 거부된다). 그래서 조용히 넘어가지 않고 경고를 찍는다.
+            signingConfig = if (hasUploadKeystore) {
+                signingConfigs.getByName("release")
+            } else {
+                logger.warn(
+                    "[signing] android/key.properties 가 없어 릴리스를 디버그 키로 서명합니다. " +
+                    "이 산출물은 Play 업로드가 거부됩니다."
+                )
+                signingConfigs.getByName("debug")
+            }
         }
     }
 }

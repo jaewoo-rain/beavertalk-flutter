@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../app/adaptive.dart';
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_color_tokens.dart';
 import '../../theme/app_radius.dart';
@@ -94,6 +95,7 @@ class Gnb extends StatelessWidget {
     this.statusColor,
     this.caption,
     this.trailing,
+    this.background,
   });
 
   /// [GnbType.main]: back arrow + centered [title].
@@ -102,12 +104,14 @@ class Gnb extends StatelessWidget {
     String? title,
     VoidCallback? onBack,
     Widget? trailing,
+    Color? background,
   }) : this(
           key: key,
           type: GnbType.main,
           title: title,
           onBack: onBack,
           trailing: trailing,
+          background: background,
         );
 
   /// [GnbType.main2]: back arrow + [progress] bar + `current/total`.
@@ -187,8 +191,15 @@ class Gnb extends StatelessWidget {
   /// When omitted, a balancing transparent spacer keeps the title centered.
   final Widget? trailing;
 
-  /// Horizontal padding for row variants (Figma `20`).
-  static const double _hPad = 20;
+  /// GNB 가 칠할 배경. null 이면 [type] 의 기본값.
+  ///
+  /// 이어지는 면 위에 얹을 때 `Colors.transparent` 를 준다 — 안 그러면 GNB 만
+  /// 제 배경을 칠해 가로줄이 생긴다.
+  final Color? background;
+
+  // 좌우 패딩(Figma `20`)은 상수가 아니라 [ContentColumn] 이 준다. 폰에서는
+  // 그대로 20이고, 넓어지면 헤더 내용이 본문 컬럼과 같은 선에 선다(태블릿
+  // 810에서 105). 막대 **배경은** 전폭 그대로다 — 좁아지는 건 패딩뿐이다.
 
   /// Vertical padding for row variants (Figma `14`).
   static const double _vPad = 14;
@@ -197,6 +208,13 @@ class Gnb extends StatelessWidget {
   static const double _iconBox = 28;
 
   Color _background(BuildContext context) {
+    // 호출부가 지정하면 그것이 이긴다.
+    //
+    // GNB 가 **자기 배경을 칠한다**는 것이 놓치기 쉬운 사실이다. 뒤에 색을 깔아도
+    // GNB 만 회색으로 남는다 — 학습 달력에서 히어로는 주황인데 GNB 만 회색이라
+    // 가로줄이 생겼다(2026-09-23 실기기). 이어지는 면 위에 얹을 때는 투명을 준다.
+    final override = background;
+    if (override != null) return override;
     switch (type) {
       case GnbType.main:
       case GnbType.sub:
@@ -222,10 +240,6 @@ class Gnb extends StatelessWidget {
         content = _buildSub2(context);
     }
 
-    final padding = type == GnbType.sub
-        ? const EdgeInsets.symmetric(horizontal: 10, vertical: 12)
-        : const EdgeInsets.symmetric(horizontal: _hPad, vertical: _vPad);
-
     return Semantics(
       container: true,
       header: true,
@@ -233,7 +247,18 @@ class Gnb extends StatelessWidget {
         color: _background(context),
         child: SafeArea(
           bottom: false,
-          child: Padding(padding: padding, child: content),
+          // sub 은 가운데 정렬된 열이라 폭이 늘어도 제자리다 — Figma 값 10을
+          // 그대로 둔다. 나머지 행 변형만 본문 컬럼 선에 맞춘다(태블릿 105).
+          child: type == GnbType.sub
+              ? Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 10, vertical: 12),
+                  child: content,
+                )
+              : ContentColumn(
+                  padding: const EdgeInsets.symmetric(vertical: _vPad),
+                  child: content,
+                ),
         ),
       ),
     );
@@ -375,7 +400,9 @@ class _CenteredTitle extends StatelessWidget {
     return Text(
       title ?? '',
       textAlign: TextAlign.center,
-      maxLines: 1,
+      // 화면 제목이 잘리면 **어느 화면인지** 모른다. GNB 본체는 높이 고정이
+      // 아니라 제목이 늘면 같이 커진다(전수감사 10건).
+      maxLines: 2,
       overflow: TextOverflow.ellipsis,
       style: AppType.body1.sb.copyWith(color: context.c.labelStrong),
     );
@@ -474,6 +501,34 @@ class _GnbProgressTrack extends StatelessWidget {
 }
 
 /// Paints the Figma `arrow-left` glyph (`162:4156`) scaled into its 28×28 box.
+/// GNB 와 **같은 모양**의 뒤로가기 화살표.
+///
+/// GNB 밖에서도 같은 글리프를 써야 하는 화면이 있다(학습 4단계 헤더). 그때 아이콘을
+/// 새로 그리면 같은 뜻의 화살표가 두 벌이 되고, 한쪽만 고쳐진다. 그래서 GNB 가 쓰는
+/// 페인터를 그대로 노출한다 — 모양의 출처는 여전히 이 파일 하나다.
+class GnbBackArrow extends StatelessWidget {
+  /// Creates the shared back glyph.
+  const GnbBackArrow({super.key, this.size = Gnb._iconBox, this.color});
+
+  /// 그릴 정사각 크기(기본 = GNB 의 아이콘 박스).
+  final double size;
+
+  /// 글리프 색. 기본은 `Label/Strong`.
+  final Color? color;
+
+  @override
+  Widget build(BuildContext context) => SizedBox(
+        width: size,
+        height: size,
+        child: Transform.flip(
+          flipX: Directionality.of(context) == TextDirection.rtl,
+          child: CustomPaint(
+            painter: _ArrowLeftPainter(color ?? context.c.labelStrong),
+          ),
+        ),
+      );
+}
+
 class _ArrowLeftPainter extends CustomPainter {
   const _ArrowLeftPainter(this.color);
 

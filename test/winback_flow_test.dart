@@ -1,0 +1,393 @@
+import 'package:beavertalk/app/routes.dart';
+import 'package:beavertalk/features/auth/domain/entities/member.dart';
+import 'package:beavertalk/features/auth/presentation/providers/my_profile_provider.dart';
+import 'package:beavertalk/features/subscription/domain/entities/subscription.dart';
+import 'package:beavertalk/features/subscription/domain/entities/subscription_state.dart';
+import 'package:beavertalk/features/subscription/domain/subscription_status_resolver.dart';
+import 'package:beavertalk/features/subscription/presentation/providers/subscription_providers.dart';
+import 'package:beavertalk/features/subscription/presentation/providers/subscription_state_providers.dart';
+import 'package:beavertalk/l10n/app_localizations.dart';
+import 'package:beavertalk/screens/plans/winback_offer_sheet.dart';
+import 'package:beavertalk/screens/plans/winback_survey.dart';
+import 'package:beavertalk/screens/plans/winback_trigger.dart';
+import 'package:beavertalk/features/subscription/domain/iap_service.dart';
+import 'package:dio/dio.dart';
+import 'package:beavertalk/features/subscription/data/datasources/subscription_remote_data_source.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+/// 윈백 — 만료 뒤 첫 실행 1회 설문 · 「비쌈」 이면 오퍼 시트(PM-DEC-034~036 · 052).
+///
+/// 띄우는 조건: 서버 판정 expired(F059) · 한 번이라도 활성화된 행(F058) · 회원별 기록(F061).
+final _expiry = DateTime.utc(2026, 9, 20);
+
+Member _member(int id) => Member(
+      memberId: id,
+      email: 'qa@example.com',
+      name: 'QA',
+      language: 'en',
+      targetLanguage: 'ko',
+      onboardingCompleted: true,
+      createdAt: DateTime(2026, 3, 1),
+    );
+
+SubscriptionStatus _status(SubscriptionState state) => SubscriptionStatus(
+      state: state,
+      tier: SubscriptionTier.free,
+      expiresAt: _expiry,
+    );
+
+/// 한 번은 활성이었다가 해지·만료된 행.
+final _lapsed = [Subscription(id: 1, endDate: _expiry, isActivate: false)];
+
+Future<void> _pump(
+  WidgetTester tester, {
+  SubscriptionStatus? server,
+  List<Subscription>? rows,
+  int memberId = 7,
+  bool profileFails = false,
+  IapService? iap,
+  SubscriptionStatus? Function(int call)? serverSeq,
+  SubscriptionRemoteDataSource? remote,
+}) async {
+  var calls = 0;
+  tester.view.physicalSize = const Size(375, 900);
+  tester.view.devicePixelRatio = 1.0;
+  addTearDown(tester.view.reset);
+  await tester.pumpWidget(ProviderScope(
+    // 매 호출 새 스코프 — 같은 시험 안에서 회원을 바꿔 다시 띄운다.
+    key: UniqueKey(),
+    overrides: [
+      serverSubscriptionStatusProvider.overrideWith(
+          (ref) async => serverSeq != null ? serverSeq(calls++) : server),
+      // 스토어 없음이 기본 — 시험 VM 은 android 로 보여 실 레일(회원 id 없음 = 대조 불가)이 잡힌다.
+      iapServiceProvider.overrideWithValue(iap ?? _StoreIap()),
+      if (remote != null)
+        subscriptionRemoteDataSourceProvider.overrideWithValue(remote),
+      subscriptionsProvider.overrideWith((ref) async => rows ?? _lapsed),
+      myProfileProvider.overrideWith((ref) async {
+        if (profileFails) throw StateError('profile down');
+        return _member(memberId);
+      }),
+    ],
+    child: MaterialApp(
+      locale: const Locale('en'),
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      routes: {Routes.winbackSurvey: (_) => const WinbackSurveyScreen()},
+      home: const Scaffold(body: Stack(children: [Text('HOME'), WinbackTrigger()])),
+    ),
+  ));
+  await tester.pump();
+  await tester.pump(const Duration(milliseconds: 50)); // futures · prefs
+  await tester.pump(const Duration(milliseconds: 400)); // route transition
+}
+
+final _survey = find.text('Your Premium plan ended');
+
+void main() {
+  test('권할 회원 — 서버 expired + 활성화된 적 있는 행', () {
+    final expired = _status(SubscriptionState.expired);
+    expect(shouldOfferWinback(status: expired, rows: _lapsed), isTrue);
+    expect(
+      shouldOfferWinback(status: expired, rows: [const Subscription(id: 2)]),
+      isFalse,
+      reason: 'is_activate null 만 있으면 결제한 적이 없다(F058)',
+    );
+    expect(
+      shouldOfferWinback(status: _status(SubscriptionState.ending), rows: _lapsed),
+      isFalse,
+    );
+    expect(winbackPrefKeyFor(7), 'winback_survey_shown_for_7');
+    expect(winbackMark(_expiry), '2026-09-20T00:00:00.000Z');
+  });
+
+  testWidgets('만료 → 설문 1회 · 사유 고르기 전 Send 꺼짐 · 「비쌈」 → 오퍼 시트 · Maybe later 로 홈',
+      (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    await _pump(tester, server: _status(SubscriptionState.expired));
+    expect(_survey, findsOneWidget);
+
+    await tester.tap(find.text('Send'));
+    await tester.pump();
+    expect(_survey, findsOneWidget, reason: '안 골랐으면 안 보낸다(PM-DEC-042)');
+    await tester.tap(find.text('Too expensive'));
+    await tester.pump();
+    await tester.tap(find.text('Send'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 600));
+    expect(find.text('Welcome back'), findsOneWidget);
+    expect(find.text('50% off your first month'), findsOneWidget);
+    expect(find.textContaining(r'$'), findsNothing, reason: '금액은 적지 않는다(사용자 결정 A)');
+
+    await tester.tap(find.text('Maybe later'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 600));
+    expect(find.text('Welcome back'), findsNothing);
+    expect(find.text('HOME'), findsOneWidget);
+
+    final prefs = await SharedPreferences.getInstance();
+    expect(prefs.getString(winbackPrefKeyFor(7)), winbackMark(_expiry));
+  });
+
+  testWidgets('「안 씀」 은 보내고 홈으로 — 오퍼 시트 없음', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    await _pump(tester, server: _status(SubscriptionState.expired));
+    await tester.tap(find.text("I wasn't using it enough"));
+    await tester.pump();
+    await tester.tap(find.text('Send'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 600));
+    expect(_survey, findsNothing);
+    expect(find.text('Welcome back'), findsNothing);
+    expect(find.text('HOME'), findsOneWidget);
+  });
+
+  testWidgets('F107 — 스토어에 활성 Premium 이 있으면 복원 후 다시 읽어 만료가 아니면 안 띄운다',
+      (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final iap = _StoreIap(ownsPremium: true);
+    await _pump(tester, iap: iap, serverSeq: (i) => i == 0
+        ? _status(SubscriptionState.expired)
+        : _status(SubscriptionState.activeMax));
+    await tester.pumpAndSettle();
+    expect(iap.restores, 1);
+    expect(_survey, findsNothing);
+  });
+
+  testWidgets('F107 — 복원 뒤에도 서버가 expired 면 그때 설문', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final iap = _StoreIap(ownsPremium: true);
+    await _pump(tester, iap: iap, server: _status(SubscriptionState.expired));
+    await tester.pumpAndSettle();
+    expect(iap.restores, 1);
+    expect(_survey, findsOneWidget);
+  });
+
+  testWidgets('F107 — 스토어에 활성 구매가 없으면 복원 없이 바로 설문(기존 흐름)', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final iap = _StoreIap(ownsPremium: false);
+    await _pump(tester, iap: iap, server: _status(SubscriptionState.expired));
+    await tester.pumpAndSettle();
+    expect(iap.restores, 0);
+    expect(_survey, findsOneWidget);
+  });
+
+  testWidgets('F112 — 스토어 조회 실패·회원 대조 불가면 이번 실행은 보류 · 기록 없음 · 복원 없음',
+      (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final iap = _StoreIap(store: StorePremium.unknown);
+    await _pump(tester, iap: iap, server: _status(SubscriptionState.expired));
+    await tester.pumpAndSettle();
+    expect(iap.restores, 0);
+    expect(_survey, findsNothing);
+    final prefs = await SharedPreferences.getInstance();
+    expect(prefs.getString(winbackPrefKeyFor(7)), isNull, reason: '다음 실행에서 다시 판정');
+  });
+
+  testWidgets('F112 — 복원 뒤 재조회 실패도 보류 · 기록 없음', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final iap = _StoreIap(ownsPremium: true);
+    await _pump(tester, iap: iap, serverSeq: (i) {
+      if (i == 0) return _status(SubscriptionState.expired);
+      throw StateError('server down');
+    });
+    await tester.pumpAndSettle();
+    expect(iap.restores, 1);
+    expect(_survey, findsNothing);
+    final prefs = await SharedPreferences.getInstance();
+    expect(prefs.getString(winbackPrefKeyFor(7)), isNull);
+  });
+
+  testWidgets('F112 — 이 만료에 이미 설문을 봤으면 스토어 조회·복원도 안 한다', (tester) async {
+    SharedPreferences.setMockInitialValues(
+        {winbackPrefKeyFor(7): winbackMark(_expiry)});
+    final iap = _StoreIap(ownsPremium: true);
+    await _pump(tester, iap: iap, server: _status(SubscriptionState.expired));
+    await tester.pumpAndSettle();
+    expect((iap.queries, iap.restores), (0, 0));
+    expect(_survey, findsNothing);
+  });
+
+  testWidgets('§17 · PM-DEC-183 — 「비쌈」 은 사유를 false 로 먼저, 오퍼 시트가 뜨면 true 로 다시',
+      (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final remote = _RecordingRemote();
+    await _pump(tester,
+        server: SubscriptionStatus(
+          state: SubscriptionState.expired,
+          tier: SubscriptionTier.free,
+          expiresAt: _expiry,
+          source: const Subscription(id: 42),
+        ),
+        remote: remote);
+    await tester.tap(find.text('Too expensive'));
+    await tester.pump();
+    await tester.tap(find.text('Send'));
+    await tester.pumpAndSettle();
+    expect(remote.sent, [('expensive', 42, false), ('expensive', 42, true)]);
+  });
+
+  testWidgets('§17 — 다른 사유는 한 번 · offer_shown false · other_app 와이어 코드', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final remote = _RecordingRemote();
+    await _pump(tester,
+        server: SubscriptionStatus(
+          state: SubscriptionState.expired,
+          tier: SubscriptionTier.free,
+          expiresAt: _expiry,
+          source: const Subscription(id: 42),
+        ),
+        remote: remote);
+    await tester.tap(find.text('I found another app'));
+    await tester.pump();
+    await tester.tap(find.text('Send'));
+    await tester.pumpAndSettle();
+    expect(remote.sent, [('other_app', 42, false)]);
+  });
+
+  testWidgets('F058 — 활성화된 적 없는 행(null)뿐이면 안 띄운다', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    await _pump(tester,
+        server: _status(SubscriptionState.expired), rows: [const Subscription(id: 3)]);
+    expect(_survey, findsNothing);
+  });
+
+  testWidgets('F059 — 서버 판정이 없으면(구서버·실패) 행 추론으로 띄우지 않는다', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    await _pump(tester, server: null);
+    expect(_survey, findsNothing);
+  });
+
+  testWidgets('만료가 아니면(해지 예약 포함) 안 띄운다', (tester) async {
+    for (final s in [SubscriptionState.ending, SubscriptionState.free, SubscriptionState.activeMax]) {
+      SharedPreferences.setMockInitialValues({});
+      await _pump(tester, server: _status(s));
+      expect(_survey, findsNothing, reason: '$s');
+    }
+  });
+
+  testWidgets('F061 — 회원별 기록: 같은 회원 같은 만료는 한 번 · 다른 회원 기록이 덮지 않는다',
+      (tester) async {
+    SharedPreferences.setMockInitialValues({
+      winbackPrefKeyFor(7): winbackMark(_expiry),
+    });
+    // A(7) 는 이미 봤다.
+    await _pump(tester, server: _status(SubscriptionState.expired), memberId: 7);
+    expect(_survey, findsNothing);
+    // B(8) 는 처음 — 뜬다.
+    await _pump(tester, server: _status(SubscriptionState.expired), memberId: 8);
+    expect(_survey, findsOneWidget);
+    // 다시 A — B 의 기록이 A 를 덮지 않았으니 안 뜬다.
+    await _pump(tester, server: _status(SubscriptionState.expired), memberId: 7);
+    expect(_survey, findsNothing);
+    final prefs = await SharedPreferences.getInstance();
+    expect(prefs.getString(winbackPrefKeyFor(7)), winbackMark(_expiry));
+    expect(prefs.getString(winbackPrefKeyFor(8)), winbackMark(_expiry));
+  });
+
+  testWidgets('F061 — 프로필을 못 읽으면 띄우지도 기록하지도 않는다', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    await _pump(tester, server: _status(SubscriptionState.expired), profileFails: true);
+    expect(_survey, findsNothing);
+    final prefs = await SharedPreferences.getInstance();
+    expect(prefs.getKeys(), isEmpty);
+  });
+
+  testWidgets('F060 — 사유 행은 선택 상태·단일 선택을, Skip 은 버튼 역할을 알린다', (tester) async {
+    final handle = tester.ensureSemantics();
+    await tester.pumpWidget(const MaterialApp(
+      locale: Locale('en'),
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: WinbackSurveyScreen(),
+    ));
+    await tester.tap(find.text('Too expensive'));
+    await tester.pump();
+    expect(
+      tester.getSemantics(find.text('Too expensive')),
+      isSemantics(
+        label: 'Too expensive',
+        hasCheckedState: true,
+        isChecked: true,
+        isInMutuallyExclusiveGroup: true,
+        hasTapAction: true,
+      ),
+    );
+    expect(
+      tester.getSemantics(find.text('Something else')),
+      isSemantics(
+        label: 'Something else',
+        hasCheckedState: true,
+        isChecked: false,
+        isInMutuallyExclusiveGroup: true,
+        hasTapAction: true,
+      ),
+    );
+    expect(tester.getSemantics(find.text('Skip')), isSemantics(label: 'Skip', isButton: true, hasTapAction: true));
+    handle.dispose();
+  });
+
+  testWidgets('오퍼 시트 — 정본 순서 · 버튼 둘(보조 위 · 주요 아래)', (tester) async {
+    var got = 0;
+    var later = 0;
+    await tester.pumpWidget(MaterialApp(
+      locale: const Locale('en'),
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: Scaffold(
+        body: Align(
+          alignment: Alignment.bottomCenter,
+          child: WinbackOfferSheet(onGetOffer: () => got++, onLater: () => later++),
+        ),
+      ),
+    ));
+    final badgeY = tester.getCenter(find.text('50% off your first month')).dy;
+    final titleY = tester.getCenter(find.text('Welcome back')).dy;
+    final videoY = tester.getCenter(find.text('15 minutes of video calls a day')).dy;
+    final laterY = tester.getCenter(find.text('Maybe later')).dy;
+    final offerY = tester.getCenter(find.text('Get 50% off')).dy;
+    expect(badgeY < titleY && titleY < videoY && videoY < laterY && laterY < offerY, isTrue);
+    await tester.tap(find.text('Get 50% off'));
+    await tester.tap(find.text('Maybe later'));
+    expect((got, later), (1, 1));
+  });
+}
+
+/// 스토어가 이 회원의 활성 Premium 을 보는지([store])와 조회·복원 호출 수.
+class _StoreIap extends MockIapService {
+  _StoreIap({bool ownsPremium = false, StorePremium? store})
+      : store = store ?? (ownsPremium ? StorePremium.owned : StorePremium.none);
+  final StorePremium store;
+  int restores = 0;
+  int queries = 0;
+
+  @override
+  Future<StorePremium> storePremium() async {
+    queries++;
+    return store;
+  }
+
+  @override
+  Future<RestoreOutcome> restore() async {
+    restores++;
+    return RestoreOutcome.restored;
+  }
+}
+
+/// 보낸 해지 사유를 순서대로 기록한다.
+class _RecordingRemote extends SubscriptionRemoteDataSource {
+  _RecordingRemote() : super(Dio());
+  final sent = <(String, int, bool)>[];
+
+  @override
+  Future<void> submitChurnReason({
+    required String reason,
+    required int subscribeId,
+    required bool offerShown,
+  }) async {
+    sent.add((reason, subscribeId, offerShown));
+  }
+}
