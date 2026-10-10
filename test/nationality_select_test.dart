@@ -37,6 +37,20 @@ class _FakeAuth implements AuthRepository {
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
+/// 국적 열이 없는 구서버 — PATCH 는 200 이지만 응답에 actual_nationality 가 없다.
+class _OldServerAuth implements AuthRepository {
+  int calls = 0;
+
+  @override
+  Future<Member> updateActualNationality(String iso) async {
+    calls++;
+    return const Member(memberId: 1);
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
 Future<ProviderContainer> _pump(
   WidgetTester tester,
   Widget screen, {
@@ -177,6 +191,47 @@ void main() {
       await tester.tap(find.text(l10n.ctaSave));
       await tester.pump(const Duration(milliseconds: 100));
       expect(auth.saved, ['JP']);
+    });
+
+    testWidgets('구서버(국적 필드를 무시하고 돌려줌)여도 Save 뒤 오류 없이 화면을 닫는다', (tester) async {
+      final auth = _OldServerAuth();
+      await tester.pumpWidget(const SizedBox.shrink());
+      final container = ProviderContainer(overrides: [
+        authRepositoryProvider.overrideWithValue(auth),
+        myProfileProvider.overrideWith((ref) async => const Member(memberId: 1)),
+      ]);
+      addTearDown(container.dispose);
+      tester.view.physicalSize = const Size(375, 812);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
+      await tester.pumpWidget(UncontrolledProviderScope(
+        container: container,
+        child: MaterialApp(
+          locale: const Locale('ko'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Builder(
+            builder: (context) => TextButton(
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute<void>(builder: (_) => const MyPageNationalityScreen()),
+              ),
+              child: const Text('OPEN'),
+            ),
+          ),
+        ),
+      ));
+      await tester.tap(find.text('OPEN'));
+      await tester.pumpAndSettle();
+      final l10n = AppLocalizations.of(tester.element(find.byType(MyPageNationalityScreen)));
+      await _search(tester, 'Japan');
+      await tester.tap(find.widgetWithText(CountrySelect, 'Japan'));
+      await tester.pump();
+      await tester.tap(find.text(l10n.ctaSave));
+      await tester.pumpAndSettle();
+      expect(auth.calls, 1);
+      expect(find.byType(MyPageNationalityScreen), findsNothing, reason: '오류 스낵바 없이 설정으로 돌아간다');
+      expect(find.byType(SnackBar), findsNothing);
     });
 
     testWidgets('미선택 회원 — 「Current」 묶음 없이 시작 · 지우는 버튼 없음', (tester) async {
