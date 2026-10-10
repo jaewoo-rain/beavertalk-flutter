@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/di/providers.dart';
@@ -41,7 +42,19 @@ final myAssignmentsProvider = FutureProvider<List<ClassroomAssignment>>((
   // B2B 주소가 없는 빌드에서는 숙제가 통째로 꺼진 것이다. 여기서 빈 목록으로
   // 끊는다 — 안 끊으면 [b2bDioProvider] 가 던지고 화면마다 오류로 번역된다.
   if (!Env.hasB2bApi) return const <ClassroomAssignment>[];
-  return ref.watch(classroomRepositoryProvider).myAssignments();
+  // Teachers can publish while the student app is in the background.
+  var loading = true;
+  final lifecycle = AppLifecycleListener(
+    onResume: () {
+      if (!loading) ref.invalidateSelf();
+    },
+  );
+  ref.onDispose(lifecycle.dispose);
+  try {
+    return await ref.watch(classroomRepositoryProvider).myAssignments();
+  } finally {
+    loading = false;
+  }
 });
 
 /// 내가 참여한 반.
@@ -76,6 +89,7 @@ void invalidateClassroomMembership(WidgetRef ref) {
 /// 방금 채점한 문장이 반영된다.
 final assignmentReportProvider = FutureProvider.autoDispose
     .family<LearningSummary, int>((ref, assignmentId) async {
-      return ref.watch(classroomRepositoryProvider).assignmentReport(assignmentId);
+      return ref
+          .watch(classroomRepositoryProvider)
+          .assignmentReport(assignmentId);
     });
-
