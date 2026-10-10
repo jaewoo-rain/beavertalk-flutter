@@ -2995,4 +2995,33 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get wsRetryBackToReport => 'Bumalik sa ulat';
+
+  @override
+  String get nationalityTitle => 'Piliin ang iyong nasyonalidad';
+
+  @override
+  String get nationalitySubtitle =>
+      'Ayos lang kahit iba ito sa iyong katutubong wika';
+
+  @override
+  String get nationalityUsageNotice =>
+      'Ginagamit para mapabuti ang mga salin at ang kapaligiran sa pag-aaral';
+
+  @override
+  String get nationalitySearchHint => 'Maghanap ng bansa';
+
+  @override
+  String get nationalityAllCountries => 'Lahat ng bansa (ayon sa alpabeto)';
+
+  @override
+  String get nationalityCurrent => 'Kasalukuyan';
+
+  @override
+  String get nationalityLabel => 'Nasyonalidad';
+
+  @override
+  String get nationalityNotSet => 'Hindi pa nakatakda';
+
+  @override
+  String get nationalitySearchEmpty => 'Walang resulta';
 }

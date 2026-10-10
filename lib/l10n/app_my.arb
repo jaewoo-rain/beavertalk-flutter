@@ -881,5 +881,14 @@
   "wsRetryListSub": "ဤသင်ခန်းစာတွင် ၂ ကြိမ်နှင့်အထက် မှားသော အသံများ",
   "wsRetryListSubWithCall": "“{title}” ခေါ်ဆိုမှုတွင် ၂ ကြိမ်နှင့်အထက် မှားသော အသံများ",
   "wsRetryListAllDone": "အသံအားလုံး လေ့ကျင့်ပြီးပါပြီ",
-  "wsRetryBackToReport": "အစီရင်ခံစာသို့ ပြန်ရန်"
+  "wsRetryBackToReport": "အစီရင်ခံစာသို့ ပြန်ရန်",
+  "nationalityTitle": "သင့်နိုင်ငံသားကို ရွေးပါ",
+  "nationalitySubtitle": "မိခင်ဘာသာနှင့် မတူလည်း ရပါတယ်",
+  "nationalityUsageNotice": "ဘာသာပြန်ခြင်းနှင့် သင်ယူမှုပတ်ဝန်းကျင် တိုးတက်စေရန် အသုံးပြုပါသည်",
+  "nationalitySearchHint": "နိုင်ငံ ရှာရန်",
+  "nationalityAllCountries": "နိုင်ငံအားလုံး (အက္ခရာစဉ်)",
+  "nationalityCurrent": "လက်ရှိ",
+  "nationalityLabel": "နိုင်ငံသား",
+  "nationalityNotSet": "မသတ်မှတ်ရသေး",
+  "nationalitySearchEmpty": "ရလဒ် မရှိပါ"
 }

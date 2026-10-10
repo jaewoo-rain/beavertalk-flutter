@@ -12,6 +12,7 @@ import 'app/push_bootstrap.dart';
 import 'app/routes.dart';
 import 'core/analytics/app_analytics.dart';
 import 'core/config/feature_flags.dart';
+import 'core/device/client_info.dart';
 import 'core/i18n/locale_controller.dart';
 import 'core/network/supabase_config.dart';
 import 'features/subscription/presentation/providers/subscription_state_providers.dart';
@@ -58,6 +59,9 @@ Future<void> main() async {
     // non-deprecated `publishableKey` param (replaces `anonKey`).
     publishableKey: SupabaseConfig.anonKey,
   );
+  // 국적 분류 모델에 같이 가는 기기 값(통화 소켓 쿼리) — 기다리지 않는다. 첫 통화 전에 끝나고,
+  // 못 끝나거나 실패하면 그 값만 빠진 채 통화가 열린다(2026-10-10 · ClientInfo).
+  unawaited(ClientInfo.load());
   // Firebase 초기화는 여기서 하지 않는다 — `_initFcm` 안으로 옮겼다.
   //
   // Firebase는 **안드로이드의 FCM 트리거**에만 필요하고 iOS의 VoIP/CallKit 경로와는

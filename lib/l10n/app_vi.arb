@@ -881,5 +881,14 @@
   "wsRetryListSub": "Các âm bạn sai từ 2 lần trở lên trong buổi học này",
   "wsRetryListSubWithCall": "Các âm bạn sai từ 2 lần trở lên trong cuộc gọi “{title}”",
   "wsRetryListAllDone": "Bạn đã luyện tất cả các âm",
-  "wsRetryBackToReport": "Quay lại báo cáo"
+  "wsRetryBackToReport": "Quay lại báo cáo",
+  "nationalityTitle": "Hãy chọn quốc tịch của bạn",
+  "nationalitySubtitle": "Khác với tiếng mẹ đẻ cũng không sao",
+  "nationalityUsageNotice": "Được dùng để cải thiện bản dịch và môi trường học tập",
+  "nationalitySearchHint": "Tìm tên quốc gia",
+  "nationalityAllCountries": "Tất cả quốc gia (theo bảng chữ cái)",
+  "nationalityCurrent": "Hiện tại",
+  "nationalityLabel": "Quốc tịch",
+  "nationalityNotSet": "Chưa đặt",
+  "nationalitySearchEmpty": "Không có kết quả"
 }

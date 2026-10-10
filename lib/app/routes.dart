@@ -7,6 +7,7 @@ import '../theme/app_motion.dart';
 import 'placeholder_screen.dart';
 import '../screens/onboarding/onboarding_language.dart';
 import '../screens/onboarding/onboarding_name.dart';
+import '../screens/onboarding/onboarding_nationality.dart';
 import '../screens/onboarding/onboarding_reason.dart';
 import '../screens/onboarding/onboarding_done.dart';
 import '../screens/auth/login.dart';
@@ -34,6 +35,7 @@ import '../screens/system/mic_denied.dart';
 import '../screens/system/network_error.dart';
 import '../screens/mypage/mypage.dart';
 import '../screens/mypage/edit_nickname.dart';
+import '../screens/mypage/nationality.dart';
 import '../screens/mypage/settings.dart';
 import '../screens/mypage/subscription_manage.dart';
 import '../screens/plans/paywall.dart';
@@ -64,6 +66,8 @@ import '../screens/classroom/assignment_detail.dart';
 /// Route names for the design_app flows.
 abstract final class Routes {
   static const onboarding = '/onboarding';
+  /// 온보딩 2/4 실제 국적(모국어와 별개 · 2026-10-10 PM-DEC-487).
+  static const onboardingNationality = '/onboarding/nationality';
   static const onboardingName = '/onboarding/name';
   static const onboardingReason = '/onboarding/reason';
   static const onboardingDone = '/onboarding/done';
@@ -104,6 +108,9 @@ abstract final class Routes {
   /// Nickname editor behind the Account card's Nickname row (Figma
   /// `depth/edit_nickname_depth3`).
   static const editNickname = '/mypage/settings/nickname';
+
+  /// 설정 Account 「Nationality」 행 → 국적 변경(Figma `depth/mypage_nationality` `6645:59501`).
+  static const mypageNationality = '/mypage/settings/nationality';
   static const subscription = '/mypage/subscription';
   static const avatar = '/mypage/avatar';
 
@@ -233,6 +240,7 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
     if (kDebugMode) Routes.echoRig: (_) => const EchoRigScreen(),
     if (kDebugMode) Routes.cancelRig: (_) => const CancelRigScreen(),
     Routes.onboarding: (_) => const OnboardingLanguageScreen(),
+    Routes.onboardingNationality: (_) => const OnboardingNationalityScreen(),
     Routes.onboardingName: (_) => const OnboardingNameScreen(),
     Routes.onboardingReason: (_) => const OnboardingReasonScreen(),
     Routes.onboardingDone: (_) => const OnboardingDoneScreen(),
@@ -278,6 +286,7 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
     Routes.mypage: (_) => const MyPageScreen(),
     Routes.mypageSettings: (_) => const MyPageSettingsScreen(),
     Routes.editNickname: (_) => const EditNicknameScreen(),
+    Routes.mypageNationality: (_) => const MyPageNationalityScreen(),
     Routes.subscription: (_) => const SubscriptionManageScreen(),
     Routes.plansCompare: (_) => const PlansCompareScreen(),
     Routes.paywallProLimit: (_) =>
@@ -303,6 +312,7 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
   final names = <String, String>{
     Routes.reportContent: '신고',
     Routes.onboarding: '온보딩 · 언어 선택',
+    Routes.onboardingNationality: '온보딩 · 국적',
     Routes.onboardingName: '온보딩 · 이름',
     Routes.onboardingReason: '온보딩 · 이유',
     Routes.onboardingDone: '온보딩 · 완료',

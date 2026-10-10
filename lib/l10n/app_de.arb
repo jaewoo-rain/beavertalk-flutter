@@ -881,5 +881,14 @@
   "wsRetryListSub": "Laute, die du in dieser Sitzung 2-mal oder öfter verfehlt hast",
   "wsRetryListSubWithCall": "Laute, die du im Gespräch „{title}“ 2-mal oder öfter verfehlt hast",
   "wsRetryListAllDone": "Du hast alle Laute geübt",
-  "wsRetryBackToReport": "Zurück zum Bericht"
+  "wsRetryBackToReport": "Zurück zum Bericht",
+  "nationalityTitle": "Wähle deine Staatsangehörigkeit",
+  "nationalitySubtitle": "Sie darf von deiner Muttersprache abweichen",
+  "nationalityUsageNotice": "Wird genutzt, um Übersetzungen und die Lernumgebung zu verbessern",
+  "nationalitySearchHint": "Land suchen",
+  "nationalityAllCountries": "Alle Länder (alphabetisch)",
+  "nationalityCurrent": "Aktuell",
+  "nationalityLabel": "Staatsangehörigkeit",
+  "nationalityNotSet": "Nicht festgelegt",
+  "nationalitySearchEmpty": "Keine Ergebnisse"
 }

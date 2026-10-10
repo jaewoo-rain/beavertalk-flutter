@@ -881,5 +881,14 @@
   "wsRetryListSub": "Бул сабакта 2 же андан көп жолу жаңылган тыбыштар",
   "wsRetryListSubWithCall": "«{title}» чалуусунда 2 же андан көп жолу жаңылган тыбыштар",
   "wsRetryListAllDone": "Бардык тыбыштар боюнча көнүгүү бүттү",
-  "wsRetryBackToReport": "Отчетко кайтуу"
+  "wsRetryBackToReport": "Отчетко кайтуу",
+  "nationalityTitle": "Жарандыгыңызды тандаңыз",
+  "nationalitySubtitle": "Эне тилиңизден башка болсо да болот",
+  "nationalityUsageNotice": "Котормолорду жана окуу чөйрөсүн жакшыртуу үчүн колдонулат",
+  "nationalitySearchHint": "Өлкөнү издөө",
+  "nationalityAllCountries": "Бардык өлкөлөр (алфавит боюнча)",
+  "nationalityCurrent": "Учурдагы",
+  "nationalityLabel": "Жарандык",
+  "nationalityNotSet": "Коюлган эмес",
+  "nationalitySearchEmpty": "Натыйжа жок"
 }

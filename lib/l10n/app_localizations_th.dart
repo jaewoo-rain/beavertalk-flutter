@@ -2937,4 +2937,32 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get wsRetryBackToReport => 'กลับไปที่รายงาน';
+
+  @override
+  String get nationalityTitle => 'เลือกสัญชาติของคุณ';
+
+  @override
+  String get nationalitySubtitle => 'ต่างจากภาษาแม่ก็ไม่เป็นไร';
+
+  @override
+  String get nationalityUsageNotice =>
+      'ใช้เพื่อปรับปรุงคำแปลและสภาพแวดล้อมการเรียน';
+
+  @override
+  String get nationalitySearchHint => 'ค้นหาประเทศ';
+
+  @override
+  String get nationalityAllCountries => 'ทุกประเทศ (เรียงตามตัวอักษร)';
+
+  @override
+  String get nationalityCurrent => 'ปัจจุบัน';
+
+  @override
+  String get nationalityLabel => 'สัญชาติ';
+
+  @override
+  String get nationalityNotSet => 'ยังไม่ได้ตั้งค่า';
+
+  @override
+  String get nationalitySearchEmpty => 'ไม่พบผลลัพธ์';
 }

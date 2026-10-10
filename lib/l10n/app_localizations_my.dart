@@ -2973,4 +2973,32 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get wsRetryBackToReport => 'အစီရင်ခံစာသို့ ပြန်ရန်';
+
+  @override
+  String get nationalityTitle => 'သင့်နိုင်ငံသားကို ရွေးပါ';
+
+  @override
+  String get nationalitySubtitle => 'မိခင်ဘာသာနှင့် မတူလည်း ရပါတယ်';
+
+  @override
+  String get nationalityUsageNotice =>
+      'ဘာသာပြန်ခြင်းနှင့် သင်ယူမှုပတ်ဝန်းကျင် တိုးတက်စေရန် အသုံးပြုပါသည်';
+
+  @override
+  String get nationalitySearchHint => 'နိုင်ငံ ရှာရန်';
+
+  @override
+  String get nationalityAllCountries => 'နိုင်ငံအားလုံး (အက္ခရာစဉ်)';
+
+  @override
+  String get nationalityCurrent => 'လက်ရှိ';
+
+  @override
+  String get nationalityLabel => 'နိုင်ငံသား';
+
+  @override
+  String get nationalityNotSet => 'မသတ်မှတ်ရသေး';
+
+  @override
+  String get nationalitySearchEmpty => 'ရလဒ် မရှိပါ';
 }

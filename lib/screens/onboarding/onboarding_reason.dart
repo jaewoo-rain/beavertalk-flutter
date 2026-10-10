@@ -17,7 +17,7 @@ import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 
-/// Onboarding step 3/5 — why are you learning a language. Final onboarding step.
+/// Onboarding step 4/4 — why are you learning a language. Final onboarding step.
 ///
 /// Figma `screen/auth_login` (`2291:21295`). A **multi-select** [SelectCard]
 /// list over [mockReasons] and a pinned "Continue" button (enabled once at least
@@ -53,6 +53,7 @@ class _OnboardingReasonScreenState
             name: draft.name,
             language: draft.language,
             reasons: draft.reasons,
+            actualNationality: draft.actualNationality,
           );
       if (!mounted) return;
       // Refresh members/me → AuthGate now sees onboardingCompleted == true, so
@@ -84,7 +85,7 @@ class _OnboardingReasonScreenState
       body: Column(
         children: [
           Gnb.main2(
-            progress: const GnbProgress(current: 3, total: 3),
+            progress: const GnbProgress(current: 4, total: 4),
             onBack: () => Navigator.pop(context),
           ),
           Expanded(

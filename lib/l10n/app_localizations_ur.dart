@@ -2965,4 +2965,32 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get wsRetryBackToReport => 'رپورٹ پر واپس جائیں';
+
+  @override
+  String get nationalityTitle => 'اپنی قومیت منتخب کریں';
+
+  @override
+  String get nationalitySubtitle => 'مادری زبان سے مختلف ہو تو بھی ٹھیک ہے';
+
+  @override
+  String get nationalityUsageNotice =>
+      'ترجمے اور سیکھنے کے ماحول کو بہتر بنانے کے لیے استعمال ہوتی ہے';
+
+  @override
+  String get nationalitySearchHint => 'ملک تلاش کریں';
+
+  @override
+  String get nationalityAllCountries => 'تمام ممالک (حروفِ تہجی کے لحاظ سے)';
+
+  @override
+  String get nationalityCurrent => 'موجودہ';
+
+  @override
+  String get nationalityLabel => 'قومیت';
+
+  @override
+  String get nationalityNotSet => 'مقرر نہیں';
+
+  @override
+  String get nationalitySearchEmpty => 'کوئی نتیجہ نہیں';
 }

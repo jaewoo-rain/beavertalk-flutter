@@ -881,5 +881,14 @@
   "wsRetryListSub": "यस सत्रमा २ पटक वा बढी गल्ती भएका ध्वनि",
   "wsRetryListSubWithCall": "“{title}” कलमा २ पटक वा बढी गल्ती भएका ध्वनि",
   "wsRetryListAllDone": "तपाईंले सबै ध्वनि अभ्यास गर्नुभयो",
-  "wsRetryBackToReport": "रिपोर्टमा फर्कनुहोस्"
+  "wsRetryBackToReport": "रिपोर्टमा फर्कनुहोस्",
+  "nationalityTitle": "आफ्नो राष्ट्रियता छान्नुहोस्",
+  "nationalitySubtitle": "मातृभाषाभन्दा फरक भए पनि ठीक छ",
+  "nationalityUsageNotice": "अनुवाद र सिकाइ वातावरण सुधार गर्न प्रयोग हुन्छ",
+  "nationalitySearchHint": "देश खोज्नुहोस्",
+  "nationalityAllCountries": "सबै देश (वर्णानुक्रम)",
+  "nationalityCurrent": "हालको",
+  "nationalityLabel": "राष्ट्रियता",
+  "nationalityNotSet": "सेट गरिएको छैन",
+  "nationalitySearchEmpty": "कुनै नतिजा छैन"
 }

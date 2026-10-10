@@ -2994,4 +2994,33 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get wsRetryBackToReport => 'Voltar ao relatório';
+
+  @override
+  String get nationalityTitle => 'Selecione sua nacionalidade';
+
+  @override
+  String get nationalitySubtitle =>
+      'Tudo bem se for diferente da sua língua materna';
+
+  @override
+  String get nationalityUsageNotice =>
+      'Usada para melhorar as traduções e o ambiente de aprendizagem';
+
+  @override
+  String get nationalitySearchHint => 'Pesquisar país';
+
+  @override
+  String get nationalityAllCountries => 'Todos os países (ordem alfabética)';
+
+  @override
+  String get nationalityCurrent => 'Atual';
+
+  @override
+  String get nationalityLabel => 'Nacionalidade';
+
+  @override
+  String get nationalityNotSet => 'Não definida';
+
+  @override
+  String get nationalitySearchEmpty => 'Nenhum resultado';
 }

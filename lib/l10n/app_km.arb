@@ -881,5 +881,14 @@
   "wsRetryListSub": "សំឡេងដែលខុស 2 ដង ឬច្រើនជាងនេះក្នុងមេរៀននេះ",
   "wsRetryListSubWithCall": "សំឡេងដែលខុស 2 ដង ឬច្រើនជាងនេះក្នុងការហៅ «{title}»",
   "wsRetryListAllDone": "អ្នកបានហាត់សំឡេងទាំងអស់ហើយ",
-  "wsRetryBackToReport": "ត្រឡប់ទៅរបាយការណ៍"
+  "wsRetryBackToReport": "ត្រឡប់ទៅរបាយការណ៍",
+  "nationalityTitle": "ជ្រើសរើសសញ្ជាតិរបស់អ្នក",
+  "nationalitySubtitle": "ខុសពីភាសាកំណើតក៏មិនអីដែរ",
+  "nationalityUsageNotice": "ប្រើដើម្បីកែលម្អការបកប្រែ និងបរិយាកាសសិក្សា",
+  "nationalitySearchHint": "ស្វែងរកប្រទេស",
+  "nationalityAllCountries": "ប្រទេសទាំងអស់ (តាមលំដាប់អក្សរ)",
+  "nationalityCurrent": "បច្ចុប្បន្ន",
+  "nationalityLabel": "សញ្ជាតិ",
+  "nationalityNotSet": "មិនទាន់កំណត់",
+  "nationalitySearchEmpty": "គ្មានលទ្ធផល"
 }

@@ -2982,4 +2982,32 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get wsRetryBackToReport => 'Vissza az elemzéshez';
+
+  @override
+  String get nationalityTitle => 'Válaszd ki az állampolgárságodat';
+
+  @override
+  String get nationalitySubtitle => 'Nem baj, ha eltér az anyanyelvedtől';
+
+  @override
+  String get nationalityUsageNotice =>
+      'A fordítások és a tanulási környezet fejlesztésére használjuk';
+
+  @override
+  String get nationalitySearchHint => 'Ország keresése';
+
+  @override
+  String get nationalityAllCountries => 'Minden ország (betűrendben)';
+
+  @override
+  String get nationalityCurrent => 'Jelenlegi';
+
+  @override
+  String get nationalityLabel => 'Állampolgárság';
+
+  @override
+  String get nationalityNotSet => 'Nincs megadva';
+
+  @override
+  String get nationalitySearchEmpty => 'Nincs találat';
 }

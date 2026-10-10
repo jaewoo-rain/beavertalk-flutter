@@ -2952,4 +2952,32 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get wsRetryBackToReport => 'রিপোর্টে ফিরে যান';
+
+  @override
+  String get nationalityTitle => 'আপনার জাতীয়তা বেছে নিন';
+
+  @override
+  String get nationalitySubtitle => 'মাতৃভাষা থেকে আলাদা হলেও সমস্যা নেই';
+
+  @override
+  String get nationalityUsageNotice =>
+      'অনুবাদ ও শেখার পরিবেশ উন্নত করতে ব্যবহার করা হয়';
+
+  @override
+  String get nationalitySearchHint => 'দেশ খুঁজুন';
+
+  @override
+  String get nationalityAllCountries => 'সব দেশ (বর্ণানুক্রমে)';
+
+  @override
+  String get nationalityCurrent => 'বর্তমান';
+
+  @override
+  String get nationalityLabel => 'জাতীয়তা';
+
+  @override
+  String get nationalityNotSet => 'সেট করা নেই';
+
+  @override
+  String get nationalitySearchEmpty => 'কোনো ফলাফল নেই';
 }

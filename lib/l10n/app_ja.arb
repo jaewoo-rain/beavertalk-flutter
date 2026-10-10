@@ -881,5 +881,14 @@
   "wsRetryListSub": "今回の学習で2回以上間違えた音です",
   "wsRetryListSubWithCall": "「{title}」の通話で2回以上間違えた音です",
   "wsRetryListAllDone": "集めた音をすべて練習しました",
-  "wsRetryBackToReport": "レポートに戻る"
+  "wsRetryBackToReport": "レポートに戻る",
+  "nationalityTitle": "国籍を選んでください",
+  "nationalitySubtitle": "母語と違っても大丈夫です",
+  "nationalityUsageNotice": "翻訳や学習環境の改善に活用されます",
+  "nationalitySearchHint": "国名で検索",
+  "nationalityAllCountries": "すべての国（アルファベット順）",
+  "nationalityCurrent": "現在の国籍",
+  "nationalityLabel": "国籍",
+  "nationalityNotSet": "未設定",
+  "nationalitySearchEmpty": "検索結果がありません"
 }

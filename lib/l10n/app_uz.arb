@@ -881,5 +881,14 @@
   "wsRetryListSub": "Bu darsda 2 va undan koʻp marta xato qilgan tovushlar",
   "wsRetryListSubWithCall": "“{title}” qoʻngʻirogʻida 2 va undan koʻp marta xato qilgan tovushlar",
   "wsRetryListAllDone": "Barcha tovushlarni mashq qildingiz",
-  "wsRetryBackToReport": "Hisobotga qaytish"
+  "wsRetryBackToReport": "Hisobotga qaytish",
+  "nationalityTitle": "Fuqaroligingizni tanlang",
+  "nationalitySubtitle": "Ona tilingizdan farq qilsa ham bo'ladi",
+  "nationalityUsageNotice": "Tarjimalar va o'quv muhitini yaxshilash uchun ishlatiladi",
+  "nationalitySearchHint": "Davlatni qidirish",
+  "nationalityAllCountries": "Barcha davlatlar (alifbo tartibida)",
+  "nationalityCurrent": "Joriy",
+  "nationalityLabel": "Fuqarolik",
+  "nationalityNotSet": "Belgilanmagan",
+  "nationalitySearchEmpty": "Natija yo'q"
 }

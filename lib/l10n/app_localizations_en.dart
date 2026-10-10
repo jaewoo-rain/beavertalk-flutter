@@ -2969,4 +2969,33 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get wsRetryBackToReport => 'Back to report';
+
+  @override
+  String get nationalityTitle => 'Select your nationality';
+
+  @override
+  String get nationalitySubtitle =>
+      'It\'s okay if it differs from your native language';
+
+  @override
+  String get nationalityUsageNotice =>
+      'Used to improve translations and your learning experience';
+
+  @override
+  String get nationalitySearchHint => 'Search country';
+
+  @override
+  String get nationalityAllCountries => 'All countries';
+
+  @override
+  String get nationalityCurrent => 'Current';
+
+  @override
+  String get nationalityLabel => 'Nationality';
+
+  @override
+  String get nationalityNotSet => 'Not set';
+
+  @override
+  String get nationalitySearchEmpty => 'No results';
 }

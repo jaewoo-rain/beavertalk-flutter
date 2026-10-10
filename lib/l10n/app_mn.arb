@@ -881,5 +881,14 @@
   "wsRetryListSub": "Энэ хичээлд 2 ба түүнээс олон удаа алдсан авиа",
   "wsRetryListSubWithCall": "“{title}” дуудлагад 2 ба түүнээс олон удаа алдсан авиа",
   "wsRetryListAllDone": "Бүх авиагаа дадлагажлаа",
-  "wsRetryBackToReport": "Тайлан руу буцах"
+  "wsRetryBackToReport": "Тайлан руу буцах",
+  "nationalityTitle": "Иргэншлээ сонгоно уу",
+  "nationalitySubtitle": "Эх хэлнээсээ өөр байсан ч болно",
+  "nationalityUsageNotice": "Орчуулга болон суралцах орчныг сайжруулахад ашиглагдана",
+  "nationalitySearchHint": "Улс хайх",
+  "nationalityAllCountries": "Бүх улс (цагаан толгойн дарааллаар)",
+  "nationalityCurrent": "Одоогийн",
+  "nationalityLabel": "Иргэншил",
+  "nationalityNotSet": "Тохируулаагүй",
+  "nationalitySearchEmpty": "Илэрц олдсонгүй"
 }

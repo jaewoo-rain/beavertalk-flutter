@@ -2960,4 +2960,32 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get wsRetryBackToReport => 'Quay lại báo cáo';
+
+  @override
+  String get nationalityTitle => 'Hãy chọn quốc tịch của bạn';
+
+  @override
+  String get nationalitySubtitle => 'Khác với tiếng mẹ đẻ cũng không sao';
+
+  @override
+  String get nationalityUsageNotice =>
+      'Được dùng để cải thiện bản dịch và môi trường học tập';
+
+  @override
+  String get nationalitySearchHint => 'Tìm tên quốc gia';
+
+  @override
+  String get nationalityAllCountries => 'Tất cả quốc gia (theo bảng chữ cái)';
+
+  @override
+  String get nationalityCurrent => 'Hiện tại';
+
+  @override
+  String get nationalityLabel => 'Quốc tịch';
+
+  @override
+  String get nationalityNotSet => 'Chưa đặt';
+
+  @override
+  String get nationalitySearchEmpty => 'Không có kết quả';
 }

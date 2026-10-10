@@ -2956,4 +2956,32 @@ class AppLocalizationsNe extends AppLocalizations {
 
   @override
   String get wsRetryBackToReport => 'रिपोर्टमा फर्कनुहोस्';
+
+  @override
+  String get nationalityTitle => 'आफ्नो राष्ट्रियता छान्नुहोस्';
+
+  @override
+  String get nationalitySubtitle => 'मातृभाषाभन्दा फरक भए पनि ठीक छ';
+
+  @override
+  String get nationalityUsageNotice =>
+      'अनुवाद र सिकाइ वातावरण सुधार गर्न प्रयोग हुन्छ';
+
+  @override
+  String get nationalitySearchHint => 'देश खोज्नुहोस्';
+
+  @override
+  String get nationalityAllCountries => 'सबै देश (वर्णानुक्रम)';
+
+  @override
+  String get nationalityCurrent => 'हालको';
+
+  @override
+  String get nationalityLabel => 'राष्ट्रियता';
+
+  @override
+  String get nationalityNotSet => 'सेट गरिएको छैन';
+
+  @override
+  String get nationalitySearchEmpty => 'कुनै नतिजा छैन';
 }

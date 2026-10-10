@@ -881,5 +881,14 @@
   "wsRetryListSub": "اس سیشن میں 2 یا زیادہ بار غلط ہونے والی آوازیں",
   "wsRetryListSubWithCall": "“{title}” کال میں 2 یا زیادہ بار غلط ہونے والی آوازیں",
   "wsRetryListAllDone": "آپ نے سب آوازوں کی مشق کر لی",
-  "wsRetryBackToReport": "رپورٹ پر واپس جائیں"
+  "wsRetryBackToReport": "رپورٹ پر واپس جائیں",
+  "nationalityTitle": "اپنی قومیت منتخب کریں",
+  "nationalitySubtitle": "مادری زبان سے مختلف ہو تو بھی ٹھیک ہے",
+  "nationalityUsageNotice": "ترجمے اور سیکھنے کے ماحول کو بہتر بنانے کے لیے استعمال ہوتی ہے",
+  "nationalitySearchHint": "ملک تلاش کریں",
+  "nationalityAllCountries": "تمام ممالک (حروفِ تہجی کے لحاظ سے)",
+  "nationalityCurrent": "موجودہ",
+  "nationalityLabel": "قومیت",
+  "nationalityNotSet": "مقرر نہیں",
+  "nationalitySearchEmpty": "کوئی نتیجہ نہیں"
 }

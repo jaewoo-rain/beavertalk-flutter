@@ -881,5 +881,14 @@
   "wsRetryListSub": "Mga tunog na nabigkas mo nang mali nang 2 beses o higit pa sa session na ito",
   "wsRetryListSubWithCall": "Mga tunog na nabigkas mo nang mali nang 2 beses o higit pa sa tawag na “{title}”",
   "wsRetryListAllDone": "Na-practice mo na ang lahat ng tunog",
-  "wsRetryBackToReport": "Bumalik sa ulat"
+  "wsRetryBackToReport": "Bumalik sa ulat",
+  "nationalityTitle": "Piliin ang iyong nasyonalidad",
+  "nationalitySubtitle": "Ayos lang kahit iba ito sa iyong katutubong wika",
+  "nationalityUsageNotice": "Ginagamit para mapabuti ang mga salin at ang kapaligiran sa pag-aaral",
+  "nationalitySearchHint": "Maghanap ng bansa",
+  "nationalityAllCountries": "Lahat ng bansa (ayon sa alpabeto)",
+  "nationalityCurrent": "Kasalukuyan",
+  "nationalityLabel": "Nasyonalidad",
+  "nationalityNotSet": "Hindi pa nakatakda",
+  "nationalitySearchEmpty": "Walang resulta"
 }

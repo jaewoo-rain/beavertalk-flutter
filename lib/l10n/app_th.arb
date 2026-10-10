@@ -881,5 +881,14 @@
   "wsRetryListSub": "เสียงที่ออกผิดตั้งแต่ 2 ครั้งขึ้นไปในการเรียนครั้งนี้",
   "wsRetryListSubWithCall": "เสียงที่ออกผิดตั้งแต่ 2 ครั้งขึ้นไปในการโทร “{title}”",
   "wsRetryListAllDone": "ฝึกครบทุกเสียงแล้ว",
-  "wsRetryBackToReport": "กลับไปที่รายงาน"
+  "wsRetryBackToReport": "กลับไปที่รายงาน",
+  "nationalityTitle": "เลือกสัญชาติของคุณ",
+  "nationalitySubtitle": "ต่างจากภาษาแม่ก็ไม่เป็นไร",
+  "nationalityUsageNotice": "ใช้เพื่อปรับปรุงคำแปลและสภาพแวดล้อมการเรียน",
+  "nationalitySearchHint": "ค้นหาประเทศ",
+  "nationalityAllCountries": "ทุกประเทศ (เรียงตามตัวอักษร)",
+  "nationalityCurrent": "ปัจจุบัน",
+  "nationalityLabel": "สัญชาติ",
+  "nationalityNotSet": "ยังไม่ได้ตั้งค่า",
+  "nationalitySearchEmpty": "ไม่พบผลลัพธ์"
 }

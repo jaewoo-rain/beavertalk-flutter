@@ -2979,4 +2979,32 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get wsRetryBackToReport => 'Takaisin raporttiin';
+
+  @override
+  String get nationalityTitle => 'Valitse kansalaisuutesi';
+
+  @override
+  String get nationalitySubtitle => 'Se saa erota äidinkielestäsi';
+
+  @override
+  String get nationalityUsageNotice =>
+      'Käytetään käännösten ja oppimisympäristön parantamiseen';
+
+  @override
+  String get nationalitySearchHint => 'Hae maata';
+
+  @override
+  String get nationalityAllCountries => 'Kaikki maat (aakkosjärjestys)';
+
+  @override
+  String get nationalityCurrent => 'Nykyinen';
+
+  @override
+  String get nationalityLabel => 'Kansalaisuus';
+
+  @override
+  String get nationalityNotSet => 'Ei asetettu';
+
+  @override
+  String get nationalitySearchEmpty => 'Ei tuloksia';
 }

@@ -881,5 +881,14 @@
   "wsRetryListSub": "මෙම සැසියේ 2 වතාවක් හෝ වැඩියෙන් වැරදුණු ශබ්ද",
   "wsRetryListSubWithCall": "“{title}” ඇමතුමේ 2 වතාවක් හෝ වැඩියෙන් වැරදුණු ශබ්ද",
   "wsRetryListAllDone": "ඔබ සියලු ශබ්ද පුහුණු වුණා",
-  "wsRetryBackToReport": "වාර්තාවට ආපසු"
+  "wsRetryBackToReport": "වාර්තාවට ආපසු",
+  "nationalityTitle": "ඔබේ ජාතිකත්වය තෝරන්න",
+  "nationalitySubtitle": "මව් භාෂාවෙන් වෙනස් වුණත් කමක් නැහැ",
+  "nationalityUsageNotice": "පරිවර්තන සහ ඉගෙනුම් පරිසරය වැඩිදියුණු කිරීමට භාවිත කෙරේ",
+  "nationalitySearchHint": "රට සොයන්න",
+  "nationalityAllCountries": "සියලු රටවල් (අකාරාදී)",
+  "nationalityCurrent": "වර්තමාන",
+  "nationalityLabel": "ජාතිකත්වය",
+  "nationalityNotSet": "සකසා නැත",
+  "nationalitySearchEmpty": "ප්‍රතිඵල නැත"
 }

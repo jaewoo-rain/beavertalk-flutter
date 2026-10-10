@@ -11,6 +11,7 @@ import 'support/i18n_data_screens.dart';
 /// 화면마다 가짜 데이터에서만 나오는 글자 하나를 찾는다. 새 데이터판을 등록하면 여기에도 적는다.
 void main() {
   const markers = <String, String>{
+    'MyPageNationalityData': 'South Georgia & South Sandwich Islands',
     'WeakSoundsData': 'Start with 받침 ㄹ',
     'RetrySoundsData': 'asking about the spicy menu',
     // 요약에서 방식 글자를 뺐다(09-26 시안 C — 방식은 줄 앞 원판).

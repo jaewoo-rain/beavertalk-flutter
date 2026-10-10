@@ -881,5 +881,14 @@
   "wsRetryListSub": "Äänteet, jotka menivät väärin vähintään 2 kertaa tällä kerralla",
   "wsRetryListSubWithCall": "Äänteet, jotka menivät väärin vähintään 2 kertaa puhelussa ”{title}”",
   "wsRetryListAllDone": "Harjoittelit kaikki äänteet",
-  "wsRetryBackToReport": "Takaisin raporttiin"
+  "wsRetryBackToReport": "Takaisin raporttiin",
+  "nationalityTitle": "Valitse kansalaisuutesi",
+  "nationalitySubtitle": "Se saa erota äidinkielestäsi",
+  "nationalityUsageNotice": "Käytetään käännösten ja oppimisympäristön parantamiseen",
+  "nationalitySearchHint": "Hae maata",
+  "nationalityAllCountries": "Kaikki maat (aakkosjärjestys)",
+  "nationalityCurrent": "Nykyinen",
+  "nationalityLabel": "Kansalaisuus",
+  "nationalityNotSet": "Ei asetettu",
+  "nationalitySearchEmpty": "Ei tuloksia"
 }

@@ -881,5 +881,14 @@
   "wsRetryListSub": "Az ebben a leckében legalább 2-szer rontott hangok",
   "wsRetryListSubWithCall": "A(z) „{title}” hívásban legalább 2-szer rontott hangok",
   "wsRetryListAllDone": "Minden hangot begyakoroltál",
-  "wsRetryBackToReport": "Vissza az elemzéshez"
+  "wsRetryBackToReport": "Vissza az elemzéshez",
+  "nationalityTitle": "Válaszd ki az állampolgárságodat",
+  "nationalitySubtitle": "Nem baj, ha eltér az anyanyelvedtől",
+  "nationalityUsageNotice": "A fordítások és a tanulási környezet fejlesztésére használjuk",
+  "nationalitySearchHint": "Ország keresése",
+  "nationalityAllCountries": "Minden ország (betűrendben)",
+  "nationalityCurrent": "Jelenlegi",
+  "nationalityLabel": "Állampolgárság",
+  "nationalityNotSet": "Nincs megadva",
+  "nationalitySearchEmpty": "Nincs találat"
 }

@@ -881,5 +881,14 @@
   "wsRetryListSub": "이번 학습에서 2번 이상 틀린 소리예요",
   "wsRetryListSubWithCall": "{title} 통화에서 2번 이상 틀린 소리예요",
   "wsRetryListAllDone": "모은 소리를 모두 연습했어요",
-  "wsRetryBackToReport": "리포트로 돌아가기"
+  "wsRetryBackToReport": "리포트로 돌아가기",
+  "nationalityTitle": "국적을 선택해 주세요",
+  "nationalitySubtitle": "모국어와 달라도 괜찮아요",
+  "nationalityUsageNotice": "번역이나 학습 환경 개선에 활용되어요",
+  "nationalitySearchHint": "국가 이름 검색",
+  "nationalityAllCountries": "전체 국가 (알파벳순)",
+  "nationalityCurrent": "현재 국적",
+  "nationalityLabel": "국적",
+  "nationalityNotSet": "미설정",
+  "nationalitySearchEmpty": "검색 결과가 없어요"
 }

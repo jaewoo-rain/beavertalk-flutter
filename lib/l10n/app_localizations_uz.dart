@@ -2983,4 +2983,32 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get wsRetryBackToReport => 'Hisobotga qaytish';
+
+  @override
+  String get nationalityTitle => 'Fuqaroligingizni tanlang';
+
+  @override
+  String get nationalitySubtitle => 'Ona tilingizdan farq qilsa ham bo\'ladi';
+
+  @override
+  String get nationalityUsageNotice =>
+      'Tarjimalar va o\'quv muhitini yaxshilash uchun ishlatiladi';
+
+  @override
+  String get nationalitySearchHint => 'Davlatni qidirish';
+
+  @override
+  String get nationalityAllCountries => 'Barcha davlatlar (alifbo tartibida)';
+
+  @override
+  String get nationalityCurrent => 'Joriy';
+
+  @override
+  String get nationalityLabel => 'Fuqarolik';
+
+  @override
+  String get nationalityNotSet => 'Belgilanmagan';
+
+  @override
+  String get nationalitySearchEmpty => 'Natija yo\'q';
 }

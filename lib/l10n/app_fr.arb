@@ -881,5 +881,14 @@
   "wsRetryListSub": "Sons ratés 2 fois ou plus pendant cette session",
   "wsRetryListSubWithCall": "Sons ratés 2 fois ou plus pendant l’appel « {title} »",
   "wsRetryListAllDone": "Vous avez travaillé tous les sons",
-  "wsRetryBackToReport": "Retour au rapport"
+  "wsRetryBackToReport": "Retour au rapport",
+  "nationalityTitle": "Choisissez votre nationalité",
+  "nationalitySubtitle": "Elle peut être différente de votre langue maternelle",
+  "nationalityUsageNotice": "Utilisée pour améliorer les traductions et l'environnement d'apprentissage",
+  "nationalitySearchHint": "Rechercher un pays",
+  "nationalityAllCountries": "Tous les pays (ordre alphabétique)",
+  "nationalityCurrent": "Actuelle",
+  "nationalityLabel": "Nationalité",
+  "nationalityNotSet": "Non défini",
+  "nationalitySearchEmpty": "Aucun résultat"
 }

@@ -5445,6 +5445,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Back to report'**
   String get wsRetryBackToReport;
+
+  /// Onboarding 2/4 title — the user's actual nationality (separate from native language).
+  ///
+  /// In en, this message translates to:
+  /// **'Select your nationality'**
+  String get nationalityTitle;
+
+  /// Onboarding nationality subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'It\'s okay if it differs from your native language'**
+  String get nationalitySubtitle;
+
+  /// Notice under the nationality title (onboarding and My Page). User-specified Korean source: 번역이나 학습 환경 개선에 활용되어요.
+  ///
+  /// In en, this message translates to:
+  /// **'Used to improve translations and your learning experience'**
+  String get nationalityUsageNotice;
+
+  /// Placeholder of the country search field.
+  ///
+  /// In en, this message translates to:
+  /// **'Search country'**
+  String get nationalitySearchHint;
+
+  /// Label above the full country list (country names are always English, A-Z).
+  ///
+  /// In en, this message translates to:
+  /// **'All countries'**
+  String get nationalityAllCountries;
+
+  /// My Page nationality screen: label above the currently saved country.
+  ///
+  /// In en, this message translates to:
+  /// **'Current'**
+  String get nationalityCurrent;
+
+  /// Settings Account row label and My Page nationality screen title.
+  ///
+  /// In en, this message translates to:
+  /// **'Nationality'**
+  String get nationalityLabel;
+
+  /// Settings Account nationality row value when no country is chosen.
+  ///
+  /// In en, this message translates to:
+  /// **'Not set'**
+  String get nationalityNotSet;
+
+  /// Shown when the country search has no match.
+  ///
+  /// In en, this message translates to:
+  /// **'No results'**
+  String get nationalitySearchEmpty;
 }
 
 class _AppLocalizationsDelegate

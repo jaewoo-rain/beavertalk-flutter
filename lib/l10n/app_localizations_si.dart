@@ -2950,4 +2950,32 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get wsRetryBackToReport => 'වාර්තාවට ආපසු';
+
+  @override
+  String get nationalityTitle => 'ඔබේ ජාතිකත්වය තෝරන්න';
+
+  @override
+  String get nationalitySubtitle => 'මව් භාෂාවෙන් වෙනස් වුණත් කමක් නැහැ';
+
+  @override
+  String get nationalityUsageNotice =>
+      'පරිවර්තන සහ ඉගෙනුම් පරිසරය වැඩිදියුණු කිරීමට භාවිත කෙරේ';
+
+  @override
+  String get nationalitySearchHint => 'රට සොයන්න';
+
+  @override
+  String get nationalityAllCountries => 'සියලු රටවල් (අකාරාදී)';
+
+  @override
+  String get nationalityCurrent => 'වර්තමාන';
+
+  @override
+  String get nationalityLabel => 'ජාතිකත්වය';
+
+  @override
+  String get nationalityNotSet => 'සකසා නැත';
+
+  @override
+  String get nationalitySearchEmpty => 'ප්‍රතිඵල නැත';
 }

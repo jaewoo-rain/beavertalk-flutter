@@ -881,5 +881,14 @@
   "wsRetryListSub": "Sons que você errou 2 vezes ou mais nesta sessão",
   "wsRetryListSubWithCall": "Sons que você errou 2 vezes ou mais na chamada “{title}”",
   "wsRetryListAllDone": "Você praticou todos os sons",
-  "wsRetryBackToReport": "Voltar ao relatório"
+  "wsRetryBackToReport": "Voltar ao relatório",
+  "nationalityTitle": "Selecione sua nacionalidade",
+  "nationalitySubtitle": "Tudo bem se for diferente da sua língua materna",
+  "nationalityUsageNotice": "Usada para melhorar as traduções e o ambiente de aprendizagem",
+  "nationalitySearchHint": "Pesquisar país",
+  "nationalityAllCountries": "Todos os países (ordem alfabética)",
+  "nationalityCurrent": "Atual",
+  "nationalityLabel": "Nacionalidade",
+  "nationalityNotSet": "Não definida",
+  "nationalitySearchEmpty": "Nenhum resultado"
 }

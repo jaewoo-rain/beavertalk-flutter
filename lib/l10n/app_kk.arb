@@ -881,5 +881,14 @@
   "wsRetryListSub": "Бұл сабақта 2 не одан көп рет қателескен дыбыстар",
   "wsRetryListSubWithCall": "«{title}» қоңырауында 2 не одан көп рет қателескен дыбыстар",
   "wsRetryListAllDone": "Барлық дыбысты жаттықтырдыңыз",
-  "wsRetryBackToReport": "Есепке оралу"
+  "wsRetryBackToReport": "Есепке оралу",
+  "nationalityTitle": "Азаматтығыңызды таңдаңыз",
+  "nationalitySubtitle": "Ана тіліңізден өзгеше болса да жарайды",
+  "nationalityUsageNotice": "Аударма мен оқу ортасын жақсартуға қолданылады",
+  "nationalitySearchHint": "Елді іздеу",
+  "nationalityAllCountries": "Барлық елдер (әліпби бойынша)",
+  "nationalityCurrent": "Қазіргі",
+  "nationalityLabel": "Азаматтық",
+  "nationalityNotSet": "Орнатылмаған",
+  "nationalitySearchEmpty": "Нәтиже жоқ"
 }

@@ -3012,4 +3012,33 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get wsRetryBackToReport => 'Zurück zum Bericht';
+
+  @override
+  String get nationalityTitle => 'Wähle deine Staatsangehörigkeit';
+
+  @override
+  String get nationalitySubtitle =>
+      'Sie darf von deiner Muttersprache abweichen';
+
+  @override
+  String get nationalityUsageNotice =>
+      'Wird genutzt, um Übersetzungen und die Lernumgebung zu verbessern';
+
+  @override
+  String get nationalitySearchHint => 'Land suchen';
+
+  @override
+  String get nationalityAllCountries => 'Alle Länder (alphabetisch)';
+
+  @override
+  String get nationalityCurrent => 'Aktuell';
+
+  @override
+  String get nationalityLabel => 'Staatsangehörigkeit';
+
+  @override
+  String get nationalityNotSet => 'Nicht festgelegt';
+
+  @override
+  String get nationalitySearchEmpty => 'Keine Ergebnisse';
 }

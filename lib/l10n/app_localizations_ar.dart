@@ -2940,4 +2940,31 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get wsRetryBackToReport => 'العودة إلى التقرير';
+
+  @override
+  String get nationalityTitle => 'اختر جنسيتك';
+
+  @override
+  String get nationalitySubtitle => 'لا بأس إن كانت مختلفة عن لغتك الأم';
+
+  @override
+  String get nationalityUsageNotice => 'تُستخدم لتحسين الترجمة وبيئة التعلّم';
+
+  @override
+  String get nationalitySearchHint => 'ابحث عن دولة';
+
+  @override
+  String get nationalityAllCountries => 'كل الدول (أبجديًا)';
+
+  @override
+  String get nationalityCurrent => 'الحالية';
+
+  @override
+  String get nationalityLabel => 'الجنسية';
+
+  @override
+  String get nationalityNotSet => 'غير محددة';
+
+  @override
+  String get nationalitySearchEmpty => 'لا توجد نتائج';
 }

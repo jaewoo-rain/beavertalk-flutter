@@ -2959,4 +2959,32 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get wsRetryBackToReport => 'Есепке оралу';
+
+  @override
+  String get nationalityTitle => 'Азаматтығыңызды таңдаңыз';
+
+  @override
+  String get nationalitySubtitle => 'Ана тіліңізден өзгеше болса да жарайды';
+
+  @override
+  String get nationalityUsageNotice =>
+      'Аударма мен оқу ортасын жақсартуға қолданылады';
+
+  @override
+  String get nationalitySearchHint => 'Елді іздеу';
+
+  @override
+  String get nationalityAllCountries => 'Барлық елдер (әліпби бойынша)';
+
+  @override
+  String get nationalityCurrent => 'Қазіргі';
+
+  @override
+  String get nationalityLabel => 'Азаматтық';
+
+  @override
+  String get nationalityNotSet => 'Орнатылмаған';
+
+  @override
+  String get nationalitySearchEmpty => 'Нәтиже жоқ';
 }

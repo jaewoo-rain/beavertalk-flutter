@@ -2876,4 +2876,31 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get wsRetryBackToReport => '리포트로 돌아가기';
+
+  @override
+  String get nationalityTitle => '국적을 선택해 주세요';
+
+  @override
+  String get nationalitySubtitle => '모국어와 달라도 괜찮아요';
+
+  @override
+  String get nationalityUsageNotice => '번역이나 학습 환경 개선에 활용되어요';
+
+  @override
+  String get nationalitySearchHint => '국가 이름 검색';
+
+  @override
+  String get nationalityAllCountries => '전체 국가 (알파벳순)';
+
+  @override
+  String get nationalityCurrent => '현재 국적';
+
+  @override
+  String get nationalityLabel => '국적';
+
+  @override
+  String get nationalityNotSet => '미설정';
+
+  @override
+  String get nationalitySearchEmpty => '검색 결과가 없어요';
 }
