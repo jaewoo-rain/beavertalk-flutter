@@ -9,7 +9,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 /// 앱 GA4 계측 — 이벤트를 보내는 **유일한 입구**.
 ///
 /// 정본: `claude_code/_shared/비버톡_GA4_계측_인수인계_2026-09-21.md` 4장.
-/// 웹(accent)과는 **다른 GA4 속성**이다. 같은 개념은 웹과 같은 이벤트 이름을 쓴다
+/// 웹(accent)과 **같은 GA4 속성**(544319612)이다 — 데이터 스트림만 갈린다(2026-10-08 GA4 점검
+/// 정정 · 예전 주석 「다른 속성」은 틀렸다). 같은 개념은 웹과 같은 이벤트 이름을 쓴다
 /// (`call_started`·`call_ended`).
 ///
 /// ## 수집 스위치 — 기본은 꺼짐
@@ -52,8 +53,24 @@ abstract final class AppEvent {
   /// 통화 종료. 파라미터 `seconds`. 웹과 같은 이름.
   static const callEnded = 'call_ended';
 
-  /// 통화 분석 결과 화면 표시.
+  /// 통화 분석 결과 화면 표시. 파라미터 `source`(post_call · history) — 통화 직후와 기록에서 다시 연
+  /// 경우를 가른다(2026-10-08 GA4 점검 개선안 6 · 없으면 「통화 → 분석」 전환율이 부풀었다).
   static const analysisViewed = 'analysis_viewed';
+
+  /// 발음 학습 시작. 파라미터 `origin`(call_review · sentence · assignment) · `sentences`(문장 수).
+  static const learningStarted = 'learning_started';
+
+  /// 발음 학습을 끝까지 마침(마지막 문장 채점 뒤 결과로 넘어감). 파라미터 `origin` · `sentences`.
+  static const learningCompleted = 'learning_completed';
+
+  /// 페이월 표시. 파라미터 `variant`(PaywallVariant 이름).
+  static const paywallViewed = 'paywall_viewed';
+
+  /// 결제 시도 시작(스토어 결제 창을 부르기 직전). 파라미터 `cycle`(monthly · annual) · `kind`(new · switch · winback).
+  static const purchaseStarted = 'purchase_started';
+
+  /// 결제 실패·취소·스토어 오류. 파라미터 `reason`(failed · canceled · store_error) · `cycle`.
+  static const purchaseFailed = 'purchase_failed';
 
   /// 발음 챌린지 결과 표시. 파라미터 `score`, `ended_by`(game_over·user).
   static const challengeCompleted = 'challenge_completed';
@@ -112,9 +129,15 @@ class AppAnalytics {
     }
   }
 
+  /// 시험 전용 — [log] 가 부를 때마다 이름·파라미터를 넘긴다(수집 스위치·Firebase 와 무관).
+  @visibleForTesting
+  static void Function(String name, Map<String, Object>? params)? debugOnLog;
+
   /// 커스텀 이벤트 1건. 이름은 [AppEvent] 에서만 가져온다.
-  void log(String name, [Map<String, Object>? params]) =>
-      _send((fa) => fa.logEvent(name: name, parameters: params));
+  void log(String name, [Map<String, Object>? params]) {
+    debugOnLog?.call(name, params);
+    _send((fa) => fa.logEvent(name: name, parameters: params));
+  }
 
   /// 화면 조회 1건. [AnalyticsRouteObserver] 가 라우트 이름으로 부른다.
   void screen(String name) =>

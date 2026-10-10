@@ -16,6 +16,7 @@ import '../../components/atoms/scan_cursor.dart';
 import '../../components/chrome/bottom_cta_bar.dart';
 import '../../components/icons/app_icons.dart';
 import '../../components/organisms/gnb.dart';
+import '../../core/analytics/app_analytics.dart';
 import '../../core/error/app_exception.dart';
 import '../../features/bookmark/presentation/providers/bookmark_toggle_controller.dart';
 import '../../features/classroom/presentation/assignment_attempt_provider.dart';
@@ -203,6 +204,11 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
     if (_initialized) return;
     _initialized = true;
     _index = args.index;
+    // GA4 — 발음 학습 시작(2026-10-08 GA4 점검 개선안 5). 「다시 학습하기」·과제 이어하기도 새 시작으로 센다.
+    AppAnalytics.instance.log(AppEvent.learningStarted, {
+      'origin': _gaOrigin(args.origin),
+      'sentences': args.sentences.length,
+    });
     if (args.origin == LearningOrigin.assignment) {
       // 과제 문장의 id 는 학습 항목 id 다 — 북마크 저장소(문장 id)와 축이 다르다.
       // 씨딩하면 남의 문장이 저장된 것처럼 보인다.
@@ -222,6 +228,18 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
     }
     _seedBookmarkFor(args.sentences[_index]);
   }
+
+  /// GA4 — 끝까지 마침(마지막 문장 채점 뒤 결과로 넘어갈 때 한 번).
+  void _logLearningCompleted(LearningArgs args) => AppAnalytics.instance.log(
+        AppEvent.learningCompleted,
+        {'origin': _gaOrigin(args.origin), 'sentences': args.sentences.length},
+      );
+
+  static String _gaOrigin(LearningOrigin o) => switch (o) {
+        LearningOrigin.callReview => 'call_review',
+        LearningOrigin.sentence => 'sentence',
+        LearningOrigin.assignment => 'assignment',
+      };
 
   /// Reconcile the shared bookmark store to this sentence's server flag (add
   /// when saved, clear when not) so a stale `true` can't stick across sentences.
@@ -662,6 +680,7 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
     if (args.origin == LearningOrigin.assignment) {
       final int? next = _nextUnscored(args);
       if (next == null) {
+        _logLearningCompleted(args);
         _finishAssignment(args);
       } else {
         _goTo(args, next);
@@ -670,6 +689,7 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
     }
 
     if (_index >= args.sentences.length - 1) {
+      _logLearningCompleted(args);
       // 분석 화면이 보던 이전 리포트 대신 마지막 채점까지 저장된 결과를 받는다.
       if (args.origin == LearningOrigin.callReview && args.callId != null) {
         ref.invalidate(pronunciationReportProvider(args.callId!));
