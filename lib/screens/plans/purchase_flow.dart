@@ -12,6 +12,7 @@ import '../../components/icons/app_icons.dart';
 import '../../components/molecules/benefit_row.dart';
 import '../../components/molecules/stacked_button_pair.dart';
 import '../../components/organisms/gnb.dart';
+import '../../core/analytics/app_analytics.dart';
 import '../../features/normalcall/presentation/normalcall_controller.dart';
 import '../../features/subscription/domain/entities/subscription_state.dart';
 import '../../features/subscription/domain/iap_service.dart';
@@ -85,6 +86,11 @@ class _PurchaseProcessingScreenState
     // A new purchase supersedes a late-result watch left by an earlier one
     // (QA F066) — otherwise both would react to this purchase's result.
     cancelLatePurchaseWatch();
+    // GA4 — 결제 시도 시작(2026-10-08 GA4 점검 개선안 7). 스토어 결제 창을 부르기 직전.
+    AppAnalytics.instance.log(AppEvent.purchaseStarted, {
+      'cycle': request.annual ? 'annual' : 'monthly',
+      'kind': _winback ? 'winback' : (_switching ? 'switch' : 'new'),
+    });
     _sub = iap.purchases.listen((p) {
       if (!mounted) return;
       if (p.state != IapPurchaseState.pending) _pendingTimer?.cancel();
@@ -189,6 +195,7 @@ class _PurchaseProcessingScreenState
   /// was ever attempted. Offering "update your payment method" here points the
   /// member at a card that is perfectly fine and hides the real cause.
   void _onStoreError(PurchaseRequest request) {
+    _logPurchaseFailed('store_error', request);
     if (_winback) {
       Navigator.pop(context);
       return;
@@ -201,6 +208,13 @@ class _PurchaseProcessingScreenState
         retrySwitch: _switching);
   }
 
+  /// GA4 — 결제 실패·취소·스토어 오류.
+  void _logPurchaseFailed(String reason, PurchaseRequest request) =>
+      AppAnalytics.instance.log(AppEvent.purchaseFailed, {
+        'reason': reason,
+        'cycle': request.annual ? 'annual' : 'monthly',
+      });
+
   /// Back to the paywall beneath, then the matching sheet over it (P4). The
   /// retry CTA rebuys the same tier AND cycle.
   ///
@@ -209,6 +223,8 @@ class _PurchaseProcessingScreenState
   /// member is told that instead (QA F005 · F028).
   void _onFailed(IapPurchase p, PurchaseRequest request) {
     if (!mounted) return;
+    _logPurchaseFailed(
+        p.state == IapPurchaseState.canceled ? 'canceled' : 'failed', request);
     final overlay = p.state == IapPurchaseState.canceled
         ? SubscriptionOverlay.purchaseFailedCanceled
         : purchaseFailureOverlayFor(p);

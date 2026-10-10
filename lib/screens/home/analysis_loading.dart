@@ -14,6 +14,7 @@ import '../../components/molecules/card_study.dart';
 import '../../components/molecules/pronunciation_result.dart';
 import '../../components/icons/app_icons.dart';
 import '../../components/organisms/gnb.dart';
+import '../../core/analytics/app_analytics.dart';
 import '../../core/error/app_exception.dart';
 import '../../features/auth/presentation/providers/auth_providers.dart'
     show authRepositoryProvider;
@@ -29,6 +30,24 @@ import '../system/network_error.dart';
 import 'analysis.dart';
 import 'call_meta_line.dart';
 import 'level_up.dart';
+
+/// 분석 화면을 어디서 열었나 — GA4 `analysis_viewed` 의 `source`(2026-10-08 GA4 점검 개선안 6).
+enum AnalysisSource {
+  /// 통화를 마친 직후(call_finish 「분석 보기」).
+  postCall('post_call'),
+
+  /// 기록·달력·마이페이지에서 지난 통화를 다시 엶.
+  history('history');
+
+  const AnalysisSource(this.wire);
+
+  /// GA4 파라미터 값.
+  final String wire;
+}
+
+/// [AnalysisLoadingScreen] 의 인자 — 통화 직후만 이 꼴로 넘긴다. 기록 쪽 진입점은 종전처럼
+/// `int` callId 를 넘기고 [AnalysisSource.history] 로 읽힌다.
+typedef AnalysisOpen = ({int callId, AnalysisSource source});
 
 /// Analysis loading — bridges 통화 종료 → 통화 분석.
 ///
@@ -82,6 +101,9 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
   static const Duration _slowInterval = Duration(seconds: 5);
 
   int? _callId;
+
+  /// GA4 `analysis_viewed` 출처 — 인자 꼴로 가른다.
+  AnalysisSource _source = AnalysisSource.history;
   _LoadingPhase _phase = _LoadingPhase.polling;
 
   /// Latest status from the server — drives the waiting card's two steps.
@@ -135,8 +157,13 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
     super.didChangeDependencies();
     if (_callId != null) return; // capture once
     final args = ModalRoute.of(context)?.settings.arguments;
-    if (args is int) {
-      _callId = args;
+    if (args is int || args is AnalysisOpen) {
+      if (args is AnalysisOpen) {
+        _callId = args.callId;
+        _source = args.source;
+      } else {
+        _callId = args as int;
+      }
       _sinceEnter.start();
       _start();
     } else {
@@ -290,6 +317,8 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
       // A short fade, not the default slide: the waiting screen already has
       // the analysis layout, so the hand-off should read as the same screen
       // filling in (Figma prototype `6330:13219` → `screen/analysis`, DISSOLVE).
+      // GA4 — 결과 화면으로 넘기는 이 한 곳에서만 센다(분석 화면은 이 경로로만 열린다).
+      AppAnalytics.instance.log(AppEvent.analysisViewed, {'source': _source.wire});
       Route<void> analysisRoute() => PageRouteBuilder<void>(
         settings: RouteSettings(name: Routes.analysis, arguments: result),
         transitionDuration: const Duration(milliseconds: 300),

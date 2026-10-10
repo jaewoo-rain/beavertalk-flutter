@@ -13,6 +13,7 @@ import '../../components/molecules/plan_row.dart';
 import '../../components/molecules/plan_summary_card.dart';
 import '../../components/organisms/dialog_basic.dart' show DialogAction;
 import '../../components/organisms/dialog_confirm_icon.dart';
+import '../../core/analytics/app_analytics.dart';
 import '../../features/subscription/domain/entities/subscription_state.dart';
 import '../../features/subscription/presentation/providers/subscription_state_providers.dart';
 import '../../features/subscription/domain/plan_prices.dart';
@@ -60,6 +61,13 @@ class PaywallScreen extends ConsumerStatefulWidget {
 
 class _PaywallScreenState extends ConsumerState<PaywallScreen> {
   _Cycle _cycle = _Cycle.monthly;
+
+  @override
+  void initState() {
+    super.initState();
+    // GA4 — 페이월 표시(2026-10-08 GA4 점검 개선안 7). 들어올 때 한 번.
+    AppAnalytics.instance.log(AppEvent.paywallViewed, {'variant': widget.variant.name});
+  }
 
   /// Whether the leave guard already ran. Once per visit: the first back/X
   /// asks (「무료로 계속 쓸 수 있어요」), a second one leaves without nagging.

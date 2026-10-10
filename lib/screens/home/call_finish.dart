@@ -16,6 +16,7 @@ import '../../core/error/app_exception.dart';
 import '../../features/character/presentation/providers/character_providers.dart';
 import '../../features/normalcall/presentation/normalcall_providers.dart';
 import '../../l10n/app_localizations.dart';
+import 'analysis_loading.dart';
 import '../../mock/mock_data.dart';
 import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
@@ -239,7 +240,8 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
     Navigator.pushReplacementNamed(
       context,
       Routes.analysisLoading,
-      arguments: callId,
+      // 통화 직후 — GA4 analysis_viewed source=post_call(기록 쪽은 int 그대로 = history).
+      arguments: (callId: callId, source: AnalysisSource.postCall),
     );
   }
 
