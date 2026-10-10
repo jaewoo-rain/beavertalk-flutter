@@ -8,6 +8,7 @@ class MemberDto {
     this.name,
     this.language,
     this.targetLanguage,
+    this.actualNationality,
     this.loginMethod,
     this.isAutoPayment,
     this.speakCountryId,
@@ -22,6 +23,9 @@ class MemberDto {
   final String? name;
   final String? language;
   final String? targetLanguage;
+
+  /// `MemberRead.actual_nationality`(ISO · 2026-10-10). 구서버는 키가 없다 → null.
+  final String? actualNationality;
   final String? loginMethod;
   final bool? isAutoPayment;
   final int? speakCountryId;
@@ -40,6 +44,7 @@ class MemberDto {
       name: json['name'] as String?,
       language: json['language'] as String?,
       targetLanguage: json['target_language'] as String?,
+      actualNationality: json['actual_nationality'] as String?,
       loginMethod: json['login_method'] as String?,
       isAutoPayment: json['is_auto_payment'] as bool?,
       speakCountryId: json['speak_country_id'] as int?,
@@ -60,6 +65,7 @@ class MemberDto {
         name: name,
         language: language,
         targetLanguage: targetLanguage,
+        actualNationality: actualNationality,
         loginMethod: loginMethod,
         isAutoPayment: isAutoPayment,
         speakCountryId: speakCountryId,

@@ -2937,4 +2937,62 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get wsRetryBackToReport => 'กลับไปที่รายงาน';
+
+  @override
+  String get callHintTabConversation => 'บทสนทนานี้';
+
+  @override
+  String get callHintTabLessons => 'รายการบทเรียน';
+
+  @override
+  String get callHintSituation => 'สถานการณ์';
+
+  @override
+  String get callHintPartner => 'คู่สนทนา';
+
+  @override
+  String get callHintNowBadge => 'ตอนนี้';
+
+  @override
+  String get callHintLevelSurvival => 'ภาษาเกาหลีเพื่อเอาตัวรอด';
+
+  @override
+  String get callHintLessonsLoadError => 'โหลดรายการบทเรียนไม่ได้';
+
+  @override
+  String get callLockReleaseHint => 'กดค้างไว้เพื่อปลดล็อก';
+
+  @override
+  String get callLockA11y => 'ล็อกหน้าจอ';
+
+  @override
+  String get callUnlockA11y => 'ปลดล็อก';
+
+  @override
+  String get nationalityTitle => 'เลือกสัญชาติของคุณ';
+
+  @override
+  String get nationalitySubtitle => 'ต่างจากภาษาแม่ก็ไม่เป็นไร';
+
+  @override
+  String get nationalityUsageNotice =>
+      'ใช้เพื่อปรับปรุงคำแปลและสภาพแวดล้อมการเรียน';
+
+  @override
+  String get nationalitySearchHint => 'ค้นหาประเทศ';
+
+  @override
+  String get nationalityAllCountries => 'ทุกประเทศ (เรียงตามตัวอักษร)';
+
+  @override
+  String get nationalityCurrent => 'ปัจจุบัน';
+
+  @override
+  String get nationalityLabel => 'สัญชาติ';
+
+  @override
+  String get nationalityNotSet => 'ยังไม่ได้ตั้งค่า';
+
+  @override
+  String get nationalitySearchEmpty => 'ไม่พบผลลัพธ์';
 }

@@ -3019,4 +3019,63 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get wsRetryBackToReport => 'Retour au rapport';
+
+  @override
+  String get callHintTabConversation => 'Cette conversation';
+
+  @override
+  String get callHintTabLessons => 'Leçons';
+
+  @override
+  String get callHintSituation => 'Situation';
+
+  @override
+  String get callHintPartner => 'Interlocuteur';
+
+  @override
+  String get callHintNowBadge => 'En cours';
+
+  @override
+  String get callHintLevelSurvival => 'Coréen de survie';
+
+  @override
+  String get callHintLessonsLoadError => 'Impossible de charger les leçons';
+
+  @override
+  String get callLockReleaseHint => 'Appuyez longuement pour déverrouiller';
+
+  @override
+  String get callLockA11y => 'Verrouiller l\'écran';
+
+  @override
+  String get callUnlockA11y => 'Déverrouiller';
+
+  @override
+  String get nationalityTitle => 'Choisissez votre nationalité';
+
+  @override
+  String get nationalitySubtitle =>
+      'Elle peut être différente de votre langue maternelle';
+
+  @override
+  String get nationalityUsageNotice =>
+      'Utilisée pour améliorer les traductions et l\'environnement d\'apprentissage';
+
+  @override
+  String get nationalitySearchHint => 'Rechercher un pays';
+
+  @override
+  String get nationalityAllCountries => 'Tous les pays (ordre alphabétique)';
+
+  @override
+  String get nationalityCurrent => 'Actuelle';
+
+  @override
+  String get nationalityLabel => 'Nationalité';
+
+  @override
+  String get nationalityNotSet => 'Non défini';
+
+  @override
+  String get nationalitySearchEmpty => 'Aucun résultat';
 }

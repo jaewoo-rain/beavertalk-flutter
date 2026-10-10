@@ -17,6 +17,7 @@ abstract interface class AuthRepository {
     String? name,
     String? language,
     List<String>? reasons,
+    String? actualNationality,
   });
 
   /// Fetches the currently authenticated member (`GET /members/me`).
@@ -47,6 +48,10 @@ abstract interface class AuthRepository {
   /// at call start instead of receiving it from the client, so this call is what
   /// actually changes which language the next call teaches.
   Future<Member> updateTargetLanguage(String targetLanguage);
+
+  /// Saves the member's **actual nationality** (ISO 3166-1 alpha-2) —
+  /// `PATCH /members/me`. Separate from the native language and the accent result.
+  Future<Member> updateActualNationality(String iso);
 
   /// Sets the member's in-use call partner to [characterId]
   /// (`PATCH /members/me`) and returns the updated member.

@@ -2950,4 +2950,62 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get wsRetryBackToReport => 'වාර්තාවට ආපසු';
+
+  @override
+  String get callHintTabConversation => 'මෙම සංවාදය';
+
+  @override
+  String get callHintTabLessons => 'පාඩම් ලැයිස්තුව';
+
+  @override
+  String get callHintSituation => 'තත්ත්වය';
+
+  @override
+  String get callHintPartner => 'අනෙක් පාර්ශ්වය';
+
+  @override
+  String get callHintNowBadge => 'දැන්';
+
+  @override
+  String get callHintLevelSurvival => 'පැවැත්මේ කොරියානු';
+
+  @override
+  String get callHintLessonsLoadError => 'පාඩම් පූරණය කළ නොහැකි විය';
+
+  @override
+  String get callLockReleaseHint => 'අගුළු හැරීමට තදකර අල්ලාගෙන සිටින්න';
+
+  @override
+  String get callLockA11y => 'තිරය අගුළු දමන්න';
+
+  @override
+  String get callUnlockA11y => 'අගුළු හරින්න';
+
+  @override
+  String get nationalityTitle => 'ඔබේ ජාතිකත්වය තෝරන්න';
+
+  @override
+  String get nationalitySubtitle => 'මව් භාෂාවෙන් වෙනස් වුණත් කමක් නැහැ';
+
+  @override
+  String get nationalityUsageNotice =>
+      'පරිවර්තන සහ ඉගෙනුම් පරිසරය වැඩිදියුණු කිරීමට භාවිත කෙරේ';
+
+  @override
+  String get nationalitySearchHint => 'රට සොයන්න';
+
+  @override
+  String get nationalityAllCountries => 'සියලු රටවල් (අකාරාදී)';
+
+  @override
+  String get nationalityCurrent => 'වර්තමාන';
+
+  @override
+  String get nationalityLabel => 'ජාතිකත්වය';
+
+  @override
+  String get nationalityNotSet => 'සකසා නැත';
+
+  @override
+  String get nationalitySearchEmpty => 'ප්‍රතිඵල නැත';
 }

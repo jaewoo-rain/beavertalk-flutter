@@ -2979,4 +2979,62 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get wsRetryBackToReport => 'Takaisin raporttiin';
+
+  @override
+  String get callHintTabConversation => 'Tämä keskustelu';
+
+  @override
+  String get callHintTabLessons => 'Oppitunnit';
+
+  @override
+  String get callHintSituation => 'Tilanne';
+
+  @override
+  String get callHintPartner => 'Keskustelukumppani';
+
+  @override
+  String get callHintNowBadge => 'Nyt';
+
+  @override
+  String get callHintLevelSurvival => 'Selviytymiskorea';
+
+  @override
+  String get callHintLessonsLoadError => 'Oppitunteja ei voitu ladata';
+
+  @override
+  String get callLockReleaseHint => 'Avaa lukitus painamalla pitkään';
+
+  @override
+  String get callLockA11y => 'Lukitse näyttö';
+
+  @override
+  String get callUnlockA11y => 'Avaa lukitus';
+
+  @override
+  String get nationalityTitle => 'Valitse kansalaisuutesi';
+
+  @override
+  String get nationalitySubtitle => 'Se saa erota äidinkielestäsi';
+
+  @override
+  String get nationalityUsageNotice =>
+      'Käytetään käännösten ja oppimisympäristön parantamiseen';
+
+  @override
+  String get nationalitySearchHint => 'Hae maata';
+
+  @override
+  String get nationalityAllCountries => 'Kaikki maat (aakkosjärjestys)';
+
+  @override
+  String get nationalityCurrent => 'Nykyinen';
+
+  @override
+  String get nationalityLabel => 'Kansalaisuus';
+
+  @override
+  String get nationalityNotSet => 'Ei asetettu';
+
+  @override
+  String get nationalitySearchEmpty => 'Ei tuloksia';
 }

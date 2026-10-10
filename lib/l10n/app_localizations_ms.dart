@@ -2985,4 +2985,64 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get wsRetryBackToReport => 'Kembali ke laporan';
+
+  @override
+  String get callHintTabConversation => 'Perbualan ini';
+
+  @override
+  String get callHintTabLessons => 'Senarai pelajaran';
+
+  @override
+  String get callHintSituation => 'Situasi';
+
+  @override
+  String get callHintPartner => 'Rakan bual';
+
+  @override
+  String get callHintNowBadge => 'Sekarang';
+
+  @override
+  String get callHintLevelSurvival => 'Bahasa Korea asas kelangsungan';
+
+  @override
+  String get callHintLessonsLoadError =>
+      'Senarai pelajaran tidak dapat dimuatkan';
+
+  @override
+  String get callLockReleaseHint => 'Tekan lama untuk buka kunci';
+
+  @override
+  String get callLockA11y => 'Kunci skrin';
+
+  @override
+  String get callUnlockA11y => 'Buka kunci';
+
+  @override
+  String get nationalityTitle => 'Pilih kewarganegaraan anda';
+
+  @override
+  String get nationalitySubtitle =>
+      'Tidak mengapa jika berbeza daripada bahasa ibunda';
+
+  @override
+  String get nationalityUsageNotice =>
+      'Digunakan untuk menambah baik terjemahan dan persekitaran pembelajaran';
+
+  @override
+  String get nationalitySearchHint => 'Cari negara';
+
+  @override
+  String get nationalityAllCountries => 'Semua negara (ikut abjad)';
+
+  @override
+  String get nationalityCurrent => 'Semasa';
+
+  @override
+  String get nationalityLabel => 'Kewarganegaraan';
+
+  @override
+  String get nationalityNotSet => 'Belum ditetapkan';
+
+  @override
+  String get nationalitySearchEmpty => 'Tiada hasil';
 }

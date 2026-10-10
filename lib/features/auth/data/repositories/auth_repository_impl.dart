@@ -20,12 +20,14 @@ class AuthRepositoryImpl implements AuthRepository {
     String? name,
     String? language,
     List<String>? reasons,
+    String? actualNationality,
   }) async {
     try {
       final dto = await _remote.submitOnboarding(
         name: name,
         language: language,
         reasons: reasons,
+        actualNationality: actualNationality,
       );
       return dto.toEntity();
     } on DioException catch (e) {
@@ -93,6 +95,16 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<Member> updateTargetLanguage(String targetLanguage) async {
     try {
       final dto = await _remote.updateTargetLanguage(targetLanguage);
+      return dto.toEntity();
+    } on DioException catch (e) {
+      throw mapDioException(e);
+    }
+  }
+
+  @override
+  Future<Member> updateActualNationality(String iso) async {
+    try {
+      final dto = await _remote.updateActualNationality(iso);
       return dto.toEntity();
     } on DioException catch (e) {
       throw mapDioException(e);

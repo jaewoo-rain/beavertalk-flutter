@@ -16,8 +16,10 @@ import '../../components/atoms/speaking_equalizer.dart';
 import '../../components/icons/app_icons.dart';
 import '../../components/chrome/home_indicator.dart';
 import '../../components/chrome/status_bar.dart';
+import '../../components/molecules/call_lock.dart';
 import '../../components/molecules/hint_card.dart';
 import '../../components/molecules/tooltip_bubble.dart';
+import '../../components/organisms/bottom_sheet_call_lesson_hint.dart';
 import '../../components/organisms/dialog_basic.dart';
 import '../../features/auth/presentation/providers/my_profile_provider.dart';
 import '../../features/bookmark/presentation/providers/bookmark_providers.dart';
@@ -103,6 +105,10 @@ class _CallScreenState extends ConsumerState<CallScreen> {
   /// `ref.listen` 은 빌드마다 다시 걸리고 상태도 여러 번 흐르므로, 이게 없으면
   /// [CallPhase.awaitingContinue] 하나에 시트가 여러 장 쌓인다.
   bool _segmentSheetOpen = false;
+
+  /// 화면 잠금 중인가(2026-10-10 · PM-DEC-480·485). 잠그는 동안 막이 종료 버튼까지 **모든 조작**을
+  /// 막고(시스템 뒤로 가기 포함), 통화 음성·자막은 그대로 흐른다. 풀려면 가운데 버튼을 길게 누른다.
+  bool _locked = false;
 
   /// turn_id of the hint the learner has revealed (peek → full). Ephemeral: a
   /// new hint carries a new turn_id, so the card auto-collapses.
@@ -649,6 +655,8 @@ class _CallScreenState extends ConsumerState<CallScreen> {
       //   `_segmentSheetOpen` 은 이걸 못 막는다 — 그 시점엔 이미 false 로 풀려 있다.
       if (next.phase == CallPhase.awaitingContinue &&
           prev?.phase != CallPhase.awaitingContinue) {
+        // 이어 할지 묻는 시트는 막 위에 뜬다 — 답하고 돌아왔을 때 잠긴 채 남지 않게 먼저 푼다.
+        if (_locked) setState(() => _locked = false);
         _showSegmentSheet(
           next,
           characterName: selectedChar?.name ?? '',
@@ -699,6 +707,10 @@ class _CallScreenState extends ConsumerState<CallScreen> {
     final course =
         ref.watch(normalCallControllerProvider.select((s) => s.course));
     final hintsAvailable = course != CallCourse.expression;
+    // ⭐ 회화학습(freetalk)은 문장 힌트 카드 대신 **시트만** 연다(사용자 10-10 「회화학습에서는 시트만
+    //   띄우자」 · 디자인 `BottomSheet/CallLessonHint`). 위 09-12 「프리토킹엔 힌트 카드」 결정을 이
+    //   코스에 한해 바꾼다. 일반 통화·레벨테스트(null)·auto 순간은 그대로 카드다.
+    final lessonHintSheet = course == CallCourse.freetalk;
     // 표현학습 말풍선의 폭 상한 — 화면 끝을 넘지 않게 화면폭에서 역산한다.
     // 푸터는 `ContentColumn(gutter: s32)` 이고 폭 상한이 [AppLayout.content] 라,
     // 힌트 버튼 시작이 max(32, (w − content)/2) 이다. 말풍선은 거기서
@@ -713,6 +725,7 @@ class _CallScreenState extends ConsumerState<CallScreen> {
           _hintBubbleInset,
     );
     final showHint = hintsAvailable &&
+        !lessonHintSheet &&
         hintOn &&
         hint != null &&
         CascadeExperiment.enabledFor(channel, CascadeExperiment.hints);
@@ -753,15 +766,31 @@ class _CallScreenState extends ConsumerState<CallScreen> {
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
         if (didPop) return;
+        // 잠금 중에는 시스템 뒤로 가기도 막는다(PM-DEC-485 ② · 「모든 조작 차단」).
+        if (_locked) return;
         ref.read(normalCallControllerProvider.notifier).hangUp();
       },
       child: AppScaffold(
         background: context.c.backgroundNormalNormal,
         statusVariant: StatusBarVariant.whiteTransparent,
         homeVariant: HomeIndicatorVariant.whiteTransparent,
-        body: Column(
+        // 잠금 막은 헤더·본문·하단 버튼을 **통째로** 덮는다(Figma `6620:15825`) — 그래서 몸통을
+        // Stack 으로 감싸고 막을 맨 위에 둔다.
+        body: Stack(
           children: [
-            // Header — connected dot + name + live timer.
+            Column(
+          children: [
+            // Header — connected dot + name + live timer. 오른쪽 끝에 잠금 버튼
+            // (`GNB / type=call` `162:46472` → `CallButton/Lock` 상자 52 · x309 y14 → 끝 14).
+            // 화면 끝 기준이라 태블릿에서도 오른쪽 여백 20 이다(본문 캡 600 을 따르지 않는다).
+            // 전폭으로 편다 — Stack 은 자식(가운데 상태 블록) 폭으로 줄어 버튼이 안쪽에 섰다.
+            // ⚠ Stack 기본 정렬은 왼쪽 위라 상태 블록이 왼쪽에 붙는다(사용자 10-11 「GNB 왼쪽으로
+            //   밀려있어」) — 잠금 전처럼 가운데에 둔다.
+            SizedBox(
+              width: double.infinity,
+              child: Stack(
+              alignment: Alignment.topCenter,
+              children: [
             ContentColumn(
               gutter: 10,
               padding: const EdgeInsets.symmetric(vertical: AppSpacing.s12),
@@ -807,6 +836,17 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                     ),
                   ),
                 ],
+              ),
+            ),
+                PositionedDirectional(
+                  top: 14, // Figma y14(AppSpacing 토큰 없음)
+                  end: 14, // 원 40 의 끝이 화면 끝에서 20 — 상자 52 라 14
+                  child: CallLockButton(
+                    semanticLabel: l10n.callLockA11y,
+                    onLocked: () => setState(() => _locked = true),
+                  ),
+                ),
+              ],
               ),
             ),
             // Body — **영상은 고정, 자막·힌트만 스크롤한다.**
@@ -1112,7 +1152,8 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                     children: [
                       CallToggleButton(
                         icon: AppIcons.lightbulb,
-                        active: hintsAvailable && hintOn,
+                        // 회화학습은 토글이 아니라 시트를 여는 버튼이다 — 켜짐 면을 보이지 않는다.
+                        active: hintsAvailable && !lessonHintSheet && hintOn,
                         // `Accent/Active` — Light #FF9200 · Dark #D17600.
                         activeFill: context.c.accentActive,
                         // 실측은 `Static/White` 다.
@@ -1124,11 +1165,13 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                         inactiveGlyph:
                             hintsAvailable ? null : context.c.labelDisabled,
                         semanticLabel: 'Hint',
-                        onChanged: hintsAvailable
-                            ? (v) => ref
-                                .read(normalCallControllerProvider.notifier)
-                                .setHintOn(v)
-                            : (_) => _showHintLocked(),
+                        onChanged: !hintsAvailable
+                            ? (_) => _showHintLocked()
+                            : lessonHintSheet
+                                ? (_) => _showLessonHintSheet(partnerImage)
+                                : (v) => ref
+                                    .read(normalCallControllerProvider.notifier)
+                                    .setHintOn(v),
                       ),
                       PositionedDirectional(
                         start: -_hintBubbleInset,
@@ -1213,7 +1256,61 @@ class _CallScreenState extends ConsumerState<CallScreen> {
               ),
             ),
           ],
+            ),
+            // ── 잠금 막(Figma `6620:15825`) ──────────────────────────────
+            // `ModalBarrier` 가 아래 모든 터치를 먹는다(종료 버튼 포함 · PM-DEC-480). 풀기는 가운데
+            // 버튼 길게 누르기뿐이다.
+            if (_locked) ...[
+              ModalBarrier(
+                dismissible: false,
+                color: context.c.materialDimmer,
+              ),
+              // 세로 자리: 모바일 Figma 링 위쪽 y272(812 · 상태바 44 아래 몸통 기준 228)를 몸통
+              // 높이에 비례로 옮긴다 — 태블릿도 같은 규칙(PM-DEC-485 ③ 「모바일과 같이」).
+              Align(
+                alignment: const Alignment(0, -0.22),
+                child: CallLockRelease(
+                  message: l10n.callLockReleaseHint,
+                  semanticLabel: l10n.callUnlockA11y,
+                  onUnlocked: () => setState(() => _locked = false),
+                ),
+              ),
+            ],
+          ],
         ),
+      ),
+    );
+  }
+
+  /// 회화학습 힌트 시트(`BottomSheet/CallLessonHint`) — 이번 차시 상황·상대역 + 그 레벨 차시 목록.
+  ///
+  /// 값은 서버가 준다: 상황·상대역 = `GET /cur/me` lesson(상대역은 PM-DEC-485 서버 추가분 —
+  /// 구서버면 null 이라 상대 줄이 숨는다), 목록 = `GET /cur/lessons?level=`. 시트 안에서 지켜보므로
+  /// 늦게 와도 열린 시트가 채워진다. 닫기는 막 탭·아래로 끌기.
+  Future<void> _showLessonHintSheet(ImageProvider? partnerImage) {
+    return showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      barrierColor: context.c.materialDim,
+      builder: (sheetContext) => Consumer(
+        builder: (context, ref, _) {
+          final me = ref.watch(curMeProvider);
+          final lesson = me.valueOrNull?.lesson;
+          final level = lesson?.levelNo ?? 0;
+          final lessons = level > 0 ? ref.watch(curLessonsProvider(level)) : null;
+          return BottomSheetCallLessonHint(
+            situation: lesson?.situation,
+            situationTranslation: lesson?.situationTranslation,
+            partner: lesson?.partner,
+            partnerTranslation: lesson?.partnerTranslation,
+            partnerImage: partnerImage,
+            levelNo: level,
+            currentNo: lesson?.no ?? 0,
+            lessons: lessons?.valueOrNull,
+            lessonsError: me.hasError || (lessons?.hasError ?? false),
+          );
+        },
       ),
     );
   }

@@ -22,10 +22,12 @@ class AuthRemoteDataSource {
     String? name,
     String? language,
     List<String>? reasons,
+    String? actualNationality,
   }) async {
     final body = <String, dynamic>{};
     if (name != null) body['name'] = name;
     if (language != null) body['language'] = language;
+    if (actualNationality != null) body['actual_nationality'] = actualNationality;
     if (reasons != null) body['reasons'] = reasons;
     final res = await _dio.post<Map<String, dynamic>>(
       ApiEndpoints.onboarding,
@@ -108,6 +110,16 @@ class AuthRemoteDataSource {
     final res = await _dio.patch<Map<String, dynamic>>(
       ApiEndpoints.membersMe,
       data: {'target_language': targetLanguage},
+    );
+    return MemberDto.fromJson(res.data!);
+  }
+
+  /// `PATCH /members/me` (Bearer) — 실제 국적(ISO 3166-1 alpha-2 · 2026-10-10). 마이페이지 국적
+  /// 화면 Save. 서버는 국가 표 밖이면 422 를 준다.
+  Future<MemberDto> updateActualNationality(String iso) async {
+    final res = await _dio.patch<Map<String, dynamic>>(
+      ApiEndpoints.membersMe,
+      data: {'actual_nationality': iso},
     );
     return MemberDto.fromJson(res.data!);
   }

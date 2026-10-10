@@ -2951,4 +2951,62 @@ class AppLocalizationsKm extends AppLocalizations {
 
   @override
   String get wsRetryBackToReport => 'ត្រឡប់ទៅរបាយការណ៍';
+
+  @override
+  String get callHintTabConversation => 'ការសន្ទនានេះ';
+
+  @override
+  String get callHintTabLessons => 'បញ្ជីមេរៀន';
+
+  @override
+  String get callHintSituation => 'ស្ថានភាព';
+
+  @override
+  String get callHintPartner => 'ភាគីម្ខាងទៀត';
+
+  @override
+  String get callHintNowBadge => 'ឥឡូវនេះ';
+
+  @override
+  String get callHintLevelSurvival => 'ភាសាកូរ៉េសម្រាប់ការរស់នៅ';
+
+  @override
+  String get callHintLessonsLoadError => 'មិនអាចផ្ទុកបញ្ជីមេរៀនបានទេ';
+
+  @override
+  String get callLockReleaseHint => 'ចុចឱ្យជាប់ដើម្បីដោះសោ';
+
+  @override
+  String get callLockA11y => 'ចាក់សោអេក្រង់';
+
+  @override
+  String get callUnlockA11y => 'ដោះសោ';
+
+  @override
+  String get nationalityTitle => 'ជ្រើសរើសសញ្ជាតិរបស់អ្នក';
+
+  @override
+  String get nationalitySubtitle => 'ខុសពីភាសាកំណើតក៏មិនអីដែរ';
+
+  @override
+  String get nationalityUsageNotice =>
+      'ប្រើដើម្បីកែលម្អការបកប្រែ និងបរិយាកាសសិក្សា';
+
+  @override
+  String get nationalitySearchHint => 'ស្វែងរកប្រទេស';
+
+  @override
+  String get nationalityAllCountries => 'ប្រទេសទាំងអស់ (តាមលំដាប់អក្សរ)';
+
+  @override
+  String get nationalityCurrent => 'បច្ចុប្បន្ន';
+
+  @override
+  String get nationalityLabel => 'សញ្ជាតិ';
+
+  @override
+  String get nationalityNotSet => 'មិនទាន់កំណត់';
+
+  @override
+  String get nationalitySearchEmpty => 'គ្មានលទ្ធផល';
 }

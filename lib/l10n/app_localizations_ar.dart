@@ -2940,4 +2940,61 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get wsRetryBackToReport => 'العودة إلى التقرير';
+
+  @override
+  String get callHintTabConversation => 'هذه المحادثة';
+
+  @override
+  String get callHintTabLessons => 'قائمة الدروس';
+
+  @override
+  String get callHintSituation => 'الموقف';
+
+  @override
+  String get callHintPartner => 'الطرف الآخر';
+
+  @override
+  String get callHintNowBadge => 'الآن';
+
+  @override
+  String get callHintLevelSurvival => 'الكورية للبقاء';
+
+  @override
+  String get callHintLessonsLoadError => 'تعذّر تحميل الدروس';
+
+  @override
+  String get callLockReleaseHint => 'اضغط مطولًا لإلغاء القفل';
+
+  @override
+  String get callLockA11y => 'قفل الشاشة';
+
+  @override
+  String get callUnlockA11y => 'إلغاء القفل';
+
+  @override
+  String get nationalityTitle => 'اختر جنسيتك';
+
+  @override
+  String get nationalitySubtitle => 'لا بأس إن كانت مختلفة عن لغتك الأم';
+
+  @override
+  String get nationalityUsageNotice => 'تُستخدم لتحسين الترجمة وبيئة التعلّم';
+
+  @override
+  String get nationalitySearchHint => 'ابحث عن دولة';
+
+  @override
+  String get nationalityAllCountries => 'كل الدول (أبجديًا)';
+
+  @override
+  String get nationalityCurrent => 'الحالية';
+
+  @override
+  String get nationalityLabel => 'الجنسية';
+
+  @override
+  String get nationalityNotSet => 'غير محددة';
+
+  @override
+  String get nationalitySearchEmpty => 'لا توجد نتائج';
 }

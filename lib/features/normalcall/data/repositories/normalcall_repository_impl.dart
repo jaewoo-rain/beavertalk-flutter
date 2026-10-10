@@ -90,6 +90,15 @@ class NormalcallRepositoryImpl implements NormalcallRepository {
   }
 
   @override
+  Future<List<CurLessonRow>> getCurLessons({int? level}) async {
+    try {
+      return await _remote.getCurLessons(level: level);
+    } on DioException catch (e) {
+      throw mapDioException(e);
+    }
+  }
+
+  @override
   Future<CurResetResult> resetCurriculum() async {
     try {
       return await _remote.resetCurriculum();

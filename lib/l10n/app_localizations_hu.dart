@@ -2982,4 +2982,62 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get wsRetryBackToReport => 'Vissza az elemzéshez';
+
+  @override
+  String get callHintTabConversation => 'Ez a beszélgetés';
+
+  @override
+  String get callHintTabLessons => 'Leckék';
+
+  @override
+  String get callHintSituation => 'Helyzet';
+
+  @override
+  String get callHintPartner => 'Beszélgetőtárs';
+
+  @override
+  String get callHintNowBadge => 'Most';
+
+  @override
+  String get callHintLevelSurvival => 'Túlélő koreai';
+
+  @override
+  String get callHintLessonsLoadError => 'Nem sikerült betölteni a leckéket';
+
+  @override
+  String get callLockReleaseHint => 'Nyomd hosszan a feloldáshoz';
+
+  @override
+  String get callLockA11y => 'Képernyő zárolása';
+
+  @override
+  String get callUnlockA11y => 'Feloldás';
+
+  @override
+  String get nationalityTitle => 'Válaszd ki az állampolgárságodat';
+
+  @override
+  String get nationalitySubtitle => 'Nem baj, ha eltér az anyanyelvedtől';
+
+  @override
+  String get nationalityUsageNotice =>
+      'A fordítások és a tanulási környezet fejlesztésére használjuk';
+
+  @override
+  String get nationalitySearchHint => 'Ország keresése';
+
+  @override
+  String get nationalityAllCountries => 'Minden ország (betűrendben)';
+
+  @override
+  String get nationalityCurrent => 'Jelenlegi';
+
+  @override
+  String get nationalityLabel => 'Állampolgárság';
+
+  @override
+  String get nationalityNotSet => 'Nincs megadva';
+
+  @override
+  String get nationalitySearchEmpty => 'Nincs találat';
 }

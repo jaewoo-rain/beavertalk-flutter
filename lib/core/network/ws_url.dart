@@ -1,3 +1,4 @@
+import '../device/client_info.dart';
 import 'env.dart';
 
 /// Rewrites [Env.apiBaseUrl] (already `…/api/v1`) from its HTTP scheme to the
@@ -21,8 +22,16 @@ String _wsBase([String? httpBase]) {
 /// transport.
 ///
 /// Example: `https://host/api/v1` → `wss://host/api/v1/calls/stream?token=…`.
-String normalcallWsUrl(String token) =>
-    '${_wsBase()}/calls/stream?token=${Uri.encodeComponent(token)}';
+///
+/// 토큰 뒤에 [ClientInfo] 기기 값(`client_session` · `os` · `os_version` · `app_version` ·
+/// `device_type`)을 붙인다(2026-10-10 · 국적 분류 모델 수집 필드). 서버가 통화 끝 국적 판정
+/// 요청에 싣는다. 모르는 값은 애초에 없다 — 비어 있으면 토큰만 간다.
+String normalcallWsUrl(String token) {
+  final extra = ClientInfo.current.queryParameters.entries
+      .map((e) => '&${e.key}=${Uri.encodeComponent(e.value)}')
+      .join();
+  return '${_wsBase()}/calls/stream?token=${Uri.encodeComponent(token)}$extra';
+}
 
 /// 캐스케이드(STT→LLM→TTS) 통화 스트림의 WS 주소.
 ///

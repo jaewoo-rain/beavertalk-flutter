@@ -2995,4 +2995,63 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get wsRetryBackToReport => 'Bumalik sa ulat';
+
+  @override
+  String get callHintTabConversation => 'Ang usapang ito';
+
+  @override
+  String get callHintTabLessons => 'Listahan ng aralin';
+
+  @override
+  String get callHintSituation => 'Sitwasyon';
+
+  @override
+  String get callHintPartner => 'Kausap';
+
+  @override
+  String get callHintNowBadge => 'Ngayon';
+
+  @override
+  String get callHintLevelSurvival => 'Survival Korean';
+
+  @override
+  String get callHintLessonsLoadError => 'Hindi ma-load ang mga aralin';
+
+  @override
+  String get callLockReleaseHint => 'Pindutin nang matagal para i-unlock';
+
+  @override
+  String get callLockA11y => 'I-lock ang screen';
+
+  @override
+  String get callUnlockA11y => 'I-unlock';
+
+  @override
+  String get nationalityTitle => 'Piliin ang iyong nasyonalidad';
+
+  @override
+  String get nationalitySubtitle =>
+      'Ayos lang kahit iba ito sa iyong katutubong wika';
+
+  @override
+  String get nationalityUsageNotice =>
+      'Ginagamit para mapabuti ang mga salin at ang kapaligiran sa pag-aaral';
+
+  @override
+  String get nationalitySearchHint => 'Maghanap ng bansa';
+
+  @override
+  String get nationalityAllCountries => 'Lahat ng bansa (ayon sa alpabeto)';
+
+  @override
+  String get nationalityCurrent => 'Kasalukuyan';
+
+  @override
+  String get nationalityLabel => 'Nasyonalidad';
+
+  @override
+  String get nationalityNotSet => 'Hindi pa nakatakda';
+
+  @override
+  String get nationalitySearchEmpty => 'Walang resulta';
 }

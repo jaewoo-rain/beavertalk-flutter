@@ -2868,4 +2868,61 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get wsRetryBackToReport => '返回报告';
+
+  @override
+  String get callHintTabConversation => '本次对话';
+
+  @override
+  String get callHintTabLessons => '课程列表';
+
+  @override
+  String get callHintSituation => '情景';
+
+  @override
+  String get callHintPartner => '对方';
+
+  @override
+  String get callHintNowBadge => '当前对话';
+
+  @override
+  String get callHintLevelSurvival => '生存会话';
+
+  @override
+  String get callHintLessonsLoadError => '无法加载课程列表';
+
+  @override
+  String get callLockReleaseHint => '长按解锁';
+
+  @override
+  String get callLockA11y => '锁定屏幕';
+
+  @override
+  String get callUnlockA11y => '解锁';
+
+  @override
+  String get nationalityTitle => '请选择你的国籍';
+
+  @override
+  String get nationalitySubtitle => '与母语不同也没关系';
+
+  @override
+  String get nationalityUsageNotice => '将用于改进翻译和学习环境';
+
+  @override
+  String get nationalitySearchHint => '搜索国家名称';
+
+  @override
+  String get nationalityAllCountries => '所有国家（按字母排序）';
+
+  @override
+  String get nationalityCurrent => '当前国籍';
+
+  @override
+  String get nationalityLabel => '国籍';
+
+  @override
+  String get nationalityNotSet => '未设置';
+
+  @override
+  String get nationalitySearchEmpty => '没有搜索结果';
 }

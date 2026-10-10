@@ -2965,4 +2965,62 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get wsRetryBackToReport => 'رپورٹ پر واپس جائیں';
+
+  @override
+  String get callHintTabConversation => 'یہ گفتگو';
+
+  @override
+  String get callHintTabLessons => 'اسباق کی فہرست';
+
+  @override
+  String get callHintSituation => 'صورتِ حال';
+
+  @override
+  String get callHintPartner => 'مخاطب';
+
+  @override
+  String get callHintNowBadge => 'ابھی';
+
+  @override
+  String get callHintLevelSurvival => 'بنیادی بقا کی کوریائی';
+
+  @override
+  String get callHintLessonsLoadError => 'اسباق لوڈ نہیں ہو سکے';
+
+  @override
+  String get callLockReleaseHint => 'کھولنے کے لیے دبا کر رکھیں';
+
+  @override
+  String get callLockA11y => 'اسکرین لاک کریں';
+
+  @override
+  String get callUnlockA11y => 'لاک کھولیں';
+
+  @override
+  String get nationalityTitle => 'اپنی قومیت منتخب کریں';
+
+  @override
+  String get nationalitySubtitle => 'مادری زبان سے مختلف ہو تو بھی ٹھیک ہے';
+
+  @override
+  String get nationalityUsageNotice =>
+      'ترجمے اور سیکھنے کے ماحول کو بہتر بنانے کے لیے استعمال ہوتی ہے';
+
+  @override
+  String get nationalitySearchHint => 'ملک تلاش کریں';
+
+  @override
+  String get nationalityAllCountries => 'تمام ممالک (حروفِ تہجی کے لحاظ سے)';
+
+  @override
+  String get nationalityCurrent => 'موجودہ';
+
+  @override
+  String get nationalityLabel => 'قومیت';
+
+  @override
+  String get nationalityNotSet => 'مقرر نہیں';
+
+  @override
+  String get nationalitySearchEmpty => 'کوئی نتیجہ نہیں';
 }

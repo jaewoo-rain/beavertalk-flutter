@@ -2877,4 +2877,61 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get wsRetryBackToReport => 'レポートに戻る';
+
+  @override
+  String get callHintTabConversation => '今回の会話';
+
+  @override
+  String get callHintTabLessons => 'レッスン一覧';
+
+  @override
+  String get callHintSituation => '状況';
+
+  @override
+  String get callHintPartner => '相手';
+
+  @override
+  String get callHintNowBadge => '今の会話';
+
+  @override
+  String get callHintLevelSurvival => 'サバイバル会話';
+
+  @override
+  String get callHintLessonsLoadError => 'レッスン一覧を読み込めませんでした';
+
+  @override
+  String get callLockReleaseHint => '長押しでロック解除';
+
+  @override
+  String get callLockA11y => '画面ロック';
+
+  @override
+  String get callUnlockA11y => 'ロック解除';
+
+  @override
+  String get nationalityTitle => '国籍を選んでください';
+
+  @override
+  String get nationalitySubtitle => '母語と違っても大丈夫です';
+
+  @override
+  String get nationalityUsageNotice => '翻訳や学習環境の改善に活用されます';
+
+  @override
+  String get nationalitySearchHint => '国名で検索';
+
+  @override
+  String get nationalityAllCountries => 'すべての国（アルファベット順）';
+
+  @override
+  String get nationalityCurrent => '現在の国籍';
+
+  @override
+  String get nationalityLabel => '国籍';
+
+  @override
+  String get nationalityNotSet => '未設定';
+
+  @override
+  String get nationalitySearchEmpty => '検索結果がありません';
 }

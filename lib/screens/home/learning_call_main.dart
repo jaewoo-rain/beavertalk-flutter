@@ -16,6 +16,7 @@ import '../../features/normalcall/presentation/normalcall_providers.dart';
 import '../../features/weak_sound/presentation/widgets/retry_pack_card.dart';
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_color_tokens.dart';
+import '../../mock/mock_data.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
@@ -134,7 +135,8 @@ class LearningCallMainScreen extends ConsumerWidget {
       context,
       Routes.learningIntro,
       arguments: LearningArgs(
-        sentences: args.sentences,
+        // 학습 중 바꾼 북마크가 다시 학습할 때 되돌아가지 않게 지금 상태로 입힌다(2026-10-10).
+        sentences: withLiveBookmarks(args.sentences),
         origin: LearningOrigin.callReview,
         callId: args.callId,
         callTitle: args.callTitle,
@@ -968,19 +970,23 @@ class _TrendChart extends StatelessWidget {
             ),
           ),
           const SizedBox(height: AppSpacing.s8),
-          Text(
-            _tick(p),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: tickStrong
-                ? AppType.caption2.m.copyWith(
-                    color: context.c.labelNormal,
-                    fontSize: 10,
-                  )
-                : AppType.caption2.r.copyWith(
-                    color: context.c.labelAlternative,
-                    fontSize: 10,
-                  ),
+          // 「10/10」 처럼 월·일이 두 자리면 320dp 의 칸(약 44)보다 넓다 — 말줄임(「10/…」)으로
+          // 날짜를 잃지 않게 칸 안으로 줄인다(점수 글자와 같은 방식 · 10-11 게이트 R11).
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              _tick(p),
+              maxLines: 1,
+              style: tickStrong
+                  ? AppType.caption2.m.copyWith(
+                      color: context.c.labelNormal,
+                      fontSize: 10,
+                    )
+                  : AppType.caption2.r.copyWith(
+                      color: context.c.labelAlternative,
+                      fontSize: 10,
+                    ),
+            ),
           ),
         ],
       );

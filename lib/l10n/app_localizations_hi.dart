@@ -2957,4 +2957,62 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get wsRetryBackToReport => 'रिपोर्ट पर वापस जाएँ';
+
+  @override
+  String get callHintTabConversation => 'यह बातचीत';
+
+  @override
+  String get callHintTabLessons => 'पाठ सूची';
+
+  @override
+  String get callHintSituation => 'स्थिति';
+
+  @override
+  String get callHintPartner => 'सामने वाला';
+
+  @override
+  String get callHintNowBadge => 'अभी';
+
+  @override
+  String get callHintLevelSurvival => 'सर्वाइवल कोरियाई';
+
+  @override
+  String get callHintLessonsLoadError => 'पाठ लोड नहीं हो सके';
+
+  @override
+  String get callLockReleaseHint => 'अनलॉक करने के लिए दबाकर रखें';
+
+  @override
+  String get callLockA11y => 'स्क्रीन लॉक करें';
+
+  @override
+  String get callUnlockA11y => 'अनलॉक करें';
+
+  @override
+  String get nationalityTitle => 'अपनी राष्ट्रीयता चुनें';
+
+  @override
+  String get nationalitySubtitle => 'मातृभाषा से अलग हो तो भी कोई बात नहीं';
+
+  @override
+  String get nationalityUsageNotice =>
+      'अनुवाद और सीखने के माहौल को बेहतर बनाने में उपयोग होती है';
+
+  @override
+  String get nationalitySearchHint => 'देश खोजें';
+
+  @override
+  String get nationalityAllCountries => 'सभी देश (वर्णानुक्रम)';
+
+  @override
+  String get nationalityCurrent => 'वर्तमान';
+
+  @override
+  String get nationalityLabel => 'राष्ट्रीयता';
+
+  @override
+  String get nationalityNotSet => 'सेट नहीं';
+
+  @override
+  String get nationalitySearchEmpty => 'कोई परिणाम नहीं';
 }

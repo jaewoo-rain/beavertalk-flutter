@@ -16,15 +16,15 @@ import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 
-/// Onboarding step 1/3 — native language picker. First onboarding step after
+/// Onboarding step 1/4 — native language picker. First onboarding step after
 /// login/signup completes.
 ///
 /// Figma `screen/onborading_language` (`2291:21265`). An [AppScaffold] with a
-/// [GnbType.main2] progress bar (1/3), the prompt "What is your native
+/// [GnbType.main2] progress bar (1/4), the prompt "What is your native
 /// language?", a single-select [CountrySelect] list over [mockLanguages], and a
 /// pinned primary [Button] ("Continue", disabled until a language is chosen).
 /// Tapping it stores the language in the signup draft and pushes the name step
-/// ([Routes.onboardingName], 2/3).
+/// ([Routes.onboardingNationality], 2/4 · 2026-10-10).
 class OnboardingLanguageScreen extends ConsumerStatefulWidget {
   /// Creates the language-selection onboarding screen.
   const OnboardingLanguageScreen({super.key});
@@ -43,12 +43,13 @@ class _OnboardingLanguageScreenState
 
   void _next() {
     // Stash the chosen native language for the onboarding submit, then advance
-    // to the name step (2/3). `_next` is only reachable once a language is
+    // to the nationality step (2/4). `_next` is only reachable once a language is
     // selected (the Continue button is disabled otherwise).
     ref.read(signupDraftProvider.notifier).setLanguage(_selectedId!);
     // Switch the UI to the chosen language for the rest of onboarding.
     ref.read(localeControllerProvider.notifier).setLanguage(_selectedId!);
-    Navigator.pushNamed(context, Routes.onboardingName);
+    // 다음은 실제 국적(2/4 · 2026-10-10 PM-DEC-487) — 모국어와 별개로 묻는다.
+    Navigator.pushNamed(context, Routes.onboardingNationality);
   }
 
   @override
@@ -61,7 +62,7 @@ class _OnboardingLanguageScreenState
       body: Column(
         children: [
           Gnb.main2(
-            progress: const GnbProgress(current: 1, total: 3),
+            progress: const GnbProgress(current: 1, total: 4),
             // Team decision: back from the first onboarding step returns to the
             // sign-up screen (its form is preserved — see SignupScreen).
             onBack: () => Navigator.pushNamed(context, Routes.signup),

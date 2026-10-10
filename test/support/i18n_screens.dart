@@ -56,6 +56,7 @@ import 'package:beavertalk/features/auth/presentation/providers/my_profile_provi
 import 'package:beavertalk/features/character/data/models/character_dto.dart';
 import 'package:beavertalk/features/character/presentation/providers/character_providers.dart';
 import 'package:beavertalk/screens/mypage/edit_nickname.dart';
+import 'package:beavertalk/screens/mypage/nationality.dart';
 import 'package:beavertalk/screens/mypage/mypage.dart';
 import 'package:beavertalk/screens/mypage/settings.dart';
 import 'package:beavertalk/components/molecules/card_bookmark.dart';
@@ -76,6 +77,7 @@ import 'package:beavertalk/screens/plans/purchase_flow.dart';
 import 'package:beavertalk/screens/onboarding/onboarding_done.dart';
 import 'package:beavertalk/screens/onboarding/onboarding_language.dart';
 import 'package:beavertalk/screens/onboarding/onboarding_name.dart';
+import 'package:beavertalk/screens/onboarding/onboarding_nationality.dart';
 import 'package:beavertalk/screens/onboarding/onboarding_reason.dart';
 import 'package:beavertalk/screens/home/learning_args.dart';
 import 'package:beavertalk/screens/home/learning_call_main.dart';
@@ -494,8 +496,10 @@ Map<String, Widget Function()> i18nScreens() {
           child: WinbackOfferSheet(onGetOffer: () {}, onLater: () {}),
         ),
     'EditNickname': () => const EditNicknameScreen(),
+    'MyPageNationality': () => const MyPageNationalityScreen(),
     'OnboardingDone': () => const OnboardingDoneScreen(),
     'OnboardingLanguage': () => const OnboardingLanguageScreen(),
+    'OnboardingNationality': () => const OnboardingNationalityScreen(),
     'OnboardingName': () => const OnboardingNameScreen(),
     'OnboardingReason': () => const OnboardingReasonScreen(),
     'RecordList': () => const RecordListScreen(),

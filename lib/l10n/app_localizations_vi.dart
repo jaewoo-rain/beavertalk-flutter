@@ -2960,4 +2960,62 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get wsRetryBackToReport => 'Quay lại báo cáo';
+
+  @override
+  String get callHintTabConversation => 'Cuộc hội thoại này';
+
+  @override
+  String get callHintTabLessons => 'Danh sách bài học';
+
+  @override
+  String get callHintSituation => 'Tình huống';
+
+  @override
+  String get callHintPartner => 'Đối phương';
+
+  @override
+  String get callHintNowBadge => 'Đang học';
+
+  @override
+  String get callHintLevelSurvival => 'Hội thoại sinh tồn';
+
+  @override
+  String get callHintLessonsLoadError => 'Không tải được danh sách bài học';
+
+  @override
+  String get callLockReleaseHint => 'Nhấn giữ để mở khóa';
+
+  @override
+  String get callLockA11y => 'Khóa màn hình';
+
+  @override
+  String get callUnlockA11y => 'Mở khóa';
+
+  @override
+  String get nationalityTitle => 'Hãy chọn quốc tịch của bạn';
+
+  @override
+  String get nationalitySubtitle => 'Khác với tiếng mẹ đẻ cũng không sao';
+
+  @override
+  String get nationalityUsageNotice =>
+      'Được dùng để cải thiện bản dịch và môi trường học tập';
+
+  @override
+  String get nationalitySearchHint => 'Tìm tên quốc gia';
+
+  @override
+  String get nationalityAllCountries => 'Tất cả quốc gia (theo bảng chữ cái)';
+
+  @override
+  String get nationalityCurrent => 'Hiện tại';
+
+  @override
+  String get nationalityLabel => 'Quốc tịch';
+
+  @override
+  String get nationalityNotSet => 'Chưa đặt';
+
+  @override
+  String get nationalitySearchEmpty => 'Không có kết quả';
 }

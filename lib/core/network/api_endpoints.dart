@@ -86,6 +86,9 @@ abstract final class ApiEndpoints {
   /// 내 커리큘럼 위치 한 장 — 현재 차시·진도·`auto` 로 걸면 정해질 코스.
   static const curMe = '/cur/me';
 
+  /// 차시 목록(no 순) + 내 상태 — `?level=` 로 한 레벨만. 회화학습 힌트 시트 「차시 목록」.
+  static const curLessons = '/cur/lessons';
+
   // ── Dev tools (루트 경로 — `/api/v1` 밖) ──
   /// 커리큘럼 2단계 진도 백지화. ⚠ `Env.apiRootUrl` 에 붙인다 — `/api/v1` 아래가 아니다.
   /// `CurrentAdmin` 전용: user 계정은 403 `ADMIN_ONLY`.

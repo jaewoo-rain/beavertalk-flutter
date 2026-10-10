@@ -2983,4 +2983,63 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get wsRetryBackToReport => 'Назад к отчёту';
+
+  @override
+  String get callHintTabConversation => 'Этот разговор';
+
+  @override
+  String get callHintTabLessons => 'Уроки';
+
+  @override
+  String get callHintSituation => 'Ситуация';
+
+  @override
+  String get callHintPartner => 'Собеседник';
+
+  @override
+  String get callHintNowBadge => 'Сейчас';
+
+  @override
+  String get callHintLevelSurvival => 'Корейский для выживания';
+
+  @override
+  String get callHintLessonsLoadError => 'Не удалось загрузить уроки';
+
+  @override
+  String get callLockReleaseHint =>
+      'Нажмите и удерживайте, чтобы разблокировать';
+
+  @override
+  String get callLockA11y => 'Заблокировать экран';
+
+  @override
+  String get callUnlockA11y => 'Разблокировать';
+
+  @override
+  String get nationalityTitle => 'Выберите ваше гражданство';
+
+  @override
+  String get nationalitySubtitle => 'Оно может отличаться от родного языка';
+
+  @override
+  String get nationalityUsageNotice =>
+      'Используется для улучшения переводов и условий обучения';
+
+  @override
+  String get nationalitySearchHint => 'Поиск страны';
+
+  @override
+  String get nationalityAllCountries => 'Все страны (по алфавиту)';
+
+  @override
+  String get nationalityCurrent => 'Текущее';
+
+  @override
+  String get nationalityLabel => 'Гражданство';
+
+  @override
+  String get nationalityNotSet => 'Не указано';
+
+  @override
+  String get nationalitySearchEmpty => 'Ничего не найдено';
 }

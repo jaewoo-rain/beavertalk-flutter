@@ -6,6 +6,7 @@ class Member {
     this.name,
     this.language,
     this.targetLanguage,
+    this.actualNationality,
     this.loginMethod,
     this.isAutoPayment,
     this.speakCountryId,
@@ -32,6 +33,10 @@ class Member {
   /// `member.target_language` at call start. Null only for pre-migration rows;
   /// the server falls back to `ko`.
   final String? targetLanguage;
+
+  /// 회원이 고른 **실제 국적**(ISO 3166-1 alpha-2, 예 `PH` · 2026-10-10). 모국어([language])·
+  /// 억양 판정([speakCountryId])과 별개다. null = 고르지 않음 — 설정 행이 「Not set」 을 보인다.
+  final String? actualNationality;
 
   /// How the member signed in, e.g. `email`, `kakao`.
   final String? loginMethod;

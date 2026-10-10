@@ -128,6 +128,9 @@ class CurLesson {
     required this.levelNo,
     this.situation,
     this.topic,
+    this.situationTranslation,
+    this.partner,
+    this.partnerTranslation,
   });
 
   final int no;
@@ -143,11 +146,76 @@ class CurLesson {
   /// 주제(`cur_topic.name`). 없으면 null.
   final String? topic;
 
+  /// [situation] 의 회원 모국어 번역(서버 §6). 모국어가 ko 이거나 못 만들면 null — 줄을 숨긴다.
+  final String? situationTranslation;
+
+  /// 상대역(`cur_lesson.partner` · 2026-10-10 PM-DEC-485) — 회화학습 힌트 시트 상대 줄.
+  /// 구서버는 키가 없고, 빈 차시는 null — 둘 다 상대 줄을 숨긴다.
+  final String? partner;
+
+  /// [partner] 의 회원 모국어 번역. 없으면 줄을 숨긴다.
+  final String? partnerTranslation;
+
   factory CurLesson.fromJson(Map<String, dynamic> json) => CurLesson(
         no: (json['no'] as num?)?.toInt() ?? 0,
         code: (json['code'] as String?) ?? '',
         levelNo: (json['level_no'] as num?)?.toInt() ?? 0,
         situation: json['situation'] as String?,
         topic: json['topic'] as String?,
+        situationTranslation: _text(json['situation_translation']),
+        partner: _text(json['partner']),
+        partnerTranslation: _text(json['partner_translation']),
       );
+}
+
+/// 공백뿐인 문자열·문자열 아닌 값은 null — 화면이 빈 줄을 그리지 않게 한다.
+String? _text(Object? v) {
+  if (v is! String) return null;
+  final t = v.trim();
+  return t.isEmpty ? null : t;
+}
+
+/// `GET /cur/lessons?level=` 한 줄 — 회화학습 힌트 시트 「차시 목록」.
+///
+/// 서버 `CurLessonRowOut`: `{no, code, level_no, situation, status}`. 번호는 DB `cur_lesson.no`
+/// 그대로다(전체 순번 — 사용자 「차시 번호는 DB 규격대로」).
+class CurLessonRow {
+  const CurLessonRow({
+    required this.no,
+    required this.code,
+    required this.levelNo,
+    this.situation,
+    this.status,
+  });
+
+  final int no;
+  final String code;
+  final int levelNo;
+  final String? situation;
+
+  /// 안 시작한 차시는 null. 시트는 완료 표시를 하지 않는다(현재 차시만 강조 · 사용자 10-10).
+  final String? status;
+
+  factory CurLessonRow.fromJson(Map<String, dynamic> json) => CurLessonRow(
+        no: (json['no'] as num?)?.toInt() ?? 0,
+        code: (json['code'] as String?) ?? '',
+        levelNo: (json['level_no'] as num?)?.toInt() ?? 0,
+        situation: _text(json['situation']),
+        status: json['status'] as String?,
+      );
+}
+
+/// 레벨 번호 → 화면 이름. 1 = 생존회화(이름은 화면이 l10n 으로 붙인다 → null), 2~13 = A1~C4.
+///
+/// 정본은 서버 시드 `assets/curriculum_v3/cur_seed.json` `meta.levels`(2=A1 … 13=C4)다 —
+/// 각 묶음이 4단계라 CEFR 6단계 표기(B1·B2·C1·C2)와 다르다.
+String? cefrLabelForLevel(int levelNo) {
+  const labels = [
+    'A1', 'A2', 'A3', 'A4', //
+    'B1', 'B2', 'B3', 'B4', //
+    'C1', 'C2', 'C3', 'C4',
+  ];
+  if (levelNo < 2) return null;
+  final i = levelNo - 2;
+  return i < labels.length ? labels[i] : null;
 }
