@@ -151,6 +151,15 @@ void main() {
       expect(find.text('NAME_STEP'), findsOneWidget);
     });
 
+    testWidgets('목록을 스크롤해도 검색창은 위에 고정된다(사용자 10-10)', (tester) async {
+      await _pump(tester, const OnboardingNationalityScreen());
+      final before = tester.getRect(find.byType(TextField).first);
+      await tester.drag(find.byType(ListView), const Offset(0, -600));
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(tester.getRect(find.byType(TextField).first), before);
+      expect(find.text('Afghanistan'), findsNothing, reason: '목록은 실제로 스크롤됐다');
+    });
+
     testWidgets('검색 결과가 없으면 안내', (tester) async {
       await _pump(tester, const OnboardingNationalityScreen());
       final l10n = AppLocalizations.of(tester.element(find.byType(OnboardingNationalityScreen)));

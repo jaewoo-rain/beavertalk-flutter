@@ -70,7 +70,8 @@ class _MyPageNationalityScreenState
     // 「Current」 는 검색 중에는 숨긴다 — 결과 목록과 같은 나라가 두 번 보인다.
     final showCurrent = currentName != null && _query.trim().isEmpty;
 
-    final header = Column(
+    // 위에 고정: 제목·안내·검색창(사용자 10-10 「검색창을 상단에 고정해두고 그 아래부터 스크롤」).
+    final pinned = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
@@ -84,7 +85,12 @@ class _MyPageNationalityScreenState
           hintText: l10n.nationalitySearchHint,
           onChanged: (v) => setState(() => _query = v),
         ),
-        const SizedBox(height: AppSpacing.s16),
+      ],
+    );
+    // 아래만 스크롤: Current · All countries · 국가 행.
+    final header = Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
         if (showCurrent) ...[
           NationalitySectionLabel(l10n.nationalityCurrent),
           const SizedBox(height: AppSpacing.s16),
@@ -107,10 +113,14 @@ class _MyPageNationalityScreenState
       body: Column(
         children: [
           Gnb.main(onBack: () => Navigator.pop(context)),
+          ContentColumn(
+            padding: const EdgeInsets.only(top: AppSpacing.s8),
+            child: pinned,
+          ),
           Expanded(
             child: ContentColumn(
               child: ListView.builder(
-                padding: const EdgeInsets.only(top: AppSpacing.s8, bottom: AppSpacing.s24),
+                padding: const EdgeInsets.only(top: AppSpacing.s16, bottom: AppSpacing.s24),
                 itemCount: countries.length + 1,
                 itemBuilder: (context, i) {
                   if (i == 0) return header;
