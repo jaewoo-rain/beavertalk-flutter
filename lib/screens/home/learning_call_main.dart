@@ -16,6 +16,7 @@ import '../../features/normalcall/presentation/normalcall_providers.dart';
 import '../../features/weak_sound/presentation/widgets/retry_pack_card.dart';
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_color_tokens.dart';
+import '../../mock/mock_data.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
@@ -134,7 +135,8 @@ class LearningCallMainScreen extends ConsumerWidget {
       context,
       Routes.learningIntro,
       arguments: LearningArgs(
-        sentences: args.sentences,
+        // 학습 중 바꾼 북마크가 다시 학습할 때 되돌아가지 않게 지금 상태로 입힌다(2026-10-10).
+        sentences: withLiveBookmarks(args.sentences),
         origin: LearningOrigin.callReview,
         callId: args.callId,
         callTitle: args.callTitle,

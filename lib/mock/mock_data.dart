@@ -171,6 +171,34 @@ void setBookmark(int id, bool saved) {
   bookmarkedSentenceIds.value = next;
 }
 
+/// [sentences] 의 `bookmarked` 를 **지금** 공용 상태([bookmarkedSentenceIds])로 다시 입힌다.
+///
+/// 학습 화면(learning_intro)은 들어오는 문장의 `bookmarked` 로 공용 상태를 맞춘다([setBookmark]).
+/// 그런데 분석 화면이 넘기던 목록은 **화면을 연 순간의 서버 값**이라, 카드에서 북마크를 켠 뒤
+/// 「연습하기」를 누르면 그 낡은 `false` 가 방금 켠 상태를 덮어 꺼졌다(2026-10-10 사용자 신고).
+/// 학습으로 넘기기 직전에 이걸 거친다. 북마크를 바꾸는 화면은 모두 공용 상태를 먼저 고치므로
+/// (낙관적 반영 · 실패 시 되돌림) 앱 안에서는 이 값이 가장 새롭다.
+List<MockSentence> withLiveBookmarks(List<MockSentence> sentences) {
+  final saved = bookmarkedSentenceIds.value;
+  return [
+    for (final s in sentences)
+      s.bookmarked == saved.contains(s.id)
+          ? s
+          : MockSentence(
+              id: s.id,
+              korean: s.korean,
+              native: s.native,
+              charScores: s.charScores,
+              overall: s.overall,
+              pronunciation: s.pronunciation,
+              fluency: s.fluency,
+              rhythm: s.rhythm,
+              bookmarked: saved.contains(s.id),
+              voiceUrl: s.voiceUrl,
+            ),
+  ];
+}
+
 /// The conversation partner / avatar.
 ///
 /// Legacy fixed label — prefer [characterName]/[characterImage] keyed by the
