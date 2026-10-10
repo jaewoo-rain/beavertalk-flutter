@@ -193,11 +193,13 @@ class AuthController extends Notifier<AuthStatus> {
     String? name,
     String? language,
     List<String>? reasons,
+    String? actualNationality,
   }) async {
     await ref.read(authRepositoryProvider).submitOnboarding(
           name: name,
           language: language,
           reasons: reasons,
+          actualNationality: actualNationality,
         );
     // 온보딩 제출 = 가입 완료(GA4 sign_up). 이름만 바꾸는 [updateName] 은 이 메서드를
     // 거치지 않으므로 중복으로 세지 않는다.
@@ -478,6 +480,15 @@ class AuthController extends Notifier<AuthStatus> {
     //   이걸 무효화하지 않으면 마이페이지 종합 레벨 카드에 **직전 언어의 레벨**이
     //   그대로 남는다 — 일본어로 바꿨는데 한국어 레벨 7단계가 계속 보였다.
     ref.invalidate(myLevelProvider);
+  }
+
+  /// 실제 국적 저장(`PATCH /members/me` `actual_nationality` · 2026-10-10) 뒤 프로필을 새로 읽는다.
+  ///
+  /// 저장만 한다 — 국적 분류 모델로는 **다음 통화가 끝날 때** 서버가 그 통화 녹음에 붙여 보낸다
+  /// (PM-DEC-498). 화면에서 지우는 길은 없다(PM-DEC-502).
+  Future<void> updateActualNationality(String iso) async {
+    await ref.read(authRepositoryProvider).updateActualNationality(iso);
+    ref.invalidate(myProfileProvider);
   }
 
   /// Deletes the account: asks the backend to delete the member (`DELETE

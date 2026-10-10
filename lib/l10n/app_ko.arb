@@ -891,5 +891,14 @@
   "callHintLessonsLoadError": "차시 목록을 불러오지 못했어요",
   "callLockReleaseHint": "길게 누르면 잠금이 풀려요",
   "callLockA11y": "화면 잠금",
-  "callUnlockA11y": "잠금 해제"
+  "callUnlockA11y": "잠금 해제",
+  "nationalityTitle": "국적을 선택해 주세요",
+  "nationalitySubtitle": "모국어와 달라도 괜찮아요",
+  "nationalityUsageNotice": "번역이나 학습 환경 개선에 활용되어요",
+  "nationalitySearchHint": "국가 이름 검색",
+  "nationalityAllCountries": "전체 국가 (알파벳순)",
+  "nationalityCurrent": "현재 국적",
+  "nationalityLabel": "국적",
+  "nationalityNotSet": "미설정",
+  "nationalitySearchEmpty": "검색 결과가 없어요"
 }

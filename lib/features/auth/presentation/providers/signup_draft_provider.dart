@@ -5,12 +5,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class SignupDraft {
   const SignupDraft({
     this.language,
+    this.actualNationality,
     this.name,
     this.selectedReasonIds = const {},
   });
 
   /// Native language code from onboarding (e.g. `en`), or null.
   final String? language;
+
+  /// 실제 국적(ISO 3166-1 alpha-2) — 온보딩 2/4 에서 고른다. 모국어와 별개.
+  final String? actualNationality;
 
   /// Nickname entered during onboarding, or null.
   final String? name;
@@ -24,11 +28,13 @@ class SignupDraft {
 
   SignupDraft copyWith({
     String? language,
+    String? actualNationality,
     String? name,
     Set<String>? selectedReasonIds,
   }) {
     return SignupDraft(
       language: language ?? this.language,
+      actualNationality: actualNationality ?? this.actualNationality,
       name: name ?? this.name,
       selectedReasonIds: selectedReasonIds ?? this.selectedReasonIds,
     );
@@ -46,6 +52,10 @@ class SignupDraftNotifier extends Notifier<SignupDraft> {
   /// Stores the native language picked during onboarding.
   void setLanguage(String language) =>
       state = state.copyWith(language: language);
+
+  /// Stores the actual nationality (ISO) picked during onboarding.
+  void setActualNationality(String iso) =>
+      state = state.copyWith(actualNationality: iso);
 
   /// Stores the nickname entered during onboarding.
   void setName(String name) => state = state.copyWith(name: name);

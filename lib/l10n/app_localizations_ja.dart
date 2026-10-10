@@ -2907,4 +2907,31 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get callUnlockA11y => 'ロック解除';
+
+  @override
+  String get nationalityTitle => '国籍を選んでください';
+
+  @override
+  String get nationalitySubtitle => '母語と違っても大丈夫です';
+
+  @override
+  String get nationalityUsageNotice => '翻訳や学習環境の改善に活用されます';
+
+  @override
+  String get nationalitySearchHint => '国名で検索';
+
+  @override
+  String get nationalityAllCountries => 'すべての国（アルファベット順）';
+
+  @override
+  String get nationalityCurrent => '現在の国籍';
+
+  @override
+  String get nationalityLabel => '国籍';
+
+  @override
+  String get nationalityNotSet => '未設定';
+
+  @override
+  String get nationalitySearchEmpty => '検索結果がありません';
 }

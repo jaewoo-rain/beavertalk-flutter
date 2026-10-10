@@ -891,5 +891,14 @@
   "callHintLessonsLoadError": "اسباق لوڈ نہیں ہو سکے",
   "callLockReleaseHint": "کھولنے کے لیے دبا کر رکھیں",
   "callLockA11y": "اسکرین لاک کریں",
-  "callUnlockA11y": "لاک کھولیں"
+  "callUnlockA11y": "لاک کھولیں",
+  "nationalityTitle": "اپنی قومیت منتخب کریں",
+  "nationalitySubtitle": "مادری زبان سے مختلف ہو تو بھی ٹھیک ہے",
+  "nationalityUsageNotice": "ترجمے اور سیکھنے کے ماحول کو بہتر بنانے کے لیے استعمال ہوتی ہے",
+  "nationalitySearchHint": "ملک تلاش کریں",
+  "nationalityAllCountries": "تمام ممالک (حروفِ تہجی کے لحاظ سے)",
+  "nationalityCurrent": "موجودہ",
+  "nationalityLabel": "قومیت",
+  "nationalityNotSet": "مقرر نہیں",
+  "nationalitySearchEmpty": "کوئی نتیجہ نہیں"
 }

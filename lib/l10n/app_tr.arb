@@ -891,5 +891,14 @@
   "callHintLessonsLoadError": "Dersler yüklenemedi",
   "callLockReleaseHint": "Kilidi açmak için basılı tut",
   "callLockA11y": "Ekranı kilitle",
-  "callUnlockA11y": "Kilidi aç"
+  "callUnlockA11y": "Kilidi aç",
+  "nationalityTitle": "Uyruğunu seç",
+  "nationalitySubtitle": "Ana dilinden farklı olabilir",
+  "nationalityUsageNotice": "Çevirileri ve öğrenme ortamını geliştirmek için kullanılır",
+  "nationalitySearchHint": "Ülke ara",
+  "nationalityAllCountries": "Tüm ülkeler (alfabetik)",
+  "nationalityCurrent": "Mevcut",
+  "nationalityLabel": "Uyruk",
+  "nationalityNotSet": "Ayarlanmadı",
+  "nationalitySearchEmpty": "Sonuç yok"
 }

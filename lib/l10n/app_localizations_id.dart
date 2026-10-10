@@ -2997,4 +2997,33 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get callUnlockA11y => 'Buka kunci';
+
+  @override
+  String get nationalityTitle => 'Pilih kewarganegaraanmu';
+
+  @override
+  String get nationalitySubtitle =>
+      'Tidak apa-apa jika berbeda dengan bahasa ibumu';
+
+  @override
+  String get nationalityUsageNotice =>
+      'Digunakan untuk meningkatkan terjemahan dan lingkungan belajar';
+
+  @override
+  String get nationalitySearchHint => 'Cari negara';
+
+  @override
+  String get nationalityAllCountries => 'Semua negara (urut abjad)';
+
+  @override
+  String get nationalityCurrent => 'Saat ini';
+
+  @override
+  String get nationalityLabel => 'Kewarganegaraan';
+
+  @override
+  String get nationalityNotSet => 'Belum diatur';
+
+  @override
+  String get nationalitySearchEmpty => 'Tidak ada hasil';
 }

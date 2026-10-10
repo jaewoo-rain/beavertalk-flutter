@@ -7,6 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
+import '../../components/organisms/nationality_list.dart';
 import '../../components/atoms/badge.dart';
 import '../../components/atoms/button.dart';
 import '../../components/molecules/card_line.dart';
@@ -451,6 +452,13 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
         l10n.nicknameLabel,
         member?.name ?? '',
         route: Routes.editNickname,
+        divider: !last,
+      ),
+      // 실제 국적(2026-10-10 · Figma 행 `6645:59494`) — 닉네임 아래. 미선택은 「Not set」.
+      (last) => _navRow(
+        l10n.nationalityLabel,
+        countryNameFor(member?.actualNationality) ?? l10n.nationalityNotSet,
+        route: Routes.mypageNationality,
         divider: !last,
       ),
       (last) =>

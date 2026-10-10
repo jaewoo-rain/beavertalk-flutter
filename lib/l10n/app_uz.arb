@@ -891,5 +891,14 @@
   "callHintLessonsLoadError": "Darslarni yuklab bo'lmadi",
   "callLockReleaseHint": "Qulfni ochish uchun bosib turing",
   "callLockA11y": "Ekranni qulflash",
-  "callUnlockA11y": "Qulfni ochish"
+  "callUnlockA11y": "Qulfni ochish",
+  "nationalityTitle": "Fuqaroligingizni tanlang",
+  "nationalitySubtitle": "Ona tilingizdan farq qilsa ham bo'ladi",
+  "nationalityUsageNotice": "Tarjimalar va o'quv muhitini yaxshilash uchun ishlatiladi",
+  "nationalitySearchHint": "Davlatni qidirish",
+  "nationalityAllCountries": "Barcha davlatlar (alifbo tartibida)",
+  "nationalityCurrent": "Joriy",
+  "nationalityLabel": "Fuqarolik",
+  "nationalityNotSet": "Belgilanmagan",
+  "nationalitySearchEmpty": "Natija yo'q"
 }

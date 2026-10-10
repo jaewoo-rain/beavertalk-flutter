@@ -891,5 +891,14 @@
   "callHintLessonsLoadError": "পাঠগুলো লোড করা যায়নি",
   "callLockReleaseHint": "আনলক করতে চেপে ধরে রাখুন",
   "callLockA11y": "স্ক্রিন লক করুন",
-  "callUnlockA11y": "আনলক করুন"
+  "callUnlockA11y": "আনলক করুন",
+  "nationalityTitle": "আপনার জাতীয়তা বেছে নিন",
+  "nationalitySubtitle": "মাতৃভাষা থেকে আলাদা হলেও সমস্যা নেই",
+  "nationalityUsageNotice": "অনুবাদ ও শেখার পরিবেশ উন্নত করতে ব্যবহার করা হয়",
+  "nationalitySearchHint": "দেশ খুঁজুন",
+  "nationalityAllCountries": "সব দেশ (বর্ণানুক্রমে)",
+  "nationalityCurrent": "বর্তমান",
+  "nationalityLabel": "জাতীয়তা",
+  "nationalityNotSet": "সেট করা নেই",
+  "nationalitySearchEmpty": "কোনো ফলাফল নেই"
 }

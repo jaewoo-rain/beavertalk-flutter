@@ -891,5 +891,14 @@
   "callHintLessonsLoadError": "Daftar pelajaran tidak dapat dimuat",
   "callLockReleaseHint": "Tekan lama untuk membuka kunci",
   "callLockA11y": "Kunci layar",
-  "callUnlockA11y": "Buka kunci"
+  "callUnlockA11y": "Buka kunci",
+  "nationalityTitle": "Pilih kewarganegaraanmu",
+  "nationalitySubtitle": "Tidak apa-apa jika berbeda dengan bahasa ibumu",
+  "nationalityUsageNotice": "Digunakan untuk meningkatkan terjemahan dan lingkungan belajar",
+  "nationalitySearchHint": "Cari negara",
+  "nationalityAllCountries": "Semua negara (urut abjad)",
+  "nationalityCurrent": "Saat ini",
+  "nationalityLabel": "Kewarganegaraan",
+  "nationalityNotSet": "Belum diatur",
+  "nationalitySearchEmpty": "Tidak ada hasil"
 }

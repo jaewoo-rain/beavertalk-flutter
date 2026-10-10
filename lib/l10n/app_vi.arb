@@ -891,5 +891,14 @@
   "callHintLessonsLoadError": "Không tải được danh sách bài học",
   "callLockReleaseHint": "Nhấn giữ để mở khóa",
   "callLockA11y": "Khóa màn hình",
-  "callUnlockA11y": "Mở khóa"
+  "callUnlockA11y": "Mở khóa",
+  "nationalityTitle": "Hãy chọn quốc tịch của bạn",
+  "nationalitySubtitle": "Khác với tiếng mẹ đẻ cũng không sao",
+  "nationalityUsageNotice": "Được dùng để cải thiện bản dịch và môi trường học tập",
+  "nationalitySearchHint": "Tìm tên quốc gia",
+  "nationalityAllCountries": "Tất cả quốc gia (theo bảng chữ cái)",
+  "nationalityCurrent": "Hiện tại",
+  "nationalityLabel": "Quốc tịch",
+  "nationalityNotSet": "Chưa đặt",
+  "nationalitySearchEmpty": "Không có kết quả"
 }

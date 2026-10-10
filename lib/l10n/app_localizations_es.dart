@@ -3027,4 +3027,33 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get callUnlockA11y => 'Desbloquear';
+
+  @override
+  String get nationalityTitle => 'Selecciona tu nacionalidad';
+
+  @override
+  String get nationalitySubtitle =>
+      'No importa si es distinta de tu lengua materna';
+
+  @override
+  String get nationalityUsageNotice =>
+      'Se usa para mejorar las traducciones y el entorno de aprendizaje';
+
+  @override
+  String get nationalitySearchHint => 'Buscar país';
+
+  @override
+  String get nationalityAllCountries => 'Todos los países (orden alfabético)';
+
+  @override
+  String get nationalityCurrent => 'Actual';
+
+  @override
+  String get nationalityLabel => 'Nacionalidad';
+
+  @override
+  String get nationalityNotSet => 'Sin definir';
+
+  @override
+  String get nationalitySearchEmpty => 'Sin resultados';
 }

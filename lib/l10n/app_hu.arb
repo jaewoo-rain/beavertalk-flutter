@@ -891,5 +891,14 @@
   "callHintLessonsLoadError": "Nem sikerült betölteni a leckéket",
   "callLockReleaseHint": "Nyomd hosszan a feloldáshoz",
   "callLockA11y": "Képernyő zárolása",
-  "callUnlockA11y": "Feloldás"
+  "callUnlockA11y": "Feloldás",
+  "nationalityTitle": "Válaszd ki az állampolgárságodat",
+  "nationalitySubtitle": "Nem baj, ha eltér az anyanyelvedtől",
+  "nationalityUsageNotice": "A fordítások és a tanulási környezet fejlesztésére használjuk",
+  "nationalitySearchHint": "Ország keresése",
+  "nationalityAllCountries": "Minden ország (betűrendben)",
+  "nationalityCurrent": "Jelenlegi",
+  "nationalityLabel": "Állampolgárság",
+  "nationalityNotSet": "Nincs megadva",
+  "nationalitySearchEmpty": "Nincs találat"
 }

@@ -891,5 +891,14 @@
   "callHintLessonsLoadError": "Lektionen konnten nicht geladen werden",
   "callLockReleaseHint": "Zum Entsperren gedrückt halten",
   "callLockA11y": "Bildschirm sperren",
-  "callUnlockA11y": "Entsperren"
+  "callUnlockA11y": "Entsperren",
+  "nationalityTitle": "Wähle deine Staatsangehörigkeit",
+  "nationalitySubtitle": "Sie darf von deiner Muttersprache abweichen",
+  "nationalityUsageNotice": "Wird genutzt, um Übersetzungen und die Lernumgebung zu verbessern",
+  "nationalitySearchHint": "Land suchen",
+  "nationalityAllCountries": "Alle Länder (alphabetisch)",
+  "nationalityCurrent": "Aktuell",
+  "nationalityLabel": "Staatsangehörigkeit",
+  "nationalityNotSet": "Nicht festgelegt",
+  "nationalitySearchEmpty": "Keine Ergebnisse"
 }

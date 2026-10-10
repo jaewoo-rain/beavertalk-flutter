@@ -2321,5 +2321,41 @@
   "callUnlockA11y": "Unlock",
   "@callUnlockA11y": {
     "description": "Accessibility label of the unlock button on the locked call screen."
+  },
+  "nationalityTitle": "Select your nationality",
+  "@nationalityTitle": {
+    "description": "Onboarding 2/4 title — the user's actual nationality (separate from native language)."
+  },
+  "nationalitySubtitle": "It's okay if it differs from your native language",
+  "@nationalitySubtitle": {
+    "description": "Onboarding nationality subtitle."
+  },
+  "nationalityUsageNotice": "Used to improve translations and your learning experience",
+  "@nationalityUsageNotice": {
+    "description": "Notice under the nationality title (onboarding and My Page). User-specified Korean source: 번역이나 학습 환경 개선에 활용되어요."
+  },
+  "nationalitySearchHint": "Search country",
+  "@nationalitySearchHint": {
+    "description": "Placeholder of the country search field."
+  },
+  "nationalityAllCountries": "All countries",
+  "@nationalityAllCountries": {
+    "description": "Label above the full country list (country names are always English, A-Z)."
+  },
+  "nationalityCurrent": "Current",
+  "@nationalityCurrent": {
+    "description": "My Page nationality screen: label above the currently saved country."
+  },
+  "nationalityLabel": "Nationality",
+  "@nationalityLabel": {
+    "description": "Settings Account row label and My Page nationality screen title."
+  },
+  "nationalityNotSet": "Not set",
+  "@nationalityNotSet": {
+    "description": "Settings Account nationality row value when no country is chosen."
+  },
+  "nationalitySearchEmpty": "No results",
+  "@nationalitySearchEmpty": {
+    "description": "Shown when the country search has no match."
   }
 }

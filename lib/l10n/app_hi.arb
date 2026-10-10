@@ -891,5 +891,14 @@
   "callHintLessonsLoadError": "पाठ लोड नहीं हो सके",
   "callLockReleaseHint": "अनलॉक करने के लिए दबाकर रखें",
   "callLockA11y": "स्क्रीन लॉक करें",
-  "callUnlockA11y": "अनलॉक करें"
+  "callUnlockA11y": "अनलॉक करें",
+  "nationalityTitle": "अपनी राष्ट्रीयता चुनें",
+  "nationalitySubtitle": "मातृभाषा से अलग हो तो भी कोई बात नहीं",
+  "nationalityUsageNotice": "अनुवाद और सीखने के माहौल को बेहतर बनाने में उपयोग होती है",
+  "nationalitySearchHint": "देश खोजें",
+  "nationalityAllCountries": "सभी देश (वर्णानुक्रम)",
+  "nationalityCurrent": "वर्तमान",
+  "nationalityLabel": "राष्ट्रीयता",
+  "nationalityNotSet": "सेट नहीं",
+  "nationalitySearchEmpty": "कोई परिणाम नहीं"
 }

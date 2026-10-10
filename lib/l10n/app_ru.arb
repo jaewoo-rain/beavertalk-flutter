@@ -891,5 +891,14 @@
   "callHintLessonsLoadError": "Не удалось загрузить уроки",
   "callLockReleaseHint": "Нажмите и удерживайте, чтобы разблокировать",
   "callLockA11y": "Заблокировать экран",
-  "callUnlockA11y": "Разблокировать"
+  "callUnlockA11y": "Разблокировать",
+  "nationalityTitle": "Выберите ваше гражданство",
+  "nationalitySubtitle": "Оно может отличаться от родного языка",
+  "nationalityUsageNotice": "Используется для улучшения переводов и условий обучения",
+  "nationalitySearchHint": "Поиск страны",
+  "nationalityAllCountries": "Все страны (по алфавиту)",
+  "nationalityCurrent": "Текущее",
+  "nationalityLabel": "Гражданство",
+  "nationalityNotSet": "Не указано",
+  "nationalitySearchEmpty": "Ничего не найдено"
 }

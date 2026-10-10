@@ -2986,4 +2986,32 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get callUnlockA11y => 'Түгжээ тайлах';
+
+  @override
+  String get nationalityTitle => 'Иргэншлээ сонгоно уу';
+
+  @override
+  String get nationalitySubtitle => 'Эх хэлнээсээ өөр байсан ч болно';
+
+  @override
+  String get nationalityUsageNotice =>
+      'Орчуулга болон суралцах орчныг сайжруулахад ашиглагдана';
+
+  @override
+  String get nationalitySearchHint => 'Улс хайх';
+
+  @override
+  String get nationalityAllCountries => 'Бүх улс (цагаан толгойн дарааллаар)';
+
+  @override
+  String get nationalityCurrent => 'Одоогийн';
+
+  @override
+  String get nationalityLabel => 'Иргэншил';
+
+  @override
+  String get nationalityNotSet => 'Тохируулаагүй';
+
+  @override
+  String get nationalitySearchEmpty => 'Илэрц олдсонгүй';
 }

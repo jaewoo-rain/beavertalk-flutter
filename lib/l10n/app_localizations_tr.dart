@@ -2985,4 +2985,32 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get callUnlockA11y => 'Kilidi aç';
+
+  @override
+  String get nationalityTitle => 'Uyruğunu seç';
+
+  @override
+  String get nationalitySubtitle => 'Ana dilinden farklı olabilir';
+
+  @override
+  String get nationalityUsageNotice =>
+      'Çevirileri ve öğrenme ortamını geliştirmek için kullanılır';
+
+  @override
+  String get nationalitySearchHint => 'Ülke ara';
+
+  @override
+  String get nationalityAllCountries => 'Tüm ülkeler (alfabetik)';
+
+  @override
+  String get nationalityCurrent => 'Mevcut';
+
+  @override
+  String get nationalityLabel => 'Uyruk';
+
+  @override
+  String get nationalityNotSet => 'Ayarlanmadı';
+
+  @override
+  String get nationalitySearchEmpty => 'Sonuç yok';
 }

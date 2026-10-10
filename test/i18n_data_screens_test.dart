@@ -13,6 +13,7 @@ void main() {
   const markers = <String, String>{
     'CallLessonHintConversation': 'Ein Klassenkamerad, den du gerade',
     'CallLessonHintLessons': '식당에서 메뉴를 고르고',
+    'MyPageNationalityData': 'South Georgia & South Sandwich Islands',
     'WeakSoundsData': 'Start with 받침 ㄹ',
     'RetrySoundsData': 'asking about the spicy menu',
     // 요약에서 방식 글자를 뺐다(09-26 시안 C — 방식은 줄 앞 원판).

@@ -891,5 +891,14 @@
   "callHintLessonsLoadError": "Hindi ma-load ang mga aralin",
   "callLockReleaseHint": "Pindutin nang matagal para i-unlock",
   "callLockA11y": "I-lock ang screen",
-  "callUnlockA11y": "I-unlock"
+  "callUnlockA11y": "I-unlock",
+  "nationalityTitle": "Piliin ang iyong nasyonalidad",
+  "nationalitySubtitle": "Ayos lang kahit iba ito sa iyong katutubong wika",
+  "nationalityUsageNotice": "Ginagamit para mapabuti ang mga salin at ang kapaligiran sa pag-aaral",
+  "nationalitySearchHint": "Maghanap ng bansa",
+  "nationalityAllCountries": "Lahat ng bansa (ayon sa alpabeto)",
+  "nationalityCurrent": "Kasalukuyan",
+  "nationalityLabel": "Nasyonalidad",
+  "nationalityNotSet": "Hindi pa nakatakda",
+  "nationalitySearchEmpty": "Walang resulta"
 }

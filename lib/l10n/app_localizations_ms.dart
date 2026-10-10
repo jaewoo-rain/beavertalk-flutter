@@ -3016,4 +3016,33 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get callUnlockA11y => 'Buka kunci';
+
+  @override
+  String get nationalityTitle => 'Pilih kewarganegaraan anda';
+
+  @override
+  String get nationalitySubtitle =>
+      'Tidak mengapa jika berbeza daripada bahasa ibunda';
+
+  @override
+  String get nationalityUsageNotice =>
+      'Digunakan untuk menambah baik terjemahan dan persekitaran pembelajaran';
+
+  @override
+  String get nationalitySearchHint => 'Cari negara';
+
+  @override
+  String get nationalityAllCountries => 'Semua negara (ikut abjad)';
+
+  @override
+  String get nationalityCurrent => 'Semasa';
+
+  @override
+  String get nationalityLabel => 'Kewarganegaraan';
+
+  @override
+  String get nationalityNotSet => 'Belum ditetapkan';
+
+  @override
+  String get nationalitySearchEmpty => 'Tiada hasil';
 }

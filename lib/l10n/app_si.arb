@@ -891,5 +891,14 @@
   "callHintLessonsLoadError": "පාඩම් පූරණය කළ නොහැකි විය",
   "callLockReleaseHint": "අගුළු හැරීමට තදකර අල්ලාගෙන සිටින්න",
   "callLockA11y": "තිරය අගුළු දමන්න",
-  "callUnlockA11y": "අගුළු හරින්න"
+  "callUnlockA11y": "අගුළු හරින්න",
+  "nationalityTitle": "ඔබේ ජාතිකත්වය තෝරන්න",
+  "nationalitySubtitle": "මව් භාෂාවෙන් වෙනස් වුණත් කමක් නැහැ",
+  "nationalityUsageNotice": "පරිවර්තන සහ ඉගෙනුම් පරිසරය වැඩිදියුණු කිරීමට භාවිත කෙරේ",
+  "nationalitySearchHint": "රට සොයන්න",
+  "nationalityAllCountries": "සියලු රටවල් (අකාරාදී)",
+  "nationalityCurrent": "වර්තමාන",
+  "nationalityLabel": "ජාතිකත්වය",
+  "nationalityNotSet": "සකසා නැත",
+  "nationalitySearchEmpty": "ප්‍රතිඵල නැත"
 }

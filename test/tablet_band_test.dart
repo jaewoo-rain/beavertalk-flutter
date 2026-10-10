@@ -37,12 +37,14 @@ import 'package:beavertalk/screens/classroom/join_profile.dart';
 import 'package:beavertalk/screens/home/call_finish.dart';
 import 'package:beavertalk/screens/home/home.dart';
 import 'package:beavertalk/screens/mypage/edit_nickname.dart';
+import 'package:beavertalk/screens/mypage/nationality.dart';
 import 'package:beavertalk/screens/mypage/mypage.dart';
 import 'package:beavertalk/screens/mypage/settings.dart';
 import 'package:beavertalk/screens/mypage/subscription_manage.dart';
 import 'package:beavertalk/screens/onboarding/onboarding_done.dart';
 import 'package:beavertalk/screens/onboarding/onboarding_language.dart';
 import 'package:beavertalk/screens/onboarding/onboarding_name.dart';
+import 'package:beavertalk/screens/onboarding/onboarding_nationality.dart';
 import 'package:beavertalk/screens/onboarding/onboarding_reason.dart';
 import 'package:beavertalk/screens/plans/winback_survey.dart';
 import 'package:beavertalk/screens/plans/plans_compare.dart';
@@ -59,6 +61,7 @@ void main() {
     'PasswordCode': () => const PasswordCodeScreen(),
     'PasswordComplete': () => const PasswordCompleteScreen(),
     'OnboardingLanguage': () => const OnboardingLanguageScreen(),
+    'OnboardingNationality': () => const OnboardingNationalityScreen(),
     'OnboardingName': () => const OnboardingNameScreen(),
     'OnboardingReason': () => const OnboardingReasonScreen(),
     'OnboardingDone': () => const OnboardingDoneScreen(),
@@ -67,6 +70,7 @@ void main() {
     'MyPage': () => const MyPageScreen(),
     'MyPageSettings': () => const MyPageSettingsScreen(),
     'EditNickname': () => const EditNicknameScreen(),
+    'MyPageNationality': () => const MyPageNationalityScreen(),
     'SubscriptionManage': () => const SubscriptionManageScreen(),
     'PlansCompare': () => const PlansCompareScreen(),
     'WinbackSurvey': () => const WinbackSurveyScreen(),

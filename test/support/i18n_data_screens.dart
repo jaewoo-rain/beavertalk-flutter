@@ -44,6 +44,7 @@ import 'package:beavertalk/screens/classroom/join_consent.dart';
 import 'package:beavertalk/screens/classroom/join_done.dart';
 import 'package:beavertalk/screens/home/call_finish.dart';
 import 'package:beavertalk/screens/mypage/edit_nickname.dart';
+import 'package:beavertalk/screens/mypage/nationality.dart';
 import 'package:beavertalk/screens/mypage/mypage.dart';
 import 'package:beavertalk/screens/mypage/settings.dart';
 import 'package:beavertalk/screens/onboarding/onboarding_reason.dart';
@@ -83,6 +84,8 @@ Member _member() => Member(
       name: _longName,
       language: 'en',
       targetLanguage: 'ko',
+      // 가장 긴 국가명 — 설정 Nationality 행 · 국적 화면 「Current」 줄이 넘치지 않는지 본다(2026-10-10).
+      actualNationality: 'GS',
       characterId: 10,
       onboardingCompleted: true,
       createdAt: DateTime(2026, 3, 1),
@@ -267,6 +270,12 @@ Map<String, Widget Function()> i18nDataScreens() => {
       // 설정 — 긴 이메일 · 닉네임 · Premium / Free.
       'MyPageSettingsPremium': () => _settingsHost(premium: true),
       'MyPageSettingsFree': () => _settingsHost(premium: false),
+
+      // 국적 변경 — 현재 국적(가장 긴 국가명)이 「Current」 묶음에 선 상태.
+      'MyPageNationalityData': () => ProviderScope(
+            overrides: [myProfileProvider.overrideWith((ref) async => _member())],
+            child: const MyPageNationalityScreen(),
+          ),
 
       // 닉네임 수정 — 긴 닉네임이 입력칸에 찬 상태.
       'EditNicknameData': () => ProviderScope(

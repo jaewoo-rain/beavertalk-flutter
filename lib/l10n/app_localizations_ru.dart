@@ -3014,4 +3014,32 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get callUnlockA11y => 'Разблокировать';
+
+  @override
+  String get nationalityTitle => 'Выберите ваше гражданство';
+
+  @override
+  String get nationalitySubtitle => 'Оно может отличаться от родного языка';
+
+  @override
+  String get nationalityUsageNotice =>
+      'Используется для улучшения переводов и условий обучения';
+
+  @override
+  String get nationalitySearchHint => 'Поиск страны';
+
+  @override
+  String get nationalityAllCountries => 'Все страны (по алфавиту)';
+
+  @override
+  String get nationalityCurrent => 'Текущее';
+
+  @override
+  String get nationalityLabel => 'Гражданство';
+
+  @override
+  String get nationalityNotSet => 'Не указано';
+
+  @override
+  String get nationalitySearchEmpty => 'Ничего не найдено';
 }

@@ -891,5 +891,14 @@
   "callHintLessonsLoadError": "Сабактар жүктөлгөн жок",
   "callLockReleaseHint": "Кулпуну ачуу үчүн басып туруңуз",
   "callLockA11y": "Экранды кулпулоо",
-  "callUnlockA11y": "Кулпуну ачуу"
+  "callUnlockA11y": "Кулпуну ачуу",
+  "nationalityTitle": "Жарандыгыңызды тандаңыз",
+  "nationalitySubtitle": "Эне тилиңизден башка болсо да болот",
+  "nationalityUsageNotice": "Котормолорду жана окуу чөйрөсүн жакшыртуу үчүн колдонулат",
+  "nationalitySearchHint": "Өлкөнү издөө",
+  "nationalityAllCountries": "Бардык өлкөлөр (алфавит боюнча)",
+  "nationalityCurrent": "Учурдагы",
+  "nationalityLabel": "Жарандык",
+  "nationalityNotSet": "Коюлган эмес",
+  "nationalitySearchEmpty": "Натыйжа жок"
 }

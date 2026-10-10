@@ -891,5 +891,14 @@
   "callHintLessonsLoadError": "သင်ခန်းစာများ ဖွင့်မရပါ",
   "callLockReleaseHint": "လော့ခ်ဖွင့်ရန် ဖိထားပါ",
   "callLockA11y": "မျက်နှာပြင် လော့ခ်ချရန်",
-  "callUnlockA11y": "လော့ခ်ဖွင့်ရန်"
+  "callUnlockA11y": "လော့ခ်ဖွင့်ရန်",
+  "nationalityTitle": "သင့်နိုင်ငံသားကို ရွေးပါ",
+  "nationalitySubtitle": "မိခင်ဘာသာနှင့် မတူလည်း ရပါတယ်",
+  "nationalityUsageNotice": "ဘာသာပြန်ခြင်းနှင့် သင်ယူမှုပတ်ဝန်းကျင် တိုးတက်စေရန် အသုံးပြုပါသည်",
+  "nationalitySearchHint": "နိုင်ငံ ရှာရန်",
+  "nationalityAllCountries": "နိုင်ငံအားလုံး (အက္ခရာစဉ်)",
+  "nationalityCurrent": "လက်ရှိ",
+  "nationalityLabel": "နိုင်ငံသား",
+  "nationalityNotSet": "မသတ်မှတ်ရသေး",
+  "nationalitySearchEmpty": "ရလဒ် မရှိပါ"
 }

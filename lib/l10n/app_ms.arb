@@ -891,5 +891,14 @@
   "callHintLessonsLoadError": "Senarai pelajaran tidak dapat dimuatkan",
   "callLockReleaseHint": "Tekan lama untuk buka kunci",
   "callLockA11y": "Kunci skrin",
-  "callUnlockA11y": "Buka kunci"
+  "callUnlockA11y": "Buka kunci",
+  "nationalityTitle": "Pilih kewarganegaraan anda",
+  "nationalitySubtitle": "Tidak mengapa jika berbeza daripada bahasa ibunda",
+  "nationalityUsageNotice": "Digunakan untuk menambah baik terjemahan dan persekitaran pembelajaran",
+  "nationalitySearchHint": "Cari negara",
+  "nationalityAllCountries": "Semua negara (ikut abjad)",
+  "nationalityCurrent": "Semasa",
+  "nationalityLabel": "Kewarganegaraan",
+  "nationalityNotSet": "Belum ditetapkan",
+  "nationalitySearchEmpty": "Tiada hasil"
 }

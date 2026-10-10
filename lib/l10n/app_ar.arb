@@ -891,5 +891,14 @@
   "callHintLessonsLoadError": "تعذّر تحميل الدروس",
   "callLockReleaseHint": "اضغط مطولًا لإلغاء القفل",
   "callLockA11y": "قفل الشاشة",
-  "callUnlockA11y": "إلغاء القفل"
+  "callUnlockA11y": "إلغاء القفل",
+  "nationalityTitle": "اختر جنسيتك",
+  "nationalitySubtitle": "لا بأس إن كانت مختلفة عن لغتك الأم",
+  "nationalityUsageNotice": "تُستخدم لتحسين الترجمة وبيئة التعلّم",
+  "nationalitySearchHint": "ابحث عن دولة",
+  "nationalityAllCountries": "كل الدول (أبجديًا)",
+  "nationalityCurrent": "الحالية",
+  "nationalityLabel": "الجنسية",
+  "nationalityNotSet": "غير محددة",
+  "nationalitySearchEmpty": "لا توجد نتائج"
 }

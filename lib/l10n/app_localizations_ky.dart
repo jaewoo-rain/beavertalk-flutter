@@ -2996,4 +2996,32 @@ class AppLocalizationsKy extends AppLocalizations {
 
   @override
   String get callUnlockA11y => 'Кулпуну ачуу';
+
+  @override
+  String get nationalityTitle => 'Жарандыгыңызды тандаңыз';
+
+  @override
+  String get nationalitySubtitle => 'Эне тилиңизден башка болсо да болот';
+
+  @override
+  String get nationalityUsageNotice =>
+      'Котормолорду жана окуу чөйрөсүн жакшыртуу үчүн колдонулат';
+
+  @override
+  String get nationalitySearchHint => 'Өлкөнү издөө';
+
+  @override
+  String get nationalityAllCountries => 'Бардык өлкөлөр (алфавит боюнча)';
+
+  @override
+  String get nationalityCurrent => 'Учурдагы';
+
+  @override
+  String get nationalityLabel => 'Жарандык';
+
+  @override
+  String get nationalityNotSet => 'Коюлган эмес';
+
+  @override
+  String get nationalitySearchEmpty => 'Натыйжа жок';
 }

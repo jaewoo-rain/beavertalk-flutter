@@ -891,5 +891,14 @@
   "callHintLessonsLoadError": "Хичээлүүдийг ачаалж чадсангүй",
   "callLockReleaseHint": "Түгжээг тайлахын тулд удаан дарна уу",
   "callLockA11y": "Дэлгэц түгжих",
-  "callUnlockA11y": "Түгжээ тайлах"
+  "callUnlockA11y": "Түгжээ тайлах",
+  "nationalityTitle": "Иргэншлээ сонгоно уу",
+  "nationalitySubtitle": "Эх хэлнээсээ өөр байсан ч болно",
+  "nationalityUsageNotice": "Орчуулга болон суралцах орчныг сайжруулахад ашиглагдана",
+  "nationalitySearchHint": "Улс хайх",
+  "nationalityAllCountries": "Бүх улс (цагаан толгойн дарааллаар)",
+  "nationalityCurrent": "Одоогийн",
+  "nationalityLabel": "Иргэншил",
+  "nationalityNotSet": "Тохируулаагүй",
+  "nationalitySearchEmpty": "Илэрц олдсонгүй"
 }

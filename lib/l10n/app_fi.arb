@@ -891,5 +891,14 @@
   "callHintLessonsLoadError": "Oppitunteja ei voitu ladata",
   "callLockReleaseHint": "Avaa lukitus painamalla pitkään",
   "callLockA11y": "Lukitse näyttö",
-  "callUnlockA11y": "Avaa lukitus"
+  "callUnlockA11y": "Avaa lukitus",
+  "nationalityTitle": "Valitse kansalaisuutesi",
+  "nationalitySubtitle": "Se saa erota äidinkielestäsi",
+  "nationalityUsageNotice": "Käytetään käännösten ja oppimisympäristön parantamiseen",
+  "nationalitySearchHint": "Hae maata",
+  "nationalityAllCountries": "Kaikki maat (aakkosjärjestys)",
+  "nationalityCurrent": "Nykyinen",
+  "nationalityLabel": "Kansalaisuus",
+  "nationalityNotSet": "Ei asetettu",
+  "nationalitySearchEmpty": "Ei tuloksia"
 }

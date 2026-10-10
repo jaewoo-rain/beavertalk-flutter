@@ -891,5 +891,14 @@
   "callHintLessonsLoadError": "Não foi possível carregar as lições",
   "callLockReleaseHint": "Toque e segure para desbloquear",
   "callLockA11y": "Bloquear tela",
-  "callUnlockA11y": "Desbloquear"
+  "callUnlockA11y": "Desbloquear",
+  "nationalityTitle": "Selecione sua nacionalidade",
+  "nationalitySubtitle": "Tudo bem se for diferente da sua língua materna",
+  "nationalityUsageNotice": "Usada para melhorar as traduções e o ambiente de aprendizagem",
+  "nationalitySearchHint": "Pesquisar país",
+  "nationalityAllCountries": "Todos os países (ordem alfabética)",
+  "nationalityCurrent": "Atual",
+  "nationalityLabel": "Nacionalidade",
+  "nationalityNotSet": "Não definida",
+  "nationalitySearchEmpty": "Nenhum resultado"
 }
