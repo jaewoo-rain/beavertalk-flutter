@@ -24,12 +24,45 @@ import 'widgets/assignment_badge.dart';
 ///
 /// 맨 아래 「교실에서 나가기」가 반 나가기 시트를 연다. 시안에는 설정 버튼이
 /// 없다 — 사용자가 걷어내고 이 텍스트 링크로 대신했다.
-class AssignmentListScreen extends ConsumerWidget {
+class AssignmentListScreen extends ConsumerStatefulWidget {
   /// 화면을 만든다.
   const AssignmentListScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<AssignmentListScreen> createState() =>
+      _AssignmentListScreenState();
+}
+
+class _AssignmentListScreenState extends ConsumerState<AssignmentListScreen> {
+  Future<void>? _refreshing;
+
+  @override
+  void initState() {
+    super.initState();
+    if (!ref.read(myAssignmentsProvider).isLoading) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) ref.invalidate(myAssignmentsProvider);
+      });
+    }
+  }
+
+  Future<void> _refresh() {
+    return _refreshing ??= _reload();
+  }
+
+  Future<void> _reload() async {
+    try {
+      ref.invalidate(myAssignmentsProvider);
+      await ref.read(myAssignmentsProvider.future);
+    } catch (_) {
+      // The provider error renders the existing retry UI.
+    } finally {
+      _refreshing = null;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final c = context.c;
     final async = ref.watch(myAssignmentsProvider);
@@ -49,12 +82,8 @@ class AssignmentListScreen extends ConsumerWidget {
               error: (_, _) =>
                   _Failed(onRetry: () => ref.invalidate(myAssignmentsProvider)),
               data: (items) => items.isEmpty
-                  ? const _Empty()
-                  : _Body(
-                      items: items,
-                      onRefresh: () async =>
-                          ref.invalidate(myAssignmentsProvider),
-                    ),
+                  ? _Empty(onRefresh: _refresh)
+                  : _Body(items: items, onRefresh: _refresh),
             ),
           ),
         ],
@@ -86,6 +115,7 @@ class _Body extends StatelessWidget {
       onRefresh: onRefresh,
       child: ContentColumn(
         child: ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
           padding: const EdgeInsets.only(
             top: AppSpacing.s8,
             bottom: AppSpacing.s24,
@@ -153,28 +183,41 @@ class _Body extends StatelessWidget {
 
 /// 받은 숙제가 없다.
 class _Empty extends StatelessWidget {
-  const _Empty();
+  const _Empty({required this.onRefresh});
+
+  final Future<void> Function() onRefresh;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final c = context.c;
-    return Center(
-      child: ContentColumn.narrow(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              l10n.hwListEmptyTitle,
-              style: AppType.heading2.b.copyWith(color: c.labelStrong),
+    return RefreshIndicator(
+      onRefresh: onRefresh,
+      child: LayoutBuilder(
+        builder: (context, constraints) => SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: SizedBox(
+            height: constraints.maxHeight,
+            child: Center(
+              child: ContentColumn.narrow(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      l10n.hwListEmptyTitle,
+                      style: AppType.heading2.b.copyWith(color: c.labelStrong),
+                    ),
+                    const SizedBox(height: AppSpacing.s8),
+                    Text(
+                      l10n.hwListEmptyBody,
+                      textAlign: TextAlign.center,
+                      style: AppType.body1.r.copyWith(color: c.labelNormal),
+                    ),
+                  ],
+                ),
+              ),
             ),
-            const SizedBox(height: AppSpacing.s8),
-            Text(
-              l10n.hwListEmptyBody,
-              textAlign: TextAlign.center,
-              style: AppType.body1.r.copyWith(color: c.labelNormal),
-            ),
-          ],
+          ),
         ),
       ),
     );
