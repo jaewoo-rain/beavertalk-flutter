@@ -970,19 +970,23 @@ class _TrendChart extends StatelessWidget {
             ),
           ),
           const SizedBox(height: AppSpacing.s8),
-          Text(
-            _tick(p),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: tickStrong
-                ? AppType.caption2.m.copyWith(
-                    color: context.c.labelNormal,
-                    fontSize: 10,
-                  )
-                : AppType.caption2.r.copyWith(
-                    color: context.c.labelAlternative,
-                    fontSize: 10,
-                  ),
+          // 「10/10」 처럼 월·일이 두 자리면 320dp 의 칸(약 44)보다 넓다 — 말줄임(「10/…」)으로
+          // 날짜를 잃지 않게 칸 안으로 줄인다(점수 글자와 같은 방식 · 10-11 게이트 R11).
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              _tick(p),
+              maxLines: 1,
+              style: tickStrong
+                  ? AppType.caption2.m.copyWith(
+                      color: context.c.labelNormal,
+                      fontSize: 10,
+                    )
+                  : AppType.caption2.r.copyWith(
+                      color: context.c.labelAlternative,
+                      fontSize: 10,
+                    ),
+            ),
           ),
         ],
       );
