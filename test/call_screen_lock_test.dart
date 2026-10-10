@@ -88,6 +88,17 @@ void main() {
     expect(375 - r.right, 14);
   });
 
+  testWidgets('잠금 버튼을 얹어도 상태 블록(연결됨 · 이름 · 시간)은 가로 가운데(사용자 10-11)', (tester) async {
+    for (final size in const [Size(375, 812), Size(810, 1080)]) {
+      await _pump(tester, size: size);
+      final l10n = AppLocalizations.of(tester.element(find.byType(CallScreen)));
+      final timer = find.text('00:00:00');
+      expect(tester.getCenter(timer).dx, size.width / 2);
+      final connected = tester.getRect(find.text(l10n.connected));
+      expect(connected.left, greaterThan(size.width / 2 - 100), reason: '왼쪽 끝에 붙지 않는다');
+    }
+  });
+
   testWidgets('태블릿 810 에서도 화면 끝 기준 — 본문 캡 600 을 따르지 않는다', (tester) async {
     await _pump(tester, size: const Size(810, 1080));
     expect(810 - tester.getRect(_lockButton).right, 14);

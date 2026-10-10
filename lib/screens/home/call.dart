@@ -784,9 +784,12 @@ class _CallScreenState extends ConsumerState<CallScreen> {
             // (`GNB / type=call` `162:46472` → `CallButton/Lock` 상자 52 · x309 y14 → 끝 14).
             // 화면 끝 기준이라 태블릿에서도 오른쪽 여백 20 이다(본문 캡 600 을 따르지 않는다).
             // 전폭으로 편다 — Stack 은 자식(가운데 상태 블록) 폭으로 줄어 버튼이 안쪽에 섰다.
+            // ⚠ Stack 기본 정렬은 왼쪽 위라 상태 블록이 왼쪽에 붙는다(사용자 10-11 「GNB 왼쪽으로
+            //   밀려있어」) — 잠금 전처럼 가운데에 둔다.
             SizedBox(
               width: double.infinity,
               child: Stack(
+              alignment: Alignment.topCenter,
               children: [
             ContentColumn(
               gutter: 10,
