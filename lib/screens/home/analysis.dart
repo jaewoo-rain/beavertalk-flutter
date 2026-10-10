@@ -173,7 +173,9 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
       // 복습하기(전체) 는 call review 라 발음 리포트(learning_call_main)로 끝나고,
       // 표현 하나 "연습하기" 는 origin=sentence 로 단문장 결과(learning_sentence_main)로 끝난다.
       arguments: LearningArgs(
-        sentences: sentences,
+        // 북마크는 **지금** 공용 상태로 다시 입힌다 — 카드에서 켠 북마크가 연습 화면에서 꺼지던 결함
+        // (2026-10-10). 이 목록은 화면을 연 순간의 서버 값이다.
+        sentences: withLiveBookmarks(sentences),
         index: index,
         origin: origin,
         callId: _result?.callId,
@@ -192,7 +194,7 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
       context,
       Routes.learningCallMain,
       arguments: LearningArgs(
-        sentences: _learningSentences,
+        sentences: withLiveBookmarks(_learningSentences),
         origin: LearningOrigin.callReview,
         callId: callId,
         callTitle: _result?.summary,
