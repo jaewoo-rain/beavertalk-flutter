@@ -2506,6 +2506,18 @@ abstract class AppLocalizations {
   /// **'Practice pronunciation'**
   String get practicePronunciation;
 
+  /// Call analysis screen study card, shown once the call's pronunciation study has been finished (every base sentence scored). Opens that call's pronunciation report. PM-DEC-427
+  ///
+  /// In en, this message translates to:
+  /// **'See learning results'**
+  String get learnResultView;
+
+  /// Pronunciation report screen button that reopens the study flow from the first sentence of the same call. PM-DEC-427
+  ///
+  /// In en, this message translates to:
+  /// **'Learn again'**
+  String get learnAgain;
+
   /// One line under the inactive score gauge when the call has learned sentences but none practiced yet (Figma screen/analysis__no_score 4867:7359). Scores come only from practicing sentences.
   ///
   /// In en, this message translates to:
@@ -5373,6 +5385,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sounds {country} speakers often get wrong'**
   String wsNationalSubtitle(String country);
+
+  /// No description provided for @wsRetryPackLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice sounds you often missed'**
+  String get wsRetryPackLabel;
+
+  /// No description provided for @wsRetryPackTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 sound you often missed this session} other{{count} sounds you often missed this session}}'**
+  String wsRetryPackTitle(int count);
+
+  /// No description provided for @wsRetryPackBody.
+  ///
+  /// In en, this message translates to:
+  /// **'We gathered the sounds you missed twice or more. Practice each in 4 steps.'**
+  String get wsRetryPackBody;
+
+  /// No description provided for @wsRetryPackCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice them all'**
+  String get wsRetryPackCta;
+
+  /// No description provided for @wsRetryListTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sounds you often missed'**
+  String get wsRetryListTitle;
+
+  /// No description provided for @wsRetryListSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Sounds from this session'**
+  String get wsRetryListSection;
+
+  /// No description provided for @wsRetryListSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Sounds you missed twice or more this session'**
+  String get wsRetryListSub;
+
+  /// No description provided for @wsRetryListSubWithCall.
+  ///
+  /// In en, this message translates to:
+  /// **'Sounds you missed twice or more in the call “{title}”'**
+  String wsRetryListSubWithCall(String title);
+
+  /// No description provided for @wsRetryListAllDone.
+  ///
+  /// In en, this message translates to:
+  /// **'You practiced all the sounds'**
+  String get wsRetryListAllDone;
+
+  /// No description provided for @wsRetryBackToReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to report'**
+  String get wsRetryBackToReport;
 }
 
 class _AppLocalizationsDelegate

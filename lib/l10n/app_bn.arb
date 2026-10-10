@@ -393,6 +393,8 @@
   "levelRetakeKeep": "অগ্রগতি রাখুন",
   "levelRetakeConfirm": "আবার টেস্ট দিন",
   "practicePronunciation": "উচ্চারণ অনুশীলন করুন",
+  "learnResultView": "শেখার ফলাফল দেখুন",
+  "learnAgain": "আবার শিখুন",
   "analysisNoScoreReview": "অনুশীলন করলে উচ্চারণের স্কোর দেখাবে",
   "analysisNoScoreEmpty": "স্কোর দেওয়ার মতো বাক্য নেই",
   "billingGroupPlanPurchases": "প্ল্যান ও কেনাকাটা",
@@ -869,5 +871,15 @@
   "wsGoalOnly": "লক্ষ্য {score}",
   "wsSoundOf": "{label} ধ্বনি",
   "wsResultTip": "{desc}। কলে আবার এলে এই আকৃতিটি মনে করুন।",
-  "wsNationalSubtitle": "{country} থেকে আসা বক্তারা প্রায়ই ভুল করেন এমন ধ্বনি"
+  "wsNationalSubtitle": "{country} থেকে আসা বক্তারা প্রায়ই ভুল করেন এমন ধ্বনি",
+  "wsRetryPackLabel": "বারবার ভুল হওয়া ধ্বনির অনুশীলন",
+  "wsRetryPackTitle": "{count, plural, other{এই সেশনে বারবার ভুল হওয়া {count}টি ধ্বনি}}",
+  "wsRetryPackBody": "২ বা তার বেশি বার ভুল হওয়া ধ্বনিগুলোই একত্র করেছি। প্রতিটি ধ্বনি ৪ ধাপে অনুশীলন করুন।",
+  "wsRetryPackCta": "সব ধ্বনি অনুশীলন করুন",
+  "wsRetryListTitle": "বারবার ভুল হওয়া ধ্বনি",
+  "wsRetryListSection": "এই সেশনের ধ্বনি",
+  "wsRetryListSub": "এই সেশনে ২ বা তার বেশি বার ভুল হওয়া ধ্বনি",
+  "wsRetryListSubWithCall": "“{title}” কলে ২ বা তার বেশি বার ভুল হওয়া ধ্বনি",
+  "wsRetryListAllDone": "আপনি সব ধ্বনি অনুশীলন করেছেন",
+  "wsRetryBackToReport": "রিপোর্টে ফিরে যান"
 }

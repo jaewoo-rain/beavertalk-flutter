@@ -1280,6 +1280,12 @@ class AppLocalizationsKo extends AppLocalizations {
   String get practicePronunciation => '발음 학습하기';
 
   @override
+  String get learnResultView => '학습 결과 보기';
+
+  @override
+  String get learnAgain => '다시 학습하기';
+
+  @override
   String get analysisNoScoreReview => '복습하면 발음 점수가 나와요';
 
   @override
@@ -2831,4 +2837,43 @@ class AppLocalizationsKo extends AppLocalizations {
   String wsNationalSubtitle(String country) {
     return '$country 화자가 자주 틀리는 소리예요';
   }
+
+  @override
+  String get wsRetryPackLabel => '자주 틀린 소리 연습';
+
+  @override
+  String wsRetryPackTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '이번 학습에서 자주 틀린 소리 $count개',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get wsRetryPackBody => '2번 이상 틀린 소리만 모았어요. 소리마다 4단계로 연습해요.';
+
+  @override
+  String get wsRetryPackCta => '모아서 연습하기';
+
+  @override
+  String get wsRetryListTitle => '자주 틀린 소리';
+
+  @override
+  String get wsRetryListSection => '이번 학습에서 모은 소리';
+
+  @override
+  String get wsRetryListSub => '이번 학습에서 2번 이상 틀린 소리예요';
+
+  @override
+  String wsRetryListSubWithCall(String title) {
+    return '$title 통화에서 2번 이상 틀린 소리예요';
+  }
+
+  @override
+  String get wsRetryListAllDone => '모은 소리를 모두 연습했어요';
+
+  @override
+  String get wsRetryBackToReport => '리포트로 돌아가기';
 }

@@ -1,6 +1,7 @@
 import '../../app/adaptive.dart';
 import 'dart:async';
 
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -26,6 +27,7 @@ import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 import '../system/network_error.dart';
 import 'analysis.dart';
+import 'call_meta_line.dart';
 import 'level_up.dart';
 
 /// Analysis loading — bridges 통화 종료 → 통화 분석.
@@ -49,11 +51,13 @@ import 'level_up.dart';
 ///
 /// **Where this departs from the frame, and why.** The frame draws the call meta
 /// ("Baba · 1월 2일 · 10분 37초 · 3번째 통화"), the partner avatar and the
-/// "Baba의 한마디" label as real content while it waits. This screen cannot:
-/// `call_finish` hands it a bare `callId` and nothing else, and the partner and
-/// call sequence are fields the server does not send even *after* the result
-/// arrives. Those three slots are skeletons here rather than invented text. The
-/// label that is static — 새로 배운 표현 — renders for real, as the frame has it.
+/// "Baba의 한마디" label as real content while it waits. The date and duration
+/// are real here too: they come from the call record (`GET /calls/{id}`), which
+/// the server writes before the analysis (A4 · 10-03). The partner and call
+/// sequence are not — the analysis screen does not get them from `/result`
+/// either, so showing them only here would make them vanish on the hand-off.
+/// Those slots stay skeletons rather than invented text. The label that is
+/// static — 새로 배운 표현 — renders for real, as the frame has it.
 class AnalysisLoadingScreen extends ConsumerStatefulWidget {
   /// Creates the analysis-loading screen.
   const AnalysisLoadingScreen({super.key});
@@ -113,6 +117,19 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
   bool _busy = false;
   bool _navigated = false;
 
+  /// 통화 기록(`GET /calls/{id}`) — 날짜 · 통화 시간. 분석보다 먼저 있다: 서버가 통화 시작 때
+  /// 행을 만들고 끊김을 본 순간 `total_time` 을 쓴다(A4 · 10-03 사용자 「날짜와 통화 시간 초를
+  /// 먼저 … Loading 일 때 어색해서」). 그래서 분석을 기다리는 동안에도 메타 줄은 실값이다.
+  CallSummary? _meta;
+
+  /// 통화 기록을 물은 횟수 — 통화 시간이 채워질 때까지 상태 조회와 함께 다시 묻는다.
+  int _metaTries = 0;
+  static const int _metaMaxTries = 5;
+  bool _metaBusy = false;
+
+  /// [계측] 화면 진입부터 — 통화 시간이 몇 번째 조회 · 몇 ms 뒤에 채워졌는지 로그에 싣는다.
+  final Stopwatch _sinceEnter = Stopwatch();
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -120,6 +137,7 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
     final args = ModalRoute.of(context)?.settings.arguments;
     if (args is int) {
       _callId = args;
+      _sinceEnter.start();
       _start();
     } else {
       // Shouldn't happen (call_finish always passes an int), but fail safe.
@@ -152,6 +170,7 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
     if (_busy || _navigated || !mounted) return;
     final callId = _callId;
     if (callId == null) return;
+    unawaited(_fetchMeta());
 
     // Past the fast window: keep waiting (no error), poll less often.
     if (_deadline != null && DateTime.now().isAfter(_deadline!)) {
@@ -195,6 +214,57 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
       // Transient network errors: keep polling — the screen stays loading.
     } finally {
       _busy = false;
+    }
+  }
+
+  /// 통화 시간이 아직 없는가. 0 도 「아직」이다 — 서버가 행을 NULL 로 만들고 끊김을 본 순간
+  /// 쓰며, 기록 목록도 0초 통화는 안 보인다(`record_list.dart` `isListedCall`).
+  bool get _durationMissing => (_meta?.totalTime ?? 0) <= 0;
+
+  /// 통화 시간 자리를 스켈레톤으로 두고 다시 물을 것인가. [_metaMaxTries] 를 다 쓰면 그만 묻고
+  /// 그 칸을 뺀다 — 끝없이 반짝이는 자리는 오류보다 나쁘다.
+  bool get _durationPending => _durationMissing && _metaTries < _metaMaxTries;
+
+  /// 통화 제목(서버 `summary`) — 비어 있으면 아직 없다.
+  ///
+  /// 10-04 사용자 「금방 끝나는 제목, 날짜, 통화 시간은 빠르게 … 먼저 프론트에서 띄우자」
+  /// (PM-DEC-362·366): 서버가 분석을 2단계로 나눠 제목을 먼저 저장하면 `GET /calls/{id}` 의
+  /// `summary` 가 분석 완료 전에 찬다. 서버가 아직 안 바뀌었으면 늘 비어 있어 지금과 똑같다.
+  String get _title => (_meta?.summary ?? '').trim();
+
+  /// 통화 기록을 다시 물을 것인가 — 통화 시간 **또는** 제목이 비어 있고 시도가 남았을 때.
+  bool get _metaWanted =>
+      (_durationMissing || _title.isEmpty) && _metaTries < _metaMaxTries;
+
+  /// 통화 기록을 한 번 묻는다(상태 조회마다 불린다 · 통화 시간·제목이 다 채워지면 더 안 묻는다).
+  Future<void> _fetchMeta() async {
+    final callId = _callId;
+    if (callId == null || _metaBusy || !_metaWanted) return;
+    _metaBusy = true;
+    _metaTries++;
+    try {
+      final meta =
+          await ref.read(normalcallRepositoryProvider).getCallSummary(callId);
+      if (!mounted) return;
+      setState(() => _meta = meta);
+      // [계측] 미검증 두 건 — 진입 시 통화 시간이 이미 있는 비율 · 몇 번째에 채워지는지.
+      // 앱 타이머(통화 종료 화면 mm:ss)와의 차이는 이 값과 그 화면을 나란히 보고 잰다.
+      if (kDebugMode) {
+        debugPrint('[analysis-meta] call=$callId try=$_metaTries '
+            'total_time=${meta.totalTime} '
+            'title=${(meta.summary ?? '').trim().isNotEmpty} '
+            '+${_sinceEnter.elapsedMilliseconds}ms');
+      }
+    } on AppException catch (e) {
+      // 메타는 분석을 기다리는 동안의 덤이다 — 못 받으면 그 줄만 스켈레톤으로 남고 다음
+      // 상태 조회 때 다시 묻는다. 분석 대기 자체를 멈출 이유가 아니다.
+      if (kDebugMode) {
+        debugPrint('[analysis-meta] call=$callId try=$_metaTries 실패: ${e.message}');
+      }
+    } finally {
+      _metaBusy = false;
+      // 마지막 시도를 써 버렸으면 스켈레톤을 거둔다(값이 안 바뀌어도 그림은 바뀐다).
+      if (mounted && !_metaWanted) setState(() {});
     }
   }
 
@@ -317,25 +387,26 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // ── CallHeader (3569:27504) ────────────────────────────────
-            // Both lines are skeletons: the frame shows real meta here, but see
-            // the class doc — this screen has only a call id. The boxes keep the
-            // heights of the text they stand in for, so the gauge lands where it
-            // will sit once the result arrives.
-            const SizedBox(
-              height: 28,
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Skeleton.bar(width: 210, height: 20),
+            // The title is the call summary. Once the server saves it ahead of
+            // the analysis (A4 · 10-04 PM-DEC-366), `GET /calls/{id}` carries it
+            // and it shows here in the analysis screen's own title type, so the
+            // hand-off does not move it. Until then it stays a skeleton — which
+            // is exactly today's screen while the server is unchanged. The meta
+            // line is the call record (date · duration), through the same widget
+            // the analysis screen uses. The boxes keep the heights of the text
+            // they stand in for, so the gauge lands where it will sit.
+            if (_title.isNotEmpty)
+              Text(_title, style: AppType.heading2.m)
+            else
+              const SizedBox(
+                key: ValueKey('analysis-loading-title-skeleton'),
+                height: 28,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Skeleton.bar(width: 210, height: 20),
+                ),
               ),
-            ),
-            const SizedBox(height: 6), // no s6 token
-            const SizedBox(
-              height: 18,
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Skeleton.bar(width: 220, height: 14),
-              ),
-            ),
+            ..._metaLine(),
 
             const SizedBox(height: AppSpacing.s24),
             // 스켈레톤 · 준비 중 둘 다 inactive 를 불투명도 0.4 로 흐리게(09-24 결정 「분석 로딩 ·
@@ -422,6 +493,34 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
         ),
       ),
     );
+  }
+
+  /// CallHeader 의 메타 줄 — 통화 기록이 오기 전엔 막대 하나, 오면 실값.
+  ///
+  /// 상대 이름은 싣지 않는다: 분석 화면의 메타 줄은 `/result` 의 `character` 를 쓰는데 서버
+  /// `CallResult` 에 그 필드가 없어(서버 `schemas/call.py` `CallResult`) 지금은 날짜 · 시간만
+  /// 나온다. 여기서만 이름을 띄우면 분석 화면으로 넘어가는 순간 이름이 사라진다.
+  List<Widget> _metaLine() {
+    final meta = _meta;
+    if (meta == null) {
+      return const [
+        SizedBox(height: 6), // no s6 token
+        SizedBox(
+          height: 18,
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Skeleton.bar(width: 220, height: 14),
+          ),
+        ),
+      ];
+    }
+    return [
+      CallMetaLine(
+        callDate: meta.callDate,
+        totalTime: _durationMissing ? null : meta.totalTime,
+        durationPending: _durationPending,
+      ),
+    ];
   }
 
   /// Mirrors the analysis screen's section rhythm (24 above, 8 under the label).

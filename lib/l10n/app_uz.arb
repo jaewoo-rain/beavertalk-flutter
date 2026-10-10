@@ -393,6 +393,8 @@
   "levelRetakeKeep": "Natijani saqlash",
   "levelRetakeConfirm": "Qayta topshirish",
   "practicePronunciation": "Talaffuzni mashq qilish",
+  "learnResultView": "Oʻrganish natijalarini koʻrish",
+  "learnAgain": "Qayta oʻrganish",
   "analysisNoScoreReview": "Mashq qilsangiz, talaffuz balli chiqadi",
   "analysisNoScoreEmpty": "Baholanadigan gap yoʻq",
   "billingGroupPlanPurchases": "Tarif va xaridlar",
@@ -869,5 +871,15 @@
   "wsGoalOnly": "Maqsad {score}",
   "wsSoundOf": "{label} tovushi",
   "wsResultTip": "{desc}. Qoʻngʻiroqda yana uchrasa, shu shaklni eslang.",
-  "wsNationalSubtitle": "{country} soʻzlovchilari koʻp xato qiladigan tovushlar"
+  "wsNationalSubtitle": "{country} soʻzlovchilari koʻp xato qiladigan tovushlar",
+  "wsRetryPackLabel": "Koʻp xato qilinadigan tovushlarni mashq qilish",
+  "wsRetryPackTitle": "{count, plural, other{Bu darsda koʻp xato qilgan {count} ta tovush}}",
+  "wsRetryPackBody": "2 va undan koʻp marta xato qilgan tovushlarni yigʻdik. Har birini 4 bosqichda mashq qiling.",
+  "wsRetryPackCta": "Hammasini mashq qilish",
+  "wsRetryListTitle": "Koʻp xato qilinadigan tovushlar",
+  "wsRetryListSection": "Bu darsdagi tovushlar",
+  "wsRetryListSub": "Bu darsda 2 va undan koʻp marta xato qilgan tovushlar",
+  "wsRetryListSubWithCall": "“{title}” qoʻngʻirogʻida 2 va undan koʻp marta xato qilgan tovushlar",
+  "wsRetryListAllDone": "Barcha tovushlarni mashq qildingiz",
+  "wsRetryBackToReport": "Hisobotga qaytish"
 }

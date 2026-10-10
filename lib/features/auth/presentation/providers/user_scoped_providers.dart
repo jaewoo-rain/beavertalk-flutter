@@ -35,6 +35,7 @@ import '../../../bookmark/presentation/providers/bookmark_toggle_controller.dart
 import '../../../character/presentation/providers/character_providers.dart';
 import '../../../normalcall/presentation/normalcall_controller.dart';
 import '../../../review/presentation/review_providers.dart';
+import '../../../weak_sound/presentation/retry_practiced.dart';
 import '../../../weak_sound/presentation/weak_sound_providers.dart';
 import '../../../subscription/presentation/providers/subscription_state_providers.dart';
 import '../../../../core/i18n/locale_controller.dart';
@@ -92,6 +93,9 @@ final List<ProviderOrFamily> userScopedProviders = <ProviderOrFamily>[
   // A 가 대화 모드로 두고 나가면 B 가 대화 모드로 시작한다. 모드는 사용자 선택이라
   // 다음 회원에게 넘기지 않는다 — 학습 모드(기본)로 되돌린다.
   homeModeProvider,
+  // A 가 「자주 틀린 소리」에서 마친 소리 키가 B 의 목록을 「모두 연습했어요」로 켤 수 있다.
+  // 목록을 열 때도 비우지만, 로그아웃 경계는 여기서 끊는다.
+  retryPracticedProvider,
 ];
 
 /// **일부러 안 지우는** 상태 — 지우면 오히려 깨지거나, 애초에 회원 스코프가 아니다.

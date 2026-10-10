@@ -201,3 +201,14 @@ abstract final class CascadeCushionGrowthOff {
 
   static bool get enabled => toggle.value && kDebugMode;
 }
+
+/// [A2] 통화 재생 게인을 **끈다** — 같은 빌드로 게인 전/후를 비교하려는 개발자 토글.
+///
+/// 제품의 끄기 스위치는 `kCallPlaybackGainOn`(`domain/pcm_gain.dart`)이다. 이건 디버그 빌드에서
+/// 실통화 A/B(같은 문장 dB · 끼어들기 오판)를 재는 용도라 릴리스에서는 늘 꺼져 있다.
+abstract final class CallPlaybackGainOff {
+  /// 화면 토글(마이페이지 → 개발자 도구). **기본 꺼짐 = 게인 적용.**
+  static final ValueNotifier<bool> toggle = ValueNotifier<bool>(false);
+
+  static bool get enabled => toggle.value && kDebugMode;
+}

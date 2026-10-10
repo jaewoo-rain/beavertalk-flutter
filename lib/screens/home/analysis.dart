@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart' as intl;
 
 import '../../core/analytics/app_analytics.dart';
 import '../../app/adaptive.dart';
@@ -15,6 +14,7 @@ import '../../components/molecules/pronunciation_result.dart';
 import '../../components/organisms/gnb.dart';
 import '../../features/bookmark/presentation/providers/bookmark_toggle_controller.dart';
 import '../../features/normalcall/domain/entities/call_result.dart';
+import '../../features/normalcall/presentation/normalcall_providers.dart';
 import '../../features/review/data/audio_player.dart';
 import '../../features/review/domain/entities/review_feedback.dart';
 import '../../features/review/presentation/review_providers.dart';
@@ -24,8 +24,8 @@ import '../../theme/app_color_tokens.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
+import 'call_meta_line.dart';
 import 'learning_args.dart';
-import '../../core/format/dates.dart';
 
 /// Call analysis screen — Figma `screen/analysis` (`3583:34434`).
 ///
@@ -115,8 +115,11 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
     if (args is CallResult) {
       final result = _kDesignPreview ? _withDesignPreview(args) : args;
       _result = result;
-      _learningSentences =
-          result.sentences.map(_toMockSentence).toList(growable: false);
+      final seenIds = <int>{};
+      _learningSentences = result.sentences
+          .where((s) => (s.korean?.trim().isNotEmpty ?? false) &&
+              seenIds.add(s.sentenceId))
+          .map(_toMockSentence).toList(growable: false);
       // Defer provider/notifier mutations out of the lifecycle phase: Riverpod
       // forbids modifying a provider during build/initState/didChangeDependencies.
       // Runs exactly once (guarded by the `_result == null` capture above).
@@ -155,13 +158,16 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
       );
 
   /// Pushes the learning flow for [sentences], starting at [index].
-  void _startLearning(
+  ///
+  /// 돌아오면 발음 리포트를 다시 받는다 — 끝까지 마쳤으면 카드가 「학습 결과 보기」로 바뀐다
+  /// (PM-DEC-427).
+  Future<void> _startLearning(
     List<MockSentence> sentences, {
     int index = 0,
     LearningOrigin origin = LearningOrigin.callReview,
-  }) {
+  }) async {
     if (sentences.isEmpty) return;
-    Navigator.pushNamed(
+    await Navigator.pushNamed(
       context,
       Routes.learningIntro,
       // 복습하기(전체) 는 call review 라 발음 리포트(learning_call_main)로 끝나고,
@@ -171,8 +177,55 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
         index: index,
         origin: origin,
         callId: _result?.callId,
+        callTitle: _result?.summary,
       ),
     );
+    _refreshReport();
+  }
+
+  /// 「학습 결과 보기」 — 그 통화의 발음 리포트(`learning_call_main`)로 바로 간다(PM-DEC-427).
+  /// 결과 화면 안 「다시 학습하기」가 같은 문장으로 학습을 다시 연다.
+  Future<void> _openLearningResult() async {
+    final callId = _result?.callId;
+    if (callId == null) return;
+    await Navigator.pushNamed(
+      context,
+      Routes.learningCallMain,
+      arguments: LearningArgs(
+        sentences: _learningSentences,
+        origin: LearningOrigin.callReview,
+        callId: callId,
+        callTitle: _result?.summary,
+      ),
+    );
+    _refreshReport();
+  }
+
+  void _refreshReport() {
+    final callId = _result?.callId;
+    if (mounted && callId != null) ref.invalidate(pronunciationReportProvider(callId));
+  }
+
+  /// 이 통화 학습을 끝까지 마쳤나 — 서버 발음 리포트로 판정한다. 받는 중·실패면 false
+  /// (「발음 학습하기」 그대로 · 재설치해도 서버 값이라 같다).
+  bool _learningFinished(WidgetRef ref) {
+    final callId = _result?.callId;
+    if (callId == null) return false;
+    final report = ref.watch(pronunciationReportProvider(callId)).valueOrNull;
+    if (report == null || !report.learningFinished ||
+        report.sentences.length != _learningSentences.length) {
+      return false;
+    }
+    // 새 계약은 실제 ID로 대조한다. 구형 응답에는 ID가 없어 개수까지만 확인한다.
+    if (report.sentences.any((s) => s.sentenceId != null)) {
+      if (report.sentences.any((s) => s.sentenceId == null)) return false;
+      final expected = _learningSentences.map((s) => s.id).toSet();
+      final actual = report.sentences.map((s) => s.sentenceId!).toSet();
+      return actual.length == report.sentences.length &&
+          expected.length == _learningSentences.length &&
+          actual.length == expected.length && actual.containsAll(expected);
+    }
+    return true;
   }
 
   /// Formats a nullable 0–100 score as a rounded percent, or `-%` when null.
@@ -322,7 +375,12 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
           children: [
             // ── CallHeader (3474:457) ──────────────────────────────────
             Text(title, style: AppType.heading2.m),
-            ..._metaLine(l10n, result),
+            CallMetaLine(
+              characterName: result.character?.name,
+              callDate: result.callDate,
+              totalTime: result.totalTime,
+              callSequence: result.callSequence,
+            ),
 
             const SizedBox(height: AppSpacing.s24),
             // ScoreBlock — 게이지 + (점수가 없으면) 안내 한 줄, 세로 간격 12 · 가운데
@@ -381,10 +439,16 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  CardStudy.learn(
-                    title: l10n.practicePronunciation,
-                    onTap: open ? () => _startLearning(_learningSentences) : null,
-                  ),
+                  if (open && _learningFinished(ref))
+                    CardStudy.learn(
+                      title: l10n.learnResultView,
+                      onTap: _openLearningResult,
+                    )
+                  else
+                    CardStudy.learn(
+                      title: l10n.practicePronunciation,
+                      onTap: open ? () => _startLearning(_learningSentences) : null,
+                    ),
                   const SizedBox(height: AppSpacing.s12),
                   CardStudy.challenge(
                     title: l10n.challengeTitle,
@@ -410,34 +474,6 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
       ),
     );
   }
-
-  /// `Baba · 1월 2일 · 10분 37초 · 3번째 통화` — a single `·`-joined line
-  /// (3474:459). Every part is nullable, so the line renders whatever is known
-  /// and disappears entirely when nothing is.
-  List<Widget> _metaLine(AppLocalizations l10n, CallResult result) {
-    final locale = Localizations.localeOf(context).toString();
-    final parts = <String>[
-      if (result.character != null) result.character!.name,
-      // Locale-aware: this screen renders in 30 locales. (The old code pinned
-      // this to 'en', which printed "Jul 10" inside an otherwise Korean line.)
-      if (result.callDate != null)
-        asciiDigits(intl.DateFormat.MMMd(locale).format(result.callDate!)),
-      if (result.totalTime != null) _formatDuration(l10n, result.totalTime!),
-      if (result.callSequence != null) l10n.callSequence(result.callSequence!),
-    ];
-    if (parts.isEmpty) return const [];
-    return [
-      const SizedBox(height: 6), // no s6 token
-      Text(
-        parts.join(' · '),
-        style: AppType.label2.r.copyWith(color: context.c.labelNeutral),
-      ),
-    ];
-  }
-
-  /// `N분 N초` from a duration in seconds.
-  String _formatDuration(AppLocalizations l10n, int totalSeconds) =>
-      l10n.durationMinSec(totalSeconds ~/ 60, totalSeconds % 60);
 
   /// Section/BabaNote (`3583:34445`) — needs both the remark and the partner it
   /// is attributed to, so it is hidden unless the server sends both.

@@ -14,6 +14,7 @@ import '../../components/organisms/bottom_sheet_country_select.dart';
 import '../../components/organisms/dialog_basic.dart';
 import '../../components/organisms/gnb.dart';
 import '../../core/config/app_version.dart';
+import '../../core/config/store_flags.dart';
 import '../../core/error/app_exception.dart';
 import '../../core/format/dates.dart';
 import '../../core/i18n/locale_controller.dart';
@@ -66,7 +67,7 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
 
   /// (멀티랭귀지 도그푸딩) 학습 언어 선택지 — 서버 target_language **코드**(커리큘럼
   /// 시드된 것만). 다른 언어가 시드되면 여기 한 줄 추가하면 된다.
-  static const _learningLanguages = <MockLanguage>[
+  static const _allLearningLanguages = <MockLanguage>[
     MockLanguage('ko', '한국어', 'KR'),
     MockLanguage('ja', '日本語', 'JP'),
     MockLanguage('en', 'English', 'US'),
@@ -74,6 +75,11 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
     MockLanguage('fr', 'Français', 'FR'),
     MockLanguage('vi', 'Tiếng Việt', 'VN'),
   ];
+
+  /// 스토어 심사 빌드면 한국어 하나뿐이다([storeKoOnly] · PM-DEC-409·410).
+  static List<MockLanguage> get _learningLanguages => storeKoOnly
+      ? _allLearningLanguages.where((l) => l.id == 'ko').toList()
+      : _allLearningLanguages;
 
   /// First subtag of a language id, lowercased (`ko-KR` → `ko`).
   ///
@@ -85,8 +91,11 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
   static String _langHead(String v) => v.split('-').first.toLowerCase();
 
   /// Display name for a learning-language code (falls back to the first entry).
-  String _learningName(String code) => _learningLanguages
-      .firstWhere((l) => l.id == code, orElse: () => _learningLanguages.first)
+  ///
+  /// 이름은 **전체 목록**에서 찾는다 — 스토어 빌드에서도 이미 다른 언어로 바꿔 둔 회원은
+  /// 실제(서버) 언어 이름을 본다. 서버 값은 앱이 바꾸지 않는다.
+  String _learningName(String code) => _allLearningLanguages
+      .firstWhere((l) => l.id == code, orElse: () => _allLearningLanguages.first)
       .name;
 
   // The legacy modal subscription sheet (manage → change-plan → cancel, the
@@ -159,7 +168,10 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
   /// 그 구간). 앱을 지우면 선택도 사라졌다. 이제 서버(member.target_language)가 단일
   /// 소스이고 통화 소켓은 이 값을 보내지 않는다.
   Future<void> _pickLearningLanguage(String currentCode) async {
-    var staged = currentCode;
+    // 스토어 빌드에서 목록에 없는 언어(예: ja)면 한국어를 미리 고른 채로 연다 — 되돌리기만 가능.
+    var staged = _learningLanguages.any((l) => l.id == currentCode)
+        ? currentCode
+        : _learningLanguages.first.id;
     final picked = await showModalBottomSheet<String>(
       context: context,
       backgroundColor: Colors.transparent,
@@ -265,7 +277,7 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
     // exactly what the next call will teach. Falls back to 'ko' while loading or
     // when the saved code is not one of the seeded languages.
     final memberTarget = member?.targetLanguage;
-    final learningLangId = _learningLanguages.any((l) => l.id == memberTarget)
+    final learningLangId = _allLearningLanguages.any((l) => l.id == memberTarget)
         ? memberTarget!
         : 'ko';
 

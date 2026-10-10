@@ -1308,6 +1308,12 @@ class AppLocalizationsVi extends AppLocalizations {
   String get practicePronunciation => 'Luyện phát âm';
 
   @override
+  String get learnResultView => 'Xem kết quả học';
+
+  @override
+  String get learnAgain => 'Học lại';
+
+  @override
   String get analysisNoScoreReview => 'Luyện tập các câu để nhận điểm phát âm';
 
   @override
@@ -2913,4 +2919,45 @@ class AppLocalizationsVi extends AppLocalizations {
   String wsNationalSubtitle(String country) {
     return 'Những âm người $country hay phát âm sai';
   }
+
+  @override
+  String get wsRetryPackLabel => 'Luyện các âm hay sai';
+
+  @override
+  String wsRetryPackTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count âm bạn hay sai trong buổi học này',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get wsRetryPackBody =>
+      'Chúng tôi đã gom các âm bạn sai từ 2 lần trở lên. Luyện mỗi âm qua 4 bước.';
+
+  @override
+  String get wsRetryPackCta => 'Luyện các âm đã gom';
+
+  @override
+  String get wsRetryListTitle => 'Âm hay sai';
+
+  @override
+  String get wsRetryListSection => 'Âm gom được trong buổi học này';
+
+  @override
+  String get wsRetryListSub =>
+      'Các âm bạn sai từ 2 lần trở lên trong buổi học này';
+
+  @override
+  String wsRetryListSubWithCall(String title) {
+    return 'Các âm bạn sai từ 2 lần trở lên trong cuộc gọi “$title”';
+  }
+
+  @override
+  String get wsRetryListAllDone => 'Bạn đã luyện tất cả các âm';
+
+  @override
+  String get wsRetryBackToReport => 'Quay lại báo cáo';
 }

@@ -393,6 +393,8 @@
   "levelRetakeKeep": "Säilytä edistyminen",
   "levelRetakeConfirm": "Tee testi uudelleen",
   "practicePronunciation": "Harjoittele ääntämistä",
+  "learnResultView": "Katso oppimisen tulokset",
+  "learnAgain": "Opiskele uudelleen",
   "analysisNoScoreReview": "Harjoittele lauseita, niin saat ääntämispisteet",
   "analysisNoScoreEmpty": "Ei pisteytettäviä lauseita",
   "billingGroupPlanPurchases": "Paketti ja ostot",
@@ -869,5 +871,15 @@
   "wsGoalOnly": "Tavoite {score}",
   "wsSoundOf": "Äänne {label}",
   "wsResultTip": "{desc}. Kuvittele tämä muoto, kun äänne tulee vastaan puhelussa.",
-  "wsNationalSubtitle": "{country} – äänteet, joissa puhujat usein erehtyvät"
+  "wsNationalSubtitle": "{country} – äänteet, joissa puhujat usein erehtyvät",
+  "wsRetryPackLabel": "Harjoittele usein väärin menneitä äänteitä",
+  "wsRetryPackTitle": "{count, plural, =1{1 usein väärin mennyt äänne tällä kerralla} other{{count} usein väärin mennyttä äännettä tällä kerralla}}",
+  "wsRetryPackBody": "Keräsimme äänteet, jotka menivät väärin vähintään 2 kertaa. Harjoittele jokaista 4 vaiheessa.",
+  "wsRetryPackCta": "Harjoittele äänteitä",
+  "wsRetryListTitle": "Usein väärin menneet äänteet",
+  "wsRetryListSection": "Tämän kerran äänteet",
+  "wsRetryListSub": "Äänteet, jotka menivät väärin vähintään 2 kertaa tällä kerralla",
+  "wsRetryListSubWithCall": "Äänteet, jotka menivät väärin vähintään 2 kertaa puhelussa ”{title}”",
+  "wsRetryListAllDone": "Harjoittelit kaikki äänteet",
+  "wsRetryBackToReport": "Takaisin raporttiin"
 }

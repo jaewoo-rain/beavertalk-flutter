@@ -1311,6 +1311,12 @@ class AppLocalizationsKy extends AppLocalizations {
   String get practicePronunciation => 'Айтылышты машыктыруу';
 
   @override
+  String get learnResultView => 'Окуунун жыйынтыгын көрүү';
+
+  @override
+  String get learnAgain => 'Кайра окуу';
+
+  @override
   String get analysisNoScoreReview => 'Машыксаңыз, айтылыш упайы чыгат';
 
   @override
@@ -2919,4 +2925,45 @@ class AppLocalizationsKy extends AppLocalizations {
   String wsNationalSubtitle(String country) {
     return '$country сүйлөөчүлөрү көп жаңылган тыбыштар';
   }
+
+  @override
+  String get wsRetryPackLabel => 'Көп жаңылган тыбыштарды көнүгүү';
+
+  @override
+  String wsRetryPackTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Бул сабакта көп жаңылган $count тыбыш',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get wsRetryPackBody =>
+      '2 же андан көп жолу жаңылган тыбыштарды чогулттук. Ар бир тыбышты 4 кадам менен көнүгүңүз.';
+
+  @override
+  String get wsRetryPackCta => 'Баарын көнүгүү';
+
+  @override
+  String get wsRetryListTitle => 'Көп жаңылган тыбыштар';
+
+  @override
+  String get wsRetryListSection => 'Бул сабактын тыбыштары';
+
+  @override
+  String get wsRetryListSub =>
+      'Бул сабакта 2 же андан көп жолу жаңылган тыбыштар';
+
+  @override
+  String wsRetryListSubWithCall(String title) {
+    return '«$title» чалуусунда 2 же андан көп жолу жаңылган тыбыштар';
+  }
+
+  @override
+  String get wsRetryListAllDone => 'Бардык тыбыштар боюнча көнүгүү бүттү';
+
+  @override
+  String get wsRetryBackToReport => 'Отчетко кайтуу';
 }

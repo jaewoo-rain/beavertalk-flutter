@@ -31,17 +31,29 @@ class _FakeRepo implements NormalcallRepository {
   @override
   Future<CallResult> getResult(int callId) => Completer<CallResult>().future;
 
+  /// 통화 기록도 영영 안 온다 — 이 시험은 상태별 칸만 본다(메타 줄은 analysis_meta_first_test).
+  @override
+  Future<CallSummary> getCallSummary(int callId) => Completer<CallSummary>().future;
+
   @override
   dynamic noSuchMethod(Invocation invocation) =>
       throw UnimplementedError('${invocation.memberName} — 이 시험엔 없다');
 }
 
 void main() {
-  Future<void> pump(WidgetTester tester, CallAnalysisStatus? status) async {
+  Future<void> pump(
+    WidgetTester tester,
+    CallAnalysisStatus? status, {
+    Locale locale = const Locale('ko'),
+  }) async {
+    // 실패한 expect 뒤에도 화면을 내려 조회·shimmer 타이머를 정리한다.
+    addTearDown(() async {
+      await tester.pumpWidget(const SizedBox.shrink());
+    });
     await tester.pumpWidget(ProviderScope(
       overrides: [normalcallRepositoryProvider.overrideWithValue(_FakeRepo(status))],
       child: MaterialApp(
-        locale: const Locale('ko'),
+        locale: locale,
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         onGenerateRoute: (_) => MaterialPageRoute<void>(
@@ -101,4 +113,137 @@ void main() {
     expect(find.byType(CardLoading), findsOneWidget);
     await tearDownScreen(tester);
   });
+
+  // getter와 화면만 비교하면 잘못 연결된 locale도 함께 통과할 수 있다.
+  // ARB에서 확인한 대표값으로 locale 선택과 실제 표시를 함께 검증한다.
+  const preparingCopy = <String, List<String>>{
+    'ko': [
+      '오늘 통화를 돌아보고 있어요.',
+      '잠시 뒤 한마디가 여기에 도착해요',
+      '비버가 오늘 배운 표현을 카드로 만들고 있어요',
+      '다 되면 이 자리에 바로 나타나요.',
+      '대화 저장',
+      '표현 카드 만들기',
+      '완료',
+      '만드는 중',
+      '대기',
+    ],
+    'en': [
+      "Looking back on today's call.",
+      'A note will appear here shortly',
+      "The beaver is turning today's expressions into cards",
+      "They'll show up right here when ready.",
+      'Saving the conversation',
+      'Making expression cards',
+      'Done',
+      'In progress',
+      'Waiting',
+    ],
+    'ja': [
+      '今日の通話を振り返っています。',
+      'まもなくここにひとことが届きます',
+      'ビーバーが今日の表現をカードにしています',
+      'できあがったらすぐここに表示されます。',
+      '会話の保存',
+      '表現カードの作成',
+      '完了',
+      '作成中',
+      '待機中',
+    ],
+  };
+
+  for (final code in preparingCopy.keys) {
+    for (final status in <CallAnalysisStatus?>[
+      null,
+      CallAnalysisStatus.ongoing,
+      CallAnalysisStatus.analyzing,
+      CallAnalysisStatus.done,
+      CallAnalysisStatus.failed,
+      CallAnalysisStatus.unknown,
+    ]) {
+      testWidgets('$code ${status?.name ?? 'first-response'} — 로딩 상태 번역',
+          (tester) async {
+        await pump(tester, status, locale: Locale(code));
+        final context = tester.element(find.byType(AnalysisLoadingScreen));
+        final l10n = AppLocalizations.of(context);
+        expect(Localizations.localeOf(context).languageCode, code);
+        final copy = preparingCopy[code]!;
+        expect([
+          l10n.analysisPrepNote,
+          l10n.analysisPrepNoteHint,
+          l10n.analysisPrepTitle,
+          l10n.analysisPrepSub,
+          l10n.analysisPrepStepSave,
+          l10n.analysisPrepStepCards,
+          l10n.analysisPrepStateDone,
+          l10n.analysisPrepStateWorking,
+          l10n.analysisPrepStateWaiting,
+        ], copy);
+        expect(find.text(l10n.conversationRecord), findsOneWidget);
+
+        if (status == CallAnalysisStatus.unknown) {
+          expect(find.text(l10n.callInfoNotFound), findsNothing);
+          // 최초 답변이 1회다. 두 번째도 대기하며 세 번째에서 오류로 끝난다.
+          await tester.pump(const Duration(milliseconds: 1600));
+          expect(find.text(l10n.callInfoNotFound), findsNothing);
+          await tester.pump(const Duration(milliseconds: 1600));
+          expect(find.text(l10n.callInfoNotFound), findsOneWidget);
+        }
+
+        final preparing = status == CallAnalysisStatus.ongoing ||
+            status == CallAnalysisStatus.analyzing;
+        final error = status == CallAnalysisStatus.failed ||
+            status == CallAnalysisStatus.unknown;
+        expect(find.byType(AnalysisPreparingCard),
+            preparing ? findsOneWidget : findsNothing);
+        expect(find.byType(CardLoading),
+            preparing || error ? findsNothing : findsOneWidget);
+
+        if (preparing) {
+          // Column은 지연 생성이 아니므로 화면 밖 고정 문구도 검사한다.
+          for (final text in copy.take(6)) {
+            expect(find.text(text), findsOneWidget);
+          }
+          expect(find.text(copy[7]), findsOneWidget);
+          final saved = status == CallAnalysisStatus.analyzing;
+          expect(find.text(copy[6]), saved ? findsOneWidget : findsNothing);
+          expect(find.text(copy[8]), saved ? findsNothing : findsOneWidget);
+          final card = find.byType(AnalysisPreparingCard);
+          expect(tester.widget<AnalysisPreparingCard>(card).saved, saved);
+          for (final (label, state) in [
+            (copy[4], saved ? copy[6] : copy[7]),
+            (copy[5], saved ? copy[7] : copy[8]),
+          ]) {
+            final row = find.ancestor(
+              of: find.descendant(of: card, matching: find.text(label)),
+              matching: find.byType(Row),
+            ).first;
+            expect(find.descendant(of: row, matching: find.text(state)),
+                findsOneWidget);
+          }
+          expect(gaugeOpacity(tester), 0.4);
+        } else {
+          for (final text in copy) {
+            expect(find.text(text), findsNothing);
+          }
+          if (!error) expect(gaugeOpacity(tester), 0.4);
+        }
+
+        if (code != 'ko') {
+          for (final text in preparingCopy['ko']!) {
+            expect(find.text(text), findsNothing);
+          }
+        }
+        if (error) {
+          expect(find.text(l10n.connectionFailedTitle), findsOneWidget);
+          expect(find.text(l10n.retry), findsOneWidget);
+          if (status == CallAnalysisStatus.failed) {
+            expect(find.text(l10n.analysisFailed), findsOneWidget);
+          }
+        }
+        expect(tester.takeException(), isNull);
+        await tearDownScreen(tester);
+      });
+    }
+  }
 }

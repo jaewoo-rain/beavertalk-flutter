@@ -393,6 +393,8 @@
   "levelRetakeKeep": "İlerlememi koru",
   "levelRetakeConfirm": "Testi yeniden yap",
   "practicePronunciation": "Telaffuz çalış",
+  "learnResultView": "Öğrenme sonuçlarını gör",
+  "learnAgain": "Yeniden çalış",
   "analysisNoScoreReview": "Cümleleri çalışınca telaffuz puanın çıkar",
   "analysisNoScoreEmpty": "Puanlanacak cümle yok",
   "billingGroupPlanPurchases": "Plan ve satın alımlar",
@@ -869,5 +871,15 @@
   "wsGoalOnly": "Hedef {score}",
   "wsSoundOf": "{label} sesi",
   "wsResultTip": "{desc}. Bir aramada karşınıza çıkınca bu şekli gözünüzde canlandırın.",
-  "wsNationalSubtitle": "{country} – konuşanların sık yanlış söylediği sesler"
+  "wsNationalSubtitle": "{country} – konuşanların sık yanlış söylediği sesler",
+  "wsRetryPackLabel": "Sık hata yaptığın sesleri çalış",
+  "wsRetryPackTitle": "{count, plural, other{Bu oturumda sık hata yaptığın {count} ses}}",
+  "wsRetryPackBody": "2 veya daha fazla kez hata yaptığın sesleri topladık. Her birini 4 adımda çalış.",
+  "wsRetryPackCta": "Hepsini çalış",
+  "wsRetryListTitle": "Sık hata yaptığın sesler",
+  "wsRetryListSection": "Bu oturumdan sesler",
+  "wsRetryListSub": "Bu oturumda 2 veya daha fazla kez hata yaptığın sesler",
+  "wsRetryListSubWithCall": "“{title}” görüşmesinde 2 veya daha fazla kez hata yaptığın sesler",
+  "wsRetryListAllDone": "Tüm sesleri çalıştın",
+  "wsRetryBackToReport": "Rapora dön"
 }

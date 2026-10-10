@@ -1323,6 +1323,12 @@ class AppLocalizationsIt extends AppLocalizations {
   String get practicePronunciation => 'Esercita la pronuncia';
 
   @override
+  String get learnResultView => 'Vedi i risultati dell\'apprendimento';
+
+  @override
+  String get learnAgain => 'Studia di nuovo';
+
+  @override
   String get analysisNoScoreReview =>
       'Esercitati sulle frasi per avere il punteggio di pronuncia';
 
@@ -2952,4 +2958,46 @@ class AppLocalizationsIt extends AppLocalizations {
   String wsNationalSubtitle(String country) {
     return '$country: suoni che i parlanti sbagliano spesso';
   }
+
+  @override
+  String get wsRetryPackLabel => 'Esercitati sui suoni che sbagli spesso';
+
+  @override
+  String wsRetryPackTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count suoni sbagliati spesso in questa sessione',
+      one: '1 suono sbagliato spesso in questa sessione',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get wsRetryPackBody =>
+      'Abbiamo raccolto i suoni sbagliati 2 o più volte. Esercitati su ognuno in 4 passaggi.';
+
+  @override
+  String get wsRetryPackCta => 'Esercitati su tutti';
+
+  @override
+  String get wsRetryListTitle => 'Suoni che sbagli spesso';
+
+  @override
+  String get wsRetryListSection => 'Suoni di questa sessione';
+
+  @override
+  String get wsRetryListSub =>
+      'Suoni sbagliati 2 o più volte in questa sessione';
+
+  @override
+  String wsRetryListSubWithCall(String title) {
+    return 'Suoni sbagliati 2 o più volte nella chiamata «$title»';
+  }
+
+  @override
+  String get wsRetryListAllDone => 'Ti sei esercitato su tutti i suoni';
+
+  @override
+  String get wsRetryBackToReport => 'Torna al report';
 }

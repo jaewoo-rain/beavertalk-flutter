@@ -22,6 +22,14 @@ abstract interface class NormalcallRepository {
   /// `GET /calls/{call_id}/result` — the full analysis result.
   Future<CallResult> getResult(int callId);
 
+  /// `GET /calls/{call_id}` — the call record itself (partner · date · duration).
+  ///
+  /// Exists before the analysis does: the server creates the row when the call
+  /// starts and writes `total_time` the moment it sees the call end, ahead of
+  /// the LLM analysis. `totalTime` can still be null for a beat right after
+  /// hang-up. Throws [AppException] on failure.
+  Future<CallSummary> getCallSummary(int callId);
+
   /// `GET /calls/{call_id}/pronunciation-report` — 복습 종료 발음 리포트.
   Future<LearningSummary> getPronunciationReport(int callId);
 

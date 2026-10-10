@@ -1317,6 +1317,12 @@ class AppLocalizationsMy extends AppLocalizations {
   String get practicePronunciation => 'အသံထွက် လေ့ကျင့်ရန်';
 
   @override
+  String get learnResultView => 'သင်ယူမှု ရလဒ် ကြည့်ရန်';
+
+  @override
+  String get learnAgain => 'ထပ်မံ သင်ယူရန်';
+
+  @override
   String get analysisNoScoreReview => 'လေ့ကျင့်ရင် အသံထွက် ရမှတ် ထွက်လာပါမယ်';
 
   @override
@@ -2926,4 +2932,45 @@ class AppLocalizationsMy extends AppLocalizations {
   String wsNationalSubtitle(String country) {
     return '$country မှ စကားပြောသူများ မကြာခဏ မှားတတ်သော အသံများ';
   }
+
+  @override
+  String get wsRetryPackLabel => 'မကြာခဏ မှားသော အသံများ လေ့ကျင့်ရန်';
+
+  @override
+  String wsRetryPackTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'ဤသင်ခန်းစာတွင် မကြာခဏ မှားသော အသံ $count ခု',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get wsRetryPackBody =>
+      '၂ ကြိမ်နှင့်အထက် မှားသော အသံများကို စုထားသည်။ အသံတစ်ခုစီကို အဆင့် ၄ ဆင့်ဖြင့် လေ့ကျင့်ပါ။';
+
+  @override
+  String get wsRetryPackCta => 'စုပြီး လေ့ကျင့်ရန်';
+
+  @override
+  String get wsRetryListTitle => 'မကြာခဏ မှားသော အသံများ';
+
+  @override
+  String get wsRetryListSection => 'ဤသင်ခန်းစာမှ အသံများ';
+
+  @override
+  String get wsRetryListSub =>
+      'ဤသင်ခန်းစာတွင် ၂ ကြိမ်နှင့်အထက် မှားသော အသံများ';
+
+  @override
+  String wsRetryListSubWithCall(String title) {
+    return '“$title” ခေါ်ဆိုမှုတွင် ၂ ကြိမ်နှင့်အထက် မှားသော အသံများ';
+  }
+
+  @override
+  String get wsRetryListAllDone => 'အသံအားလုံး လေ့ကျင့်ပြီးပါပြီ';
+
+  @override
+  String get wsRetryBackToReport => 'အစီရင်ခံစာသို့ ပြန်ရန်';
 }

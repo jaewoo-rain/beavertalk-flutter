@@ -1308,6 +1308,12 @@ class AppLocalizationsBn extends AppLocalizations {
   String get practicePronunciation => 'উচ্চারণ অনুশীলন করুন';
 
   @override
+  String get learnResultView => 'শেখার ফলাফল দেখুন';
+
+  @override
+  String get learnAgain => 'আবার শিখুন';
+
+  @override
   String get analysisNoScoreReview => 'অনুশীলন করলে উচ্চারণের স্কোর দেখাবে';
 
   @override
@@ -2906,4 +2912,44 @@ class AppLocalizationsBn extends AppLocalizations {
   String wsNationalSubtitle(String country) {
     return '$country থেকে আসা বক্তারা প্রায়ই ভুল করেন এমন ধ্বনি';
   }
+
+  @override
+  String get wsRetryPackLabel => 'বারবার ভুল হওয়া ধ্বনির অনুশীলন';
+
+  @override
+  String wsRetryPackTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'এই সেশনে বারবার ভুল হওয়া $countটি ধ্বনি',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get wsRetryPackBody =>
+      '২ বা তার বেশি বার ভুল হওয়া ধ্বনিগুলোই একত্র করেছি। প্রতিটি ধ্বনি ৪ ধাপে অনুশীলন করুন।';
+
+  @override
+  String get wsRetryPackCta => 'সব ধ্বনি অনুশীলন করুন';
+
+  @override
+  String get wsRetryListTitle => 'বারবার ভুল হওয়া ধ্বনি';
+
+  @override
+  String get wsRetryListSection => 'এই সেশনের ধ্বনি';
+
+  @override
+  String get wsRetryListSub => 'এই সেশনে ২ বা তার বেশি বার ভুল হওয়া ধ্বনি';
+
+  @override
+  String wsRetryListSubWithCall(String title) {
+    return '“$title” কলে ২ বা তার বেশি বার ভুল হওয়া ধ্বনি';
+  }
+
+  @override
+  String get wsRetryListAllDone => 'আপনি সব ধ্বনি অনুশীলন করেছেন';
+
+  @override
+  String get wsRetryBackToReport => 'রিপোর্টে ফিরে যান';
 }

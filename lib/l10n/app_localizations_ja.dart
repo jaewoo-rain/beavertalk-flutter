@@ -1278,6 +1278,12 @@ class AppLocalizationsJa extends AppLocalizations {
   String get practicePronunciation => '発音を学習する';
 
   @override
+  String get learnResultView => '学習結果を見る';
+
+  @override
+  String get learnAgain => 'もう一度学習する';
+
+  @override
   String get analysisNoScoreReview => '復習すると発音スコアが出ます';
 
   @override
@@ -2832,4 +2838,43 @@ class AppLocalizationsJa extends AppLocalizations {
   String wsNationalSubtitle(String country) {
     return '$country の話者がよく間違える音';
   }
+
+  @override
+  String get wsRetryPackLabel => 'よく間違えた音の練習';
+
+  @override
+  String wsRetryPackTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '今回の学習でよく間違えた音 $count個',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get wsRetryPackBody => '2回以上間違えた音だけを集めました。音ごとに4ステップで練習します。';
+
+  @override
+  String get wsRetryPackCta => 'まとめて練習する';
+
+  @override
+  String get wsRetryListTitle => 'よく間違えた音';
+
+  @override
+  String get wsRetryListSection => '今回の学習で集めた音';
+
+  @override
+  String get wsRetryListSub => '今回の学習で2回以上間違えた音です';
+
+  @override
+  String wsRetryListSubWithCall(String title) {
+    return '「$title」の通話で2回以上間違えた音です';
+  }
+
+  @override
+  String get wsRetryListAllDone => '集めた音をすべて練習しました';
+
+  @override
+  String get wsRetryBackToReport => 'レポートに戻る';
 }

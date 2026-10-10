@@ -393,6 +393,8 @@
   "levelRetakeKeep": "Жетишкендикти сактоо",
   "levelRetakeConfirm": "Кайра тапшыруу",
   "practicePronunciation": "Айтылышты машыктыруу",
+  "learnResultView": "Окуунун жыйынтыгын көрүү",
+  "learnAgain": "Кайра окуу",
   "analysisNoScoreReview": "Машыксаңыз, айтылыш упайы чыгат",
   "analysisNoScoreEmpty": "Баалай турган сүйлөм жок",
   "billingGroupPlanPurchases": "План жана сатып алуулар",
@@ -869,5 +871,15 @@
   "wsGoalOnly": "Максат {score}",
   "wsSoundOf": "{label} тыбышы",
   "wsResultTip": "{desc}. Чалууда кайра кезиксе, ушул форманы эсиңизге түшүрүңүз.",
-  "wsNationalSubtitle": "{country} сүйлөөчүлөрү көп жаңылган тыбыштар"
+  "wsNationalSubtitle": "{country} сүйлөөчүлөрү көп жаңылган тыбыштар",
+  "wsRetryPackLabel": "Көп жаңылган тыбыштарды көнүгүү",
+  "wsRetryPackTitle": "{count, plural, other{Бул сабакта көп жаңылган {count} тыбыш}}",
+  "wsRetryPackBody": "2 же андан көп жолу жаңылган тыбыштарды чогулттук. Ар бир тыбышты 4 кадам менен көнүгүңүз.",
+  "wsRetryPackCta": "Баарын көнүгүү",
+  "wsRetryListTitle": "Көп жаңылган тыбыштар",
+  "wsRetryListSection": "Бул сабактын тыбыштары",
+  "wsRetryListSub": "Бул сабакта 2 же андан көп жолу жаңылган тыбыштар",
+  "wsRetryListSubWithCall": "«{title}» чалуусунда 2 же андан көп жолу жаңылган тыбыштар",
+  "wsRetryListAllDone": "Бардык тыбыштар боюнча көнүгүү бүттү",
+  "wsRetryBackToReport": "Отчетко кайтуу"
 }

@@ -49,6 +49,7 @@ import '../domain/entities/call_channel.dart';
 import '../domain/entities/call_course.dart';
 import '../domain/entities/call_hint.dart';
 import '../domain/entities/playback_ledger.dart';
+import '../domain/pcm_gain.dart';
 import 'avatar_assets.dart' show kIdleWait, kIdleListen, kIdleThink;
 import 'cascade_auto_talk.dart';
 import 'cascade_experiment.dart'
@@ -57,7 +58,8 @@ import 'cascade_experiment.dart'
         CascadeMicAlwaysGated,
         CascadeMicNoAec,
         CascadeMicOff,
-        CascadeMicToFile;
+        CascadeMicToFile,
+        CallPlaybackGainOff;
 import 'normalcall_providers.dart';
 
 /// `call_ended.call_id` 정규화 — **빈 값은 없는 것**이다.
@@ -2001,7 +2003,61 @@ class NormalCallController extends Notifier<CallState> {
     // 32,000 B/s 고정) — 서버 로그와 정수로 대조할 수 있다.
     _log('route (미전송) → ${route.isEmpty ? '(못 읽음)' : route} '
         'uplink=${_uplinkBytes}B (=${_uplinkBytes ~/ 32}ms)');
+    _scheduleMicReopenForRoute(route);
   }
+
+  /// iOS: 통화 중 헤드셋이 붙거나 떨어지면 마이크를 다시 연다(10-06 실기기 R7).
+  ///
+  /// 사용자 「에어팟으로 받았다가 스피커로 전환했다가 다시 에어팟 끼면 마이크 인식이
+  /// 아예 안돼」. 레코더는 통화 시작 때 한 번만 열리고, 그때의 헤드셋 유무로
+  /// VoiceProcessing 을 정한다([_startMic]). 경로가 바뀌면 네이티브는
+  /// `setPreferredInput` 만 해서, 이미 열린 레코더가 입력 형식이 다른 BT HFP 마이크에
+  /// 묶이지 못하고 조용히 멈춘다. 워치독은 「시작 뒤 6초 프레임 0」만 봐서 이걸 못 잡는다.
+  ///
+  /// 그래서 경로가 실제로 바뀐 뒤 잠깐 기다렸다가(세션이 자리 잡을 시간) 레코더를 새로
+  /// 연다 — [_startMic] 이 헤드셋 유무를 다시 읽어 VoiceProcessing 도 다시 정한다
+  /// (AirPods = 끔 · 스피커 = 켬, 에코 제거 복귀). 재오픈 뒤 워치독을 다시 무장해,
+  /// 새 레코더가 프레임을 못 내면 기존 복구(최대 [_micRestartMaxAttempts]회)가 이어받는다.
+  ///
+  /// ⛔ Android 는 여기서 하지 않는다 — 네이티브가 SCO 를 직접 다룬다(9a72d5c).
+  void _scheduleMicReopenForRoute(String route) {
+    if (kIsWeb || defaultTargetPlatform != TargetPlatform.iOS) return;
+    // 출력을 못 읽었으면(빈 값) 시작 때 규칙(헤드셋 연결 여부)으로 돌아간다.
+    _micRouteVoiceProcessing = route.isEmpty ? null : route != 'headset';
+    _micRouteReopenTimer?.cancel();
+    _micRouteReopenTimer = Timer(_micRouteReopenDelay, () async {
+      _micRouteReopenTimer = null;
+      final phase = state.phase;
+      if (phase != CallPhase.inCall && phase != CallPhase.connecting) return;
+      if (_micSub == null || _micRouteReopening) return; // 마이크가 아직 안 열렸다
+      _micRouteReopening = true;
+      final myGen = _gen;
+      _log('route 변경 → 마이크 재오픈(헤드셋 유무로 음성처리 다시 결정)');
+      await _logNativeAudio('mic-route/before-reopen');
+      try {
+        await _restartMic();
+      } catch (e) {
+        _log('mic route reopen failed: $e');
+      } finally {
+        _micRouteReopening = false;
+      }
+      if (myGen != _gen) return;
+      await _logNativeAudio('mic-route/after-reopen');
+      // 새 레코더가 실제로 프레임을 내는지 다시 본다.
+      _micFramesReceived = 0;
+      _armMicWatchdog();
+    });
+  }
+
+  /// 경로 변경 알림 뒤 레코더를 다시 열기까지 기다리는 시간 — 알림은 세션이 자리
+  /// 잡기 전에 온다(AppDelegate.handleAudioRouteChange 주석).
+  static const Duration _micRouteReopenDelay = Duration(milliseconds: 600);
+  Timer? _micRouteReopenTimer;
+  bool _micRouteReopening = false;
+
+  /// 통화 중 출력이 바뀐 뒤 정한 음성처리 여부(헤드셋 출력 = 끔 · 그 밖 = 켬).
+  /// null 이면 [_openMicStream] 이 시작 때 규칙(헤드셋 연결 여부)을 쓴다. 통화마다 초기화.
+  bool? _micRouteVoiceProcessing;
 
   /// Opens the native PCM playback engine and starts the push pump.
   ///
@@ -2540,7 +2596,13 @@ class NormalCallController extends Notifier<CallState> {
       _log('⚠ [실험] MIC_NO_AEC — 음성처리/에코제거를 끄고 연다. '
           '에코가 안 걸리니 스피커폰에서 비버가 자기 목소리에 끊길 수 있다(계측 전용)');
     }
-    if (!CascadeMicNoAec.enabled &&
+    final routeVp = _micRouteVoiceProcessing;
+    if (!CascadeMicNoAec.enabled && routeVp != null) {
+      // 통화 중 출력이 바뀌어 다시 여는 경우 — 「헤드셋이 붙어 있나」가 아니라 **지금 소리가
+      // 나가는 곳**으로 정한다. AirPods 를 낀 채 출력만 스피커로 고르면 헤드셋은 여전히
+      // 「연결됨」이지만 입력은 내장 마이크다(10-06 실기기 R7).
+      useVoiceProcessing = routeVp;
+    } else if (!CascadeMicNoAec.enabled &&
         !kIsWeb &&
         defaultTargetPlatform == TargetPlatform.iOS) {
       try {
@@ -2887,7 +2949,40 @@ class NormalCallController extends Notifier<CallState> {
       _cancelledResidualBytes += chunk.length;
       return;
     }
-    _feedPlayer(chunk);
+    _feedPlayer(_withPlaybackGain(chunk));
+  }
+
+  static final double _playbackGain = dbToGain(kCallPlaybackGainDb);
+
+  /// [A2] 통화 재생 음량 보정 — 서버 PCM 에 +[kCallPlaybackGainDb] 와 리미터를 건다
+  /// (10-03 사용자 「앱 수정 해」 · PM-DEC-352 · 근거와 한계는 `domain/pcm_gain.dart`).
+  ///
+  /// 바이트 수는 그대로다 — 재생 장부(played_server_bytes)·쿠션 계산은 안 바뀐다.
+  ///
+  /// ⛔ 이번 통화에 홀수 길이 프레임이 **한 번이라도** 왔으면 끝까지 끈다. 큐는 다음 청크와
+  ///   이어붙여 재생하지만, 청크 단위로 샘플을 읽는 여기서는 그 뒤로 바이트 짝이 어긋나
+  ///   상위·하위 바이트를 바꿔 읽게 된다 — 그러면 키우는 게 아니라 잡음을 만든다.
+  Uint8List _withPlaybackGain(Uint8List chunk) {
+    if (!kCallPlaybackGainOn ||
+        CallPlaybackGainOff.enabled ||
+        _oddFrames > 0 ||
+        !playbackGainApplies(_lastReportedRoute)) {
+      return chunk;
+    }
+    final n = chunk.length ~/ 2;
+    if (n == 0) return chunk;
+    // 소켓 버퍼는 짝수 오프셋이 보장되지 않는다 — Int16List 뷰 대신 바이트로 읽는다.
+    final src = ByteData.sublistView(chunk);
+    final samples = Int16List(n);
+    for (var i = 0; i < n; i++) {
+      samples[i] = src.getInt16(i * 2, Endian.little);
+    }
+    final out = applyPcmGain(samples, _playbackGain);
+    final bytes = ByteData(n * 2);
+    for (var i = 0; i < n; i++) {
+      bytes.setInt16(i * 2, out[i], Endian.little);
+    }
+    return bytes.buffer.asUint8List();
   }
 
   /// [계측] 취소 후 버린 잔여 바이트. 서버 페이서가 취소에 얼마나 빨리 반응하는지가
@@ -6141,6 +6236,9 @@ class NormalCallController extends Notifier<CallState> {
     AudioRouteProbe.setRouteChangeListener(null);
     _micWatchdogTimer?.cancel();
     _micWatchdogTimer = null;
+    _micRouteReopenTimer?.cancel();
+    _micRouteReopenTimer = null;
+    _micRouteVoiceProcessing = null;
     _micFramesReceived = 0;
     _micRestartCount = 0;
 

@@ -1305,6 +1305,12 @@ class AppLocalizationsKk extends AppLocalizations {
   String get practicePronunciation => 'Айтылымды жаттықтыру';
 
   @override
+  String get learnResultView => 'Оқу нәтижелерін көру';
+
+  @override
+  String get learnAgain => 'Қайта оқу';
+
+  @override
   String get analysisNoScoreReview => 'Жаттықсаңыз, айтылым ұпайы шығады';
 
   @override
@@ -2912,4 +2918,45 @@ class AppLocalizationsKk extends AppLocalizations {
   String wsNationalSubtitle(String country) {
     return '$country сөйлеушілері жиі қателесетін дыбыстар';
   }
+
+  @override
+  String get wsRetryPackLabel => 'Жиі қателесетін дыбыстарды жаттықтыру';
+
+  @override
+  String wsRetryPackTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Бұл сабақта жиі қателескен $count дыбыс',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get wsRetryPackBody =>
+      '2 не одан көп рет қателескен дыбыстарды жинадық. Әр дыбысты 4 қадаммен жаттықтырыңыз.';
+
+  @override
+  String get wsRetryPackCta => 'Барлығын жаттықтыру';
+
+  @override
+  String get wsRetryListTitle => 'Жиі қателесетін дыбыстар';
+
+  @override
+  String get wsRetryListSection => 'Осы сабақтың дыбыстары';
+
+  @override
+  String get wsRetryListSub =>
+      'Бұл сабақта 2 не одан көп рет қателескен дыбыстар';
+
+  @override
+  String wsRetryListSubWithCall(String title) {
+    return '«$title» қоңырауында 2 не одан көп рет қателескен дыбыстар';
+  }
+
+  @override
+  String get wsRetryListAllDone => 'Барлық дыбысты жаттықтырдыңыз';
+
+  @override
+  String get wsRetryBackToReport => 'Есепке оралу';
 }

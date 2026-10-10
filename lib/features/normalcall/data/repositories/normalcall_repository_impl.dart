@@ -99,6 +99,15 @@ class NormalcallRepositoryImpl implements NormalcallRepository {
   }
 
   @override
+  Future<CallSummary> getCallSummary(int callId) async {
+    try {
+      return (await _remote.getCall(callId)).toEntity();
+    } on DioException catch (e) {
+      throw mapDioException(e);
+    }
+  }
+
+  @override
   Future<List<CallSummary>> listCalls({int? limit, int? offset}) async {
     try {
       final dtos = await _remote.listCalls(limit: limit, offset: offset);

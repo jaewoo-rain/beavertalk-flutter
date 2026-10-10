@@ -8,16 +8,19 @@ import '../../core/format/dates.dart';
 import '../../components/atoms/button.dart';
 import '../../components/layout/need_based_rows.dart';
 import '../../components/molecules/empty_state.dart';
+import '../../components/molecules/stacked_button_pair.dart';
 import '../../components/molecules/pronunciation_result.dart';
 import '../../components/organisms/gnb.dart';
 import '../../features/classroom/presentation/classroom_providers.dart';
 import '../../features/normalcall/presentation/normalcall_providers.dart';
+import '../../features/weak_sound/presentation/widgets/retry_pack_card.dart';
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_color_tokens.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 import '../system/network_error.dart';
+import '../weak_sound/retry_sounds.dart';
 import 'learning_args.dart';
 import 'learning_call_main_loading.dart';
 import 'learning_summary.dart';
@@ -102,6 +105,42 @@ class LearningCallMainScreen extends ConsumerWidget {
             name != Routes.learningCallMain &&
             name != Routes.learningCallMainLoading;
       });
+
+  Widget _endButton(BuildContext context, AppLocalizations l10n) => Button(
+        type: BtnType.primaryFill,
+        size: BtnSize.s60,
+        text: l10n.endLearning,
+        onPressed: () => _finish(context),
+      );
+
+  /// 통화 학습(callReview)이고 문장이 있을 때만 「다시 학습하기」를 둔다 — 과제·단문장은 없다.
+  LearningArgs? _relearnArgs(BuildContext context) {
+    final args = ModalRoute.of(context)?.settings.arguments;
+    if (args is! LearningArgs ||
+        args.origin != LearningOrigin.callReview ||
+        args.callId == null ||
+        args.sentences.isEmpty) {
+      return null;
+    }
+    return args;
+  }
+
+  /// 「다시 학습하기」 — 같은 통화 문장으로 학습을 처음부터 연다(PM-DEC-427 · 사용자 Q1 A).
+  /// 끝나면 새 결과 화면이 쌓이고, 「학습 종료」는 학습 화면을 모두 걷어낸다([_finish]).
+  void _relearn(BuildContext context) {
+    final args = _relearnArgs(context);
+    if (args == null) return;
+    Navigator.pushNamed(
+      context,
+      Routes.learningIntro,
+      arguments: LearningArgs(
+        sentences: args.sentences,
+        origin: LearningOrigin.callReview,
+        callId: args.callId,
+        callTitle: args.callTitle,
+      ),
+    );
+  }
 
   /// Error state — a message and, when recoverable, a retry that refetches.
   ///
@@ -188,6 +227,7 @@ class LearningCallMainScreen extends ConsumerWidget {
                     ),
                   ),
                   ..._oneFix(context, l10n, s),
+                  ..._retryPack(context, l10n, s, callId: callId),
                   ..._phonemes(context, l10n, s),
                   ..._sentences(context, ref, l10n, s),
                   ..._trend(context, l10n, s, callId: callId),
@@ -197,12 +237,18 @@ class LearningCallMainScreen extends ConsumerWidget {
           ),
           ContentColumn(
             padding: const EdgeInsets.only(bottom: AppSpacing.s20),
-            child: Button(
-              type: BtnType.primaryFill,
-              size: BtnSize.s60,
-              text: l10n.endLearning,
-              onPressed: () => _finish(context),
-            ),
+            child: _relearnArgs(context) == null
+                ? _endButton(context, l10n)
+                // 「다시 학습하기」 위 · 「학습 종료」 아래(PM-DEC-427 · 버튼 쌍은 세로 R11).
+                : StackedButtonPair(
+                    top: Button(
+                      type: BtnType.secondaryFill,
+                      size: BtnSize.s60,
+                      text: l10n.learnAgain,
+                      onPressed: () => _relearn(context),
+                    ),
+                    bottom: _endButton(context, l10n),
+                  ),
           ),
         ],
       ),
@@ -282,6 +328,28 @@ class LearningCallMainScreen extends ConsumerWidget {
           ),
         ),
       );
+  }
+
+  /// Section/RetryPack (`6564:15403`) — 이번 학습에서 2번 이상 틀린 소리 모아 연습(A5 · M1).
+  ///
+  /// 「가장 어려웠던 소리」 바로 아래(PM-DEC-333 A안). 서버가 고른 소리가 없으면(구서버 · 해당
+  /// 소리 0개 · 과제 리포트처럼 통화가 없는 경우) 섹션째 그리지 않는다 — 현행 리포트와 같다.
+  List<Widget> _retryPack(BuildContext context, AppLocalizations l10n,
+      LearningSummary s, {int? callId}) {
+    if (s.retrySounds.isEmpty || callId == null) return const [];
+    final args = ModalRoute.of(context)?.settings.arguments;
+    final callTitle = args is LearningArgs ? args.callTitle : null;
+    return _section(
+      context,
+      label: l10n.wsRetryPackLabel,
+      child: RetryPackCard(
+        sounds: s.retrySounds,
+        onStart: () => Navigator.of(context).pushNamed(
+          Routes.weakSoundRetry,
+          arguments: RetrySoundsArgs(callId: callId, callTitle: callTitle),
+        ),
+      ),
+    );
   }
 
   /// Section/Phonemes (`3569:15122`).

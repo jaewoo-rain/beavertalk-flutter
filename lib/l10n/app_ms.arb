@@ -393,6 +393,8 @@
   "levelRetakeKeep": "Kekalkan kemajuan",
   "levelRetakeConfirm": "Ulang ujian",
   "practicePronunciation": "Latih sebutan",
+  "learnResultView": "Lihat keputusan pembelajaran",
+  "learnAgain": "Belajar semula",
   "analysisNoScoreReview": "Berlatih ayat untuk mendapat skor sebutan",
   "analysisNoScoreEmpty": "Tiada ayat untuk dinilai",
   "billingGroupPlanPurchases": "Pelan & pembelian",
@@ -869,5 +871,15 @@
   "wsGoalOnly": "Sasaran {score}",
   "wsSoundOf": "Bunyi {label}",
   "wsResultTip": "{desc}. Bayangkan bentuk ini apabila bunyinya muncul dalam panggilan.",
-  "wsNationalSubtitle": "Bunyi yang sering tersalah sebut oleh penutur dari {country}"
+  "wsNationalSubtitle": "Bunyi yang sering tersalah sebut oleh penutur dari {country}",
+  "wsRetryPackLabel": "Latih bunyi yang kerap salah",
+  "wsRetryPackTitle": "{count, plural, other{{count} bunyi yang kerap salah dalam sesi ini}}",
+  "wsRetryPackBody": "Kami kumpulkan bunyi yang salah 2 kali atau lebih. Latih setiap bunyi dalam 4 langkah.",
+  "wsRetryPackCta": "Latih semua bunyi",
+  "wsRetryListTitle": "Bunyi yang kerap salah",
+  "wsRetryListSection": "Bunyi daripada sesi ini",
+  "wsRetryListSub": "Bunyi yang salah 2 kali atau lebih dalam sesi ini",
+  "wsRetryListSubWithCall": "Bunyi yang salah 2 kali atau lebih dalam panggilan “{title}”",
+  "wsRetryListAllDone": "Anda telah melatih semua bunyi",
+  "wsRetryBackToReport": "Kembali ke laporan"
 }

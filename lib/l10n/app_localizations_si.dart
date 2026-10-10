@@ -1309,6 +1309,12 @@ class AppLocalizationsSi extends AppLocalizations {
   String get practicePronunciation => 'උච්චාරණය පුහුණු වන්න';
 
   @override
+  String get learnResultView => 'ඉගෙනුම් ප්‍රතිඵල බලන්න';
+
+  @override
+  String get learnAgain => 'නැවත ඉගෙන ගන්න';
+
+  @override
   String get analysisNoScoreReview => 'පුහුණු වුණාම උච්චාරණ ලකුණු පෙන්වයි';
 
   @override
@@ -2904,4 +2910,44 @@ class AppLocalizationsSi extends AppLocalizations {
   String wsNationalSubtitle(String country) {
     return '$country කථිකයන් බොහෝ විට වැරදි කරන ශබ්ද';
   }
+
+  @override
+  String get wsRetryPackLabel => 'නිතර වැරදෙන ශබ්ද පුහුණුව';
+
+  @override
+  String wsRetryPackTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'මෙම සැසියේ නිතර වැරදුණු ශබ්ද $count',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get wsRetryPackBody =>
+      '2 වතාවක් හෝ වැඩියෙන් වැරදුණු ශබ්ද එකතු කළා. සෑම ශබ්දයක්ම පියවර 4කින් පුහුණු වන්න.';
+
+  @override
+  String get wsRetryPackCta => 'සියලු ශබ්ද පුහුණු වන්න';
+
+  @override
+  String get wsRetryListTitle => 'නිතර වැරදෙන ශබ්ද';
+
+  @override
+  String get wsRetryListSection => 'මෙම සැසියේ ශබ්ද';
+
+  @override
+  String get wsRetryListSub => 'මෙම සැසියේ 2 වතාවක් හෝ වැඩියෙන් වැරදුණු ශබ්ද';
+
+  @override
+  String wsRetryListSubWithCall(String title) {
+    return '“$title” ඇමතුමේ 2 වතාවක් හෝ වැඩියෙන් වැරදුණු ශබ්ද';
+  }
+
+  @override
+  String get wsRetryListAllDone => 'ඔබ සියලු ශබ්ද පුහුණු වුණා';
+
+  @override
+  String get wsRetryBackToReport => 'වාර්තාවට ආපසු';
 }

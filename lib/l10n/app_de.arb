@@ -393,6 +393,8 @@
   "levelRetakeKeep": "Fortschritt behalten",
   "levelRetakeConfirm": "Test wiederholen",
   "practicePronunciation": "Aussprache üben",
+  "learnResultView": "Lernergebnisse ansehen",
+  "learnAgain": "Erneut lernen",
   "analysisNoScoreReview": "Übe die Sätze, dann bekommst du deine Aussprache-Punkte",
   "analysisNoScoreEmpty": "Keine Sätze zum Bewerten",
   "billingGroupPlanPurchases": "Plan & Käufe",
@@ -869,5 +871,15 @@
   "wsGoalOnly": "Ziel {score}",
   "wsSoundOf": "Laut {label}",
   "wsResultTip": "{desc}. Stell dir diese Form vor, wenn der Laut im Anruf vorkommt.",
-  "wsNationalSubtitle": "Laute, die Sprecher aus {country} oft falsch aussprechen"
+  "wsNationalSubtitle": "Laute, die Sprecher aus {country} oft falsch aussprechen",
+  "wsRetryPackLabel": "Oft verfehlte Laute üben",
+  "wsRetryPackTitle": "{count, plural, =1{1 oft verfehlter Laut in dieser Sitzung} other{{count} oft verfehlte Laute in dieser Sitzung}}",
+  "wsRetryPackBody": "Wir haben die Laute gesammelt, die du 2-mal oder öfter verfehlt hast. Übe jeden in 4 Schritten.",
+  "wsRetryPackCta": "Alle Laute üben",
+  "wsRetryListTitle": "Oft verfehlte Laute",
+  "wsRetryListSection": "Laute aus dieser Sitzung",
+  "wsRetryListSub": "Laute, die du in dieser Sitzung 2-mal oder öfter verfehlt hast",
+  "wsRetryListSubWithCall": "Laute, die du im Gespräch „{title}“ 2-mal oder öfter verfehlt hast",
+  "wsRetryListAllDone": "Du hast alle Laute geübt",
+  "wsRetryBackToReport": "Zurück zum Bericht"
 }

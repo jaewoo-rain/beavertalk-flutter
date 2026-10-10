@@ -1308,6 +1308,12 @@ class AppLocalizationsKm extends AppLocalizations {
   String get practicePronunciation => 'អនុវត្តការបញ្ចេញសំឡេង';
 
   @override
+  String get learnResultView => 'មើលលទ្ធផលនៃការរៀន';
+
+  @override
+  String get learnAgain => 'រៀនម្ដងទៀត';
+
+  @override
   String get analysisNoScoreReview =>
       'ហាត់ប្រយោគ ដើម្បីទទួលបានពិន្ទុបញ្ចេញសំឡេង';
 
@@ -2905,4 +2911,44 @@ class AppLocalizationsKm extends AppLocalizations {
   String wsNationalSubtitle(String country) {
     return 'សំឡេងដែលអ្នកនិយាយមកពី $country ច្រើនតែខុស';
   }
+
+  @override
+  String get wsRetryPackLabel => 'ហាត់សំឡេងដែលច្រើនខុស';
+
+  @override
+  String wsRetryPackTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count សំឡេងដែលច្រើនខុសក្នុងមេរៀននេះ',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get wsRetryPackBody =>
+      'យើងបានប្រមូលសំឡេងដែលខុស 2 ដង ឬច្រើនជាងនេះ។ ហាត់សំឡេងនីមួយៗតាម 4 ជំហាន។';
+
+  @override
+  String get wsRetryPackCta => 'ហាត់សំឡេងដែលប្រមូលបាន';
+
+  @override
+  String get wsRetryListTitle => 'សំឡេងដែលច្រើនខុស';
+
+  @override
+  String get wsRetryListSection => 'សំឡេងពីមេរៀននេះ';
+
+  @override
+  String get wsRetryListSub => 'សំឡេងដែលខុស 2 ដង ឬច្រើនជាងនេះក្នុងមេរៀននេះ';
+
+  @override
+  String wsRetryListSubWithCall(String title) {
+    return 'សំឡេងដែលខុស 2 ដង ឬច្រើនជាងនេះក្នុងការហៅ «$title»';
+  }
+
+  @override
+  String get wsRetryListAllDone => 'អ្នកបានហាត់សំឡេងទាំងអស់ហើយ';
+
+  @override
+  String get wsRetryBackToReport => 'ត្រឡប់ទៅរបាយការណ៍';
 }

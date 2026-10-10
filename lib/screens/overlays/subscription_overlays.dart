@@ -230,6 +230,31 @@ Future<void> runRestoreFlow(BuildContext context) async {
   // sheet appeared. The container outlives every screen that can start this.
   final container = ProviderScope.containerOf(context, listen: false);
   final iap = container.read(iapServiceProvider);
+  // 누른 즉시 진행 표시를 띄운다 — 스토어 조회·대기·서버 확인에 1~3초가 걸리는데
+  // 그동안 화면이 그대로라 「안 눌렸다」고 보고 다시 누르게 되고, 그 탭은 위의
+  // 중복 방지에 막혀 무시된다(10-06 사용자 「아이콘에서만 눌리는 것 같다」).
+  // 루트 내비게이터에 띄워, 시트에서 호출돼 시트가 먼저 닫혀도 닫을 수 있게 한다.
+  final rootNav = Navigator.of(context, rootNavigator: true);
+  final c = context.c;
+  showDialog<void>(
+    context: context,
+    useRootNavigator: true,
+    barrierDismissible: false,
+    builder: (_) => PopScope(
+      canPop: false,
+      child: Center(
+        child: SizedBox(
+          width: 56,
+          height: 56,
+          child: CircularProgressIndicator(
+            strokeWidth: 4,
+            color: c.primaryNormal,
+            backgroundColor: c.primaryNormal10,
+          ),
+        ),
+      ),
+    ),
+  );
   // The rail's verdict, not a count of `restored` events (QA F003): the server
   // can refuse every receipt with a 200, and an unreachable server is not
   // "nothing to restore".
@@ -240,6 +265,7 @@ Future<void> runRestoreFlow(BuildContext context) async {
     outcome = RestoreOutcome.unavailable;
   } finally {
     _restoring = false;
+    if (rootNav.mounted) rootNav.pop();
   }
   container.invalidate(charactersProvider);
   container.invalidate(ownedCharactersProvider);

@@ -1313,6 +1313,12 @@ class AppLocalizationsFi extends AppLocalizations {
   String get practicePronunciation => 'Harjoittele ääntämistä';
 
   @override
+  String get learnResultView => 'Katso oppimisen tulokset';
+
+  @override
+  String get learnAgain => 'Opiskele uudelleen';
+
+  @override
   String get analysisNoScoreReview =>
       'Harjoittele lauseita, niin saat ääntämispisteet';
 
@@ -2931,4 +2937,46 @@ class AppLocalizationsFi extends AppLocalizations {
   String wsNationalSubtitle(String country) {
     return '$country – äänteet, joissa puhujat usein erehtyvät';
   }
+
+  @override
+  String get wsRetryPackLabel => 'Harjoittele usein väärin menneitä äänteitä';
+
+  @override
+  String wsRetryPackTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count usein väärin mennyttä äännettä tällä kerralla',
+      one: '1 usein väärin mennyt äänne tällä kerralla',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get wsRetryPackBody =>
+      'Keräsimme äänteet, jotka menivät väärin vähintään 2 kertaa. Harjoittele jokaista 4 vaiheessa.';
+
+  @override
+  String get wsRetryPackCta => 'Harjoittele äänteitä';
+
+  @override
+  String get wsRetryListTitle => 'Usein väärin menneet äänteet';
+
+  @override
+  String get wsRetryListSection => 'Tämän kerran äänteet';
+
+  @override
+  String get wsRetryListSub =>
+      'Äänteet, jotka menivät väärin vähintään 2 kertaa tällä kerralla';
+
+  @override
+  String wsRetryListSubWithCall(String title) {
+    return 'Äänteet, jotka menivät väärin vähintään 2 kertaa puhelussa ”$title”';
+  }
+
+  @override
+  String get wsRetryListAllDone => 'Harjoittelit kaikki äänteet';
+
+  @override
+  String get wsRetryBackToReport => 'Takaisin raporttiin';
 }

@@ -1321,6 +1321,12 @@ class AppLocalizationsHu extends AppLocalizations {
   String get practicePronunciation => 'Kiejtés gyakorlása';
 
   @override
+  String get learnResultView => 'Tanulási eredmények megtekintése';
+
+  @override
+  String get learnAgain => 'Újratanulás';
+
+  @override
   String get analysisNoScoreReview =>
       'Gyakorold a mondatokat, és megkapod a kiejtési pontszámod';
 
@@ -2935,4 +2941,45 @@ class AppLocalizationsHu extends AppLocalizations {
   String wsNationalSubtitle(String country) {
     return '$country – a beszélők által gyakran elrontott hangok';
   }
+
+  @override
+  String get wsRetryPackLabel => 'Gyakran rontott hangok gyakorlása';
+
+  @override
+  String wsRetryPackTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count gyakran rontott hang ebben a leckében',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get wsRetryPackBody =>
+      'Összegyűjtöttük a legalább 2-szer rontott hangokat. Mindegyiket 4 lépésben gyakorolhatod.';
+
+  @override
+  String get wsRetryPackCta => 'Hangok gyakorlása';
+
+  @override
+  String get wsRetryListTitle => 'Gyakran rontott hangok';
+
+  @override
+  String get wsRetryListSection => 'Ebből a leckéből gyűjtött hangok';
+
+  @override
+  String get wsRetryListSub =>
+      'Az ebben a leckében legalább 2-szer rontott hangok';
+
+  @override
+  String wsRetryListSubWithCall(String title) {
+    return 'A(z) „$title” hívásban legalább 2-szer rontott hangok';
+  }
+
+  @override
+  String get wsRetryListAllDone => 'Minden hangot begyakoroltál';
+
+  @override
+  String get wsRetryBackToReport => 'Vissza az elemzéshez';
 }

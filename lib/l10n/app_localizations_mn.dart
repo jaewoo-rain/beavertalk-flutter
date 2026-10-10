@@ -1306,6 +1306,12 @@ class AppLocalizationsMn extends AppLocalizations {
   String get practicePronunciation => 'Дуудлага дасгалжуулах';
 
   @override
+  String get learnResultView => 'Суралцсан үр дүнг харах';
+
+  @override
+  String get learnAgain => 'Дахин суралцах';
+
+  @override
   String get analysisNoScoreReview => 'Давтвал дуудлагын оноо гарна';
 
   @override
@@ -2910,4 +2916,44 @@ class AppLocalizationsMn extends AppLocalizations {
   String wsNationalSubtitle(String country) {
     return '$country – хүмүүсийн түгээмэл алддаг авиа';
   }
+
+  @override
+  String get wsRetryPackLabel => 'Байнга алддаг авиагаа дадлагажих';
+
+  @override
+  String wsRetryPackTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Энэ хичээлд байнга алдсан $count авиа',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get wsRetryPackBody =>
+      '2 ба түүнээс олон удаа алдсан авиануудыг цуглууллаа. Авиа бүрийг 4 алхмаар дадлагажина.';
+
+  @override
+  String get wsRetryPackCta => 'Бүгдийг нь дадлагажих';
+
+  @override
+  String get wsRetryListTitle => 'Байнга алддаг авиа';
+
+  @override
+  String get wsRetryListSection => 'Энэ хичээлийн авиа';
+
+  @override
+  String get wsRetryListSub => 'Энэ хичээлд 2 ба түүнээс олон удаа алдсан авиа';
+
+  @override
+  String wsRetryListSubWithCall(String title) {
+    return '“$title” дуудлагад 2 ба түүнээс олон удаа алдсан авиа';
+  }
+
+  @override
+  String get wsRetryListAllDone => 'Бүх авиагаа дадлагажлаа';
+
+  @override
+  String get wsRetryBackToReport => 'Тайлан руу буцах';
 }

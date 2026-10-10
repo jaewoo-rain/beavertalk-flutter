@@ -199,9 +199,11 @@ class _LoginFormScreenState extends ConsumerState<LoginFormScreen>
                     _SocialButtonRow(
                       onKakao: kakaoSignIn,
                       onGoogle: googleSignIn,
+                      onFacebook: facebookSignIn,
                       onApple: appleSignIn,
                       kakaoBusy: kakaoBusy,
                       googleBusy: googleBusy,
+                      facebookBusy: facebookBusy,
                       appleBusy: appleBusy,
                     ),
                     const SizedBox(height: AppSpacing.s24),
@@ -239,24 +241,29 @@ class _FieldLabel extends StatelessWidget {
   }
 }
 
-/// Three equal-width social sign-in buttons (Kakao / Google / Apple). Each runs
-/// the login screen's sign-in ([SocialSignInMixin]) — it used to open the
-/// signup screen instead (09-29 · QA F117).
+/// Four equal-width social sign-in buttons (Kakao / Google / Facebook / Apple),
+/// the same order as the signup footer. Each runs the login screen's sign-in
+/// ([SocialSignInMixin]) — it used to open the signup screen instead
+/// (09-29 · QA F117). Facebook was missing here only (PM-DEC-429).
 class _SocialButtonRow extends StatelessWidget {
   const _SocialButtonRow({
     required this.onKakao,
     required this.onGoogle,
+    required this.onFacebook,
     required this.onApple,
     required this.kakaoBusy,
     required this.googleBusy,
+    required this.facebookBusy,
     required this.appleBusy,
   });
 
   final VoidCallback onKakao;
   final VoidCallback onGoogle;
+  final VoidCallback onFacebook;
   final VoidCallback onApple;
   final bool kakaoBusy;
   final bool googleBusy;
+  final bool facebookBusy;
   final bool appleBusy;
 
   @override
@@ -278,6 +285,8 @@ class _SocialButtonRow extends StatelessWidget {
         social(const KakaoIcon(size: 24), onKakao, kakaoBusy),
         const SizedBox(width: AppSpacing.s12),
         social(const GoogleIcon(size: 24), onGoogle, googleBusy),
+        const SizedBox(width: AppSpacing.s12),
+        social(const FacebookIcon(size: 24), onFacebook, facebookBusy),
         const SizedBox(width: AppSpacing.s12),
         social(AppleIcon(size: 24, color: context.c.labelStrong), onApple, appleBusy),
       ],

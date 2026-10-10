@@ -1318,6 +1318,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get practicePronunciation => 'Тренировать произношение';
 
   @override
+  String get learnResultView => 'Результаты занятия';
+
+  @override
+  String get learnAgain => 'Пройти заново';
+
+  @override
   String get analysisNoScoreReview =>
       'Потренируйте фразы, чтобы получить оценку произношения';
 
@@ -2933,4 +2939,48 @@ class AppLocalizationsRu extends AppLocalizations {
   String wsNationalSubtitle(String country) {
     return '$country — звуки, в которых говорящие часто ошибаются';
   }
+
+  @override
+  String get wsRetryPackLabel => 'Практика звуков с частыми ошибками';
+
+  @override
+  String wsRetryPackTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count звука с частыми ошибками в этом занятии',
+      many: '$count звуков с частыми ошибками в этом занятии',
+      few: '$count звука с частыми ошибками в этом занятии',
+      one: '$count звук с частыми ошибками в этом занятии',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get wsRetryPackBody =>
+      'Мы собрали звуки, в которых вы ошиблись 2 раза и больше. Отработайте каждый в 4 шага.';
+
+  @override
+  String get wsRetryPackCta => 'Отработать все звуки';
+
+  @override
+  String get wsRetryListTitle => 'Звуки с частыми ошибками';
+
+  @override
+  String get wsRetryListSection => 'Звуки из этого занятия';
+
+  @override
+  String get wsRetryListSub =>
+      'Звуки, в которых вы ошиблись 2 раза и больше в этом занятии';
+
+  @override
+  String wsRetryListSubWithCall(String title) {
+    return 'Звуки, в которых вы ошиблись 2 раза и больше в звонке «$title»';
+  }
+
+  @override
+  String get wsRetryListAllDone => 'Вы отработали все звуки';
+
+  @override
+  String get wsRetryBackToReport => 'Назад к отчёту';
 }

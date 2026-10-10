@@ -393,6 +393,8 @@
   "levelRetakeKeep": "保留进度",
   "levelRetakeConfirm": "重新测试",
   "practicePronunciation": "练习发音",
+  "learnResultView": "查看学习结果",
+  "learnAgain": "重新学习",
   "analysisNoScoreReview": "复习后就会出现发音分数",
   "analysisNoScoreEmpty": "没有可评分的句子",
   "billingGroupPlanPurchases": "套餐与购买",
@@ -869,5 +871,15 @@
   "wsGoalOnly": "目标{score}",
   "wsSoundOf": "{label} 的发音",
   "wsResultTip": "{desc}。通话中再遇到时，想想这个口型。",
-  "wsNationalSubtitle": "来自 {country} 的人常发错的音"
+  "wsNationalSubtitle": "来自 {country} 的人常发错的音",
+  "wsRetryPackLabel": "常错发音练习",
+  "wsRetryPackTitle": "{count, plural, other{本次学习中常错的发音 {count} 个}}",
+  "wsRetryPackBody": "只收集了出错两次及以上的发音。每个发音分 4 个步骤练习。",
+  "wsRetryPackCta": "集中练习",
+  "wsRetryListTitle": "常错发音",
+  "wsRetryListSection": "本次学习收集的发音",
+  "wsRetryListSub": "本次学习中出错两次及以上的发音",
+  "wsRetryListSubWithCall": "在“{title}”通话中出错两次及以上的发音",
+  "wsRetryListAllDone": "已练习完所有收集的发音",
+  "wsRetryBackToReport": "返回报告"
 }

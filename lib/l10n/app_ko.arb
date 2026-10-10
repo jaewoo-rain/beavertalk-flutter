@@ -393,6 +393,8 @@
   "levelRetakeKeep": "진도 유지하기",
   "levelRetakeConfirm": "다시 측정하기",
   "practicePronunciation": "발음 학습하기",
+  "learnResultView": "학습 결과 보기",
+  "learnAgain": "다시 학습하기",
   "analysisNoScoreReview": "복습하면 발음 점수가 나와요",
   "analysisNoScoreEmpty": "점수를 낼 문장이 없어요",
   "billingGroupPlanPurchases": "플랜과 구매",
@@ -869,5 +871,15 @@
   "wsGoalOnly": "목표 {score}",
   "wsSoundOf": "{label} 소리",
   "wsResultTip": "{desc}. 통화에서 다시 만나면 이 모양을 떠올리세요.",
-  "wsNationalSubtitle": "{country} 화자가 자주 틀리는 소리예요"
+  "wsNationalSubtitle": "{country} 화자가 자주 틀리는 소리예요",
+  "wsRetryPackLabel": "자주 틀린 소리 연습",
+  "wsRetryPackTitle": "{count, plural, other{이번 학습에서 자주 틀린 소리 {count}개}}",
+  "wsRetryPackBody": "2번 이상 틀린 소리만 모았어요. 소리마다 4단계로 연습해요.",
+  "wsRetryPackCta": "모아서 연습하기",
+  "wsRetryListTitle": "자주 틀린 소리",
+  "wsRetryListSection": "이번 학습에서 모은 소리",
+  "wsRetryListSub": "이번 학습에서 2번 이상 틀린 소리예요",
+  "wsRetryListSubWithCall": "{title} 통화에서 2번 이상 틀린 소리예요",
+  "wsRetryListAllDone": "모은 소리를 모두 연습했어요",
+  "wsRetryBackToReport": "리포트로 돌아가기"
 }
