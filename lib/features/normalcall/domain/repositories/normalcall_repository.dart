@@ -43,6 +43,9 @@ abstract interface class NormalcallRepository {
   /// `GET /cur/me` — 내 커리큘럼 위치 한 장(커리큘럼 2단계).
   Future<CurMe> getCurMe();
 
+  /// `GET /cur/lessons?level=` — 그 레벨 차시 목록(회화학습 힌트 시트 「차시 목록」).
+  Future<List<CurLessonRow>> getCurLessons({int? level});
+
   /// `POST /__dev/cur-reset` — 내 진도를 지우고 차시 1 로(dev 도구, admin 전용).
   Future<CurResetResult> resetCurriculum();
 

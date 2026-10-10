@@ -2983,4 +2983,34 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get wsRetryBackToReport => 'Hisobotga qaytish';
+
+  @override
+  String get callHintTabConversation => 'Bu suhbat';
+
+  @override
+  String get callHintTabLessons => 'Darslar ro\'yxati';
+
+  @override
+  String get callHintSituation => 'Vaziyat';
+
+  @override
+  String get callHintPartner => 'Suhbatdosh';
+
+  @override
+  String get callHintNowBadge => 'Hozir';
+
+  @override
+  String get callHintLevelSurvival => 'Omon qolish uchun koreys tili';
+
+  @override
+  String get callHintLessonsLoadError => 'Darslarni yuklab bo\'lmadi';
+
+  @override
+  String get callLockReleaseHint => 'Qulfni ochish uchun bosib turing';
+
+  @override
+  String get callLockA11y => 'Ekranni qulflash';
+
+  @override
+  String get callUnlockA11y => 'Qulfni ochish';
 }

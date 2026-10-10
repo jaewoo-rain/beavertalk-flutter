@@ -2982,4 +2982,34 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get wsRetryBackToReport => 'Vissza az elemzéshez';
+
+  @override
+  String get callHintTabConversation => 'Ez a beszélgetés';
+
+  @override
+  String get callHintTabLessons => 'Leckék';
+
+  @override
+  String get callHintSituation => 'Helyzet';
+
+  @override
+  String get callHintPartner => 'Beszélgetőtárs';
+
+  @override
+  String get callHintNowBadge => 'Most';
+
+  @override
+  String get callHintLevelSurvival => 'Túlélő koreai';
+
+  @override
+  String get callHintLessonsLoadError => 'Nem sikerült betölteni a leckéket';
+
+  @override
+  String get callLockReleaseHint => 'Nyomd hosszan a feloldáshoz';
+
+  @override
+  String get callLockA11y => 'Képernyő zárolása';
+
+  @override
+  String get callUnlockA11y => 'Feloldás';
 }

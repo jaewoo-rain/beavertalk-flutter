@@ -881,5 +881,15 @@
   "wsRetryListSub": "इस सत्र में 2 या अधिक बार गलत हुई ध्वनियाँ",
   "wsRetryListSubWithCall": "“{title}” कॉल में 2 या अधिक बार गलत हुई ध्वनियाँ",
   "wsRetryListAllDone": "आपने सभी ध्वनियों का अभ्यास कर लिया",
-  "wsRetryBackToReport": "रिपोर्ट पर वापस जाएँ"
+  "wsRetryBackToReport": "रिपोर्ट पर वापस जाएँ",
+  "callHintTabConversation": "यह बातचीत",
+  "callHintTabLessons": "पाठ सूची",
+  "callHintSituation": "स्थिति",
+  "callHintPartner": "सामने वाला",
+  "callHintNowBadge": "अभी",
+  "callHintLevelSurvival": "सर्वाइवल कोरियाई",
+  "callHintLessonsLoadError": "पाठ लोड नहीं हो सके",
+  "callLockReleaseHint": "अनलॉक करने के लिए दबाकर रखें",
+  "callLockA11y": "स्क्रीन लॉक करें",
+  "callUnlockA11y": "अनलॉक करें"
 }

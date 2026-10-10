@@ -5445,6 +5445,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Back to report'**
   String get wsRetryBackToReport;
+
+  /// Lesson hint sheet tab: the current call's situation and partner role (freetalk call only).
+  ///
+  /// In en, this message translates to:
+  /// **'This conversation'**
+  String get callHintTabConversation;
+
+  /// Lesson hint sheet tab: list of lessons in the current level.
+  ///
+  /// In en, this message translates to:
+  /// **'Lessons'**
+  String get callHintTabLessons;
+
+  /// Label above the lesson situation sentence in the hint sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Situation'**
+  String get callHintSituation;
+
+  /// Label above the partner role (who the beaver plays) in the hint sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Partner'**
+  String get callHintPartner;
+
+  /// Badge on the lesson row of the current call in the lesson list.
+  ///
+  /// In en, this message translates to:
+  /// **'Now'**
+  String get callHintNowBadge;
+
+  /// Level name for level 1 (survival Korean) in the lesson list header. Other levels show A1~C4.
+  ///
+  /// In en, this message translates to:
+  /// **'Survival Korean'**
+  String get callHintLevelSurvival;
+
+  /// Shown in the lesson list tab when the lesson list failed to load.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load the lessons'**
+  String get callHintLessonsLoadError;
+
+  /// Pill under the unlock button while the call screen is locked.
+  ///
+  /// In en, this message translates to:
+  /// **'Press and hold to unlock'**
+  String get callLockReleaseHint;
+
+  /// Accessibility label of the lock button in the call header (press and hold to lock).
+  ///
+  /// In en, this message translates to:
+  /// **'Lock screen'**
+  String get callLockA11y;
+
+  /// Accessibility label of the unlock button on the locked call screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock'**
+  String get callUnlockA11y;
 }
 
 class _AppLocalizationsDelegate

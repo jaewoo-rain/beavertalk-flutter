@@ -3012,4 +3012,35 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get wsRetryBackToReport => 'Zurück zum Bericht';
+
+  @override
+  String get callHintTabConversation => 'Dieses Gespräch';
+
+  @override
+  String get callHintTabLessons => 'Lektionen';
+
+  @override
+  String get callHintSituation => 'Situation';
+
+  @override
+  String get callHintPartner => 'Gegenüber';
+
+  @override
+  String get callHintNowBadge => 'Jetzt';
+
+  @override
+  String get callHintLevelSurvival => 'Überlebenskoreanisch';
+
+  @override
+  String get callHintLessonsLoadError =>
+      'Lektionen konnten nicht geladen werden';
+
+  @override
+  String get callLockReleaseHint => 'Zum Entsperren gedrückt halten';
+
+  @override
+  String get callLockA11y => 'Bildschirm sperren';
+
+  @override
+  String get callUnlockA11y => 'Entsperren';
 }

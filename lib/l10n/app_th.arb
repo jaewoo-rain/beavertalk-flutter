@@ -881,5 +881,15 @@
   "wsRetryListSub": "เสียงที่ออกผิดตั้งแต่ 2 ครั้งขึ้นไปในการเรียนครั้งนี้",
   "wsRetryListSubWithCall": "เสียงที่ออกผิดตั้งแต่ 2 ครั้งขึ้นไปในการโทร “{title}”",
   "wsRetryListAllDone": "ฝึกครบทุกเสียงแล้ว",
-  "wsRetryBackToReport": "กลับไปที่รายงาน"
+  "wsRetryBackToReport": "กลับไปที่รายงาน",
+  "callHintTabConversation": "บทสนทนานี้",
+  "callHintTabLessons": "รายการบทเรียน",
+  "callHintSituation": "สถานการณ์",
+  "callHintPartner": "คู่สนทนา",
+  "callHintNowBadge": "ตอนนี้",
+  "callHintLevelSurvival": "ภาษาเกาหลีเพื่อเอาตัวรอด",
+  "callHintLessonsLoadError": "โหลดรายการบทเรียนไม่ได้",
+  "callLockReleaseHint": "กดค้างไว้เพื่อปลดล็อก",
+  "callLockA11y": "ล็อกหน้าจอ",
+  "callUnlockA11y": "ปลดล็อก"
 }

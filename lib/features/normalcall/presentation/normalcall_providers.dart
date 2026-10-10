@@ -129,3 +129,9 @@ final dailyStatusProvider =
 final curMeProvider = FutureProvider.autoDispose<CurMe>((ref) async {
   return ref.watch(normalcallRepositoryProvider).getCurMe();
 });
+
+/// 그 레벨 차시 목록 — 회화학습 힌트 시트 「차시 목록」 탭(2026-10-10 PM-DEC-485).
+final curLessonsProvider =
+    FutureProvider.autoDispose.family<List<CurLessonRow>, int>((ref, level) {
+  return ref.watch(normalcallRepositoryProvider).getCurLessons(level: level);
+});

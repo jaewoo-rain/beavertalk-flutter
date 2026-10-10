@@ -2281,5 +2281,45 @@
     }
   },
   "wsRetryListAllDone": "You practiced all the sounds",
-  "wsRetryBackToReport": "Back to report"
+  "wsRetryBackToReport": "Back to report",
+  "callHintTabConversation": "This conversation",
+  "@callHintTabConversation": {
+    "description": "Lesson hint sheet tab: the current call's situation and partner role (freetalk call only)."
+  },
+  "callHintTabLessons": "Lessons",
+  "@callHintTabLessons": {
+    "description": "Lesson hint sheet tab: list of lessons in the current level."
+  },
+  "callHintSituation": "Situation",
+  "@callHintSituation": {
+    "description": "Label above the lesson situation sentence in the hint sheet."
+  },
+  "callHintPartner": "Partner",
+  "@callHintPartner": {
+    "description": "Label above the partner role (who the beaver plays) in the hint sheet."
+  },
+  "callHintNowBadge": "Now",
+  "@callHintNowBadge": {
+    "description": "Badge on the lesson row of the current call in the lesson list."
+  },
+  "callHintLevelSurvival": "Survival Korean",
+  "@callHintLevelSurvival": {
+    "description": "Level name for level 1 (survival Korean) in the lesson list header. Other levels show A1~C4."
+  },
+  "callHintLessonsLoadError": "Couldn't load the lessons",
+  "@callHintLessonsLoadError": {
+    "description": "Shown in the lesson list tab when the lesson list failed to load."
+  },
+  "callLockReleaseHint": "Press and hold to unlock",
+  "@callLockReleaseHint": {
+    "description": "Pill under the unlock button while the call screen is locked."
+  },
+  "callLockA11y": "Lock screen",
+  "@callLockA11y": {
+    "description": "Accessibility label of the lock button in the call header (press and hold to lock)."
+  },
+  "callUnlockA11y": "Unlock",
+  "@callUnlockA11y": {
+    "description": "Accessibility label of the unlock button on the locked call screen."
+  }
 }

@@ -2983,4 +2983,35 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get wsRetryBackToReport => 'Назад к отчёту';
+
+  @override
+  String get callHintTabConversation => 'Этот разговор';
+
+  @override
+  String get callHintTabLessons => 'Уроки';
+
+  @override
+  String get callHintSituation => 'Ситуация';
+
+  @override
+  String get callHintPartner => 'Собеседник';
+
+  @override
+  String get callHintNowBadge => 'Сейчас';
+
+  @override
+  String get callHintLevelSurvival => 'Корейский для выживания';
+
+  @override
+  String get callHintLessonsLoadError => 'Не удалось загрузить уроки';
+
+  @override
+  String get callLockReleaseHint =>
+      'Нажмите и удерживайте, чтобы разблокировать';
+
+  @override
+  String get callLockA11y => 'Заблокировать экран';
+
+  @override
+  String get callUnlockA11y => 'Разблокировать';
 }

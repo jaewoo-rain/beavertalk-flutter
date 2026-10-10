@@ -2955,4 +2955,34 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get wsRetryBackToReport => 'Rapora dön';
+
+  @override
+  String get callHintTabConversation => 'Bu konuşma';
+
+  @override
+  String get callHintTabLessons => 'Dersler';
+
+  @override
+  String get callHintSituation => 'Durum';
+
+  @override
+  String get callHintPartner => 'Karşı taraf';
+
+  @override
+  String get callHintNowBadge => 'Şimdi';
+
+  @override
+  String get callHintLevelSurvival => 'Hayatta kalma Korecesi';
+
+  @override
+  String get callHintLessonsLoadError => 'Dersler yüklenemedi';
+
+  @override
+  String get callLockReleaseHint => 'Kilidi açmak için basılı tut';
+
+  @override
+  String get callLockA11y => 'Ekranı kilitle';
+
+  @override
+  String get callUnlockA11y => 'Kilidi aç';
 }

@@ -881,5 +881,15 @@
   "wsRetryListSub": "Laute, die du in dieser Sitzung 2-mal oder öfter verfehlt hast",
   "wsRetryListSubWithCall": "Laute, die du im Gespräch „{title}“ 2-mal oder öfter verfehlt hast",
   "wsRetryListAllDone": "Du hast alle Laute geübt",
-  "wsRetryBackToReport": "Zurück zum Bericht"
+  "wsRetryBackToReport": "Zurück zum Bericht",
+  "callHintTabConversation": "Dieses Gespräch",
+  "callHintTabLessons": "Lektionen",
+  "callHintSituation": "Situation",
+  "callHintPartner": "Gegenüber",
+  "callHintNowBadge": "Jetzt",
+  "callHintLevelSurvival": "Überlebenskoreanisch",
+  "callHintLessonsLoadError": "Lektionen konnten nicht geladen werden",
+  "callLockReleaseHint": "Zum Entsperren gedrückt halten",
+  "callLockA11y": "Bildschirm sperren",
+  "callUnlockA11y": "Entsperren"
 }

@@ -2956,4 +2956,34 @@ class AppLocalizationsNe extends AppLocalizations {
 
   @override
   String get wsRetryBackToReport => 'रिपोर्टमा फर्कनुहोस्';
+
+  @override
+  String get callHintTabConversation => 'यो कुराकानी';
+
+  @override
+  String get callHintTabLessons => 'पाठ सूची';
+
+  @override
+  String get callHintSituation => 'परिस्थिति';
+
+  @override
+  String get callHintPartner => 'अर्को पक्ष';
+
+  @override
+  String get callHintNowBadge => 'अहिले';
+
+  @override
+  String get callHintLevelSurvival => 'सर्भाइभल कोरियाली';
+
+  @override
+  String get callHintLessonsLoadError => 'पाठहरू लोड गर्न सकिएन';
+
+  @override
+  String get callLockReleaseHint => 'अनलक गर्न थिचिराख्नुहोस्';
+
+  @override
+  String get callLockA11y => 'स्क्रिन लक गर्नुहोस्';
+
+  @override
+  String get callUnlockA11y => 'अनलक गर्नुहोस्';
 }

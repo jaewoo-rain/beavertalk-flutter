@@ -2959,4 +2959,34 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get wsRetryBackToReport => 'Есепке оралу';
+
+  @override
+  String get callHintTabConversation => 'Осы әңгіме';
+
+  @override
+  String get callHintTabLessons => 'Сабақтар тізімі';
+
+  @override
+  String get callHintSituation => 'Жағдай';
+
+  @override
+  String get callHintPartner => 'Әңгімелесуші';
+
+  @override
+  String get callHintNowBadge => 'Қазір';
+
+  @override
+  String get callHintLevelSurvival => 'Өмір сүруге арналған корей тілі';
+
+  @override
+  String get callHintLessonsLoadError => 'Сабақтарды жүктеу мүмкін болмады';
+
+  @override
+  String get callLockReleaseHint => 'Құлыпты ашу үшін басып тұрыңыз';
+
+  @override
+  String get callLockA11y => 'Экранды құлыптау';
+
+  @override
+  String get callUnlockA11y => 'Құлыпты ашу';
 }

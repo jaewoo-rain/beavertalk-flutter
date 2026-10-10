@@ -2973,4 +2973,34 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get wsRetryBackToReport => 'အစီရင်ခံစာသို့ ပြန်ရန်';
+
+  @override
+  String get callHintTabConversation => 'ဤစကားပြော';
+
+  @override
+  String get callHintTabLessons => 'သင်ခန်းစာစာရင်း';
+
+  @override
+  String get callHintSituation => 'အခြေအနေ';
+
+  @override
+  String get callHintPartner => 'တစ်ဖက်လူ';
+
+  @override
+  String get callHintNowBadge => 'ယခု';
+
+  @override
+  String get callHintLevelSurvival => 'အသက်ရှင်ရေး ကိုရီးယား';
+
+  @override
+  String get callHintLessonsLoadError => 'သင်ခန်းစာများ ဖွင့်မရပါ';
+
+  @override
+  String get callLockReleaseHint => 'လော့ခ်ဖွင့်ရန် ဖိထားပါ';
+
+  @override
+  String get callLockA11y => 'မျက်နှာပြင် လော့ခ်ချရန်';
+
+  @override
+  String get callUnlockA11y => 'လော့ခ်ဖွင့်ရန်';
 }

@@ -881,5 +881,15 @@
   "wsRetryListSub": "Bunyi yang salah 2 kali atau lebih dalam sesi ini",
   "wsRetryListSubWithCall": "Bunyi yang salah 2 kali atau lebih dalam panggilan “{title}”",
   "wsRetryListAllDone": "Anda telah melatih semua bunyi",
-  "wsRetryBackToReport": "Kembali ke laporan"
+  "wsRetryBackToReport": "Kembali ke laporan",
+  "callHintTabConversation": "Perbualan ini",
+  "callHintTabLessons": "Senarai pelajaran",
+  "callHintSituation": "Situasi",
+  "callHintPartner": "Rakan bual",
+  "callHintNowBadge": "Sekarang",
+  "callHintLevelSurvival": "Bahasa Korea asas kelangsungan",
+  "callHintLessonsLoadError": "Senarai pelajaran tidak dapat dimuatkan",
+  "callLockReleaseHint": "Tekan lama untuk buka kunci",
+  "callLockA11y": "Kunci skrin",
+  "callUnlockA11y": "Buka kunci"
 }

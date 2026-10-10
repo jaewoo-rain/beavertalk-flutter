@@ -881,5 +881,15 @@
   "wsRetryListSub": "សំឡេងដែលខុស 2 ដង ឬច្រើនជាងនេះក្នុងមេរៀននេះ",
   "wsRetryListSubWithCall": "សំឡេងដែលខុស 2 ដង ឬច្រើនជាងនេះក្នុងការហៅ «{title}»",
   "wsRetryListAllDone": "អ្នកបានហាត់សំឡេងទាំងអស់ហើយ",
-  "wsRetryBackToReport": "ត្រឡប់ទៅរបាយការណ៍"
+  "wsRetryBackToReport": "ត្រឡប់ទៅរបាយការណ៍",
+  "callHintTabConversation": "ការសន្ទនានេះ",
+  "callHintTabLessons": "បញ្ជីមេរៀន",
+  "callHintSituation": "ស្ថានភាព",
+  "callHintPartner": "ភាគីម្ខាងទៀត",
+  "callHintNowBadge": "ឥឡូវនេះ",
+  "callHintLevelSurvival": "ភាសាកូរ៉េសម្រាប់ការរស់នៅ",
+  "callHintLessonsLoadError": "មិនអាចផ្ទុកបញ្ជីមេរៀនបានទេ",
+  "callLockReleaseHint": "ចុចឱ្យជាប់ដើម្បីដោះសោ",
+  "callLockA11y": "ចាក់សោអេក្រង់",
+  "callUnlockA11y": "ដោះសោ"
 }

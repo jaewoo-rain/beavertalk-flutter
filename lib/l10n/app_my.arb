@@ -881,5 +881,15 @@
   "wsRetryListSub": "ဤသင်ခန်းစာတွင် ၂ ကြိမ်နှင့်အထက် မှားသော အသံများ",
   "wsRetryListSubWithCall": "“{title}” ခေါ်ဆိုမှုတွင် ၂ ကြိမ်နှင့်အထက် မှားသော အသံများ",
   "wsRetryListAllDone": "အသံအားလုံး လေ့ကျင့်ပြီးပါပြီ",
-  "wsRetryBackToReport": "အစီရင်ခံစာသို့ ပြန်ရန်"
+  "wsRetryBackToReport": "အစီရင်ခံစာသို့ ပြန်ရန်",
+  "callHintTabConversation": "ဤစကားပြော",
+  "callHintTabLessons": "သင်ခန်းစာစာရင်း",
+  "callHintSituation": "အခြေအနေ",
+  "callHintPartner": "တစ်ဖက်လူ",
+  "callHintNowBadge": "ယခု",
+  "callHintLevelSurvival": "အသက်ရှင်ရေး ကိုရီးယား",
+  "callHintLessonsLoadError": "သင်ခန်းစာများ ဖွင့်မရပါ",
+  "callLockReleaseHint": "လော့ခ်ဖွင့်ရန် ဖိထားပါ",
+  "callLockA11y": "မျက်နှာပြင် လော့ခ်ချရန်",
+  "callUnlockA11y": "လော့ခ်ဖွင့်ရန်"
 }

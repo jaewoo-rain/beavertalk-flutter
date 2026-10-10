@@ -2956,4 +2956,34 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get wsRetryBackToReport => 'Тайлан руу буцах';
+
+  @override
+  String get callHintTabConversation => 'Энэ харилцан яриа';
+
+  @override
+  String get callHintTabLessons => 'Хичээлийн жагсаалт';
+
+  @override
+  String get callHintSituation => 'Нөхцөл байдал';
+
+  @override
+  String get callHintPartner => 'Харилцагч';
+
+  @override
+  String get callHintNowBadge => 'Одоо';
+
+  @override
+  String get callHintLevelSurvival => 'Амьдралын солонгос хэл';
+
+  @override
+  String get callHintLessonsLoadError => 'Хичээлүүдийг ачаалж чадсангүй';
+
+  @override
+  String get callLockReleaseHint => 'Түгжээг тайлахын тулд удаан дарна уу';
+
+  @override
+  String get callLockA11y => 'Дэлгэц түгжих';
+
+  @override
+  String get callUnlockA11y => 'Түгжээ тайлах';
 }

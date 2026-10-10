@@ -2876,4 +2876,34 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get wsRetryBackToReport => '리포트로 돌아가기';
+
+  @override
+  String get callHintTabConversation => '이번 대화';
+
+  @override
+  String get callHintTabLessons => '차시 목록';
+
+  @override
+  String get callHintSituation => '상황';
+
+  @override
+  String get callHintPartner => '상대';
+
+  @override
+  String get callHintNowBadge => '지금 대화';
+
+  @override
+  String get callHintLevelSurvival => '생존회화';
+
+  @override
+  String get callHintLessonsLoadError => '차시 목록을 불러오지 못했어요';
+
+  @override
+  String get callLockReleaseHint => '길게 누르면 잠금이 풀려요';
+
+  @override
+  String get callLockA11y => '화면 잠금';
+
+  @override
+  String get callUnlockA11y => '잠금 해제';
 }

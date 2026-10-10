@@ -2966,4 +2966,34 @@ class AppLocalizationsKy extends AppLocalizations {
 
   @override
   String get wsRetryBackToReport => 'Отчетко кайтуу';
+
+  @override
+  String get callHintTabConversation => 'Бул маек';
+
+  @override
+  String get callHintTabLessons => 'Сабактардын тизмеси';
+
+  @override
+  String get callHintSituation => 'Кырдаал';
+
+  @override
+  String get callHintPartner => 'Маектеш';
+
+  @override
+  String get callHintNowBadge => 'Азыр';
+
+  @override
+  String get callHintLevelSurvival => 'Жашоо үчүн корей тили';
+
+  @override
+  String get callHintLessonsLoadError => 'Сабактар жүктөлгөн жок';
+
+  @override
+  String get callLockReleaseHint => 'Кулпуну ачуу үчүн басып туруңуз';
+
+  @override
+  String get callLockA11y => 'Экранды кулпулоо';
+
+  @override
+  String get callUnlockA11y => 'Кулпуну ачуу';
 }

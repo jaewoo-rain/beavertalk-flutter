@@ -2985,4 +2985,35 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get wsRetryBackToReport => 'Kembali ke laporan';
+
+  @override
+  String get callHintTabConversation => 'Perbualan ini';
+
+  @override
+  String get callHintTabLessons => 'Senarai pelajaran';
+
+  @override
+  String get callHintSituation => 'Situasi';
+
+  @override
+  String get callHintPartner => 'Rakan bual';
+
+  @override
+  String get callHintNowBadge => 'Sekarang';
+
+  @override
+  String get callHintLevelSurvival => 'Bahasa Korea asas kelangsungan';
+
+  @override
+  String get callHintLessonsLoadError =>
+      'Senarai pelajaran tidak dapat dimuatkan';
+
+  @override
+  String get callLockReleaseHint => 'Tekan lama untuk buka kunci';
+
+  @override
+  String get callLockA11y => 'Kunci skrin';
+
+  @override
+  String get callUnlockA11y => 'Buka kunci';
 }

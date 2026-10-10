@@ -2951,4 +2951,34 @@ class AppLocalizationsKm extends AppLocalizations {
 
   @override
   String get wsRetryBackToReport => 'ត្រឡប់ទៅរបាយការណ៍';
+
+  @override
+  String get callHintTabConversation => 'ការសន្ទនានេះ';
+
+  @override
+  String get callHintTabLessons => 'បញ្ជីមេរៀន';
+
+  @override
+  String get callHintSituation => 'ស្ថានភាព';
+
+  @override
+  String get callHintPartner => 'ភាគីម្ខាងទៀត';
+
+  @override
+  String get callHintNowBadge => 'ឥឡូវនេះ';
+
+  @override
+  String get callHintLevelSurvival => 'ភាសាកូរ៉េសម្រាប់ការរស់នៅ';
+
+  @override
+  String get callHintLessonsLoadError => 'មិនអាចផ្ទុកបញ្ជីមេរៀនបានទេ';
+
+  @override
+  String get callLockReleaseHint => 'ចុចឱ្យជាប់ដើម្បីដោះសោ';
+
+  @override
+  String get callLockA11y => 'ចាក់សោអេក្រង់';
+
+  @override
+  String get callUnlockA11y => 'ដោះសោ';
 }

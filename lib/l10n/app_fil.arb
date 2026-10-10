@@ -881,5 +881,15 @@
   "wsRetryListSub": "Mga tunog na nabigkas mo nang mali nang 2 beses o higit pa sa session na ito",
   "wsRetryListSubWithCall": "Mga tunog na nabigkas mo nang mali nang 2 beses o higit pa sa tawag na “{title}”",
   "wsRetryListAllDone": "Na-practice mo na ang lahat ng tunog",
-  "wsRetryBackToReport": "Bumalik sa ulat"
+  "wsRetryBackToReport": "Bumalik sa ulat",
+  "callHintTabConversation": "Ang usapang ito",
+  "callHintTabLessons": "Listahan ng aralin",
+  "callHintSituation": "Sitwasyon",
+  "callHintPartner": "Kausap",
+  "callHintNowBadge": "Ngayon",
+  "callHintLevelSurvival": "Survival Korean",
+  "callHintLessonsLoadError": "Hindi ma-load ang mga aralin",
+  "callLockReleaseHint": "Pindutin nang matagal para i-unlock",
+  "callLockA11y": "I-lock ang screen",
+  "callUnlockA11y": "I-unlock"
 }
