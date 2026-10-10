@@ -46,8 +46,9 @@ class _OnboardingNationalityScreenState
     final countries = filterCountries(_query);
     final gap = nationalityRowGap(MediaQuery.sizeOf(context).width);
 
-    // 머리 묶음(제목~라벨)은 한 칸, 국가 행은 각자 한 칸 — 249줄을 한 번에 그리지 않는다.
-    final header = Column(
+    // 위에 고정: 제목~검색창(사용자 10-10 「검색창을 상단에 고정해두고 그 아래부터 스크롤」).
+    // 아래만 스크롤: 라벨 + 국가 행(249줄을 한 번에 그리지 않게 builder).
+    final pinned = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
@@ -66,7 +67,11 @@ class _OnboardingNationalityScreenState
           hintText: l10n.nationalitySearchHint,
           onChanged: (v) => setState(() => _query = v),
         ),
-        const SizedBox(height: AppSpacing.s16),
+      ],
+    );
+    final listHead = Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
         NationalitySectionLabel(l10n.nationalityAllCountries),
         const SizedBox(height: AppSpacing.s16),
         if (countries.isEmpty) NationalitySearchEmpty(l10n.nationalitySearchEmpty),
@@ -81,13 +86,17 @@ class _OnboardingNationalityScreenState
             progress: const GnbProgress(current: 2, total: 4),
             onBack: () => Navigator.pop(context),
           ),
+          ContentColumn(
+            padding: const EdgeInsets.only(top: AppSpacing.s16),
+            child: pinned,
+          ),
           Expanded(
             child: ContentColumn(
               child: ListView.builder(
                 padding: const EdgeInsets.only(top: AppSpacing.s16, bottom: AppSpacing.s24),
                 itemCount: countries.length + 1,
                 itemBuilder: (context, i) {
-                  if (i == 0) return header;
+                  if (i == 0) return listHead;
                   final (iso, name) = countries[i - 1];
                   return Padding(
                     padding: EdgeInsets.only(top: i == 1 ? 0 : gap),
