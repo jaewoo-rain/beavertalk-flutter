@@ -1321,6 +1321,12 @@ class AppLocalizationsFil extends AppLocalizations {
   String get practicePronunciation => 'Magsanay ng pagbigkas';
 
   @override
+  String get learnResultView => 'Tingnan ang resulta ng pag-aaral';
+
+  @override
+  String get learnAgain => 'Mag-aral muli';
+
+  @override
   String get analysisNoScoreReview =>
       'Mag-practice para makuha ang score mo sa pagbigkas';
 

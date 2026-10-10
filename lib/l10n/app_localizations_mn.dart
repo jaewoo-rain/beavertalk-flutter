@@ -1306,6 +1306,12 @@ class AppLocalizationsMn extends AppLocalizations {
   String get practicePronunciation => 'Дуудлага дасгалжуулах';
 
   @override
+  String get learnResultView => 'Суралцсан үр дүнг харах';
+
+  @override
+  String get learnAgain => 'Дахин суралцах';
+
+  @override
   String get analysisNoScoreReview => 'Давтвал дуудлагын оноо гарна';
 
   @override

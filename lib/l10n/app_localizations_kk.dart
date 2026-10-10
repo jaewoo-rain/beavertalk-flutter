@@ -1305,6 +1305,12 @@ class AppLocalizationsKk extends AppLocalizations {
   String get practicePronunciation => 'Айтылымды жаттықтыру';
 
   @override
+  String get learnResultView => 'Оқу нәтижелерін көру';
+
+  @override
+  String get learnAgain => 'Қайта оқу';
+
+  @override
   String get analysisNoScoreReview => 'Жаттықсаңыз, айтылым ұпайы шығады';
 
   @override

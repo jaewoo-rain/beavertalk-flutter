@@ -1309,6 +1309,12 @@ class AppLocalizationsSi extends AppLocalizations {
   String get practicePronunciation => 'උච්චාරණය පුහුණු වන්න';
 
   @override
+  String get learnResultView => 'ඉගෙනුම් ප්‍රතිඵල බලන්න';
+
+  @override
+  String get learnAgain => 'නැවත ඉගෙන ගන්න';
+
+  @override
   String get analysisNoScoreReview => 'පුහුණු වුණාම උච්චාරණ ලකුණු පෙන්වයි';
 
   @override

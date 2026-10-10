@@ -1280,6 +1280,12 @@ class AppLocalizationsKo extends AppLocalizations {
   String get practicePronunciation => '발음 학습하기';
 
   @override
+  String get learnResultView => '학습 결과 보기';
+
+  @override
+  String get learnAgain => '다시 학습하기';
+
+  @override
   String get analysisNoScoreReview => '복습하면 발음 점수가 나와요';
 
   @override

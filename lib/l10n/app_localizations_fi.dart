@@ -1313,6 +1313,12 @@ class AppLocalizationsFi extends AppLocalizations {
   String get practicePronunciation => 'Harjoittele ääntämistä';
 
   @override
+  String get learnResultView => 'Katso oppimisen tulokset';
+
+  @override
+  String get learnAgain => 'Opiskele uudelleen';
+
+  @override
   String get analysisNoScoreReview =>
       'Harjoittele lauseita, niin saat ääntämispisteet';
 

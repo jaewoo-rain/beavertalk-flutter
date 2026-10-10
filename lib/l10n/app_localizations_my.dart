@@ -1317,6 +1317,12 @@ class AppLocalizationsMy extends AppLocalizations {
   String get practicePronunciation => 'အသံထွက် လေ့ကျင့်ရန်';
 
   @override
+  String get learnResultView => 'သင်ယူမှု ရလဒ် ကြည့်ရန်';
+
+  @override
+  String get learnAgain => 'ထပ်မံ သင်ယူရန်';
+
+  @override
   String get analysisNoScoreReview => 'လေ့ကျင့်ရင် အသံထွက် ရမှတ် ထွက်လာပါမယ်';
 
   @override

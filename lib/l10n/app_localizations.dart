@@ -2506,6 +2506,18 @@ abstract class AppLocalizations {
   /// **'Practice pronunciation'**
   String get practicePronunciation;
 
+  /// Call analysis screen study card, shown once the call's pronunciation study has been finished (every base sentence scored). Opens that call's pronunciation report. PM-DEC-427
+  ///
+  /// In en, this message translates to:
+  /// **'See learning results'**
+  String get learnResultView;
+
+  /// Pronunciation report screen button that reopens the study flow from the first sentence of the same call. PM-DEC-427
+  ///
+  /// In en, this message translates to:
+  /// **'Learn again'**
+  String get learnAgain;
+
   /// One line under the inactive score gauge when the call has learned sentences but none practiced yet (Figma screen/analysis__no_score 4867:7359). Scores come only from practicing sentences.
   ///
   /// In en, this message translates to:

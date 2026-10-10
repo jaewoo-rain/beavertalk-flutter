@@ -1311,6 +1311,12 @@ class AppLocalizationsId extends AppLocalizations {
   String get practicePronunciation => 'Latih pelafalan';
 
   @override
+  String get learnResultView => 'Lihat hasil belajar';
+
+  @override
+  String get learnAgain => 'Belajar lagi';
+
+  @override
   String get analysisNoScoreReview =>
       'Latih kalimatnya untuk mendapat skor pelafalan';
 

@@ -1321,6 +1321,12 @@ class AppLocalizationsHu extends AppLocalizations {
   String get practicePronunciation => 'Kiejtés gyakorlása';
 
   @override
+  String get learnResultView => 'Tanulási eredmények megtekintése';
+
+  @override
+  String get learnAgain => 'Újratanulás';
+
+  @override
   String get analysisNoScoreReview =>
       'Gyakorold a mondatokat, és megkapod a kiejtési pontszámod';
 

@@ -1319,6 +1319,12 @@ class AppLocalizationsMs extends AppLocalizations {
   String get practicePronunciation => 'Latih sebutan';
 
   @override
+  String get learnResultView => 'Lihat keputusan pembelajaran';
+
+  @override
+  String get learnAgain => 'Belajar semula';
+
+  @override
   String get analysisNoScoreReview =>
       'Berlatih ayat untuk mendapat skor sebutan';
 

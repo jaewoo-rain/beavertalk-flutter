@@ -774,6 +774,10 @@
   "levelRetakeConfirm": "Retake test",
   "@levelRetakeConfirm": {"description": "Secondary (bottom) button \u2014 go ahead with the retake."},
   "practicePronunciation": "Practice pronunciation",
+  "learnResultView": "See learning results",
+  "learnAgain": "Learn again",
+  "@learnResultView": {"description": "Call analysis screen study card, shown once the call's pronunciation study has been finished (every base sentence scored). Opens that call's pronunciation report. PM-DEC-427"},
+  "@learnAgain": {"description": "Pronunciation report screen button that reopens the study flow from the first sentence of the same call. PM-DEC-427"},
   "@practicePronunciation": {
     "description": "CTA on the pronunciation card - open the latest call analysis."
   },

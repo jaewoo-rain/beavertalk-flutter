@@ -1318,6 +1318,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get practicePronunciation => 'Тренировать произношение';
 
   @override
+  String get learnResultView => 'Результаты занятия';
+
+  @override
+  String get learnAgain => 'Пройти заново';
+
+  @override
   String get analysisNoScoreReview =>
       'Потренируйте фразы, чтобы получить оценку произношения';
 

@@ -1278,6 +1278,12 @@ class AppLocalizationsJa extends AppLocalizations {
   String get practicePronunciation => '発音を学習する';
 
   @override
+  String get learnResultView => '学習結果を見る';
+
+  @override
+  String get learnAgain => 'もう一度学習する';
+
+  @override
   String get analysisNoScoreReview => '復習すると発音スコアが出ます';
 
   @override

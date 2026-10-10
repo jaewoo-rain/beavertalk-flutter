@@ -1305,6 +1305,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get practicePronunciation => 'تدرب على النطق';
 
   @override
+  String get learnResultView => 'عرض نتائج التعلم';
+
+  @override
+  String get learnAgain => 'التعلم مرة أخرى';
+
+  @override
   String get analysisNoScoreReview => 'تدرّب على الجمل لتحصل على نتيجة نطقك';
 
   @override

@@ -1322,6 +1322,12 @@ class AppLocalizationsEs extends AppLocalizations {
   String get practicePronunciation => 'Practicar pronunciación';
 
   @override
+  String get learnResultView => 'Ver resultados del estudio';
+
+  @override
+  String get learnAgain => 'Volver a estudiar';
+
+  @override
   String get analysisNoScoreReview =>
       'Practica las frases para ver tu puntuación de pronunciación';
 

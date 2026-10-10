@@ -393,6 +393,8 @@
   "levelRetakeKeep": "진도 유지하기",
   "levelRetakeConfirm": "다시 측정하기",
   "practicePronunciation": "발음 학습하기",
+  "learnResultView": "학습 결과 보기",
+  "learnAgain": "다시 학습하기",
   "analysisNoScoreReview": "복습하면 발음 점수가 나와요",
   "analysisNoScoreEmpty": "점수를 낼 문장이 없어요",
   "billingGroupPlanPurchases": "플랜과 구매",

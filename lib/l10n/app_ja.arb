@@ -393,6 +393,8 @@
   "levelRetakeKeep": "進度をそのままにする",
   "levelRetakeConfirm": "測り直す",
   "practicePronunciation": "発音を学習する",
+  "learnResultView": "学習結果を見る",
+  "learnAgain": "もう一度学習する",
   "analysisNoScoreReview": "復習すると発音スコアが出ます",
   "analysisNoScoreEmpty": "採点する文がありません",
   "billingGroupPlanPurchases": "プランと購入",

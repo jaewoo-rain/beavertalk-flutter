@@ -1311,6 +1311,12 @@ class AppLocalizationsUr extends AppLocalizations {
   String get practicePronunciation => 'تلفظ کی مشق کریں';
 
   @override
+  String get learnResultView => 'سیکھنے کے نتائج دیکھیں';
+
+  @override
+  String get learnAgain => 'دوبارہ سیکھیں';
+
+  @override
   String get analysisNoScoreReview => 'مشق کریں تو تلفظ کا اسکور آئے گا';
 
   @override

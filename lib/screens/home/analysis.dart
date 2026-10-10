@@ -14,6 +14,7 @@ import '../../components/molecules/pronunciation_result.dart';
 import '../../components/organisms/gnb.dart';
 import '../../features/bookmark/presentation/providers/bookmark_toggle_controller.dart';
 import '../../features/normalcall/domain/entities/call_result.dart';
+import '../../features/normalcall/presentation/normalcall_providers.dart';
 import '../../features/review/data/audio_player.dart';
 import '../../features/review/domain/entities/review_feedback.dart';
 import '../../features/review/presentation/review_providers.dart';
@@ -114,8 +115,11 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
     if (args is CallResult) {
       final result = _kDesignPreview ? _withDesignPreview(args) : args;
       _result = result;
-      _learningSentences =
-          result.sentences.map(_toMockSentence).toList(growable: false);
+      final seenIds = <int>{};
+      _learningSentences = result.sentences
+          .where((s) => (s.korean?.trim().isNotEmpty ?? false) &&
+              seenIds.add(s.sentenceId))
+          .map(_toMockSentence).toList(growable: false);
       // Defer provider/notifier mutations out of the lifecycle phase: Riverpod
       // forbids modifying a provider during build/initState/didChangeDependencies.
       // Runs exactly once (guarded by the `_result == null` capture above).
@@ -154,13 +158,16 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
       );
 
   /// Pushes the learning flow for [sentences], starting at [index].
-  void _startLearning(
+  ///
+  /// 돌아오면 발음 리포트를 다시 받는다 — 끝까지 마쳤으면 카드가 「학습 결과 보기」로 바뀐다
+  /// (PM-DEC-427).
+  Future<void> _startLearning(
     List<MockSentence> sentences, {
     int index = 0,
     LearningOrigin origin = LearningOrigin.callReview,
-  }) {
+  }) async {
     if (sentences.isEmpty) return;
-    Navigator.pushNamed(
+    await Navigator.pushNamed(
       context,
       Routes.learningIntro,
       // 복습하기(전체) 는 call review 라 발음 리포트(learning_call_main)로 끝나고,
@@ -173,6 +180,52 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
         callTitle: _result?.summary,
       ),
     );
+    _refreshReport();
+  }
+
+  /// 「학습 결과 보기」 — 그 통화의 발음 리포트(`learning_call_main`)로 바로 간다(PM-DEC-427).
+  /// 결과 화면 안 「다시 학습하기」가 같은 문장으로 학습을 다시 연다.
+  Future<void> _openLearningResult() async {
+    final callId = _result?.callId;
+    if (callId == null) return;
+    await Navigator.pushNamed(
+      context,
+      Routes.learningCallMain,
+      arguments: LearningArgs(
+        sentences: _learningSentences,
+        origin: LearningOrigin.callReview,
+        callId: callId,
+        callTitle: _result?.summary,
+      ),
+    );
+    _refreshReport();
+  }
+
+  void _refreshReport() {
+    final callId = _result?.callId;
+    if (mounted && callId != null) ref.invalidate(pronunciationReportProvider(callId));
+  }
+
+  /// 이 통화 학습을 끝까지 마쳤나 — 서버 발음 리포트로 판정한다. 받는 중·실패면 false
+  /// (「발음 학습하기」 그대로 · 재설치해도 서버 값이라 같다).
+  bool _learningFinished(WidgetRef ref) {
+    final callId = _result?.callId;
+    if (callId == null) return false;
+    final report = ref.watch(pronunciationReportProvider(callId)).valueOrNull;
+    if (report == null || !report.learningFinished ||
+        report.sentences.length != _learningSentences.length) {
+      return false;
+    }
+    // 새 계약은 실제 ID로 대조한다. 구형 응답에는 ID가 없어 개수까지만 확인한다.
+    if (report.sentences.any((s) => s.sentenceId != null)) {
+      if (report.sentences.any((s) => s.sentenceId == null)) return false;
+      final expected = _learningSentences.map((s) => s.id).toSet();
+      final actual = report.sentences.map((s) => s.sentenceId!).toSet();
+      return actual.length == report.sentences.length &&
+          expected.length == _learningSentences.length &&
+          actual.length == expected.length && actual.containsAll(expected);
+    }
+    return true;
   }
 
   /// Formats a nullable 0–100 score as a rounded percent, or `-%` when null.
@@ -386,10 +439,16 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  CardStudy.learn(
-                    title: l10n.practicePronunciation,
-                    onTap: open ? () => _startLearning(_learningSentences) : null,
-                  ),
+                  if (open && _learningFinished(ref))
+                    CardStudy.learn(
+                      title: l10n.learnResultView,
+                      onTap: _openLearningResult,
+                    )
+                  else
+                    CardStudy.learn(
+                      title: l10n.practicePronunciation,
+                      onTap: open ? () => _startLearning(_learningSentences) : null,
+                    ),
                   const SizedBox(height: AppSpacing.s12),
                   CardStudy.challenge(
                     title: l10n.challengeTitle,
