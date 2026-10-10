@@ -157,73 +157,81 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
           top: 76, // Figma top offset (no AppSpacing token)
           bottom: AppSpacing.s24,
         ),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // ── Brand block: circular beaver avatar + wordmark ──────────
-              const _LogoBlock(),
-              // Figma: wordmark bottom → first social button ≈ 46px.
-              const SizedBox(height: 46), // Figma 46px gap (no AppSpacing token)
-              // ── Social sign-in buttons ──────────────────────────────────
-              Button(
-                type: BtnType.secondaryFill,
-                size: BtnSize.s60,
-                text: l10n.loginContinueWithKakao,
-                leftIcon: const KakaoIcon(size: 24),
-                disabled: kakaoBusy,
-                onPressed: kakaoSignIn,
+        // 남는 높이가 있으면(태블릿) 블록 전체를 세로 가운데에 둔다 — 위에 붙으면 아래 절반이
+        // 비었다(10-10 사용자 지시). 폰은 내용이 화면보다 길어 스크롤되므로 위치가 그대로다.
+        child: LayoutBuilder(
+          builder: (context, box) => SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: box.maxHeight),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // ── Brand block: circular beaver avatar + wordmark ──────────
+                  const _LogoBlock(),
+                  // Figma: wordmark bottom → first social button ≈ 46px.
+                  const SizedBox(height: 46), // Figma 46px gap (no AppSpacing token)
+                  // ── Social sign-in buttons ──────────────────────────────────
+                  Button(
+                    type: BtnType.secondaryFill,
+                    size: BtnSize.s60,
+                    text: l10n.loginContinueWithKakao,
+                    leftIcon: const KakaoIcon(size: 24),
+                    disabled: kakaoBusy,
+                    onPressed: kakaoSignIn,
+                  ),
+                  const SizedBox(height: AppSpacing.s16),
+                  // Google: custom button (matches Kakao/Apple) wired to the real
+                  // Google sign-in flow.
+                  Button(
+                    type: BtnType.secondaryFill,
+                    size: BtnSize.s60,
+                    text: l10n.loginContinueWithGoogle,
+                    leftIcon: const GoogleIcon(size: 24),
+                    disabled: googleBusy,
+                    onPressed: googleSignIn,
+                  ),
+                  const SizedBox(height: AppSpacing.s16),
+                  Button(
+                    type: BtnType.secondaryFill,
+                    size: BtnSize.s60,
+                    text: l10n.loginContinueWithFacebook,
+                    leftIcon: const FacebookIcon(size: 24),
+                    disabled: facebookBusy,
+                    onPressed: facebookSignIn,
+                  ),
+                  const SizedBox(height: AppSpacing.s16),
+                  Button(
+                    type: BtnType.secondaryFill,
+                    size: BtnSize.s60,
+                    text: l10n.loginContinueWithApple,
+                    leftIcon: const AppleIcon(size: 24),
+                    disabled: appleBusy,
+                    onPressed: appleSignIn,
+                  ),
+                  const SizedBox(height: AppSpacing.s16),
+                  // ── "or" divider ────────────────────────────────────────────
+                  const _OrDivider(),
+                  const SizedBox(height: AppSpacing.s16),
+                  // ── Email login (primary) ───────────────────────────────────
+                  Button(
+                    type: BtnType.primaryFill,
+                    size: BtnSize.s60,
+                    text: l10n.loginContinueWithEmail,
+                    leftIcon: MailIcon(size: 24, color: context.c.primaryOnPrimary),
+                    onPressed: _emailLogin,
+                  ),
+                  // Figma: email button → signup prompt = 16px.
+                  const SizedBox(height: AppSpacing.s16),
+                  // ── Signup prompt + terms notice ────────────────────────────
+                  _SignupPrompt(
+                    onSignup: _goSignup,
+                    onTerms: _goTerms,
+                    onPrivacy: _goPrivacy,
+                  ),
+                ],
               ),
-              const SizedBox(height: AppSpacing.s16),
-              // Google: custom button (matches Kakao/Apple) wired to the real
-              // Google sign-in flow.
-              Button(
-                type: BtnType.secondaryFill,
-                size: BtnSize.s60,
-                text: l10n.loginContinueWithGoogle,
-                leftIcon: const GoogleIcon(size: 24),
-                disabled: googleBusy,
-                onPressed: googleSignIn,
-              ),
-              const SizedBox(height: AppSpacing.s16),
-              Button(
-                type: BtnType.secondaryFill,
-                size: BtnSize.s60,
-                text: l10n.loginContinueWithFacebook,
-                leftIcon: const FacebookIcon(size: 24),
-                disabled: facebookBusy,
-                onPressed: facebookSignIn,
-              ),
-              const SizedBox(height: AppSpacing.s16),
-              Button(
-                type: BtnType.secondaryFill,
-                size: BtnSize.s60,
-                text: l10n.loginContinueWithApple,
-                leftIcon: const AppleIcon(size: 24),
-                disabled: appleBusy,
-                onPressed: appleSignIn,
-              ),
-              const SizedBox(height: AppSpacing.s16),
-              // ── "or" divider ────────────────────────────────────────────
-              const _OrDivider(),
-              const SizedBox(height: AppSpacing.s16),
-              // ── Email login (primary) ───────────────────────────────────
-              Button(
-                type: BtnType.primaryFill,
-                size: BtnSize.s60,
-                text: l10n.loginContinueWithEmail,
-                leftIcon: MailIcon(size: 24, color: context.c.primaryOnPrimary),
-                onPressed: _emailLogin,
-              ),
-              // Figma: email button → signup prompt = 16px.
-              const SizedBox(height: AppSpacing.s16),
-              // ── Signup prompt + terms notice ────────────────────────────
-              _SignupPrompt(
-                onSignup: _goSignup,
-                onTerms: _goTerms,
-                onPrivacy: _goPrivacy,
-              ),
-            ],
+            ),
           ),
         ),
       ),

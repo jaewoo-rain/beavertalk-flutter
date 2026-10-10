@@ -83,10 +83,11 @@ class OnboardingDoneScreen extends StatelessWidget {
               ),
             ),
           ),
-          // Figma `BottomSheet` 두 버튼(Mobile `3360:48` · Tablet `5281:1142`): pt 12, px 20, pb 0 —
-          // 그 밑은 홈 표시줄이다(아래 12 를 두면 버튼이 12px 떠 있었다 · 09-24 figma-code-diff).
+          // Figma `BottomSheet` 두 버튼(Mobile `3360:48` · Tablet `5281:1142`): pt 12, px 20.
+          // 아래도 12 — 앞 온보딩 단계(이름·이유)의 하단 버튼과 같은 높이에 선다. 0 이면 버튼이
+          // 화면 아래에 붙었다(10-10 사용자 지시 · 09-24 pb 0 판단 번복).
           ContentColumn(
-            padding: const EdgeInsets.only(top: AppSpacing.s12),
+            padding: const EdgeInsets.only(top: AppSpacing.s12, bottom: AppSpacing.s12),
             // 버튼 쌍은 항상 세로(09-24 사장님 확정) — 「홈으로」 위 · 「레벨 테스트하기」 아래, 각자
             // 전폭 · 간격 12. 옛 가로 1:1 에서는 긴 언어가 반 폭 안에서 줄을 바꿨다(전수조사 H).
             // 문구는 Figma(Mobile `I3360:55` · Tablet `I5281:1149`) — 사장님 「Figma 대로 해」(09-24).
