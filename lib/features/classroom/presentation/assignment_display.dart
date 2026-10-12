@@ -13,6 +13,40 @@ String assignmentTitleOf(ClassroomAssignment a, String Function(String) chapterL
   return chapterLabel(a.chapter.toString().padLeft(2, '0'));
 }
 
+/// 마감일 표기 — `2026-10-11`.
+///
+/// 로케일과 무관한 숫자 형식이다(2026-10-12 사용자 「2026-10-11 이런 식으로 간략하게」).
+/// 기기 시간대로 바꾼 [dueAt] 의 **날짜만** 쓴다.
+String formatDueDate(DateTime dueAt) {
+  String two(int v) => v.toString().padLeft(2, '0');
+  return '${dueAt.year}-${two(dueAt.month)}-${two(dueAt.day)}';
+}
+
+/// 숙제 목록의 탭.
+enum AssignmentTab {
+  /// 미완료 — 진행 중 + 예정(닫힌 미완료 과제 포함).
+  todo,
+
+  /// 완료 — 제출 상태 done.
+  done,
+}
+
+/// 탭별로 나눈다. 순서는 [groupAssignments] 를 그대로 따른다 — 미완료 탭은
+/// 「진행 중」 칸 다음에 「예정」 칸이 이어진다.
+Map<AssignmentTab, List<ClassroomAssignment>> tabAssignments(
+  List<ClassroomAssignment> items,
+  DateTime now,
+) {
+  final g = groupAssignments(items, now);
+  return {
+    AssignmentTab.todo: [
+      ...?g[AssignmentBucket.inProgress],
+      ...?g[AssignmentBucket.upcoming],
+    ],
+    AssignmentTab.done: [...?g[AssignmentBucket.done]],
+  };
+}
+
 /// 리스트에서 과제가 들어갈 칸.
 enum AssignmentBucket {
   /// 진행 중 — 미제출(마감 지남)과 마감 임박(D-3 이내)을 함께 담는다.

@@ -2517,7 +2517,7 @@ class AppLocalizationsSi extends AppLocalizations {
   }
 
   @override
-  String get hwTaskSpeakingDesc => 'ඔබේ උච්චාරණ ලකුණු පරීක්ෂා කරන්න';
+  String get hwTaskSpeakingDesc => 'ඉගෙනගත් ප්‍රකාශන ඔබම කියමින් පුහුණු වන්න.';
 
   @override
   String get hwTaskConversationDesc => 'ඉගෙන ගත් දේ සැබෑ සංවාදයක භාවිත කරන්න';
@@ -3007,5 +3007,65 @@ class AppLocalizationsSi extends AppLocalizations {
   String get nationalityNotSet => 'සකසා නැත';
 
   @override
+  String get nativeLanguageLabel => 'මව් භාෂාව';
+
+  @override
   String get nationalitySearchEmpty => 'ප්‍රතිඵල නැත';
+
+  @override
+  String get hwTabTodo => 'නිම නොවූ';
+
+  @override
+  String hwTeacherName(String name) {
+    return 'ගුරු $name';
+  }
+
+  @override
+  String hwDetailClassLine(String className, String teacher) {
+    return '$className, ගුරු $teacher';
+  }
+
+  @override
+  String get hwCtaDone => 'නිමයි';
+
+  @override
+  String hwWorkbookTitle(String chapter) {
+    return 'Chapter $chapter වැඩපොත';
+  }
+
+  @override
+  String hwWorkbookPages(int count) {
+    return 'පිටු $count';
+  }
+
+  @override
+  String hwWorkbookWords(int count) {
+    return 'වචන $count';
+  }
+
+  @override
+  String hwA11yActivityDone(String activity) {
+    return '$activity නිමයි';
+  }
+
+  @override
+  String hwA11yActivityTodo(String activity) {
+    return '$activity නිම නොවූ';
+  }
+
+  @override
+  String get hwTabTodoEmptyTitle => 'ඔබ සියලු ගෙදර වැඩ නිම කළා';
+
+  @override
+  String get hwTabDoneEmptyTitle => 'තවම නිම කළ ගෙදර වැඩ නැත';
+
+  @override
+  String get hwDetailOverdueNote =>
+      'අවසන් දිනය පසු වුවද, දැන් වුවත් ඉදිරිපත් කළ හැක.';
+
+  @override
+  String get hwClassPickerTitle => 'පන්තිය තෝරන්න';
+
+  @override
+  String get hwA11yClassPicker => 'පන්තිය මාරු කරන්න';
 }

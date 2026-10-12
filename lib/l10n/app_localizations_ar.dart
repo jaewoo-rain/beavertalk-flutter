@@ -2509,7 +2509,7 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get hwTaskSpeakingDesc => 'تحقّق من درجة نطقك';
+  String get hwTaskSpeakingDesc => 'تعلّم التعابير بنطقها بصوت عالٍ.';
 
   @override
   String get hwTaskConversationDesc => 'استخدم ما تعلّمته في حديث حقيقي';
@@ -2996,5 +2996,65 @@ class AppLocalizationsAr extends AppLocalizations {
   String get nationalityNotSet => 'غير محددة';
 
   @override
+  String get nativeLanguageLabel => 'اللغة الأم';
+
+  @override
   String get nationalitySearchEmpty => 'لا توجد نتائج';
+
+  @override
+  String get hwTabTodo => 'غير مكتمل';
+
+  @override
+  String hwTeacherName(String name) {
+    return 'المعلم $name';
+  }
+
+  @override
+  String hwDetailClassLine(String className, String teacher) {
+    return '$className، المعلم $teacher';
+  }
+
+  @override
+  String get hwCtaDone => 'مكتمل';
+
+  @override
+  String hwWorkbookTitle(String chapter) {
+    return 'كراسة Chapter $chapter';
+  }
+
+  @override
+  String hwWorkbookPages(int count) {
+    return '$count صفحة';
+  }
+
+  @override
+  String hwWorkbookWords(int count) {
+    return '$count كلمة';
+  }
+
+  @override
+  String hwA11yActivityDone(String activity) {
+    return '$activity مكتمل';
+  }
+
+  @override
+  String hwA11yActivityTodo(String activity) {
+    return '$activity غير مكتمل';
+  }
+
+  @override
+  String get hwTabTodoEmptyTitle => 'أنهيت كل واجباتك';
+
+  @override
+  String get hwTabDoneEmptyTitle => 'لا توجد واجبات مكتملة بعد';
+
+  @override
+  String get hwDetailOverdueNote =>
+      'انتهى الموعد النهائي، لكن ما زال بإمكانك التسليم الآن.';
+
+  @override
+  String get hwClassPickerTitle => 'اختر صفًا';
+
+  @override
+  String get hwA11yClassPicker => 'تغيير الصف';
 }

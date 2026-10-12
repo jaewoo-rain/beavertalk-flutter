@@ -2531,7 +2531,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get hwTaskSpeakingDesc => 'Check your pronunciation score';
+  String get hwTaskSpeakingDesc =>
+      'Learn the expressions by saying them out loud.';
 
   @override
   String get hwTaskConversationDesc => 'Use what you learned in a real talk';
@@ -3027,5 +3028,65 @@ class AppLocalizationsEn extends AppLocalizations {
   String get nationalityNotSet => 'Not set';
 
   @override
+  String get nativeLanguageLabel => 'Native language';
+
+  @override
   String get nationalitySearchEmpty => 'No results';
+
+  @override
+  String get hwTabTodo => 'To do';
+
+  @override
+  String hwTeacherName(String name) {
+    return 'Teacher $name';
+  }
+
+  @override
+  String hwDetailClassLine(String className, String teacher) {
+    return '$className, Teacher $teacher';
+  }
+
+  @override
+  String get hwCtaDone => 'Completed';
+
+  @override
+  String hwWorkbookTitle(String chapter) {
+    return 'Chapter $chapter workbook';
+  }
+
+  @override
+  String hwWorkbookPages(int count) {
+    return '$count pages';
+  }
+
+  @override
+  String hwWorkbookWords(int count) {
+    return '$count words';
+  }
+
+  @override
+  String hwA11yActivityDone(String activity) {
+    return '$activity done';
+  }
+
+  @override
+  String hwA11yActivityTodo(String activity) {
+    return '$activity not done';
+  }
+
+  @override
+  String get hwTabTodoEmptyTitle => 'You finished all your homework';
+
+  @override
+  String get hwTabDoneEmptyTitle => 'No finished homework yet';
+
+  @override
+  String get hwDetailOverdueNote =>
+      'The due date has passed, but you can still submit it now.';
+
+  @override
+  String get hwClassPickerTitle => 'Choose a class';
+
+  @override
+  String get hwA11yClassPicker => 'Change class';
 }

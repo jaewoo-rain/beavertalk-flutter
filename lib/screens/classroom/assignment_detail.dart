@@ -24,6 +24,8 @@ import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 import '../home/learning_args.dart';
 import 'widgets/assignment_badge.dart';
+import 'widgets/homework_list_parts.dart';
+import 'widgets/homework_thumbnails.dart';
 
 /// A7 숙제 상세 — Figma `screen/hw_detail`(`5685:6129`).
 ///
@@ -265,46 +267,49 @@ class _AssignmentDetailScreenState
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          // 제목은 「숙제」 고정 — 긴 과제 제목이 GNB 에 안 들어가 본문 머리로 내렸다
+          // (2026-10-12 확정 · `6692:17033`).
           Gnb.main(
-            title: assignmentTitleOf(a, l10n.hwChapterLabel),
+            title: l10n.hwTitle,
             onBack: () => Navigator.of(context).pop(),
           ),
           Expanded(
             child: ContentColumn(
               child: ListView(
                 padding: const EdgeInsets.only(
-                  top: AppSpacing.s8,
+                  top: AppSpacing.s16,
                   bottom: AppSpacing.s24,
                 ),
                 children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          a.classroomName,
-                          // 교실 이름은 식별자 + 수치다(「TOPIK 1 A」). 잘리면
-                          // 어느 반 과제인지 모른다.
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: AppType.label1.r.copyWith(
-                            color: c.labelNeutral,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: AppSpacing.s8),
-                      assignmentBadge(context, a),
-                    ],
+                  // 과제 머리(`6692:17037`) — 배지·마감일 / 제목 / 반, 선생님.
+                  HomeworkDueRow(assignment: a),
+                  const SizedBox(height: AppSpacing.s8),
+                  HomeworkTitleText(assignmentTitleOf(a, l10n.hwChapterLabel)),
+                  const SizedBox(height: AppSpacing.s8),
+                  Text(
+                    _classLine(l10n, a),
+                    style: AppType.caption1.r.copyWith(color: c.labelNeutral),
                   ),
-                  if (a.isClosed) ...[
-                    const SizedBox(height: AppSpacing.s12),
+                  // 마감 지남·닫힘 안내 — 머리 맨 아래 줄(§3-7 · `6705:17560`·`6705:17715`).
+                  // 완료 과제에는 둘 다 넣지 않는다.
+                  if (a.status != AssignmentStatus.done && a.isClosed) ...[
+                    const SizedBox(height: AppSpacing.s8),
                     Text(
                       l10n.hwDetailClosed,
                       style: AppType.caption1.r.copyWith(
                         color: c.accentForegroundRed,
                       ),
                     ),
+                  ] else if (a.status != AssignmentStatus.done && a.overdue) ...[
+                    // 지각 제출은 받는다 — 버튼은 그대로 두고 그 사실만 말한다.
+                    const SizedBox(height: AppSpacing.s8),
+                    Text(
+                      l10n.hwDetailOverdueNote,
+                      style: AppType.caption1.r.copyWith(color: c.labelNeutral),
+                    ),
                   ],
-                  const SizedBox(height: AppSpacing.s16),
+                  // 머리 아래 여백 12 + 카드 사이 12(시안 pb 12 · gap 12).
+                  const SizedBox(height: AppSpacing.s24),
                   for (final act in a.activities)
                     Padding(
                       padding: const EdgeInsets.only(bottom: AppSpacing.s12),
@@ -317,6 +322,35 @@ class _AssignmentDetailScreenState
         ],
       ),
     );
+  }
+
+  /// 머리 셋째 줄 — 「반 이름, 선생님」. 선생님은 반 목록(`/classrooms/my`)에서 찾는다.
+  ///
+  /// 과제 응답에는 선생님이 없다. 반 목록을 못 받았거나 교사 이름이 비었으면 반 이름만 쓴다.
+  String _classLine(AppLocalizations l10n, ClassroomAssignment a) {
+    final joined = ref.watch(myClassroomsProvider).valueOrNull ?? const [];
+    String? teacher;
+    for (final room in joined) {
+      if (room.classroomId == a.classroomId) {
+        teacher = room.teacherDisplayName?.trim();
+        break;
+      }
+    }
+    if (teacher == null || teacher.isEmpty) return a.classroomName;
+    return l10n.hwDetailClassLine(a.classroomName, teacher);
+  }
+
+  /// 워크북 정보 줄 — 「Chapter 03 워크북 (12쪽, 단어 40개)」.
+  ///
+  /// 쪽수·단어 수는 서버가 모르면 그 항목만 뺀다. 둘 다 없으면 괄호째 뺀다.
+  /// 구분은 쉼표·괄호다 — 화면 문구에 가운뎃점을 쓰지 않는다(2026-10-13 사용자).
+  String _workbookInfo(AppLocalizations l10n, ClassroomAssignment a) {
+    final title = l10n.hwWorkbookTitle(a.chapter.toString().padLeft(2, '0'));
+    final parts = [
+      if (a.workbookPageCount != null) l10n.hwWorkbookPages(a.workbookPageCount!),
+      if (a.workbookWordCount != null) l10n.hwWorkbookWords(a.workbookWordCount!),
+    ];
+    return parts.isEmpty ? title : '$title (${parts.join(', ')})';
   }
 
   /// 지표 한 칸 — 채점 전이면 `-`. 0 을 쓰면 「0점」으로 읽힌다.
@@ -332,7 +366,8 @@ class _AssignmentDetailScreenState
     final bool done =
         activityDone(a, act) ||
         (act == AssignmentActivity.workbook && _workbookOpenedHere);
-    final Widget? badge = done ? assignmentBadgeDone(context) : null;
+    // 끝낸 활동은 배지가 아니라 Primary 테두리로 말한다(2026-10-12 확정 · 정본 발음
+    // 완료 카드 `5672:5257` 도 배지 없음).
 
     switch (act) {
       case AssignmentActivity.speaking:
@@ -344,18 +379,23 @@ class _AssignmentDetailScreenState
         final int? shownPassed = attempt?.passed ?? a.speakingPassed;
         final int? shownTotal = attempt?.total ?? a.speakingTotal;
         return CardTask(
-          icon: AppIcons.soundWave,
+          // 목록과 같은 「말하는 사람」(§3-1 10-13 통일).
+          icon: AppIcons.speak,
           title: l10n.hwActivitySpeaking,
-          badge: badge,
-          description: (shownPassed == null || shownTotal == null)
-              ? l10n.hwTaskSpeakingDesc
-              : l10n.hwSpeakingProgress(shownPassed, shownTotal),
+          outlined: done,
+          // 설명은 상태와 무관하게 고정이다(2026-10-12 확정). 진행 문장 수는 게이지 아래
+          // 안내(hint)가 맡는다.
+          description: l10n.hwTaskSpeakingDesc,
           result: PronunciationResult(
             score: (average ?? 0).toDouble(),
             state: average == null
                 ? PronunciationState.inactive
                 : PronunciationState.active,
-            hint: average == null ? l10n.hwSpeakingNoScore : null,
+            hint: average == null
+                ? ((shownPassed == null || shownTotal == null)
+                      ? l10n.hwSpeakingNoScore
+                      : l10n.hwSpeakingProgress(shownPassed, shownTotal))
+                : null,
             // 시안의 세 칸은 발음·유창성·리듬이다. 과제 맥락이라고 다른 축을
             // 끼워 넣으면 같은 컴포넌트가 화면마다 다른 뜻이 된다.
             metrics: [
@@ -389,18 +429,19 @@ class _AssignmentDetailScreenState
         return CardTask(
           icon: AppIcons.chat,
           title: l10n.hwActivityConversation,
-          badge: badge,
+          outlined: done,
           // ⭐ **회화는 과제당 한 번이다**(2026-09-04 사장님 결정). 끝냈으면 왜 못
           //    누르는지 말해 준다 — 비활성만 시키면 고장으로 읽힌다.
           description: done
               ? l10n.hwConversationOnce
               : l10n.hwTaskConversationDesc,
-          // 🔴 발음과 달리 라벨을 「학습결과」로 바꾸지 않는다. 회화에는 볼 결과가
-          //    없다 — 과제 리포트(`assignmentReport`)는 **발음** 축이고, 통화 요약은
-          //    과제가 아니라 통화 한 건에 붙는다. 라벨만 바꾸면 눌렀을 때 결과 대신
-          //    통화가 또 걸린다(발음 카드가 예전에 그랬다). 끝난 것은 배지가 말한다.
-          ctaLabel: l10n.hwCtaStudy,
-          ctaType: done ? BtnType.secondaryFill : BtnType.primaryFill,
+          // 통화 화면 축소 목업(장식). 완료여도 그대로 둔다(`6697:17273`).
+          result: const CallThumbnail(),
+          // 🔴 「학습결과」로 바꾸지 않는다. 회화에는 볼 결과가 없다 — 과제
+          //    리포트(`assignmentReport`)는 **발음** 축이다. 끝냈으면 「학습완료」로
+          //    바꾸고 잠근다(2026-10-12 확정 — 판정은 서버 값 `conversation_met`).
+          ctaLabel: done ? l10n.hwCtaDone : l10n.hwCtaStudy,
+          ctaType: BtnType.primaryFill,
           // ⛔ 화면만 막는 것이 아니다. 서버도 이미 끝낸 과제엔 목표를 안 주고
           //    두 번째 통화를 과제에 안 묶는다(b2b `link_call`·`conversation-goals`).
           ctaDisabled: a.isClosed || done,
@@ -416,16 +457,24 @@ class _AssignmentDetailScreenState
         return CardTask(
           icon: AppIcons.book,
           title: l10n.hwActivityWorkbook,
-          badge: badge,
+          outlined: done,
           description: url == null
               ? l10n.hwWorkbookUnavailable
               : l10n.hwTaskWorkbookDesc,
+          // 원고지 썸네일(장식) + 정보 줄(인계 명세 §3-4).
+          result: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const WorkbookThumbnail(),
+              const SizedBox(height: AppSpacing.s8),
+              Text(
+                _workbookInfo(l10n, a),
+                style: AppType.caption1.r.copyWith(color: context.c.labelNeutral),
+              ),
+            ],
+          ),
           ctaLabel: l10n.hwCtaDownload,
           ctaType: BtnType.secondaryFill,
-          ctaRightIcon: Builder(
-            builder: (ctx) =>
-                AppIcons.externalLink(size: 20, color: ctx.c.labelStrong),
-          ),
           // 교사가 링크를 안 넣었으면 열 곳이 없다.
           ctaDisabled: url == null,
           onCta: url == null ? null : () => _openWorkbook(a.assignmentId, url),

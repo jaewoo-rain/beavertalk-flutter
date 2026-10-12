@@ -2453,7 +2453,7 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get hwTaskSpeakingDesc => '나의 발음 점수를 확인해보세요';
+  String get hwTaskSpeakingDesc => '배운 표현을 직접 말해보면서 익혀요.';
 
   @override
   String get hwTaskConversationDesc => '배운 표현을 실제로 적용해봐요';
@@ -2932,5 +2932,64 @@ class AppLocalizationsKo extends AppLocalizations {
   String get nationalityNotSet => '미설정';
 
   @override
+  String get nativeLanguageLabel => '모국어';
+
+  @override
   String get nationalitySearchEmpty => '검색 결과가 없어요';
+
+  @override
+  String get hwTabTodo => '미완료';
+
+  @override
+  String hwTeacherName(String name) {
+    return '$name 선생님';
+  }
+
+  @override
+  String hwDetailClassLine(String className, String teacher) {
+    return '$className, $teacher 선생님';
+  }
+
+  @override
+  String get hwCtaDone => '학습완료';
+
+  @override
+  String hwWorkbookTitle(String chapter) {
+    return 'Chapter $chapter 워크북';
+  }
+
+  @override
+  String hwWorkbookPages(int count) {
+    return '$count쪽';
+  }
+
+  @override
+  String hwWorkbookWords(int count) {
+    return '단어 $count개';
+  }
+
+  @override
+  String hwA11yActivityDone(String activity) {
+    return '$activity 완료';
+  }
+
+  @override
+  String hwA11yActivityTodo(String activity) {
+    return '$activity 미완료';
+  }
+
+  @override
+  String get hwTabTodoEmptyTitle => '할 숙제를 모두 마쳤어요';
+
+  @override
+  String get hwTabDoneEmptyTitle => '아직 완료한 숙제가 없어요';
+
+  @override
+  String get hwDetailOverdueNote => '마감일이 지났지만 지금 해도 제출돼요.';
+
+  @override
+  String get hwClassPickerTitle => '반 선택';
+
+  @override
+  String get hwA11yClassPicker => '반 바꾸기';
 }

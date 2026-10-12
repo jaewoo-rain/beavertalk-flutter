@@ -2445,7 +2445,7 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get hwTaskSpeakingDesc => '确认你的发音得分';
+  String get hwTaskSpeakingDesc => '亲口说出学过的表达来掌握它们。';
 
   @override
   String get hwTaskConversationDesc => '把学到的用在真实对话里';
@@ -2924,5 +2924,64 @@ class AppLocalizationsZh extends AppLocalizations {
   String get nationalityNotSet => '未设置';
 
   @override
+  String get nativeLanguageLabel => '母语';
+
+  @override
   String get nationalitySearchEmpty => '没有搜索结果';
+
+  @override
+  String get hwTabTodo => '未完成';
+
+  @override
+  String hwTeacherName(String name) {
+    return '$name老师';
+  }
+
+  @override
+  String hwDetailClassLine(String className, String teacher) {
+    return '$className，$teacher老师';
+  }
+
+  @override
+  String get hwCtaDone => '已完成';
+
+  @override
+  String hwWorkbookTitle(String chapter) {
+    return 'Chapter $chapter 练习册';
+  }
+
+  @override
+  String hwWorkbookPages(int count) {
+    return '$count页';
+  }
+
+  @override
+  String hwWorkbookWords(int count) {
+    return '$count个单词';
+  }
+
+  @override
+  String hwA11yActivityDone(String activity) {
+    return '$activity已完成';
+  }
+
+  @override
+  String hwA11yActivityTodo(String activity) {
+    return '$activity未完成';
+  }
+
+  @override
+  String get hwTabTodoEmptyTitle => '作业已全部完成';
+
+  @override
+  String get hwTabDoneEmptyTitle => '还没有已完成的作业';
+
+  @override
+  String get hwDetailOverdueNote => '已过截止日期，但现在完成仍可提交。';
+
+  @override
+  String get hwClassPickerTitle => '选择班级';
+
+  @override
+  String get hwA11yClassPicker => '切换班级';
 }

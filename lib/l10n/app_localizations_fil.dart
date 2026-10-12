@@ -2551,7 +2551,8 @@ class AppLocalizationsFil extends AppLocalizations {
   }
 
   @override
-  String get hwTaskSpeakingDesc => 'Tingnan ang iskor ng pagbigkas mo';
+  String get hwTaskSpeakingDesc =>
+      'Matutunan ang mga ekspresyon sa pagsasabi nito nang malakas.';
 
   @override
   String get hwTaskConversationDesc =>
@@ -3053,5 +3054,65 @@ class AppLocalizationsFil extends AppLocalizations {
   String get nationalityNotSet => 'Hindi pa nakatakda';
 
   @override
+  String get nativeLanguageLabel => 'Katutubong wika';
+
+  @override
   String get nationalitySearchEmpty => 'Walang resulta';
+
+  @override
+  String get hwTabTodo => 'Hindi pa tapos';
+
+  @override
+  String hwTeacherName(String name) {
+    return 'Guro $name';
+  }
+
+  @override
+  String hwDetailClassLine(String className, String teacher) {
+    return '$className, Guro $teacher';
+  }
+
+  @override
+  String get hwCtaDone => 'Tapos na';
+
+  @override
+  String hwWorkbookTitle(String chapter) {
+    return 'Workbook ng Chapter $chapter';
+  }
+
+  @override
+  String hwWorkbookPages(int count) {
+    return '$count pahina';
+  }
+
+  @override
+  String hwWorkbookWords(int count) {
+    return '$count salita';
+  }
+
+  @override
+  String hwA11yActivityDone(String activity) {
+    return '$activity tapos na';
+  }
+
+  @override
+  String hwA11yActivityTodo(String activity) {
+    return '$activity hindi pa tapos';
+  }
+
+  @override
+  String get hwTabTodoEmptyTitle => 'Natapos mo na ang lahat ng takdang-aralin';
+
+  @override
+  String get hwTabDoneEmptyTitle => 'Wala ka pang natapos na takdang-aralin';
+
+  @override
+  String get hwDetailOverdueNote =>
+      'Lumipas na ang deadline, pero maipapasa mo pa rin ngayon.';
+
+  @override
+  String get hwClassPickerTitle => 'Pumili ng klase';
+
+  @override
+  String get hwA11yClassPicker => 'Palitan ang klase';
 }

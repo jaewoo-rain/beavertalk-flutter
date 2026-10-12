@@ -17,17 +17,22 @@ import '../../theme/app_typography.dart';
 ///
 /// 되돌릴 수 없는 행동이라 확인을 한 번 받는다. 성공하면 마이페이지로 보낸다 —
 /// 방금 나온 숙제 목록으로 돌아가면 빈 화면이 남는다.
-Future<void> showLeaveClassSheet(BuildContext context) {
+///
+/// [classroomId] 를 주면 그 반을 나간다 — 반이 여럿인 학습자가 숙제 목록에서 고른 반이다
+/// (2026-10-13 확정 §2-7). 없으면 아래 순서로 찾는다.
+Future<void> showLeaveClassSheet(BuildContext context, {int? classroomId}) {
   return showModalBottomSheet<void>(
     context: context,
     backgroundColor: const Color(0x00000000),
     isScrollControlled: true,
-    builder: (_) => const _LeaveClassSheet(),
+    builder: (_) => _LeaveClassSheet(classroomId: classroomId),
   );
 }
 
 class _LeaveClassSheet extends ConsumerStatefulWidget {
-  const _LeaveClassSheet();
+  const _LeaveClassSheet({this.classroomId});
+
+  final int? classroomId;
 
   @override
   ConsumerState<_LeaveClassSheet> createState() => _LeaveClassSheetState();
@@ -43,15 +48,18 @@ class _LeaveClassSheetState extends ConsumerState<_LeaveClassSheet> {
     final messenger = ScaffoldMessenger.of(context);
     final navigator = Navigator.of(context);
 
-    // 과제에서 직접 읽는 쪽이 우선이다. 기기에 적어 둔 값은 폴백 — 과제가
-    // 하나도 없는 반은 목록에 안 나타난다(「내 반 목록」 엔드포인트가 없다).
+    // 과제에서 직접 읽는 쪽이 우선이다. 과제가 하나도 없는 반은 과제 목록에 안 나타나므로
+    // 「내 반 목록」(`/classrooms/my`)이 다음이고, 기기에 적어 둔 값이 마지막 폴백이다.
+    // 기기 값만 믿으면 재설치·다른 기기에서 참여한 학습자가 나갈 수 없다(2026-10-12 PM-DEC-523).
     final store = ref.read(joinedClassStoreProvider);
     final int? id =
+        widget.classroomId ??
         ref
             .read(myAssignmentsProvider)
             .valueOrNull
             ?.map((a) => a.classroomId)
             .firstWhere((e) => e != null, orElse: () => null) ??
+        await _firstJoinedClassroomId() ??
         await store.read();
 
     if (id == null) {
@@ -82,6 +90,17 @@ class _LeaveClassSheetState extends ConsumerState<_LeaveClassSheet> {
             content: Text(e.fromServer ? e.message : l10n.hwLeaveFailed),
           ),
         );
+    }
+  }
+
+  /// 「내 반 목록」의 첫 반 id. 숙제 화면만 열린 상태면 아직 안 읽었을 수 있어 기다린다.
+  /// 목록을 못 받으면 null — 기기 저장값 폴백으로 넘어간다(실패 문구는 그 뒤 판단).
+  Future<int?> _firstJoinedClassroomId() async {
+    try {
+      final rooms = await ref.read(myClassroomsProvider.future);
+      return rooms.isEmpty ? null : rooms.first.classroomId;
+    } on Exception {
+      return null;
     }
   }
 

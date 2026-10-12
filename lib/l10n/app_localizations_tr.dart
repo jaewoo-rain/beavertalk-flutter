@@ -2519,7 +2519,8 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String get hwTaskSpeakingDesc => 'Telaffuz puanını kontrol et';
+  String get hwTaskSpeakingDesc =>
+      'Öğrendiğin ifadeleri sesli söyleyerek pekiştir.';
 
   @override
   String get hwTaskConversationDesc =>
@@ -3012,5 +3013,65 @@ class AppLocalizationsTr extends AppLocalizations {
   String get nationalityNotSet => 'Ayarlanmadı';
 
   @override
+  String get nativeLanguageLabel => 'Ana dil';
+
+  @override
   String get nationalitySearchEmpty => 'Sonuç yok';
+
+  @override
+  String get hwTabTodo => 'Tamamlanmadı';
+
+  @override
+  String hwTeacherName(String name) {
+    return '$name Öğretmen';
+  }
+
+  @override
+  String hwDetailClassLine(String className, String teacher) {
+    return '$className, $teacher Öğretmen';
+  }
+
+  @override
+  String get hwCtaDone => 'Tamamlandı';
+
+  @override
+  String hwWorkbookTitle(String chapter) {
+    return 'Chapter $chapter çalışma kitabı';
+  }
+
+  @override
+  String hwWorkbookPages(int count) {
+    return '$count sayfa';
+  }
+
+  @override
+  String hwWorkbookWords(int count) {
+    return '$count kelime';
+  }
+
+  @override
+  String hwA11yActivityDone(String activity) {
+    return '$activity tamamlandı';
+  }
+
+  @override
+  String hwA11yActivityTodo(String activity) {
+    return '$activity tamamlanmadı';
+  }
+
+  @override
+  String get hwTabTodoEmptyTitle => 'Tüm ödevlerini bitirdin';
+
+  @override
+  String get hwTabDoneEmptyTitle => 'Henüz bitirilen ödev yok';
+
+  @override
+  String get hwDetailOverdueNote =>
+      'Son tarih geçti ama şimdi de teslim edebilirsin.';
+
+  @override
+  String get hwClassPickerTitle => 'Sınıf seç';
+
+  @override
+  String get hwA11yClassPicker => 'Sınıfı değiştir';
 }

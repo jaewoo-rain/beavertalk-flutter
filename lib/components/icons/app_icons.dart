@@ -213,6 +213,20 @@ abstract final class AppIcons {
   static Widget calendar({double size = 24, required Color color}) =>
       _glyph('calendar', size, color);
 
+  // ── 숙제 탭 개편(2026-10-12 확정 · Figma `8ZSZBmb5wFi6OMZhx8SBaN`) ──
+  //
+  // 라이브러리 미등록 시안 아이콘이다. 시안 노드에서 경로만 그대로 옮겼다 —
+  // speak `6679:34216` · teacher `6679:18127` · exit `6677:18202`.
+  // `calendar-check` 은 라이브러리 `4962:23250` 16 판(선 1.333)이다.
+  static Widget speak({double size = 20, required Color color}) =>
+      _glyph('speak', size, color);
+  static Widget teacher({double size = 16, required Color color}) =>
+      _glyph('teacher', size, color);
+  static Widget exit({double size = 24, required Color color}) =>
+      _glyph('exit', size, color);
+  static Widget calendarCheck({double size = 16, required Color color}) =>
+      _glyph('calendar-check', size, color);
+
   // ── Alarm quick-start presets (`screen/etc_alarm__add`, 3665:12018) ──
   //
   // Unlike every other glyph here, these three are **not** in the

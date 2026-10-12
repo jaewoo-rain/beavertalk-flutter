@@ -11,7 +11,7 @@ import '../atoms/button.dart';
 /// r12 · `Background/Elevated/Alternative` · 패딩 16/20 · 간격 10 · 세로 스택.
 /// 높이는 내용이 정한다(발음 카드는 결과 게이지가 들어가 380 까지 커진다).
 ///
-/// 골격은 넷이다 — 머리(아이콘+이름+배지) · 설명 · 결과 · CTA.
+/// 골격은 넷이다 — 머리(아이콘+이름+배지) · 설명 · 결과(썸네일) · CTA.
 /// [description] 과 [result] 는 상태에 따라 빠진다. 끝낸 과제는 설명 대신 결과를
 /// 보여주고 CTA 가 「학습결과」로 바뀐다.
 class CardTask extends StatelessWidget {
@@ -27,6 +27,7 @@ class CardTask extends StatelessWidget {
     this.result,
     this.ctaRightIcon,
     this.ctaDisabled = false,
+    this.outlined = false,
     this.onCta,
   });
 
@@ -62,6 +63,12 @@ class CardTask extends StatelessWidget {
   /// 칠한다. 눌리는 척하는 버튼이 되므로 잠글 때는 이 값을 켜라.
   final bool ctaDisabled;
 
+  /// 활동을 끝낸 카드 — `Primary/Normal` 1 테두리(안쪽).
+  ///
+  /// 2026-10-12 사용자 「학습 다 했으면 카드에 Primary 컬러로 Stroke 주자」. 완료
+  /// 배지 대신 이 테두리가 끝났다는 신호다(Figma `6692:17033`).
+  final bool outlined;
+
   /// CTA 탭.
   final VoidCallback? onCta;
 
@@ -84,6 +91,14 @@ class CardTask extends StatelessWidget {
         color: c.backgroundElevatedAlternative,
         borderRadius: BorderRadius.circular(AppRadius.sm),
       ),
+      // 안쪽 정렬 테두리를 **앞면에** 그린다. `decoration` 의 border 는 그 굵기만큼
+      // 안쪽 여백을 더해 내용이 1px 밀린다 — 완료 카드만 어긋나 보인다.
+      foregroundDecoration: outlined
+          ? BoxDecoration(
+              borderRadius: BorderRadius.circular(AppRadius.sm),
+              border: Border.all(color: c.primaryNormal),
+            )
+          : null,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

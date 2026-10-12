@@ -207,6 +207,61 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
     }
   }
 
+  /// 모국어 이름 — 서버 ISO 639-1 값을 언어 목록에서 찾는다(`ko` ↔ `ko-KR`). 목록 밖 코드는 그대로.
+  String? _nativeName(String? iso) {
+    if (iso == null || iso.isEmpty) return null;
+    for (final l in mockLanguages) {
+      if (_langHead(l.id) == _langHead(iso)) return l.name;
+    }
+    return iso;
+  }
+
+  /// **모국어** 다시 고르기(2026-10-12 · PM-DEC-515 · F066). 온보딩 1/4 와 같은 언어 목록·시트다.
+  ///
+  /// 「사용자 언어」와 달리 **화면 언어를 바꾸지 않고** `native_language` 만 저장한다 — 교사 콘솔의
+  /// 「모국어」와 과제 번역 언어가 이 값을 읽는다. 미기록 회원은 아무것도 고르지 않은 채로 연다.
+  Future<void> _pickNativeLanguage(String? currentIso) async {
+    String? currentId;
+    if (currentIso != null) {
+      for (final l in mockLanguages) {
+        if (_langHead(l.id) == _langHead(currentIso)) currentId = l.id;
+      }
+    }
+    var staged = currentId;
+    final picked = await showModalBottomSheet<String>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      barrierColor: context.c.materialDim,
+      isScrollControlled: true,
+      builder: (sheetCtx) => StatefulBuilder(
+        builder: (sheetCtx, setSheetState) => BottomSheetCountrySelect(
+          title: AppLocalizations.of(sheetCtx).onboardingLanguageTitle,
+          items: [
+            for (final l in mockLanguages)
+              CountryItem(code: l.id, name: l.name, countryCode: l.countryCode),
+          ],
+          value: staged,
+          onChanged: (code) => setSheetState(() => staged = code),
+          onConfirm: () => Navigator.of(sheetCtx).pop(staged),
+          onClose: () => Navigator.of(sheetCtx).pop(),
+        ),
+      ),
+    );
+    if (picked == null || picked == currentId || !mounted) return;
+    final l10n = AppLocalizations.of(context);
+    try {
+      await ref
+          .read(authControllerProvider.notifier)
+          .updateNativeLanguage(_langHead(picked));
+    } catch (e) {
+      if (!mounted) return;
+      final msg = e is AppException && e.fromServer ? e.message : l10n.languageSaveFailed;
+      ScaffoldMessenger.of(context)
+        ..clearSnackBars()
+        ..showSnackBar(SnackBar(content: Text(msg)));
+    }
+  }
+
   /// Contact Us → 메일 앱으로 문의 메일 작성(QA F012/F021 · 09-26 사용자 결정 A).
   ///
   /// 전엔 행에 화살표만 있고 눌러도 아무 일이 없었다. 제목에 설치 빌드를 싣는다 —
@@ -459,6 +514,13 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
         l10n.nationalityLabel,
         countryNameFor(member?.actualNationality) ?? l10n.nationalityNotSet,
         route: Routes.mypageNationality,
+        divider: !last,
+      ),
+      // 모국어(2026-10-12 · PM-DEC-515) — 국적 아래 · 국적 행과 같은 모양 · 미기록은 국적과 같은 「Not set」.
+      (last) => _navRow(
+        l10n.nativeLanguageLabel,
+        _nativeName(member?.nativeLanguage) ?? l10n.nationalityNotSet,
+        onTap: () => _pickNativeLanguage(member?.nativeLanguage),
         divider: !last,
       ),
       (last) =>

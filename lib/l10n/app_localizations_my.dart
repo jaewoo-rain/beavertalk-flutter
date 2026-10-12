@@ -2535,7 +2535,8 @@ class AppLocalizationsMy extends AppLocalizations {
   }
 
   @override
-  String get hwTaskSpeakingDesc => 'သင့်အသံထွက် ရမှတ်ကို စစ်ကြည့်ပါ';
+  String get hwTaskSpeakingDesc =>
+      'သင်ယူခဲ့သော အသုံးအနှုန်းများကို ကိုယ်တိုင်ပြောပြီး လေ့ကျင့်ပါ။';
 
   @override
   String get hwTaskConversationDesc =>
@@ -3030,5 +3031,65 @@ class AppLocalizationsMy extends AppLocalizations {
   String get nationalityNotSet => 'မသတ်မှတ်ရသေး';
 
   @override
+  String get nativeLanguageLabel => 'မိခင်ဘာသာစကား';
+
+  @override
   String get nationalitySearchEmpty => 'ရလဒ် မရှိပါ';
+
+  @override
+  String get hwTabTodo => 'မပြီးသေး';
+
+  @override
+  String hwTeacherName(String name) {
+    return 'ဆရာ $name';
+  }
+
+  @override
+  String hwDetailClassLine(String className, String teacher) {
+    return '$className, ဆရာ $teacher';
+  }
+
+  @override
+  String get hwCtaDone => 'ပြီးပြီ';
+
+  @override
+  String hwWorkbookTitle(String chapter) {
+    return 'Chapter $chapter လေ့ကျင့်ခန်းစာအုပ်';
+  }
+
+  @override
+  String hwWorkbookPages(int count) {
+    return '$count မျက်နှာ';
+  }
+
+  @override
+  String hwWorkbookWords(int count) {
+    return 'စကားလုံး $count လုံး';
+  }
+
+  @override
+  String hwA11yActivityDone(String activity) {
+    return '$activity ပြီးပြီ';
+  }
+
+  @override
+  String hwA11yActivityTodo(String activity) {
+    return '$activity မပြီးသေး';
+  }
+
+  @override
+  String get hwTabTodoEmptyTitle => 'အိမ်စာအားလုံး ပြီးသွားပါပြီ';
+
+  @override
+  String get hwTabDoneEmptyTitle => 'ပြီးဆုံးသော အိမ်စာ မရှိသေးပါ';
+
+  @override
+  String get hwDetailOverdueNote =>
+      'နောက်ဆုံးရက် ကျော်သွားပြီဖြစ်သော်လည်း ယခု တင်သွင်းနိုင်ပါသေးသည်။';
+
+  @override
+  String get hwClassPickerTitle => 'အတန်း ရွေးပါ';
+
+  @override
+  String get hwA11yClassPicker => 'အတန်း ပြောင်းရန်';
 }

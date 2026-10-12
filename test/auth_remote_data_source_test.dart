@@ -82,8 +82,16 @@ void main() {
       expect(jsonDecode(adapter.lastBody!), {
         'name': 'Jae',
         'language': 'en',
+        'native_language': 'en',
         'reasons': ['travel'],
       });
+    });
+
+    test('name only (updateName) sends no language fields', () async {
+      setup({'member_id': 1, 'onboarding_completed': true});
+      await ds.submitOnboarding(name: 'Bao');
+
+      expect(jsonDecode(adapter.lastBody!), {'name': 'Bao'});
     });
 
     test('null fields are omitted', () async {
@@ -100,6 +108,25 @@ void main() {
 
       final body = jsonDecode(adapter.lastBody!) as Map<String, dynamic>;
       expect(body['reasons'], ['travel', 'career', 'exam']);
+    });
+  });
+
+  group('updateLanguage (app language) leaves native language alone', () {
+    test('PATCH body carries language only', () async {
+      setup({'member_id': 1, 'language': 'en', 'native_language': 'vi'});
+      final member = (await ds.updateLanguage('en')).toEntity();
+
+      expect(adapter.lastRequest!.method, 'PATCH');
+      expect(jsonDecode(adapter.lastBody!), {'language': 'en'});
+      expect(member.language, 'en');
+      expect(member.nativeLanguage, 'vi');
+    });
+
+    test('native_language absent on an old server parses as null', () async {
+      setup({'member_id': 1, 'language': 'en'});
+      final member = (await ds.getMe()).toEntity();
+
+      expect(member.nativeLanguage, isNull);
     });
   });
 

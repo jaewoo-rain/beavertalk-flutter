@@ -2543,7 +2543,8 @@ class AppLocalizationsUz extends AppLocalizations {
   }
 
   @override
-  String get hwTaskSpeakingDesc => 'Talaffuz ballingizni tekshiring';
+  String get hwTaskSpeakingDesc =>
+      'Oʻrgangan iboralarni oʻzingiz aytib mustahkamlang.';
 
   @override
   String get hwTaskConversationDesc =>
@@ -3040,5 +3041,65 @@ class AppLocalizationsUz extends AppLocalizations {
   String get nationalityNotSet => 'Belgilanmagan';
 
   @override
+  String get nativeLanguageLabel => 'Ona tili';
+
+  @override
   String get nationalitySearchEmpty => 'Natija yo\'q';
+
+  @override
+  String get hwTabTodo => 'Bajarilmagan';
+
+  @override
+  String hwTeacherName(String name) {
+    return '$name ustoz';
+  }
+
+  @override
+  String hwDetailClassLine(String className, String teacher) {
+    return '$className, $teacher ustoz';
+  }
+
+  @override
+  String get hwCtaDone => 'Bajarildi';
+
+  @override
+  String hwWorkbookTitle(String chapter) {
+    return 'Chapter $chapter ish daftari';
+  }
+
+  @override
+  String hwWorkbookPages(int count) {
+    return '$count bet';
+  }
+
+  @override
+  String hwWorkbookWords(int count) {
+    return '$count soʻz';
+  }
+
+  @override
+  String hwA11yActivityDone(String activity) {
+    return '$activity bajarildi';
+  }
+
+  @override
+  String hwA11yActivityTodo(String activity) {
+    return '$activity bajarilmagan';
+  }
+
+  @override
+  String get hwTabTodoEmptyTitle => 'Barcha uy vazifalarini bajardingiz';
+
+  @override
+  String get hwTabDoneEmptyTitle => 'Hali bajarilgan uy vazifasi yoʻq';
+
+  @override
+  String get hwDetailOverdueNote =>
+      'Muddat oʻtdi, lekin hozir ham topshirishingiz mumkin.';
+
+  @override
+  String get hwClassPickerTitle => 'Guruhni tanlang';
+
+  @override
+  String get hwA11yClassPicker => 'Guruhni almashtirish';
 }

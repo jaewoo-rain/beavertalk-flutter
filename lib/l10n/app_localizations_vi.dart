@@ -2523,7 +2523,8 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
-  String get hwTaskSpeakingDesc => 'Kiểm tra điểm phát âm của bạn';
+  String get hwTaskSpeakingDesc =>
+      'Hãy luyện các biểu hiện đã học bằng cách tự nói thành tiếng.';
 
   @override
   String get hwTaskConversationDesc =>
@@ -3017,5 +3018,65 @@ class AppLocalizationsVi extends AppLocalizations {
   String get nationalityNotSet => 'Chưa đặt';
 
   @override
+  String get nativeLanguageLabel => 'Tiếng mẹ đẻ';
+
+  @override
   String get nationalitySearchEmpty => 'Không có kết quả';
+
+  @override
+  String get hwTabTodo => 'Chưa xong';
+
+  @override
+  String hwTeacherName(String name) {
+    return 'Giáo viên $name';
+  }
+
+  @override
+  String hwDetailClassLine(String className, String teacher) {
+    return '$className, giáo viên $teacher';
+  }
+
+  @override
+  String get hwCtaDone => 'Đã học xong';
+
+  @override
+  String hwWorkbookTitle(String chapter) {
+    return 'Sách bài tập Chapter $chapter';
+  }
+
+  @override
+  String hwWorkbookPages(int count) {
+    return '$count trang';
+  }
+
+  @override
+  String hwWorkbookWords(int count) {
+    return '$count từ';
+  }
+
+  @override
+  String hwA11yActivityDone(String activity) {
+    return '$activity đã xong';
+  }
+
+  @override
+  String hwA11yActivityTodo(String activity) {
+    return '$activity chưa xong';
+  }
+
+  @override
+  String get hwTabTodoEmptyTitle => 'Bạn đã làm xong tất cả bài tập';
+
+  @override
+  String get hwTabDoneEmptyTitle => 'Chưa có bài tập nào hoàn thành';
+
+  @override
+  String get hwDetailOverdueNote =>
+      'Đã quá hạn nộp, nhưng bạn vẫn có thể nộp ngay bây giờ.';
+
+  @override
+  String get hwClassPickerTitle => 'Chọn lớp';
+
+  @override
+  String get hwA11yClassPicker => 'Đổi lớp';
 }

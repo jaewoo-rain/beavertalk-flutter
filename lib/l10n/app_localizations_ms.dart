@@ -2547,7 +2547,8 @@ class AppLocalizationsMs extends AppLocalizations {
   }
 
   @override
-  String get hwTaskSpeakingDesc => 'Semak skor sebutan anda';
+  String get hwTaskSpeakingDesc =>
+      'Kuasai ungkapan dengan menyebutnya sendiri.';
 
   @override
   String get hwTaskConversationDesc =>
@@ -3044,5 +3045,65 @@ class AppLocalizationsMs extends AppLocalizations {
   String get nationalityNotSet => 'Belum ditetapkan';
 
   @override
+  String get nativeLanguageLabel => 'Bahasa ibunda';
+
+  @override
   String get nationalitySearchEmpty => 'Tiada hasil';
+
+  @override
+  String get hwTabTodo => 'Belum selesai';
+
+  @override
+  String hwTeacherName(String name) {
+    return 'Cikgu $name';
+  }
+
+  @override
+  String hwDetailClassLine(String className, String teacher) {
+    return '$className, Cikgu $teacher';
+  }
+
+  @override
+  String get hwCtaDone => 'Selesai';
+
+  @override
+  String hwWorkbookTitle(String chapter) {
+    return 'Buku kerja Chapter $chapter';
+  }
+
+  @override
+  String hwWorkbookPages(int count) {
+    return '$count halaman';
+  }
+
+  @override
+  String hwWorkbookWords(int count) {
+    return '$count perkataan';
+  }
+
+  @override
+  String hwA11yActivityDone(String activity) {
+    return '$activity selesai';
+  }
+
+  @override
+  String hwA11yActivityTodo(String activity) {
+    return '$activity belum selesai';
+  }
+
+  @override
+  String get hwTabTodoEmptyTitle => 'Semua kerja rumah sudah siap';
+
+  @override
+  String get hwTabDoneEmptyTitle => 'Belum ada kerja rumah yang siap';
+
+  @override
+  String get hwDetailOverdueNote =>
+      'Tarikh akhir sudah lepas, tetapi anda masih boleh menghantarnya sekarang.';
+
+  @override
+  String get hwClassPickerTitle => 'Pilih kelas';
+
+  @override
+  String get hwA11yClassPicker => 'Tukar kelas';
 }

@@ -2529,7 +2529,8 @@ class AppLocalizationsKy extends AppLocalizations {
   }
 
   @override
-  String get hwTaskSpeakingDesc => 'Айтуу упайыңызды текшериңиз';
+  String get hwTaskSpeakingDesc =>
+      'Үйрөнгөн сөз айкаштарын өзүңүз айтып өздөштүрүңүз.';
 
   @override
   String get hwTaskConversationDesc =>
@@ -3023,5 +3024,65 @@ class AppLocalizationsKy extends AppLocalizations {
   String get nationalityNotSet => 'Коюлган эмес';
 
   @override
+  String get nativeLanguageLabel => 'Эне тил';
+
+  @override
   String get nationalitySearchEmpty => 'Натыйжа жок';
+
+  @override
+  String get hwTabTodo => 'Бүтө элек';
+
+  @override
+  String hwTeacherName(String name) {
+    return '$name мугалим';
+  }
+
+  @override
+  String hwDetailClassLine(String className, String teacher) {
+    return '$className, $teacher мугалим';
+  }
+
+  @override
+  String get hwCtaDone => 'Бүттү';
+
+  @override
+  String hwWorkbookTitle(String chapter) {
+    return 'Chapter $chapter жумуш дептери';
+  }
+
+  @override
+  String hwWorkbookPages(int count) {
+    return '$count бет';
+  }
+
+  @override
+  String hwWorkbookWords(int count) {
+    return '$count сөз';
+  }
+
+  @override
+  String hwA11yActivityDone(String activity) {
+    return '$activity бүттү';
+  }
+
+  @override
+  String hwA11yActivityTodo(String activity) {
+    return '$activity бүтө элек';
+  }
+
+  @override
+  String get hwTabTodoEmptyTitle => 'Бардык үй тапшырмасын бүттүңүз';
+
+  @override
+  String get hwTabDoneEmptyTitle => 'Азырынча бүткөн үй тапшырмасы жок';
+
+  @override
+  String get hwDetailOverdueNote =>
+      'Мөөнөтү өттү, бирок азыр да тапшыра аласыз.';
+
+  @override
+  String get hwClassPickerTitle => 'Классты тандоо';
+
+  @override
+  String get hwA11yClassPicker => 'Классты алмаштыруу';
 }

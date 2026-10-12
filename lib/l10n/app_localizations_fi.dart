@@ -2540,7 +2540,8 @@ class AppLocalizationsFi extends AppLocalizations {
   }
 
   @override
-  String get hwTaskSpeakingDesc => 'Tarkista ääntämispisteesi';
+  String get hwTaskSpeakingDesc =>
+      'Opettele ilmaukset sanomalla ne itse ääneen.';
 
   @override
   String get hwTaskConversationDesc => 'Käytä oppimaasi oikeassa keskustelussa';
@@ -3036,5 +3037,65 @@ class AppLocalizationsFi extends AppLocalizations {
   String get nationalityNotSet => 'Ei asetettu';
 
   @override
+  String get nativeLanguageLabel => 'Äidinkieli';
+
+  @override
   String get nationalitySearchEmpty => 'Ei tuloksia';
+
+  @override
+  String get hwTabTodo => 'Kesken';
+
+  @override
+  String hwTeacherName(String name) {
+    return 'Opettaja $name';
+  }
+
+  @override
+  String hwDetailClassLine(String className, String teacher) {
+    return '$className, opettaja $teacher';
+  }
+
+  @override
+  String get hwCtaDone => 'Valmis';
+
+  @override
+  String hwWorkbookTitle(String chapter) {
+    return 'Chapter $chapter -työkirja';
+  }
+
+  @override
+  String hwWorkbookPages(int count) {
+    return '$count sivua';
+  }
+
+  @override
+  String hwWorkbookWords(int count) {
+    return '$count sanaa';
+  }
+
+  @override
+  String hwA11yActivityDone(String activity) {
+    return '$activity valmis';
+  }
+
+  @override
+  String hwA11yActivityTodo(String activity) {
+    return '$activity kesken';
+  }
+
+  @override
+  String get hwTabTodoEmptyTitle => 'Teit kaikki kotitehtävät';
+
+  @override
+  String get hwTabDoneEmptyTitle => 'Ei vielä valmiita kotitehtäviä';
+
+  @override
+  String get hwDetailOverdueNote =>
+      'Määräaika on mennyt, mutta voit vielä palauttaa sen.';
+
+  @override
+  String get hwClassPickerTitle => 'Valitse ryhmä';
+
+  @override
+  String get hwA11yClassPicker => 'Vaihda ryhmää';
 }

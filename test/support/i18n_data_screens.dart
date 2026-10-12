@@ -337,9 +337,21 @@ Map<String, Widget Function()> i18nDataScreens() => {
             child: const PaymentHistoryScreen(),
           ),
 
-      // 과제 목록 — 진행 중 · 마감 지남 · 완료(직접 출제 긴 제목).
+      // 과제 목록 — 진행 중 · 마감 지남 · 완료(직접 출제 긴 제목) + 긴 반 정보 머리(반 둘 · 셰브런).
       'HwAssignmentListData': () => ProviderScope(
-            overrides: [myAssignmentsProvider.overrideWith((ref) async => _assignments)],
+            overrides: [
+              myAssignmentsProvider.overrideWith((ref) async => _assignments),
+              myClassroomsProvider.overrideWith((ref) async => const [
+                    JoinedClassroom(
+                      classroomId: 7, // 과제 묶음과 같은 반 — 고른 반 기준으로 거른다
+                      name: 'TOPIK 1 A반 말하기 심화 저녁반',
+                      institution: '전북대학교 언어교육원 한국어교육센터 Rehabilitation',
+                      teacherDisplayName: 'Maximilian-Alexander',
+                      term: '2026 가을학기 Wintersemester',
+                    ),
+                    JoinedClassroom(classroomId: 2, name: '생활 한국어 2반'),
+                  ]),
+            ],
             child: const AssignmentListScreen(),
           ),
 
