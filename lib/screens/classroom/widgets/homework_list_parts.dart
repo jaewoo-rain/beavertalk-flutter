@@ -16,6 +16,17 @@ import 'assignment_badge.dart';
 // 숙제 탭 개편(2026-10-12 확정) 목록 부품 — Figma `8ZSZBmb5wFi6OMZhx8SBaN`
 // 목록 `6677:18145` · 상세 머리 `6692:17037`.
 
+/// 교사 이름이 이미 '선생님'으로 끝나는지(공백 무시).
+///
+/// 콘솔은 교사가 적은 값을 그대로 저장한다. '김 선생님'처럼 적으면 앱이 덧붙인 호칭과
+/// 겹쳐 '김 선생님 선생님'·'Teacher 김 선생님'이 된다(2026-10-13 command center).
+bool teacherNameHasTitle(String name) =>
+    name.replaceAll(RegExp(r'\s'), '').endsWith('선생님');
+
+/// 머리·상세에 쓰는 교사 표시 — 호칭이 이미 있으면 적힌 그대로 쓴다.
+String teacherLabel(AppLocalizations l10n, String name) =>
+    teacherNameHasTitle(name) ? name : l10n.hwTeacherName(name);
+
 /// 반 정보 머리 — 아이콘 · 기관 · 반 이름 · 선생님 · 학기(`6677:18149`).
 ///
 /// 기관·선생님·학기는 교사가 안 적었으면 없다. **빈 줄을 남기지 않는다** — 줄째
@@ -100,7 +111,7 @@ class HomeworkClassHeader extends StatelessWidget {
               if (teacher != null)
                 _IconText(
                   icon: AppIcons.teacher(size: 16, color: c.labelNeutral),
-                  text: l10n.hwTeacherName(teacher),
+                  text: teacherLabel(l10n, teacher),
                   style: meta,
                 ),
               if (term != null)

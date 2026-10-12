@@ -523,4 +523,34 @@ void main() {
     expect(find.text('Chapter 05'), findsOneWidget);
     expect(find.byType(Opacity), findsNothing);
   });
+
+  testWidgets('교사 이름이 이미 선생님으로 끝나면 호칭을 덧붙이지 않는다', (tester) async {
+    Future<void> pump(Locale locale) async {
+      await tester.pumpWidget(ProviderScope(
+        key: UniqueKey(),
+        overrides: [
+          myAssignmentsProvider.overrideWith((ref) async => [_a(id: 1, daysFromNow: 2)]),
+          myClassroomsProvider.overrideWith(
+            (ref) async => const [
+              JoinedClassroom(classroomId: 3, name: 'A', teacherDisplayName: '김 선생님 '),
+            ],
+          ),
+        ],
+        child: MaterialApp(
+          locale: locale,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const AssignmentListScreen(),
+        ),
+      ));
+      await tester.pumpAndSettle();
+    }
+
+    await pump(const Locale('ko'));
+    expect(find.text('김 선생님'), findsOneWidget);
+    expect(find.textContaining('선생님 선생님'), findsNothing);
+    await pump(const Locale('en'));
+    expect(find.text('김 선생님'), findsOneWidget);
+    expect(find.textContaining('Teacher'), findsNothing);
+  });
 }
