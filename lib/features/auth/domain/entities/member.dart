@@ -7,6 +7,7 @@ class Member {
     this.language,
     this.targetLanguage,
     this.actualNationality,
+    this.nativeLanguage,
     this.loginMethod,
     this.isAutoPayment,
     this.speakCountryId,
@@ -37,6 +38,10 @@ class Member {
   /// 회원이 고른 **실제 국적**(ISO 3166-1 alpha-2, 예 `PH` · 2026-10-10). 모국어([language])·
   /// 억양 판정([speakCountryId])과 별개다. null = 고르지 않음 — 설정 행이 「Not set」 을 보인다.
   final String? actualNationality;
+
+  /// 온보딩에서 고른 **모국어**(ISO 639-1 · 서버 `member.native_language` · 2026-10-12).
+  /// [language] 는 앱 화면 언어라 설정에서 바뀌지만 이 값은 그대로다(F066). null = 기록 없음(구서버·옛 회원).
+  final String? nativeLanguage;
 
   /// How the member signed in, e.g. `email`, `kakao`.
   final String? loginMethod;

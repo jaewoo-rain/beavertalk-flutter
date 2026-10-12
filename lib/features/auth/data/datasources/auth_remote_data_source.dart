@@ -26,7 +26,12 @@ class AuthRemoteDataSource {
   }) async {
     final body = <String, dynamic>{};
     if (name != null) body['name'] = name;
-    if (language != null) body['language'] = language;
+    if (language != null) {
+      body['language'] = language;
+      // 온보딩 언어 화면의 질문은 「모국어가 무엇인가요?」다 — 같은 값을 모국어 칸에도 명시한다
+      // (서버 member.native_language · F066). 앱 언어 변경(updateLanguage)은 이 칸을 보내지 않는다.
+      body['native_language'] = language;
+    }
     if (actualNationality != null) body['actual_nationality'] = actualNationality;
     if (reasons != null) body['reasons'] = reasons;
     final res = await _dio.post<Map<String, dynamic>>(
