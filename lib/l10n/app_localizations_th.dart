@@ -2506,7 +2506,7 @@ class AppLocalizationsTh extends AppLocalizations {
   }
 
   @override
-  String get hwTaskSpeakingDesc => 'ตรวจคะแนนการออกเสียงของคุณ';
+  String get hwTaskSpeakingDesc => 'ฝึกสำนวนที่เรียนโดยพูดออกเสียงด้วยตัวเอง';
 
   @override
   String get hwTaskConversationDesc => 'ใช้สิ่งที่เรียนมาในการสนทนาจริง';
@@ -2998,4 +2998,60 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get nationalitySearchEmpty => 'ไม่พบผลลัพธ์';
+
+  @override
+  String get hwTabTodo => 'ยังไม่เสร็จ';
+
+  @override
+  String hwTeacherName(String name) {
+    return 'ครู$name';
+  }
+
+  @override
+  String hwDetailClassLine(String className, String teacher) {
+    return '$className, ครู$teacher';
+  }
+
+  @override
+  String get hwCtaDone => 'เรียนเสร็จแล้ว';
+
+  @override
+  String hwWorkbookTitle(String chapter) {
+    return 'แบบฝึกหัด Chapter $chapter';
+  }
+
+  @override
+  String hwWorkbookPages(int count) {
+    return '$count หน้า';
+  }
+
+  @override
+  String hwWorkbookWords(int count) {
+    return '$count คำ';
+  }
+
+  @override
+  String hwA11yActivityDone(String activity) {
+    return '$activity เสร็จแล้ว';
+  }
+
+  @override
+  String hwA11yActivityTodo(String activity) {
+    return '$activity ยังไม่เสร็จ';
+  }
+
+  @override
+  String get hwTabTodoEmptyTitle => 'ทำการบ้านครบทั้งหมดแล้ว';
+
+  @override
+  String get hwTabDoneEmptyTitle => 'ยังไม่มีการบ้านที่ทำเสร็จ';
+
+  @override
+  String get hwDetailOverdueNote => 'เลยกำหนดส่งแล้ว แต่ตอนนี้ยังส่งได้อยู่';
+
+  @override
+  String get hwClassPickerTitle => 'เลือกชั้นเรียน';
+
+  @override
+  String get hwA11yClassPicker => 'เปลี่ยนชั้นเรียน';
 }

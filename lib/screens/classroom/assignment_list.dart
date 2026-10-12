@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -5,9 +7,10 @@ import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
-import '../../components/molecules/card_homework.dart';
+import '../../components/icons/app_icons.dart';
 import '../../components/organisms/gnb.dart';
 import '../../features/classroom/domain/entities/classroom_assignment.dart';
+import '../../features/classroom/domain/entities/classroom_membership.dart';
 import '../../features/classroom/presentation/assignment_display.dart';
 import '../../features/classroom/presentation/classroom_providers.dart';
 import '../../l10n/app_localizations.dart';
@@ -15,15 +18,20 @@ import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 import 'leave_class_sheet.dart';
-import 'widgets/assignment_badge.dart';
+import 'widgets/homework_list_parts.dart';
 
-/// A6 숙제 목록 — Figma `screen/hw_list`(`5684:5881`).
+/// A6 숙제 목록 — 정본 `12_숙제`(`5679:24798`) 미완료 `6705:16616` · 완료 `6705:16740` ·
+/// 과제 0개 `6705:16911` · 반 여러 개 `6705:16963`.
 ///
-/// 세 칸으로 나눠 그린다 — 진행 중 · 예정 · 완료. 빈 칸은 머리글째 숨긴다.
-/// 정렬·분류 규칙은 [groupAssignments] 가 한 곳에서 정한다.
+/// 위에서부터 반 정보 머리 · 「미완료 / 완료」 탭 · 선택한 탭의 카드(또는 빈 안내).
+/// 정렬·분류는 [tabAssignments] 가 [groupAssignments] 를 그대로 따른다.
 ///
-/// 맨 아래 「교실에서 나가기」가 반 나가기 시트를 연다. 시안에는 설정 버튼이
-/// 없다 — 사용자가 걷어내고 이 텍스트 링크로 대신했다.
+/// 반이 둘 이상이면 머리의 반 이름을 눌러 반을 고른다. 머리·탭·목록·빈 안내·GNB 나가기가
+/// 모두 **고른 반 기준**이다(2026-10-13 확정 §2-7). 처음 고른 반은 기기에 남긴 마지막
+/// 반(`JoinedClassStore`)이고, 없으면 `/classrooms/my` 의 첫 반이다.
+///
+/// 반 나가기는 GNB 오른쪽 아이콘이다. 🔴 과제가 0개여도 GNB 는 같으므로 나갈 길이 늘
+/// 있다(PM-DEC-522·523 결함 재발 방지).
 class AssignmentListScreen extends ConsumerStatefulWidget {
   /// 화면을 만든다.
   const AssignmentListScreen({super.key});
@@ -36,6 +44,12 @@ class AssignmentListScreen extends ConsumerStatefulWidget {
 class _AssignmentListScreenState extends ConsumerState<AssignmentListScreen> {
   Future<void>? _refreshing;
 
+  /// 첫 진입은 늘 미완료 탭이다. 미완료가 0개여도 자동으로 넘기지 않는다(§2-6).
+  AssignmentTab _tab = AssignmentTab.todo;
+
+  /// 고른 반 id. null 이면 아직 기기 값을 못 읽었거나 없다 — 첫 반을 쓴다.
+  int? _pickedId;
+
   @override
   void initState() {
     super.initState();
@@ -43,6 +57,17 @@ class _AssignmentListScreenState extends ConsumerState<AssignmentListScreen> {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) ref.invalidate(myAssignmentsProvider);
       });
+    }
+    unawaited(_restorePicked());
+  }
+
+  Future<void> _restorePicked() async {
+    try {
+      final saved = await ref.read(joinedClassStoreProvider).read();
+      if (!mounted || saved == null || _pickedId != null) return;
+      setState(() => _pickedId = saved);
+    } catch (_) {
+      // 기기 값을 못 읽으면 첫 반으로 둔다.
     }
   }
 
@@ -53,6 +78,7 @@ class _AssignmentListScreenState extends ConsumerState<AssignmentListScreen> {
   Future<void> _reload() async {
     try {
       ref.invalidate(myAssignmentsProvider);
+      ref.invalidate(myClassroomsProvider);
       await ref.read(myAssignmentsProvider.future);
     } catch (_) {
       // The provider error renders the existing retry UI.
@@ -61,11 +87,35 @@ class _AssignmentListScreenState extends ConsumerState<AssignmentListScreen> {
     }
   }
 
+  Future<void> _pickClass(List<JoinedClassroom> rooms, int selectedId) async {
+    final picked = await showClassPickerSheet(
+      context,
+      classrooms: rooms,
+      selectedId: selectedId,
+    );
+    if (picked == null || picked == selectedId || !mounted) return;
+    setState(() => _pickedId = picked);
+    try {
+      // 다음 진입도 이 반으로 연다. 나가기 시트의 마지막 폴백과 같은 칸이다.
+      await ref.read(joinedClassStoreProvider).save(picked);
+    } catch (_) {
+      // 남기지 못해도 지금 화면은 바뀌었다.
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final c = context.c;
     final async = ref.watch(myAssignmentsProvider);
+    // 반 정보 머리 — 반 목록을 못 받았으면 머리만 빠지고 목록은 그대로 그린다.
+    final joined = ref.watch(myClassroomsProvider).valueOrNull ?? const [];
+    JoinedClassroom? classroom;
+    for (final room in joined) {
+      if (room.classroomId == _pickedId) classroom = room;
+    }
+    classroom ??= joined.isEmpty ? null : joined.first;
+    final room = classroom;
 
     return AppScaffold(
       background: c.backgroundNormalNormal,
@@ -75,15 +125,31 @@ class _AssignmentListScreenState extends ConsumerState<AssignmentListScreen> {
           Gnb.main(
             title: l10n.hwTitle,
             onBack: () => Navigator.of(context).pop(),
+            trailing: _LeaveClassButton(classroomId: room?.classroomId),
           ),
           Expanded(
             child: async.when(
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (_, _) =>
                   _Failed(onRetry: () => ref.invalidate(myAssignmentsProvider)),
-              data: (items) => items.isEmpty
-                  ? _Empty(onRefresh: _refresh)
-                  : _Body(items: items, onRefresh: _refresh),
+              data: (items) => _Body(
+                // 반이 여럿이면 고른 반의 과제만 — 반 id 가 없는 옛 응답은 버리지 않는다.
+                items: room == null || joined.length < 2
+                    ? items
+                    : [
+                        for (final a in items)
+                          if (a.classroomId == null ||
+                              a.classroomId == room.classroomId)
+                            a,
+                      ],
+                classroom: room,
+                onPickClass: room != null && joined.length >= 2
+                    ? () => _pickClass(joined, room.classroomId)
+                    : null,
+                tab: _tab,
+                onTab: (t) => setState(() => _tab = t),
+                onRefresh: _refresh,
+              ),
             ),
           ),
         ],
@@ -92,149 +158,161 @@ class _AssignmentListScreenState extends ConsumerState<AssignmentListScreen> {
   }
 }
 
-/// 세 칸 목록 + 나가기 링크.
+/// 반 정보 머리 + 탭 + 카드(또는 빈 안내).
 class _Body extends StatelessWidget {
-  const _Body({required this.items, required this.onRefresh});
+  const _Body({
+    required this.items,
+    required this.classroom,
+    required this.onPickClass,
+    required this.tab,
+    required this.onTab,
+    required this.onRefresh,
+  });
 
   final List<ClassroomAssignment> items;
+  final JoinedClassroom? classroom;
+  final VoidCallback? onPickClass;
+  final AssignmentTab tab;
+  final ValueChanged<AssignmentTab> onTab;
   final Future<void> Function() onRefresh;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final c = context.c;
-    final groups = groupAssignments(items, DateTime.now());
+    final list = tabAssignments(items, DateTime.now())[tab] ?? const [];
+    final room = classroom;
 
-    final sections = <(String, List<ClassroomAssignment>)>[
-      (l10n.hwSectionInProgress, groups[AssignmentBucket.inProgress] ?? []),
-      (l10n.hwSectionUpcoming, groups[AssignmentBucket.upcoming] ?? []),
-      (l10n.hwSectionDone, groups[AssignmentBucket.done] ?? []),
-    ].where((s) => s.$2.isNotEmpty).toList();
+    // 빈 안내 문구 — §2-6 표 4경우. 받은 과제 자체가 0개면 탭과 무관하게 같은 안내다.
+    final (String, String?) empty = items.isEmpty
+        ? (l10n.hwListEmptyTitle, l10n.hwListEmptyBody)
+        : tab == AssignmentTab.todo
+        ? (l10n.hwTabTodoEmptyTitle, null)
+        : (l10n.hwTabDoneEmptyTitle, null);
 
     return RefreshIndicator(
       onRefresh: onRefresh,
-      child: ContentColumn(
-        child: ListView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.only(
-            top: AppSpacing.s8,
-            bottom: AppSpacing.s24,
+      child: CustomScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        slivers: [
+          SliverToBoxAdapter(
+            child: ContentColumn(
+              padding: const EdgeInsets.only(top: AppSpacing.s24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  if (room != null) ...[
+                    HomeworkClassHeader(
+                      classroom: room,
+                      onPickClass: onPickClass,
+                    ),
+                    const SizedBox(height: AppSpacing.s24),
+                  ],
+                  HomeworkTabs(
+                    labels: [l10n.hwTabTodo, l10n.hwSectionDone],
+                    activeIndex: tab.index,
+                    onChanged: (i) => onTab(AssignmentTab.values[i]),
+                  ),
+                  const SizedBox(height: AppSpacing.s12),
+                ],
+              ),
+            ),
           ),
-          children: [
-            for (final (title, list) in sections) ...[
-              Padding(
-                padding: const EdgeInsets.only(bottom: AppSpacing.s8),
-                child: Text(
-                  title,
-                  style: AppType.body1.b.copyWith(color: c.labelNormal),
+          if (list.isEmpty)
+            // 안내는 탭 아래 **남은 높이**의 가운데다(`6705:16911`).
+            SliverFillRemaining(
+              hasScrollBody: false,
+              child: _EmptyNote(title: empty.$1, body: empty.$2),
+            )
+          else
+            SliverToBoxAdapter(
+              child: ContentColumn(
+                padding: const EdgeInsets.only(bottom: AppSpacing.s12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    for (final a in list)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: AppSpacing.s12),
+                        child: HomeworkListCard(
+                          assignment: a,
+                          onTap: () => Navigator.of(
+                            context,
+                          ).pushNamed(Routes.assignmentDetail, arguments: a),
+                        ),
+                      ),
+                  ],
                 ),
               ),
-              for (final a in list)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: AppSpacing.s12),
-                  child: _card(context, a),
-                ),
-              const SizedBox(height: AppSpacing.s12),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+/// 빈 안내 — 제목 Heading 2 Bold `Label/Strong` · 본문 Body 1 Regular `Label/Neutral` · 간격 8.
+///
+/// 일러스트·버튼·나가기 글자 링크는 없다(§2-6). 나가기는 GNB 아이콘이 맡는다.
+class _EmptyNote extends StatelessWidget {
+  const _EmptyNote({required this.title, this.body});
+
+  final String title;
+  final String? body;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.c;
+    return Center(
+      child: ContentColumn.narrow(
+        padding: const EdgeInsets.symmetric(vertical: AppSpacing.s24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: AppType.heading2.b.copyWith(color: c.labelStrong),
+            ),
+            if (body != null) ...[
+              const SizedBox(height: AppSpacing.s8),
+              Text(
+                body!,
+                textAlign: TextAlign.center,
+                style: AppType.body1.r.copyWith(color: c.labelNeutral),
+              ),
             ],
-            const SizedBox(height: AppSpacing.s4),
-            const _LeaveClassLink(),
           ],
         ),
       ),
     );
   }
-
-  Widget _card(BuildContext context, ClassroomAssignment a) {
-    final l10n = AppLocalizations.of(context);
-    final done = a.status == AssignmentStatus.done;
-    return CardHomework(
-      chapterLabel: assignmentTitleOf(a, l10n.hwChapterLabel),
-      // 🔴 서버가 챕터 이름을 주지 않는다(학습자용 라우트에 없다). 반 이름이
-      //    둘째 줄에 오는 이유다 — 없는 값을 지어내지 않는다.
-      title: a.classroomName,
-      dimmed: done,
-      badge: assignmentBadge(context, a),
-      countLabel: '${a.completedActivityCount}/${a.activityCount}',
-      chips: [
-        for (final act in a.activities)
-          HomeworkCardChip(
-            activityLabel(context, act),
-            done: activityDone(a, act),
-          ),
-      ],
-      onTap: () => Navigator.of(
-        context,
-      ).pushNamed(Routes.assignmentDetail, arguments: a),
-    );
-  }
 }
 
-/// 받은 숙제가 없다.
-class _Empty extends StatelessWidget {
-  const _Empty({required this.onRefresh});
-
-  final Future<void> Function() onRefresh;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    final c = context.c;
-    return RefreshIndicator(
-      onRefresh: onRefresh,
-      child: LayoutBuilder(
-        builder: (context, constraints) => SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          child: SizedBox(
-            height: constraints.maxHeight,
-            child: Center(
-              child: ContentColumn.narrow(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      l10n.hwListEmptyTitle,
-                      style: AppType.heading2.b.copyWith(color: c.labelStrong),
-                    ),
-                    const SizedBox(height: AppSpacing.s8),
-                    Text(
-                      l10n.hwListEmptyBody,
-                      textAlign: TextAlign.center,
-                      style: AppType.body1.r.copyWith(color: c.labelNormal),
-                    ),
-                    const SizedBox(height: AppSpacing.s24),
-                    const _LeaveClassLink(),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// 「반 나가기」 링크 — 과제가 있을 때(목록 끝)와 없을 때(안내 아래) 둘 다 같은 것을 쓴다.
+/// GNB 오른쪽 「교실에서 나가기」 아이콘(`6677:18202` · 24 · `Icon/Strong`).
 ///
-/// 🔴 예전엔 목록 본문에만 있어서 **과제가 0개인 반은 나갈 길이 없었다**(2026-10-12 사용자
-///    「반 나가기가 없어」 · PM-DEC-522·523).
-class _LeaveClassLink extends StatelessWidget {
-  const _LeaveClassLink();
+/// 글자가 없으므로 옛 링크 문구(`hwLeaveClassLink`)를 스크린리더 라벨로 쓴다.
+/// [classroomId] 는 고른 반이다 — 반 목록을 못 받았으면 null 이고 시트가 스스로 찾는다.
+class _LeaveClassButton extends StatelessWidget {
+  const _LeaveClassButton({this.classroomId});
+
+  final int? classroomId;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final c = context.c;
-    return Center(
+    return Semantics(
+      button: true,
+      label: l10n.hwLeaveClassLink,
+      excludeSemantics: true,
       child: GestureDetector(
-        onTap: () => showLeaveClassSheet(context),
+        key: const ValueKey('hw-leave-class'),
+        onTap: () => showLeaveClassSheet(context, classroomId: classroomId),
         behavior: HitTestBehavior.opaque,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: AppSpacing.s12),
-          child: Text(
-            l10n.hwLeaveClassLink,
-            style: AppType.body1.r.copyWith(color: c.labelNormal),
-          ),
+        child: SizedBox(
+          width: 28,
+          height: 28,
+          child: Center(child: AppIcons.exit(size: 24, color: c.labelStrong)),
         ),
       ),
     );

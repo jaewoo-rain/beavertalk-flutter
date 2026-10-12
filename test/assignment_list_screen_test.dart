@@ -1,7 +1,4 @@
-// A6 숙제 목록 화면 — 칸 머리글이 상태에 따라 나타나고 사라지는지 본다.
-//
-// 「그룹이 비면 섹션 헤더째 숨긴다」(스펙 §7)가 이 화면의 유일한 조건부
-// 레이아웃이라 회귀가 눈에 안 띈다.
+// A6 숙제 목록 화면 — 2026-10-12 확정안(탭 · 반 정보 머리 · 새 카드 · GNB 나가기).
 
 import 'dart:async';
 
@@ -52,16 +49,19 @@ Widget _host(List<ClassroomAssignment> items) {
   );
 }
 
-/// 칸 머리글만 고른다.
+/// 탭 라벨만 고른다.
 ///
-/// 「완료」는 머리글과 완료 배지가 **같은 낱말**이라 `find.text` 가 둘을 잡는다
-/// (영문 `Done`, 한국어 `완료` 모두). 머리글은 Body 1 Bold(16) 이고 배지는
-/// Caption 2(11) 이라 크기로 가른다 — 시안 실측값이다.
-Finder _sectionHeader(String label) {
+/// 「완료」는 탭과 완료 배지가 **같은 낱말**이라 `find.text` 가 둘을 잡는다
+/// (영문 `Done`, 한국어 `완료` 모두). 탭은 Label 1(14) 이고 배지는 Caption 2(11)
+/// 이라 크기로 가른다 — 시안 `6677:18163` 실측값이다.
+Finder _tab(String label) {
   return find.byWidgetPredicate(
-    (w) => w is Text && w.data == label && (w.style?.fontSize ?? 0) >= 16,
+    (w) => w is Text && w.data == label && (w.style?.fontSize ?? 0) == 14,
   );
 }
+
+/// GNB 나가기 아이콘.
+final Finder _leaveIcon = find.byKey(const ValueKey('hw-leave-class'));
 
 class _AssignmentsRepository implements ClassroomRepository {
   List<ClassroomAssignment> items = [];
@@ -165,18 +165,40 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('No homework yet'), findsOneWidget);
     items = [_a(id: 10, daysFromNow: 1)];
-    await tester.drag(find.byType(SingleChildScrollView), const Offset(0, 350));
+    await tester.drag(find.byType(CustomScrollView), const Offset(0, 350));
     await tester.pumpAndSettle();
     expect(find.text('Chapter 10'), findsOneWidget);
   });
 
-  testWidgets('빈 목록은 안내만 그리고 칸 머리글을 만들지 않는다', (tester) async {
+  testWidgets('과제 0개 — 탭은 남기고 남은 자리에 안내 제목·본문(§2-6)', (tester) async {
     await tester.pumpWidget(_host(const []));
     await tester.pumpAndSettle();
 
+    expect(_tab('To do'), findsOneWidget);
     expect(find.text('No homework yet'), findsOneWidget);
-    expect(_sectionHeader('In progress'), findsNothing);
-    expect(_sectionHeader('Done'), findsNothing);
+    // 완료 탭으로 가도 같은 안내다.
+    await tester.tap(_tab('Done'));
+    await tester.pumpAndSettle();
+    expect(find.text('No homework yet'), findsOneWidget);
+  });
+
+  testWidgets('미완료 0개 · 완료 있음 — 첫 탭은 미완료이고 모두 마쳤다는 안내', (tester) async {
+    await tester.pumpWidget(
+      _host([_a(id: 1, daysFromNow: -2, status: AssignmentStatus.done)]),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('You finished all your homework'), findsOneWidget);
+    expect(find.text('Chapter 01'), findsNothing);
+  });
+
+  testWidgets('완료 0개 — 완료 탭 안내', (tester) async {
+    await tester.pumpWidget(_host([_a(id: 1, daysFromNow: 3)]));
+    await tester.pumpAndSettle();
+    await tester.tap(_tab('Done'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('No finished homework yet'), findsOneWidget);
   });
 
   testWidgets('짧은 목록도 당겨 갱신하면 새 숙제가 나타난다', (tester) async {
@@ -194,7 +216,7 @@ void main() {
     );
     await tester.pumpAndSettle();
     items = [...items, _a(id: 10, daysFromNow: 1)];
-    await tester.drag(find.byType(ListView), const Offset(0, 350));
+    await tester.drag(find.byType(CustomScrollView), const Offset(0, 350));
     await tester.pumpAndSettle();
     expect(find.text('Chapter 10'), findsOneWidget);
   });
@@ -245,18 +267,20 @@ void main() {
     expect(find.text('Chapter 09'), findsOneWidget);
   });
 
-  testWidgets('완료만 있으면 완료 머리글만 나온다', (tester) async {
+  testWidgets('완료만 있으면 미완료 탭은 비고 완료 탭에 나온다', (tester) async {
     await tester.pumpWidget(
       _host([_a(id: 1, daysFromNow: -2, status: AssignmentStatus.done)]),
     );
     await tester.pumpAndSettle();
 
-    expect(_sectionHeader('Done'), findsOneWidget);
-    expect(_sectionHeader('In progress'), findsNothing);
-    expect(_sectionHeader('Upcoming'), findsNothing);
+    expect(_tab('To do'), findsOneWidget);
+    expect(find.text('Chapter 01'), findsNothing);
+    await tester.tap(_tab('Done'));
+    await tester.pumpAndSettle();
+    expect(find.text('Chapter 01'), findsOneWidget);
   });
 
-  testWidgets('세 상태가 섞이면 머리글 셋이 모두 나온다', (tester) async {
+  testWidgets('미완료 탭 = 진행 중 + 예정 · 완료 탭 = done', (tester) async {
     await tester.pumpWidget(
       _host([
         _a(id: 1, daysFromNow: -2, overdue: true),
@@ -266,24 +290,112 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(_sectionHeader('In progress'), findsOneWidget);
-    expect(_sectionHeader('Upcoming'), findsOneWidget);
-    expect(_sectionHeader('Done'), findsOneWidget);
+    expect(find.text('Chapter 01'), findsOneWidget);
+    expect(find.text('Chapter 02'), findsOneWidget);
+    expect(find.text('Chapter 03'), findsNothing);
+    // 진행 중(미제출)이 예정보다 위다.
+    expect(
+      tester.getTopLeft(find.text('Chapter 01')).dy,
+      lessThan(tester.getTopLeft(find.text('Chapter 02')).dy),
+    );
+
+    await tester.tap(_tab('Done'));
+    await tester.pumpAndSettle();
+    expect(find.text('Chapter 01'), findsNothing);
+    expect(find.text('Chapter 03'), findsOneWidget);
   });
 
-  testWidgets('나가기 링크는 목록이 있을 때 항상 있다', (tester) async {
+  testWidgets('카드에 마감일이 yyyy-MM-dd 로 나오고 n/N 은 없다', (tester) async {
+    final a = _a(id: 4, daysFromNow: 5);
+    await tester.pumpWidget(_host([a]));
+    await tester.pumpAndSettle();
+
+    final d = a.dueAt;
+    final ymd =
+        '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
+    expect(find.text(ymd), findsOneWidget);
+    expect(find.text('0/2'), findsNothing);
+    expect(find.text('TOPIK 1 A'), findsNothing); // 반 이름은 카드에서 뺐다
+  });
+
+  testWidgets('활동 아이콘은 스크린리더 라벨을 단다', (tester) async {
+    final handle = tester.ensureSemantics();
+    await tester.pumpWidget(_host([_a(id: 4, daysFromNow: 5)]));
+    await tester.pumpAndSettle();
+
+    // 카드 전체가 버튼이라 라벨이 합쳐진다 — 한 조각으로 들어 있는지만 본다.
+    expect(find.bySemanticsLabel(RegExp('Pronunciation not done')), findsOneWidget);
+    handle.dispose();
+  });
+
+  testWidgets('반 정보 머리 — 기관·반·선생님·학기, 빈 값은 줄째 숨긴다', (tester) async {
+    Future<void> pump(JoinedClassroom room) async {
+      await tester.pumpWidget(ProviderScope(
+        overrides: [
+          myAssignmentsProvider.overrideWith(
+            (ref) async => [_a(id: 1, daysFromNow: 2)],
+          ),
+          myClassroomsProvider.overrideWith((ref) async => [room]),
+        ],
+        child: MaterialApp(
+          locale: const Locale('en'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const AssignmentListScreen(),
+        ),
+      ));
+      await tester.pumpAndSettle();
+    }
+
+    await pump(const JoinedClassroom(
+      classroomId: 3,
+      name: 'TOPIK 1 A반',
+      institution: '전북대학교 한국어교육원',
+      teacherDisplayName: '이수진',
+      term: '2026 가을학기',
+    ));
+    expect(find.text('전북대학교 한국어교육원'), findsOneWidget);
+    expect(find.text('TOPIK 1 A반'), findsOneWidget);
+    expect(find.text('Teacher 이수진'), findsOneWidget);
+    expect(find.text('2026 가을학기'), findsOneWidget);
+  });
+
+  testWidgets('반 정보 머리 — 기관·선생님·학기가 비면 빈 줄을 남기지 않는다', (tester) async {
+    await tester.pumpWidget(ProviderScope(
+      overrides: [
+        myAssignmentsProvider.overrideWith(
+          (ref) async => [_a(id: 1, daysFromNow: 2)],
+        ),
+        myClassroomsProvider.overrideWith(
+          (ref) async => const [JoinedClassroom(classroomId: 3, name: 'QA B')],
+        ),
+      ],
+      child: MaterialApp(
+        locale: const Locale('en'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: const AssignmentListScreen(),
+      ),
+    ));
+    await tester.pumpAndSettle();
+    expect(find.text('QA B'), findsOneWidget);
+    expect(find.textContaining('Teacher'), findsNothing);
+  });
+
+  testWidgets('나가기 아이콘은 목록이 있을 때 항상 있다', (tester) async {
     await tester.pumpWidget(_host([_a(id: 1, daysFromNow: 2)]));
     await tester.pumpAndSettle();
 
-    expect(find.text('Leave the class'), findsOneWidget);
+    expect(_leaveIcon, findsOneWidget);
+    expect(find.text('Leave the class'), findsNothing); // 글자 링크는 걷었다
   });
 
-  testWidgets('과제가 0개인 반도 나가기 링크가 있다(2026-10-12 PM-DEC-523)', (tester) async {
+  testWidgets('과제가 0개인 반도 나가기 아이콘이 있다(2026-10-12 PM-DEC-523)', (tester) async {
     await tester.pumpWidget(_host(const []));
     await tester.pumpAndSettle();
 
     expect(find.text('No homework yet'), findsOneWidget);
-    expect(find.text('Leave the class'), findsOneWidget);
+    expect(_leaveIcon, findsOneWidget);
   });
 
   testWidgets('기기 저장값이 없어도 내 반 목록의 id 로 나간다(재설치·다른 기기 참여)', (tester) async {
@@ -307,7 +419,7 @@ void main() {
     ));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Leave the class'));
+    await tester.tap(_leaveIcon);
     await tester.pumpAndSettle();
     await tester.tap(find.text('Leave'));
     await tester.pumpAndSettle();
@@ -315,10 +427,100 @@ void main() {
     expect(repo.left, [3]);
   });
 
-  testWidgets('미제출 배지는 지난 날수를 말한다', (tester) async {
+  testWidgets('미제출 배지는 지난 날수를 붙이지 않는다(2026-10-12 확정)', (tester) async {
     await tester.pumpWidget(_host([_a(id: 1, daysFromNow: -3, overdue: true)]));
     await tester.pumpAndSettle();
 
-    expect(find.textContaining('Not submitted'), findsOneWidget);
+    expect(find.text('Not submitted'), findsOneWidget);
+  });
+
+  testWidgets('반 여러 개 — 셰브런·시트로 반을 바꾸면 머리·목록·나가기가 그 반 기준(§2-7)', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final repo = _LeaveRepository();
+    ClassroomAssignment inRoom(int id, int room) => ClassroomAssignment(
+      assignmentId: id,
+      classroomId: room,
+      classroomName: 'R$room',
+      grade: 1,
+      chapter: id,
+      activities: const [AssignmentActivity.speaking],
+      itemIds: const [],
+      dueAt: DateTime.now().add(const Duration(days: 2)),
+      overdue: false,
+      status: AssignmentStatus.notStarted,
+    );
+    await tester.pumpWidget(ProviderScope(
+      overrides: [
+        myAssignmentsProvider.overrideWith(
+          (ref) async => [inRoom(1, 3), inRoom(2, 4)],
+        ),
+        myClassroomsProvider.overrideWith(
+          (ref) async => const [
+            JoinedClassroom(classroomId: 3, name: 'Class A', institution: 'Uni'),
+            JoinedClassroom(classroomId: 4, name: 'Class B', institution: 'Center'),
+          ],
+        ),
+        classroomRepositoryProvider.overrideWithValue(repo),
+      ],
+      child: MaterialApp(
+        locale: const Locale('en'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: const AssignmentListScreen(),
+        routes: {'/mypage': (_) => const Text('MYPAGE')},
+      ),
+    ));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Class A'), findsOneWidget);
+    expect(find.text('Chapter 01'), findsOneWidget);
+    expect(find.text('Chapter 02'), findsNothing);
+
+    await tester.tap(find.byKey(const ValueKey('hw-class-picker')));
+    await tester.pumpAndSettle();
+    expect(find.text('Choose a class'), findsOneWidget);
+    await tester.tap(find.text('Class B'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Class B'), findsOneWidget);
+    expect(find.text('Chapter 02'), findsOneWidget);
+    expect(find.text('Chapter 01'), findsNothing);
+
+    await tester.tap(_leaveIcon);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Leave'));
+    await tester.pumpAndSettle();
+    expect(repo.left, [4]);
+  });
+
+  testWidgets('반이 하나면 셰브런이 없다', (tester) async {
+    await tester.pumpWidget(ProviderScope(
+      overrides: [
+        myAssignmentsProvider.overrideWith((ref) async => [_a(id: 1, daysFromNow: 2)]),
+        myClassroomsProvider.overrideWith(
+          (ref) async => const [JoinedClassroom(classroomId: 3, name: 'Only')],
+        ),
+      ],
+      child: MaterialApp(
+        locale: const Locale('en'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: const AssignmentListScreen(),
+      ),
+    ));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('hw-class-picker')), findsNothing);
+  });
+
+  testWidgets('완료 카드 — 완료 배지(체크 없음) · 흐림 없음', (tester) async {
+    await tester.pumpWidget(
+      _host([_a(id: 5, daysFromNow: -1, status: AssignmentStatus.done)]),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(_tab('Done'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Chapter 05'), findsOneWidget);
+    expect(find.byType(Opacity), findsNothing);
   });
 }

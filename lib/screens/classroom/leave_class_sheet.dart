@@ -17,17 +17,22 @@ import '../../theme/app_typography.dart';
 ///
 /// 되돌릴 수 없는 행동이라 확인을 한 번 받는다. 성공하면 마이페이지로 보낸다 —
 /// 방금 나온 숙제 목록으로 돌아가면 빈 화면이 남는다.
-Future<void> showLeaveClassSheet(BuildContext context) {
+///
+/// [classroomId] 를 주면 그 반을 나간다 — 반이 여럿인 학습자가 숙제 목록에서 고른 반이다
+/// (2026-10-13 확정 §2-7). 없으면 아래 순서로 찾는다.
+Future<void> showLeaveClassSheet(BuildContext context, {int? classroomId}) {
   return showModalBottomSheet<void>(
     context: context,
     backgroundColor: const Color(0x00000000),
     isScrollControlled: true,
-    builder: (_) => const _LeaveClassSheet(),
+    builder: (_) => _LeaveClassSheet(classroomId: classroomId),
   );
 }
 
 class _LeaveClassSheet extends ConsumerStatefulWidget {
-  const _LeaveClassSheet();
+  const _LeaveClassSheet({this.classroomId});
+
+  final int? classroomId;
 
   @override
   ConsumerState<_LeaveClassSheet> createState() => _LeaveClassSheetState();
@@ -48,6 +53,7 @@ class _LeaveClassSheetState extends ConsumerState<_LeaveClassSheet> {
     // 기기 값만 믿으면 재설치·다른 기기에서 참여한 학습자가 나갈 수 없다(2026-10-12 PM-DEC-523).
     final store = ref.read(joinedClassStoreProvider);
     final int? id =
+        widget.classroomId ??
         ref
             .read(myAssignmentsProvider)
             .valueOrNull

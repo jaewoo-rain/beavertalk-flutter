@@ -11,6 +11,7 @@ class JoinedClassroom {
     required this.name,
     this.institution,
     this.teacherDisplayName,
+    this.term,
     this.rosterName = '',
     this.archived = false,
   });
@@ -22,6 +23,7 @@ class JoinedClassroom {
       name: json['name'] as String? ?? '',
       institution: json['institution'] as String?,
       teacherDisplayName: json['teacher_display_name'] as String?,
+      term: json['term'] as String?,
       rosterName: json['roster_name'] as String? ?? '',
       archived: json['archived'] as bool? ?? false,
     );
@@ -38,6 +40,9 @@ class JoinedClassroom {
 
   /// 교사 표시 이름. 없을 수 있다.
   final String? teacherDisplayName;
+
+  /// 학기 라벨(「2026 가을학기」). 교사가 안 적었으면 null 이다.
+  final String? term;
 
   /// 반에서 쓰는 내 이름.
   final String rosterName;

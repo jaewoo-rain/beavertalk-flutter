@@ -9,7 +9,7 @@ import '../../../l10n/app_localizations.dart';
 ///
 /// | 상황 | 표기 | tone |
 /// |---|---|---|
-/// | 마감 지남 | `미제출 · N일 지남` | danger |
+/// | 마감 지남 | `미제출` | danger |
 /// | D-3 이내 | `D-n` | warning |
 /// | D-4 이상 | `D-n` | neutral |
 /// | 완료 | `완료` | success |
@@ -24,10 +24,10 @@ HomeworkBadge assignmentBadge(
   final at = now ?? DateTime.now();
 
   if (a.status == AssignmentStatus.done) {
+    // 체크 글리프 없이 글자만(2026-10-13 완료 탭 확정 `6701:16760`).
     return HomeworkBadge(
       tone: HomeworkBadgeTone.success,
       label: l10n.hwBadgeDone,
-      showCheck: true,
     );
   }
 
@@ -43,11 +43,10 @@ HomeworkBadge assignmentBadge(
   final days = daysUntilDue(a.dueAt, at);
 
   if (a.overdue) {
-    final late = -days;
+    // 지난 날 수는 붙이지 않는다(2026-10-12 숙제 탭 확정 「미제출」만 · 구분용 가운뎃점 금지).
     return HomeworkBadge(
       tone: HomeworkBadgeTone.danger,
-      // 같은 날 안에서 시각만 지난 경우는 「N일 지남」이 0 이라 어색하다.
-      label: late > 0 ? l10n.hwBadgeOverdueDays(late) : l10n.hwBadgeOverdue,
+      label: l10n.hwBadgeOverdue,
     );
   }
 

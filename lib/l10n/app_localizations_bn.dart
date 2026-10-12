@@ -2516,7 +2516,8 @@ class AppLocalizationsBn extends AppLocalizations {
   }
 
   @override
-  String get hwTaskSpeakingDesc => 'আপনার উচ্চারণের স্কোর দেখুন';
+  String get hwTaskSpeakingDesc =>
+      'শেখা অভিব্যক্তিগুলো নিজে বলে বলে আয়ত্ত করুন।';
 
   @override
   String get hwTaskConversationDesc =>
@@ -3013,4 +3014,61 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get nationalitySearchEmpty => 'কোনো ফলাফল নেই';
+
+  @override
+  String get hwTabTodo => 'অসম্পূর্ণ';
+
+  @override
+  String hwTeacherName(String name) {
+    return 'শিক্ষক $name';
+  }
+
+  @override
+  String hwDetailClassLine(String className, String teacher) {
+    return '$className, শিক্ষক $teacher';
+  }
+
+  @override
+  String get hwCtaDone => 'সম্পন্ন';
+
+  @override
+  String hwWorkbookTitle(String chapter) {
+    return 'Chapter $chapter ওয়ার্কবুক';
+  }
+
+  @override
+  String hwWorkbookPages(int count) {
+    return '$count পৃষ্ঠা';
+  }
+
+  @override
+  String hwWorkbookWords(int count) {
+    return '$countটি শব্দ';
+  }
+
+  @override
+  String hwA11yActivityDone(String activity) {
+    return '$activity সম্পন্ন';
+  }
+
+  @override
+  String hwA11yActivityTodo(String activity) {
+    return '$activity অসম্পূর্ণ';
+  }
+
+  @override
+  String get hwTabTodoEmptyTitle => 'সব হোমওয়ার্ক শেষ হয়েছে';
+
+  @override
+  String get hwTabDoneEmptyTitle => 'এখনও কোনো হোমওয়ার্ক শেষ হয়নি';
+
+  @override
+  String get hwDetailOverdueNote =>
+      'শেষ তারিখ পেরিয়ে গেছে, তবে এখনও জমা দিতে পারবেন।';
+
+  @override
+  String get hwClassPickerTitle => 'ক্লাস বেছে নিন';
+
+  @override
+  String get hwA11yClassPicker => 'ক্লাস বদলান';
 }

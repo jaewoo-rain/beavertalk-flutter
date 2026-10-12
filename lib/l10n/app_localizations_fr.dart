@@ -2573,7 +2573,8 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get hwTaskSpeakingDesc => 'Vérifiez votre score de prononciation';
+  String get hwTaskSpeakingDesc =>
+      'Apprenez les expressions en les disant à voix haute.';
 
   @override
   String get hwTaskConversationDesc =>
@@ -3081,4 +3082,61 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get nationalitySearchEmpty => 'Aucun résultat';
+
+  @override
+  String get hwTabTodo => 'À faire';
+
+  @override
+  String hwTeacherName(String name) {
+    return 'Prof. $name';
+  }
+
+  @override
+  String hwDetailClassLine(String className, String teacher) {
+    return '$className, Prof. $teacher';
+  }
+
+  @override
+  String get hwCtaDone => 'Terminé';
+
+  @override
+  String hwWorkbookTitle(String chapter) {
+    return 'Cahier du Chapter $chapter';
+  }
+
+  @override
+  String hwWorkbookPages(int count) {
+    return '$count pages';
+  }
+
+  @override
+  String hwWorkbookWords(int count) {
+    return '$count mots';
+  }
+
+  @override
+  String hwA11yActivityDone(String activity) {
+    return '$activity terminé';
+  }
+
+  @override
+  String hwA11yActivityTodo(String activity) {
+    return '$activity à faire';
+  }
+
+  @override
+  String get hwTabTodoEmptyTitle => 'Vous avez terminé tous vos devoirs';
+
+  @override
+  String get hwTabDoneEmptyTitle => 'Aucun devoir terminé pour l’instant';
+
+  @override
+  String get hwDetailOverdueNote =>
+      'La date limite est passée, mais vous pouvez encore le rendre.';
+
+  @override
+  String get hwClassPickerTitle => 'Choisir une classe';
+
+  @override
+  String get hwA11yClassPicker => 'Changer de classe';
 }

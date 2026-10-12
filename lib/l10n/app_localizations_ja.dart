@@ -2453,7 +2453,7 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get hwTaskSpeakingDesc => '発音スコアを確認しましょう';
+  String get hwTaskSpeakingDesc => '習った表現を実際に声に出して身につけましょう。';
 
   @override
   String get hwTaskConversationDesc => '学んだ表現を実際の会話で使ってみましょう';
@@ -2937,4 +2937,60 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get nationalitySearchEmpty => '検索結果がありません';
+
+  @override
+  String get hwTabTodo => '未完了';
+
+  @override
+  String hwTeacherName(String name) {
+    return '$name先生';
+  }
+
+  @override
+  String hwDetailClassLine(String className, String teacher) {
+    return '$className、$teacher先生';
+  }
+
+  @override
+  String get hwCtaDone => '学習完了';
+
+  @override
+  String hwWorkbookTitle(String chapter) {
+    return 'Chapter $chapter ワークブック';
+  }
+
+  @override
+  String hwWorkbookPages(int count) {
+    return '$countページ';
+  }
+
+  @override
+  String hwWorkbookWords(int count) {
+    return '単語$count個';
+  }
+
+  @override
+  String hwA11yActivityDone(String activity) {
+    return '$activity 完了';
+  }
+
+  @override
+  String hwA11yActivityTodo(String activity) {
+    return '$activity 未完了';
+  }
+
+  @override
+  String get hwTabTodoEmptyTitle => '宿題をすべて終えました';
+
+  @override
+  String get hwTabDoneEmptyTitle => 'まだ完了した宿題はありません';
+
+  @override
+  String get hwDetailOverdueNote => '締め切りは過ぎましたが、今やっても提出できます。';
+
+  @override
+  String get hwClassPickerTitle => 'クラスを選択';
+
+  @override
+  String get hwA11yClassPicker => 'クラスを変更';
 }

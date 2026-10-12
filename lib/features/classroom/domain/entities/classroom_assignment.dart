@@ -87,6 +87,8 @@ class ClassroomAssignment {
     this.classroomId,
     this.closedAt,
     this.workbookUrl,
+    this.workbookPageCount,
+    this.workbookWordCount,
     this.source = AssignmentSource.curriculum,
     this.title,
     required this.grade,
@@ -121,6 +123,12 @@ class ClassroomAssignment {
       // (급수·챕터 1권). 평평한 `workbook_url` 로 오던 초안은 폐기됐다.
       workbookUrl: json['workbook'] is Map
           ? (json['workbook'] as Map)['view_url'] as String?
+          : null,
+      workbookPageCount: json['workbook'] is Map
+          ? ((json['workbook'] as Map)['page_count'] as num?)?.toInt()
+          : null,
+      workbookWordCount: json['workbook'] is Map
+          ? ((json['workbook'] as Map)['word_count'] as num?)?.toInt()
           : null,
       source: AssignmentSource.fromCode(json['source'] as String?),
       title: json['title'] as String?,
@@ -184,6 +192,12 @@ class ClassroomAssignment {
   ///
   /// 앱 안에서 열지 않는다 — 뷰어를 들이면 30 로케일 폰트가 따라온다.
   final String? workbookUrl;
+
+  /// 워크북 쪽수(`workbook.page_count`). 서버가 모르면 null 이다.
+  final int? workbookPageCount;
+
+  /// 워크북에 담긴 어휘 수(`workbook.word_count`). 서버가 모르면 null 이다.
+  final int? workbookWordCount;
 
   /// 닫혀서 더 제출할 수 없는 과제인지.
   bool get isClosed => closedAt != null;

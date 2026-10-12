@@ -2521,7 +2521,8 @@ class AppLocalizationsMn extends AppLocalizations {
   }
 
   @override
-  String get hwTaskSpeakingDesc => 'Дуудлагын оноогоо шалгаарай';
+  String get hwTaskSpeakingDesc =>
+      'Сурсан хэллэгээ өөрөө хэлж дадлага хийгээрэй.';
 
   @override
   String get hwTaskConversationDesc => 'Сурсанаа жинхэнэ ярианд хэрэглээрэй';
@@ -3017,4 +3018,61 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get nationalitySearchEmpty => 'Илэрц олдсонгүй';
+
+  @override
+  String get hwTabTodo => 'Дуусаагүй';
+
+  @override
+  String hwTeacherName(String name) {
+    return '$name багш';
+  }
+
+  @override
+  String hwDetailClassLine(String className, String teacher) {
+    return '$className, $teacher багш';
+  }
+
+  @override
+  String get hwCtaDone => 'Дууссан';
+
+  @override
+  String hwWorkbookTitle(String chapter) {
+    return 'Chapter $chapter дасгалын ном';
+  }
+
+  @override
+  String hwWorkbookPages(int count) {
+    return '$count хуудас';
+  }
+
+  @override
+  String hwWorkbookWords(int count) {
+    return '$count үг';
+  }
+
+  @override
+  String hwA11yActivityDone(String activity) {
+    return '$activity дууссан';
+  }
+
+  @override
+  String hwA11yActivityTodo(String activity) {
+    return '$activity дуусаагүй';
+  }
+
+  @override
+  String get hwTabTodoEmptyTitle => 'Бүх гэрийн даалгавраа дуусгалаа';
+
+  @override
+  String get hwTabDoneEmptyTitle => 'Дууссан гэрийн даалгавар алга';
+
+  @override
+  String get hwDetailOverdueNote =>
+      'Хугацаа өнгөрсөн ч одоо хийвэл илгээгдэнэ.';
+
+  @override
+  String get hwClassPickerTitle => 'Анги сонгох';
+
+  @override
+  String get hwA11yClassPicker => 'Анги солих';
 }

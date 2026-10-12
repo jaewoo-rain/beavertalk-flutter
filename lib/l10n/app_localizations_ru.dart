@@ -2542,7 +2542,8 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get hwTaskSpeakingDesc => 'Проверьте свою оценку произношения';
+  String get hwTaskSpeakingDesc =>
+      'Осваивайте выражения, проговаривая их вслух.';
 
   @override
   String get hwTaskConversationDesc =>
@@ -3045,4 +3046,61 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get nationalitySearchEmpty => 'Ничего не найдено';
+
+  @override
+  String get hwTabTodo => 'Не выполнено';
+
+  @override
+  String hwTeacherName(String name) {
+    return 'Преподаватель $name';
+  }
+
+  @override
+  String hwDetailClassLine(String className, String teacher) {
+    return '$className, преподаватель $teacher';
+  }
+
+  @override
+  String get hwCtaDone => 'Выполнено';
+
+  @override
+  String hwWorkbookTitle(String chapter) {
+    return 'Рабочая тетрадь Chapter $chapter';
+  }
+
+  @override
+  String hwWorkbookPages(int count) {
+    return '$count стр.';
+  }
+
+  @override
+  String hwWorkbookWords(int count) {
+    return '$count слов';
+  }
+
+  @override
+  String hwA11yActivityDone(String activity) {
+    return '$activity: выполнено';
+  }
+
+  @override
+  String hwA11yActivityTodo(String activity) {
+    return '$activity: не выполнено';
+  }
+
+  @override
+  String get hwTabTodoEmptyTitle => 'Вы выполнили все домашние задания';
+
+  @override
+  String get hwTabDoneEmptyTitle => 'Выполненных домашних заданий пока нет';
+
+  @override
+  String get hwDetailOverdueNote =>
+      'Срок прошёл, но вы ещё можете сдать задание.';
+
+  @override
+  String get hwClassPickerTitle => 'Выбор группы';
+
+  @override
+  String get hwA11yClassPicker => 'Сменить группу';
 }

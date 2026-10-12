@@ -2527,7 +2527,7 @@ class AppLocalizationsUr extends AppLocalizations {
   }
 
   @override
-  String get hwTaskSpeakingDesc => 'اپنے تلفظ کا اسکور دیکھیں';
+  String get hwTaskSpeakingDesc => 'سیکھے ہوئے جملے خود بول کر یاد کریں۔';
 
   @override
   String get hwTaskConversationDesc =>
@@ -3026,4 +3026,61 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get nationalitySearchEmpty => 'کوئی نتیجہ نہیں';
+
+  @override
+  String get hwTabTodo => 'نامکمل';
+
+  @override
+  String hwTeacherName(String name) {
+    return 'استاد $name';
+  }
+
+  @override
+  String hwDetailClassLine(String className, String teacher) {
+    return '$className، استاد $teacher';
+  }
+
+  @override
+  String get hwCtaDone => 'مکمل';
+
+  @override
+  String hwWorkbookTitle(String chapter) {
+    return 'Chapter $chapter ورک بک';
+  }
+
+  @override
+  String hwWorkbookPages(int count) {
+    return '$count صفحات';
+  }
+
+  @override
+  String hwWorkbookWords(int count) {
+    return '$count الفاظ';
+  }
+
+  @override
+  String hwA11yActivityDone(String activity) {
+    return '$activity مکمل';
+  }
+
+  @override
+  String hwA11yActivityTodo(String activity) {
+    return '$activity نامکمل';
+  }
+
+  @override
+  String get hwTabTodoEmptyTitle => 'آپ نے سارا ہوم ورک مکمل کر لیا';
+
+  @override
+  String get hwTabDoneEmptyTitle => 'ابھی تک کوئی ہوم ورک مکمل نہیں ہوا';
+
+  @override
+  String get hwDetailOverdueNote =>
+      'آخری تاریخ گزر گئی ہے، لیکن آپ ابھی بھی جمع کرا سکتے ہیں۔';
+
+  @override
+  String get hwClassPickerTitle => 'کلاس منتخب کریں';
+
+  @override
+  String get hwA11yClassPicker => 'کلاس بدلیں';
 }

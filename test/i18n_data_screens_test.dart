@@ -30,7 +30,7 @@ void main() {
     'RecordListData': 'Ordering food at a restaurant',
     'HwJoinConsentChecked': 'What your teacher sees',
     'HwJoinDoneData': 'Maximilian-Alexander',
-    'HwAssignmentListData': 'Not submitted, 2d late',
+    'HwAssignmentListData': 'Rehabilitation',
     'PaymentHistoryData': 'first year discount applied',
     'PaymentHistoryEmpty': 'No payments yet',
   };

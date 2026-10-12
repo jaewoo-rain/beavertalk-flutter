@@ -2544,7 +2544,8 @@ class AppLocalizationsHu extends AppLocalizations {
   }
 
   @override
-  String get hwTaskSpeakingDesc => 'Nézd meg a kiejtési pontszámodat';
+  String get hwTaskSpeakingDesc =>
+      'Tanuld meg a kifejezéseket hangosan kimondva.';
 
   @override
   String get hwTaskConversationDesc =>
@@ -3043,4 +3044,60 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get nationalitySearchEmpty => 'Nincs találat';
+
+  @override
+  String get hwTabTodo => 'Hátralévő';
+
+  @override
+  String hwTeacherName(String name) {
+    return '$name tanár';
+  }
+
+  @override
+  String hwDetailClassLine(String className, String teacher) {
+    return '$className, $teacher tanár';
+  }
+
+  @override
+  String get hwCtaDone => 'Kész';
+
+  @override
+  String hwWorkbookTitle(String chapter) {
+    return 'Chapter $chapter munkafüzet';
+  }
+
+  @override
+  String hwWorkbookPages(int count) {
+    return '$count oldal';
+  }
+
+  @override
+  String hwWorkbookWords(int count) {
+    return '$count szó';
+  }
+
+  @override
+  String hwA11yActivityDone(String activity) {
+    return '$activity kész';
+  }
+
+  @override
+  String hwA11yActivityTodo(String activity) {
+    return '$activity hátravan';
+  }
+
+  @override
+  String get hwTabTodoEmptyTitle => 'Minden házi feladatot elvégeztél';
+
+  @override
+  String get hwTabDoneEmptyTitle => 'Még nincs elvégzett házi feladat';
+
+  @override
+  String get hwDetailOverdueNote => 'A határidő lejárt, de most is beadhatod.';
+
+  @override
+  String get hwClassPickerTitle => 'Csoport kiválasztása';
+
+  @override
+  String get hwA11yClassPicker => 'Csoport váltása';
 }

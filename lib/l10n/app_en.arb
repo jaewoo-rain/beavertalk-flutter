@@ -1920,7 +1920,7 @@
       }
     }
   },
-  "hwTaskSpeakingDesc": "Check your pronunciation score",
+  "hwTaskSpeakingDesc": "Learn the expressions by saying them out loud.",
   "@hwTaskSpeakingDesc": {
     "description": "Homework (class join / assignments) copy"
   },
@@ -2361,5 +2361,33 @@
   "nationalitySearchEmpty": "No results",
   "@nationalitySearchEmpty": {
     "description": "Shown when the country search has no match."
-  }
+  },
+  "hwTabTodo": "To do",
+  "@hwTabTodo": {"description": "Homework list tab: assignments not finished yet (in progress + upcoming)."},
+  "hwTeacherName": "Teacher {name}",
+  "@hwTeacherName": {"description": "Homework list class header: the teacher's display name.", "placeholders": {"name": {"type": "String"}}},
+  "hwDetailClassLine": "{className}, Teacher {teacher}",
+  "@hwDetailClassLine": {"description": "Homework detail header line under the title: class name and teacher.", "placeholders": {"className": {"type": "String"}, "teacher": {"type": "String"}}},
+  "hwCtaDone": "Completed",
+  "@hwCtaDone": {"description": "Disabled button on the conversation card once the conversation was done (once per homework)."},
+  "hwWorkbookTitle": "Chapter {chapter} workbook",
+  "@hwWorkbookTitle": {"description": "Workbook card info line: which chapter's workbook.", "placeholders": {"chapter": {"type": "String"}}},
+  "hwWorkbookPages": "{count} pages",
+  "@hwWorkbookPages": {"description": "Workbook card info line: page count.", "placeholders": {"count": {"type": "int"}}},
+  "hwWorkbookWords": "{count} words",
+  "@hwWorkbookWords": {"description": "Workbook card info line: vocabulary count.", "placeholders": {"count": {"type": "int"}}},
+  "hwA11yActivityDone": "{activity} done",
+  "@hwA11yActivityDone": {"description": "Screen-reader label of an activity icon on a homework card (done).", "placeholders": {"activity": {"type": "String"}}},
+  "hwA11yActivityTodo": "{activity} not done",
+  "@hwA11yActivityTodo": {"description": "Screen-reader label of an activity icon on a homework card (not done).", "placeholders": {"activity": {"type": "String"}}},
+  "hwTabTodoEmptyTitle": "You finished all your homework",
+  "@hwTabTodoEmptyTitle": {"description": "Homework list empty state on the To do tab when everything is finished."},
+  "hwTabDoneEmptyTitle": "No finished homework yet",
+  "@hwTabDoneEmptyTitle": {"description": "Homework list empty state on the Done tab when nothing is finished yet."},
+  "hwDetailOverdueNote": "The due date has passed, but you can still submit it now.",
+  "@hwDetailOverdueNote": {"description": "Homework detail note under the header when the due date passed but it can still be submitted."},
+  "hwClassPickerTitle": "Choose a class",
+  "@hwClassPickerTitle": {"description": "Title of the class picker sheet (learner in two or more classes)."},
+  "hwA11yClassPicker": "Change class",
+  "@hwA11yClassPicker": {"description": "Screen-reader label of the class name row that opens the class picker."}
 }

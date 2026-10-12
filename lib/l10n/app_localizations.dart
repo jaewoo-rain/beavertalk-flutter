@@ -4681,7 +4681,7 @@ abstract class AppLocalizations {
   /// Homework (class join / assignments) copy
   ///
   /// In en, this message translates to:
-  /// **'Check your pronunciation score'**
+  /// **'Learn the expressions by saying them out loud.'**
   String get hwTaskSpeakingDesc;
 
   /// Homework (class join / assignments) copy
@@ -5565,6 +5565,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No results'**
   String get nationalitySearchEmpty;
+
+  /// Homework list tab: assignments not finished yet (in progress + upcoming).
+  ///
+  /// In en, this message translates to:
+  /// **'To do'**
+  String get hwTabTodo;
+
+  /// Homework list class header: the teacher's display name.
+  ///
+  /// In en, this message translates to:
+  /// **'Teacher {name}'**
+  String hwTeacherName(String name);
+
+  /// Homework detail header line under the title: class name and teacher.
+  ///
+  /// In en, this message translates to:
+  /// **'{className}, Teacher {teacher}'**
+  String hwDetailClassLine(String className, String teacher);
+
+  /// Disabled button on the conversation card once the conversation was done (once per homework).
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get hwCtaDone;
+
+  /// Workbook card info line: which chapter's workbook.
+  ///
+  /// In en, this message translates to:
+  /// **'Chapter {chapter} workbook'**
+  String hwWorkbookTitle(String chapter);
+
+  /// Workbook card info line: page count.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} pages'**
+  String hwWorkbookPages(int count);
+
+  /// Workbook card info line: vocabulary count.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} words'**
+  String hwWorkbookWords(int count);
+
+  /// Screen-reader label of an activity icon on a homework card (done).
+  ///
+  /// In en, this message translates to:
+  /// **'{activity} done'**
+  String hwA11yActivityDone(String activity);
+
+  /// Screen-reader label of an activity icon on a homework card (not done).
+  ///
+  /// In en, this message translates to:
+  /// **'{activity} not done'**
+  String hwA11yActivityTodo(String activity);
+
+  /// Homework list empty state on the To do tab when everything is finished.
+  ///
+  /// In en, this message translates to:
+  /// **'You finished all your homework'**
+  String get hwTabTodoEmptyTitle;
+
+  /// Homework list empty state on the Done tab when nothing is finished yet.
+  ///
+  /// In en, this message translates to:
+  /// **'No finished homework yet'**
+  String get hwTabDoneEmptyTitle;
+
+  /// Homework detail note under the header when the due date passed but it can still be submitted.
+  ///
+  /// In en, this message translates to:
+  /// **'The due date has passed, but you can still submit it now.'**
+  String get hwDetailOverdueNote;
+
+  /// Title of the class picker sheet (learner in two or more classes).
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a class'**
+  String get hwClassPickerTitle;
+
+  /// Screen-reader label of the class name row that opens the class picker.
+  ///
+  /// In en, this message translates to:
+  /// **'Change class'**
+  String get hwA11yClassPicker;
 }
 
 class _AppLocalizationsDelegate
