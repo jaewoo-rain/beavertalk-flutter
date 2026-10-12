@@ -9,8 +9,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:beavertalk/features/classroom/domain/entities/classroom_assignment.dart';
+import 'package:beavertalk/features/classroom/domain/entities/classroom_membership.dart';
 import 'package:beavertalk/features/classroom/presentation/classroom_providers.dart';
 import 'package:beavertalk/features/classroom/domain/repositories/classroom_repository.dart';
 import 'package:beavertalk/l10n/app_localizations.dart';
@@ -71,6 +73,16 @@ class _AssignmentsRepository implements ClassroomRepository {
     requests++;
     return pending?.future ?? items;
   }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+class _LeaveRepository implements ClassroomRepository {
+  final left = <int>[];
+
+  @override
+  Future<void> leave(int classroomId) async => left.add(classroomId);
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
@@ -264,6 +276,43 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Leave the class'), findsOneWidget);
+  });
+
+  testWidgets('과제가 0개인 반도 나가기 링크가 있다(2026-10-12 PM-DEC-523)', (tester) async {
+    await tester.pumpWidget(_host(const []));
+    await tester.pumpAndSettle();
+
+    expect(find.text('No homework yet'), findsOneWidget);
+    expect(find.text('Leave the class'), findsOneWidget);
+  });
+
+  testWidgets('기기 저장값이 없어도 내 반 목록의 id 로 나간다(재설치·다른 기기 참여)', (tester) async {
+    SharedPreferences.setMockInitialValues({}); // 기기에 적어 둔 반 id 없음
+    final repo = _LeaveRepository();
+    await tester.pumpWidget(ProviderScope(
+      overrides: [
+        myAssignmentsProvider.overrideWith((ref) async => const []),
+        myClassroomsProvider.overrideWith(
+          (ref) async => const [JoinedClassroom(classroomId: 3, name: 'QA B')],
+        ),
+        classroomRepositoryProvider.overrideWithValue(repo),
+      ],
+      child: MaterialApp(
+        locale: const Locale('en'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: const AssignmentListScreen(),
+        routes: {'/mypage': (_) => const Text('MYPAGE')},
+      ),
+    ));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Leave the class'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Leave'));
+    await tester.pumpAndSettle();
+
+    expect(repo.left, [3]);
   });
 
   testWidgets('미제출 배지는 지난 날수를 말한다', (tester) async {

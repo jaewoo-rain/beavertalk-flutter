@@ -137,19 +137,7 @@ class _Body extends StatelessWidget {
               const SizedBox(height: AppSpacing.s12),
             ],
             const SizedBox(height: AppSpacing.s4),
-            Center(
-              child: GestureDetector(
-                onTap: () => showLeaveClassSheet(context),
-                behavior: HitTestBehavior.opaque,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: AppSpacing.s12),
-                  child: Text(
-                    l10n.hwLeaveClassLink,
-                    style: AppType.body1.r.copyWith(color: c.labelNormal),
-                  ),
-                ),
-              ),
-            ),
+            const _LeaveClassLink(),
           ],
         ),
       ),
@@ -213,10 +201,39 @@ class _Empty extends StatelessWidget {
                       textAlign: TextAlign.center,
                       style: AppType.body1.r.copyWith(color: c.labelNormal),
                     ),
+                    const SizedBox(height: AppSpacing.s24),
+                    const _LeaveClassLink(),
                   ],
                 ),
               ),
             ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// 「반 나가기」 링크 — 과제가 있을 때(목록 끝)와 없을 때(안내 아래) 둘 다 같은 것을 쓴다.
+///
+/// 🔴 예전엔 목록 본문에만 있어서 **과제가 0개인 반은 나갈 길이 없었다**(2026-10-12 사용자
+///    「반 나가기가 없어」 · PM-DEC-522·523).
+class _LeaveClassLink extends StatelessWidget {
+  const _LeaveClassLink();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final c = context.c;
+    return Center(
+      child: GestureDetector(
+        onTap: () => showLeaveClassSheet(context),
+        behavior: HitTestBehavior.opaque,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: AppSpacing.s12),
+          child: Text(
+            l10n.hwLeaveClassLink,
+            style: AppType.body1.r.copyWith(color: c.labelNormal),
           ),
         ),
       ),
