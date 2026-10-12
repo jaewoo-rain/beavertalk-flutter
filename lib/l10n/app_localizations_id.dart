@@ -3025,5 +3025,8 @@ class AppLocalizationsId extends AppLocalizations {
   String get nationalityNotSet => 'Belum diatur';
 
   @override
+  String get nativeLanguageLabel => 'Bahasa ibu';
+
+  @override
   String get nationalitySearchEmpty => 'Tidak ada hasil';
 }

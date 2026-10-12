@@ -900,5 +900,6 @@
   "nationalityCurrent": "現在の国籍",
   "nationalityLabel": "国籍",
   "nationalityNotSet": "未設定",
+  "nativeLanguageLabel": "母国語",
   "nationalitySearchEmpty": "検索結果がありません"
 }

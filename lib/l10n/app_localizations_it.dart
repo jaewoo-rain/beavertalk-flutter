@@ -3058,5 +3058,8 @@ class AppLocalizationsIt extends AppLocalizations {
   String get nationalityNotSet => 'Non impostata';
 
   @override
+  String get nativeLanguageLabel => 'Lingua madre';
+
+  @override
   String get nationalitySearchEmpty => 'Nessun risultato';
 }

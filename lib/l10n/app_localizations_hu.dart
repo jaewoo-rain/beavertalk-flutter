@@ -3039,5 +3039,8 @@ class AppLocalizationsHu extends AppLocalizations {
   String get nationalityNotSet => 'Nincs megadva';
 
   @override
+  String get nativeLanguageLabel => 'Anyanyelv';
+
+  @override
   String get nationalitySearchEmpty => 'Nincs találat';
 }

@@ -3016,5 +3016,8 @@ class AppLocalizationsKk extends AppLocalizations {
   String get nationalityNotSet => 'Орнатылмаған';
 
   @override
+  String get nativeLanguageLabel => 'Ана тілі';
+
+  @override
   String get nationalitySearchEmpty => 'Нәтиже жоқ';
 }

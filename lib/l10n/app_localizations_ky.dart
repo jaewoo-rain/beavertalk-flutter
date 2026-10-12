@@ -3023,5 +3023,8 @@ class AppLocalizationsKy extends AppLocalizations {
   String get nationalityNotSet => 'Коюлган эмес';
 
   @override
+  String get nativeLanguageLabel => 'Эне тил';
+
+  @override
   String get nationalitySearchEmpty => 'Натыйжа жок';
 }

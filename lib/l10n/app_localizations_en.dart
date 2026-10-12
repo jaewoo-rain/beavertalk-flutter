@@ -3027,5 +3027,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get nationalityNotSet => 'Not set';
 
   @override
+  String get nativeLanguageLabel => 'Native language';
+
+  @override
   String get nationalitySearchEmpty => 'No results';
 }

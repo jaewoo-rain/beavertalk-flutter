@@ -3008,5 +3008,8 @@ class AppLocalizationsKm extends AppLocalizations {
   String get nationalityNotSet => 'មិនទាន់កំណត់';
 
   @override
+  String get nativeLanguageLabel => 'ភាសាកំណើត';
+
+  @override
   String get nationalitySearchEmpty => 'គ្មានលទ្ធផល';
 }

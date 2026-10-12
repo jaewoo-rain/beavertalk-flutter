@@ -3040,5 +3040,8 @@ class AppLocalizationsUz extends AppLocalizations {
   String get nationalityNotSet => 'Belgilanmagan';
 
   @override
+  String get nativeLanguageLabel => 'Ona tili';
+
+  @override
   String get nationalitySearchEmpty => 'Natija yo\'q';
 }

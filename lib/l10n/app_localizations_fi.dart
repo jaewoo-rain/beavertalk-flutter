@@ -3036,5 +3036,8 @@ class AppLocalizationsFi extends AppLocalizations {
   String get nationalityNotSet => 'Ei asetettu';
 
   @override
+  String get nativeLanguageLabel => 'Äidinkieli';
+
+  @override
   String get nationalitySearchEmpty => 'Ei tuloksia';
 }

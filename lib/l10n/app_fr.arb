@@ -900,5 +900,6 @@
   "nationalityCurrent": "Actuelle",
   "nationalityLabel": "Nationalité",
   "nationalityNotSet": "Non défini",
+  "nativeLanguageLabel": "Langue maternelle",
   "nationalitySearchEmpty": "Aucun résultat"
 }

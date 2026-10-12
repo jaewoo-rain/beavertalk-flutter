@@ -900,5 +900,6 @@
   "nationalityCurrent": "Одоогийн",
   "nationalityLabel": "Иргэншил",
   "nationalityNotSet": "Тохируулаагүй",
+  "nativeLanguageLabel": "Эх хэл",
   "nationalitySearchEmpty": "Илэрц олдсонгүй"
 }

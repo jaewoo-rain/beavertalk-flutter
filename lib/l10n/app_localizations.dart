@@ -5554,6 +5554,12 @@ abstract class AppLocalizations {
   /// **'Not set'**
   String get nationalityNotSet;
 
+  /// Settings Account row label for the native language (separate from the app UI language). Value shows the language name or the nationalityNotSet text.
+  ///
+  /// In en, this message translates to:
+  /// **'Native language'**
+  String get nativeLanguageLabel;
+
   /// Shown when the country search has no match.
   ///
   /// In en, this message translates to:

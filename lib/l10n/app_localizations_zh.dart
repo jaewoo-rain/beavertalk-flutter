@@ -2924,5 +2924,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get nationalityNotSet => '未设置';
 
   @override
+  String get nativeLanguageLabel => '母语';
+
+  @override
   String get nationalitySearchEmpty => '没有搜索结果';
 }

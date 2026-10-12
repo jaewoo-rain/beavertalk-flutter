@@ -3030,5 +3030,8 @@ class AppLocalizationsMy extends AppLocalizations {
   String get nationalityNotSet => 'မသတ်မှတ်ရသေး';
 
   @override
+  String get nativeLanguageLabel => 'မိခင်ဘာသာစကား';
+
+  @override
   String get nationalitySearchEmpty => 'ရလဒ် မရှိပါ';
 }

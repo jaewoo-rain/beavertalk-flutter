@@ -3007,5 +3007,8 @@ class AppLocalizationsSi extends AppLocalizations {
   String get nationalityNotSet => 'සකසා නැත';
 
   @override
+  String get nativeLanguageLabel => 'මව් භාෂාව';
+
+  @override
   String get nationalitySearchEmpty => 'ප්‍රතිඵල නැත';
 }

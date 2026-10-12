@@ -900,5 +900,6 @@
   "nationalityCurrent": "현재 국적",
   "nationalityLabel": "국적",
   "nationalityNotSet": "미설정",
+  "nativeLanguageLabel": "모국어",
   "nationalitySearchEmpty": "검색 결과가 없어요"
 }

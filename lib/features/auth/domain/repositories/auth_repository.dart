@@ -41,6 +41,10 @@ abstract interface class AuthRepository {
   /// the updated member. Throws [AppException] on failure.
   Future<Member> updateLanguage(String language);
 
+  /// 모국어를 다시 고른다(`PATCH /members/me` `native_language` · 2026-10-12). 앱 화면 언어는
+  /// 그대로다. 갱신된 회원을 돌려준다. 실패 시 [AppException].
+  Future<Member> updateNativeLanguage(String nativeLanguage);
+
   /// Updates the language the member is **learning** (`PATCH /members/me`,
   /// server `target_language`) and returns the updated member.
   ///

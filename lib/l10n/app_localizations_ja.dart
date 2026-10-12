@@ -2933,5 +2933,8 @@ class AppLocalizationsJa extends AppLocalizations {
   String get nationalityNotSet => '未設定';
 
   @override
+  String get nativeLanguageLabel => '母国語';
+
+  @override
   String get nationalitySearchEmpty => '検索結果がありません';
 }

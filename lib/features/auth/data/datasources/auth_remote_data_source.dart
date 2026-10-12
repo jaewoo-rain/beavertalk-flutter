@@ -108,6 +108,16 @@ class AuthRemoteDataSource {
     return MemberDto.fromJson(res.data!);
   }
 
+  /// `PATCH /members/me` (Bearer) — 모국어 재선택(ISO 639-1 · 서버 `native_language` · 2026-10-12).
+  /// 앱 화면 언어(`language`)는 보내지 않는다 — 두 칸은 따로다(F066).
+  Future<MemberDto> updateNativeLanguage(String nativeLanguage) async {
+    final res = await _dio.patch<Map<String, dynamic>>(
+      ApiEndpoints.membersMe,
+      data: {'native_language': nativeLanguage},
+    );
+    return MemberDto.fromJson(res.data!);
+  }
+
   /// `PATCH /members/me` (Bearer) — the language the member is **learning**
   /// (server `target_language`). This is the single source for the call's
   /// target language; the call socket no longer sends it.

@@ -3055,5 +3055,8 @@ class AppLocalizationsEs extends AppLocalizations {
   String get nationalityNotSet => 'Sin definir';
 
   @override
+  String get nativeLanguageLabel => 'Idioma nativo';
+
+  @override
   String get nationalitySearchEmpty => 'Sin resultados';
 }

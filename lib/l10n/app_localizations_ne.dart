@@ -3013,5 +3013,8 @@ class AppLocalizationsNe extends AppLocalizations {
   String get nationalityNotSet => 'सेट गरिएको छैन';
 
   @override
+  String get nativeLanguageLabel => 'मातृभाषा';
+
+  @override
   String get nationalitySearchEmpty => 'कुनै नतिजा छैन';
 }

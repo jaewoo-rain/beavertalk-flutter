@@ -900,5 +900,6 @@
   "nationalityCurrent": "हालको",
   "nationalityLabel": "राष्ट्रियता",
   "nationalityNotSet": "सेट गरिएको छैन",
+  "nativeLanguageLabel": "मातृभाषा",
   "nationalitySearchEmpty": "कुनै नतिजा छैन"
 }

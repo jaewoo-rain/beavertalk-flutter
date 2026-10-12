@@ -2354,6 +2354,10 @@
   "@nationalityNotSet": {
     "description": "Settings Account nationality row value when no country is chosen."
   },
+  "nativeLanguageLabel": "Native language",
+  "@nativeLanguageLabel": {
+    "description": "Settings Account row label for the native language (separate from the app UI language). Value shows the language name or the nationalityNotSet text."
+  },
   "nationalitySearchEmpty": "No results",
   "@nationalitySearchEmpty": {
     "description": "Shown when the country search has no match."

@@ -3013,5 +3013,8 @@ class AppLocalizationsMn extends AppLocalizations {
   String get nationalityNotSet => 'Тохируулаагүй';
 
   @override
+  String get nativeLanguageLabel => 'Эх хэл';
+
+  @override
   String get nationalitySearchEmpty => 'Илэрц олдсонгүй';
 }

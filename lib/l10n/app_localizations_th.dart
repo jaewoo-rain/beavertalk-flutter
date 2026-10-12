@@ -2994,5 +2994,8 @@ class AppLocalizationsTh extends AppLocalizations {
   String get nationalityNotSet => 'ยังไม่ได้ตั้งค่า';
 
   @override
+  String get nativeLanguageLabel => 'ภาษาแม่';
+
+  @override
   String get nationalitySearchEmpty => 'ไม่พบผลลัพธ์';
 }

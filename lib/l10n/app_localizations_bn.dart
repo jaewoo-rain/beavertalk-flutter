@@ -3009,5 +3009,8 @@ class AppLocalizationsBn extends AppLocalizations {
   String get nationalityNotSet => 'সেট করা নেই';
 
   @override
+  String get nativeLanguageLabel => 'মাতৃভাষা';
+
+  @override
   String get nationalitySearchEmpty => 'কোনো ফলাফল নেই';
 }

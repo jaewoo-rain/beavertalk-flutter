@@ -3071,5 +3071,8 @@ class AppLocalizationsDe extends AppLocalizations {
   String get nationalityNotSet => 'Nicht festgelegt';
 
   @override
+  String get nativeLanguageLabel => 'Muttersprache';
+
+  @override
   String get nationalitySearchEmpty => 'Keine Ergebnisse';
 }

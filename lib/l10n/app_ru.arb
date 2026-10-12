@@ -900,5 +900,6 @@
   "nationalityCurrent": "Текущее",
   "nationalityLabel": "Гражданство",
   "nationalityNotSet": "Не указано",
+  "nativeLanguageLabel": "Родной язык",
   "nationalitySearchEmpty": "Ничего не найдено"
 }

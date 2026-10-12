@@ -3012,5 +3012,8 @@ class AppLocalizationsTr extends AppLocalizations {
   String get nationalityNotSet => 'Ayarlanmadı';
 
   @override
+  String get nativeLanguageLabel => 'Ana dil';
+
+  @override
   String get nationalitySearchEmpty => 'Sonuç yok';
 }

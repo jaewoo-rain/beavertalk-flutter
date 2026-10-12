@@ -3022,5 +3022,8 @@ class AppLocalizationsUr extends AppLocalizations {
   String get nationalityNotSet => 'مقرر نہیں';
 
   @override
+  String get nativeLanguageLabel => 'مادری زبان';
+
+  @override
   String get nationalitySearchEmpty => 'کوئی نتیجہ نہیں';
 }

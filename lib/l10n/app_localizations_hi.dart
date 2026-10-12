@@ -3014,5 +3014,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get nationalityNotSet => 'सेट नहीं';
 
   @override
+  String get nativeLanguageLabel => 'मातृभाषा';
+
+  @override
   String get nationalitySearchEmpty => 'कोई परिणाम नहीं';
 }

@@ -900,5 +900,6 @@
   "nationalityCurrent": "الحالية",
   "nationalityLabel": "الجنسية",
   "nationalityNotSet": "غير محددة",
+  "nativeLanguageLabel": "اللغة الأم",
   "nationalitySearchEmpty": "لا توجد نتائج"
 }

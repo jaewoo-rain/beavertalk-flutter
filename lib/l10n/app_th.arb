@@ -900,5 +900,6 @@
   "nationalityCurrent": "ปัจจุบัน",
   "nationalityLabel": "สัญชาติ",
   "nationalityNotSet": "ยังไม่ได้ตั้งค่า",
+  "nativeLanguageLabel": "ภาษาแม่",
   "nationalitySearchEmpty": "ไม่พบผลลัพธ์"
 }

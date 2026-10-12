@@ -3077,5 +3077,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get nationalityNotSet => 'Non défini';
 
   @override
+  String get nativeLanguageLabel => 'Langue maternelle';
+
+  @override
   String get nationalitySearchEmpty => 'Aucun résultat';
 }

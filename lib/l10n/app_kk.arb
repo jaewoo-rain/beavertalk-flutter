@@ -900,5 +900,6 @@
   "nationalityCurrent": "Қазіргі",
   "nationalityLabel": "Азаматтық",
   "nationalityNotSet": "Орнатылмаған",
+  "nativeLanguageLabel": "Ана тілі",
   "nationalitySearchEmpty": "Нәтиже жоқ"
 }

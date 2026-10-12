@@ -900,5 +900,6 @@
   "nationalityCurrent": "Mevcut",
   "nationalityLabel": "Uyruk",
   "nationalityNotSet": "Ayarlanmadı",
+  "nativeLanguageLabel": "Ana dil",
   "nationalitySearchEmpty": "Sonuç yok"
 }

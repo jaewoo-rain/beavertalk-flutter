@@ -3052,5 +3052,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get nationalityNotSet => 'Não definida';
 
   @override
+  String get nativeLanguageLabel => 'Idioma nativo';
+
+  @override
   String get nationalitySearchEmpty => 'Nenhum resultado';
 }

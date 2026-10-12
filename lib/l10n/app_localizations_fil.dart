@@ -3053,5 +3053,8 @@ class AppLocalizationsFil extends AppLocalizations {
   String get nationalityNotSet => 'Hindi pa nakatakda';
 
   @override
+  String get nativeLanguageLabel => 'Katutubong wika';
+
+  @override
   String get nationalitySearchEmpty => 'Walang resulta';
 }

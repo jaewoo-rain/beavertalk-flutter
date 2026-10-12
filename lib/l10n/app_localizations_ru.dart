@@ -3041,5 +3041,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get nationalityNotSet => 'Не указано';
 
   @override
+  String get nativeLanguageLabel => 'Родной язык';
+
+  @override
   String get nationalitySearchEmpty => 'Ничего не найдено';
 }

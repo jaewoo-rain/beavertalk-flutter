@@ -3017,5 +3017,8 @@ class AppLocalizationsVi extends AppLocalizations {
   String get nationalityNotSet => 'Chưa đặt';
 
   @override
+  String get nativeLanguageLabel => 'Tiếng mẹ đẻ';
+
+  @override
   String get nationalitySearchEmpty => 'Không có kết quả';
 }

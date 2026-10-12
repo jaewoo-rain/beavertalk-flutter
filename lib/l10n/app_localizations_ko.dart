@@ -2932,5 +2932,8 @@ class AppLocalizationsKo extends AppLocalizations {
   String get nationalityNotSet => '미설정';
 
   @override
+  String get nativeLanguageLabel => '모국어';
+
+  @override
   String get nationalitySearchEmpty => '검색 결과가 없어요';
 }

@@ -467,6 +467,15 @@ class AuthController extends Notifier<AuthStatus> {
     }
   }
 
+  /// 모국어 재선택 저장(`PATCH /members/me` `native_language` · 2026-10-12) 뒤 프로필을 새로 읽는다.
+  ///
+  /// 화면 언어·서버 번역 언어(`language`)는 바꾸지 않으므로 [memberLanguageScopedProviders] 는
+  /// 버리지 않는다. 이 값은 교사 콘솔 「모국어」·과제 번역 언어로 쓰인다(B2B 서버가 읽음).
+  Future<void> updateNativeLanguage(String nativeLanguage) async {
+    await ref.read(authRepositoryProvider).updateNativeLanguage(nativeLanguage);
+    ref.invalidate(myProfileProvider);
+  }
+
   /// Persists the member's **learning** language (`PATCH /members/me`
   /// `target_language`) and refreshes the cached profile.
   ///

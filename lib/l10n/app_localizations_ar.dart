@@ -2996,5 +2996,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get nationalityNotSet => 'غير محددة';
 
   @override
+  String get nativeLanguageLabel => 'اللغة الأم';
+
+  @override
   String get nationalitySearchEmpty => 'لا توجد نتائج';
 }

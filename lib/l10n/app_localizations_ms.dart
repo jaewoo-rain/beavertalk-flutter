@@ -3044,5 +3044,8 @@ class AppLocalizationsMs extends AppLocalizations {
   String get nationalityNotSet => 'Belum ditetapkan';
 
   @override
+  String get nativeLanguageLabel => 'Bahasa ibunda';
+
+  @override
   String get nationalitySearchEmpty => 'Tiada hasil';
 }
