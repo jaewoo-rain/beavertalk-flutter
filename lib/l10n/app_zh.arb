@@ -644,6 +644,8 @@
   "hwCallDoneTitle": "你完成了作业通话",
   "hwCallDoneSeeResults": "查看结果",
   "hwCallDoneBackToHomework": "返回作业",
+  "callRoleplayMe": "你",
+  "callRoleplayInfoA11y": "查看情境和角色",
   "fcEndedTitle": "免费通话已结束",
   "fcEndedBody": "今天的5分钟免费通话已用完\n订阅后可继续畅聊",
   "ctaSubscribeKeepTalking": "订阅并继续通话",

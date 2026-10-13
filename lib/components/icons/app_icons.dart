@@ -161,6 +161,10 @@ abstract final class AppIcons {
   /// the caller's decision, per the icon's own Figma note.
   static Widget alert({double size = 24, required Color color}) =>
       _glyph('alert', size, color);
+
+  /// `info` (`6738:1510`) — 역할극 숙제 통화 GNB i 버튼(PM-DEC-623). alert 를 위아래로 뒤집은 꼴.
+  static Widget info({double size = 24, required Color color}) =>
+      _glyph('info', size, color);
   static Widget thumbsUp({double size = 24, required Color color}) =>
       _glyph('thumbs-up', size, color);
   static Widget thumbsDown({double size = 24, required Color color}) =>

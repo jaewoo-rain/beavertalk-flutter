@@ -644,6 +644,8 @@
   "hwCallDoneTitle": "Tu as terminé l'appel de ton devoir",
   "hwCallDoneSeeResults": "Voir les résultats",
   "hwCallDoneBackToHomework": "Retour au devoir",
+  "callRoleplayMe": "Toi",
+  "callRoleplayInfoA11y": "Voir la situation et les rôles",
   "fcEndedTitle": "Ton appel gratuit est terminé",
   "fcEndedBody": "Tu as utilisé tes 5 minutes d'appel gratuites du jour\nAbonne-toi pour continuer plus longtemps",
   "ctaSubscribeKeepTalking": "S'abonner et continuer à parler",

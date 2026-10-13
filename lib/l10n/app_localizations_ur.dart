@@ -2197,6 +2197,12 @@ class AppLocalizationsUr extends AppLocalizations {
   String get hwCallDoneBackToHomework => 'ہوم ورک پر واپس جائیں';
 
   @override
+  String get callRoleplayMe => 'آپ';
+
+  @override
+  String get callRoleplayInfoA11y => 'صورتِ حال اور کردار دیکھیں';
+
+  @override
   String get fcEndedTitle => 'آپ کی مفت کال ختم ہو گئی';
 
   @override

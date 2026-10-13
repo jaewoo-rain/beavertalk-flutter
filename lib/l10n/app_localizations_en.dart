@@ -2203,6 +2203,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hwCallDoneBackToHomework => 'Back to homework';
 
   @override
+  String get callRoleplayMe => 'You';
+
+  @override
+  String get callRoleplayInfoA11y => 'See situation and roles';
+
+  @override
   String get fcEndedTitle => 'Your free call has ended';
 
   @override

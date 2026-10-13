@@ -2219,6 +2219,12 @@ class AppLocalizationsPt extends AppLocalizations {
   String get hwCallDoneBackToHomework => 'Voltar para a tarefa';
 
   @override
+  String get callRoleplayMe => 'Você';
+
+  @override
+  String get callRoleplayInfoA11y => 'Ver a situação e os papéis';
+
+  @override
   String get fcEndedTitle => 'A sua chamada gratuita terminou';
 
   @override

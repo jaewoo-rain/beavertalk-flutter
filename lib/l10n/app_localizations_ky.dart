@@ -2198,6 +2198,12 @@ class AppLocalizationsKy extends AppLocalizations {
   String get hwCallDoneBackToHomework => 'Үй тапшырмасына кайтуу';
 
   @override
+  String get callRoleplayMe => 'Сиз';
+
+  @override
+  String get callRoleplayInfoA11y => 'Кырдаал менен ролдорду көрүү';
+
+  @override
   String get fcEndedTitle => 'Акысыз чалууңуз аяктады';
 
   @override

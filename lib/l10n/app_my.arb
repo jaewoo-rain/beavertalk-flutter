@@ -644,6 +644,8 @@
   "hwCallDoneTitle": "အိမ်စာခေါ်ဆိုမှုကို ပြီးဆုံးပါပြီ",
   "hwCallDoneSeeResults": "ရလဒ်ကြည့်ရန်",
   "hwCallDoneBackToHomework": "အိမ်စာသို့ ပြန်သွားရန်",
+  "callRoleplayMe": "သင်",
+  "callRoleplayInfoA11y": "အခြေအနေနှင့် အခန်းကဏ္ဍများကို ကြည့်ရန်",
   "fcEndedTitle": "သင့်အခမဲ့ခေါ်ဆိုမှု ပြီးဆုံးသွားပါပြီ",
   "fcEndedBody": "ယနေ့အတွက် အခမဲ့ခေါ်ဆိုချိန် ၅ မိနစ် ကုန်သွားပါပြီ\nပိုမိုကြာရှည်စွာ စကားပြောရန် စာရင်းသွင်းပါ",
   "ctaSubscribeKeepTalking": "စာရင်းသွင်းပြီး ဆက်ပြောပါ",

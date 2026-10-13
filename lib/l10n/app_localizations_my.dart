@@ -2207,6 +2207,12 @@ class AppLocalizationsMy extends AppLocalizations {
   String get hwCallDoneBackToHomework => 'အိမ်စာသို့ ပြန်သွားရန်';
 
   @override
+  String get callRoleplayMe => 'သင်';
+
+  @override
+  String get callRoleplayInfoA11y => 'အခြေအနေနှင့် အခန်းကဏ္ဍများကို ကြည့်ရန်';
+
+  @override
   String get fcEndedTitle => 'သင့်အခမဲ့ခေါ်ဆိုမှု ပြီးဆုံးသွားပါပြီ';
 
   @override

@@ -2194,6 +2194,12 @@ class AppLocalizationsVi extends AppLocalizations {
   String get hwCallDoneBackToHomework => 'Quay lại bài tập';
 
   @override
+  String get callRoleplayMe => 'Bạn';
+
+  @override
+  String get callRoleplayInfoA11y => 'Xem tình huống và vai trò';
+
+  @override
   String get fcEndedTitle => 'Cuộc gọi miễn phí đã kết thúc';
 
   @override

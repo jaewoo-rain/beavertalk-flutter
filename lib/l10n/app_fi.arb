@@ -644,6 +644,8 @@
   "hwCallDoneTitle": "Kotitehtäväpuhelusi on valmis",
   "hwCallDoneSeeResults": "Katso tulokset",
   "hwCallDoneBackToHomework": "Takaisin kotitehtävään",
+  "callRoleplayMe": "Sinä",
+  "callRoleplayInfoA11y": "Näytä tilanne ja roolit",
   "fcEndedTitle": "Ilmainen puhelusi päättyi",
   "fcEndedBody": "Olet käyttänyt tämän päivän 5 ilmaista puheluminuuttia\nTilaa, niin voit jutella pidempään",
   "ctaSubscribeKeepTalking": "Tilaa ja jatka juttelua",

@@ -2210,6 +2210,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get hwCallDoneBackToHomework => 'Вернуться к заданию';
 
   @override
+  String get callRoleplayMe => 'Вы';
+
+  @override
+  String get callRoleplayInfoA11y => 'Посмотреть ситуацию и роли';
+
+  @override
   String get fcEndedTitle => 'Бесплатный звонок завершён';
 
   @override

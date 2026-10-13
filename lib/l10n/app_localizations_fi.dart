@@ -2210,6 +2210,12 @@ class AppLocalizationsFi extends AppLocalizations {
   String get hwCallDoneBackToHomework => 'Takaisin kotitehtävään';
 
   @override
+  String get callRoleplayMe => 'Sinä';
+
+  @override
+  String get callRoleplayInfoA11y => 'Näytä tilanne ja roolit';
+
+  @override
   String get fcEndedTitle => 'Ilmainen puhelusi päättyi';
 
   @override

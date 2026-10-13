@@ -644,6 +644,8 @@
   "hwCallDoneTitle": "Natapos mo na ang tawag para sa takdang-aralin",
   "hwCallDoneSeeResults": "Tingnan ang resulta",
   "hwCallDoneBackToHomework": "Bumalik sa takdang-aralin",
+  "callRoleplayMe": "Ikaw",
+  "callRoleplayInfoA11y": "Tingnan ang sitwasyon at mga papel",
   "fcEndedTitle": "Tapos na ang libre mong tawag",
   "fcEndedBody": "Nagamit mo na ang 5 minutong libreng tawag ngayong araw\nMag-subscribe para mas mahabang usapan",
   "ctaSubscribeKeepTalking": "Mag-subscribe at ituloy ang usapan",

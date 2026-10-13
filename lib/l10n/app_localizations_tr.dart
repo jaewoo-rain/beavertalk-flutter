@@ -2192,6 +2192,12 @@ class AppLocalizationsTr extends AppLocalizations {
   String get hwCallDoneBackToHomework => 'Ödeve dön';
 
   @override
+  String get callRoleplayMe => 'Sen';
+
+  @override
+  String get callRoleplayInfoA11y => 'Durumu ve rolleri gör';
+
+  @override
   String get fcEndedTitle => 'Ücretsiz görüşmen sona erdi';
 
   @override

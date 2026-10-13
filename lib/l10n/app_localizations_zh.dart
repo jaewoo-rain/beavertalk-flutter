@@ -2126,6 +2126,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get hwCallDoneBackToHomework => '返回作业';
 
   @override
+  String get callRoleplayMe => '你';
+
+  @override
+  String get callRoleplayInfoA11y => '查看情境和角色';
+
+  @override
   String get fcEndedTitle => '免费通话已结束';
 
   @override

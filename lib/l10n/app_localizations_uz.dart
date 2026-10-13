@@ -2210,6 +2210,12 @@ class AppLocalizationsUz extends AppLocalizations {
   String get hwCallDoneBackToHomework => 'Uy vazifasiga qaytish';
 
   @override
+  String get callRoleplayMe => 'Siz';
+
+  @override
+  String get callRoleplayInfoA11y => 'Vaziyat va rollarni ko\'rish';
+
+  @override
   String get fcEndedTitle => 'Bepul qo\'ng\'irog\'ingiz tugadi';
 
   @override

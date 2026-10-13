@@ -2192,6 +2192,12 @@ class AppLocalizationsBn extends AppLocalizations {
   String get hwCallDoneBackToHomework => 'হোমওয়ার্কে ফিরে যান';
 
   @override
+  String get callRoleplayMe => 'আপনি';
+
+  @override
+  String get callRoleplayInfoA11y => 'পরিস্থিতি ও ভূমিকা দেখুন';
+
+  @override
   String get fcEndedTitle => 'আপনার ফ্রি কল শেষ হয়েছে';
 
   @override

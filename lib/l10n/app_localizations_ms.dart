@@ -2213,6 +2213,12 @@ class AppLocalizationsMs extends AppLocalizations {
   String get hwCallDoneBackToHomework => 'Kembali ke kerja rumah';
 
   @override
+  String get callRoleplayMe => 'Anda';
+
+  @override
+  String get callRoleplayInfoA11y => 'Lihat situasi dan peranan';
+
+  @override
   String get fcEndedTitle => 'Panggilan percuma anda telah tamat';
 
   @override

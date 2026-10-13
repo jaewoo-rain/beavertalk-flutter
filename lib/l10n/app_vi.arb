@@ -644,6 +644,8 @@
   "hwCallDoneTitle": "Bạn đã hoàn thành cuộc gọi bài tập",
   "hwCallDoneSeeResults": "Xem kết quả",
   "hwCallDoneBackToHomework": "Quay lại bài tập",
+  "callRoleplayMe": "Bạn",
+  "callRoleplayInfoA11y": "Xem tình huống và vai trò",
   "fcEndedTitle": "Cuộc gọi miễn phí đã kết thúc",
   "fcEndedBody": "Bạn đã dùng hết 5 phút gọi miễn phí hôm nay\nĐăng ký để trò chuyện lâu hơn",
   "ctaSubscribeKeepTalking": "Đăng ký và tiếp tục trò chuyện",

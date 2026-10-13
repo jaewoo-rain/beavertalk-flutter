@@ -644,6 +644,8 @@
   "hwCallDoneTitle": "Uy vazifasi qo'ng'irog'ini tugatdingiz",
   "hwCallDoneSeeResults": "Natijalarni ko'rish",
   "hwCallDoneBackToHomework": "Uy vazifasiga qaytish",
+  "callRoleplayMe": "Siz",
+  "callRoleplayInfoA11y": "Vaziyat va rollarni ko'rish",
   "fcEndedTitle": "Bepul qo'ng'irog'ingiz tugadi",
   "fcEndedBody": "Bugungi 5 daqiqalik bepul qo'ng'iroq vaqti tugadi\nUzoqroq suhbatlashish uchun obuna bo'ling",
   "ctaSubscribeKeepTalking": "Obuna bo'lib, suhbatni davom ettirish",

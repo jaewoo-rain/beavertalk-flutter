@@ -644,6 +644,8 @@
   "hwCallDoneTitle": "أنهيت مكالمة الواجب",
   "hwCallDoneSeeResults": "عرض النتائج",
   "hwCallDoneBackToHomework": "العودة إلى الواجب",
+  "callRoleplayMe": "أنت",
+  "callRoleplayInfoA11y": "عرض الموقف والأدوار",
   "fcEndedTitle": "انتهت مكالمتك المجانية",
   "fcEndedBody": "لقد استخدمت دقائق المكالمات المجانية الخمس لهذا اليوم\nاشترك لمواصلة الحديث لفترة أطول",
   "ctaSubscribeKeepTalking": "اشترك وواصل الحديث",

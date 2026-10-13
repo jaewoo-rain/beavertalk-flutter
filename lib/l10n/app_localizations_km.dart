@@ -2192,6 +2192,12 @@ class AppLocalizationsKm extends AppLocalizations {
   String get hwCallDoneBackToHomework => 'ត្រឡប់ទៅកិច្ចការផ្ទះ';
 
   @override
+  String get callRoleplayMe => 'អ្នក';
+
+  @override
+  String get callRoleplayInfoA11y => 'មើលស្ថានភាព និងតួនាទី';
+
+  @override
   String get fcEndedTitle => 'ការហៅទូរស័ព្ទឥតគិតថ្លៃរបស់អ្នកបានបញ្ចប់';
 
   @override

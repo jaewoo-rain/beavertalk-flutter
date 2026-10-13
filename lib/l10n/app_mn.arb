@@ -644,6 +644,8 @@
   "hwCallDoneTitle": "Гэрийн даалгаврын дуудлагаа дуусгалаа",
   "hwCallDoneSeeResults": "Үр дүнг харах",
   "hwCallDoneBackToHomework": "Гэрийн даалгавар руу буцах",
+  "callRoleplayMe": "Та",
+  "callRoleplayInfoA11y": "Нөхцөл байдал ба дүрийг харах",
   "fcEndedTitle": "Таны үнэгүй дуудлага дууслаа",
   "fcEndedBody": "Өнөөдрийн 5 минутын үнэгүй дуудлага дууслаа\nУрт ярихын тулд захиалга аваарай",
   "ctaSubscribeKeepTalking": "Захиалж, яриаг үргэлжлүүлэх",

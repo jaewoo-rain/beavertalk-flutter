@@ -1,0 +1,7 @@
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<!-- Figma `info` (6738:1510), Size=24 variant (6738:1498). alert(4395:1387) bar/dot flipped vertically. PM-DEC-623. -->
+<g id="info">
+<circle id="dot" cx="12" cy="5.04" r="1" fill="#111111"/>
+<path id="bar" d="M12 10.08V18.96" stroke="#111111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+</svg>

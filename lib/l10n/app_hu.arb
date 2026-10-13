@@ -644,6 +644,8 @@
   "hwCallDoneTitle": "Befejezted a házi feladat hívását",
   "hwCallDoneSeeResults": "Eredmények",
   "hwCallDoneBackToHomework": "Vissza a házi feladathoz",
+  "callRoleplayMe": "Te",
+  "callRoleplayInfoA11y": "Helyzet és szerepek megtekintése",
   "fcEndedTitle": "A díjmentes hívásod véget ért",
   "fcEndedBody": "Elhasználtad a mai 5 perc díjmentes hívásidődet\nElőfizetéssel tovább beszélgethetsz",
   "ctaSubscribeKeepTalking": "Előfizetés és beszélgetés folytatása",

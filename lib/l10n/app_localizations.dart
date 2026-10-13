@@ -4060,6 +4060,18 @@ abstract class AppLocalizations {
   /// **'Back to homework'**
   String get hwCallDoneBackToHomework;
 
+  /// Label of the learner's own row in the roleplay homework info sheet (opened from the i button on the call screen).
+  ///
+  /// In en, this message translates to:
+  /// **'You'**
+  String get callRoleplayMe;
+
+  /// Accessibility label of the i button on a roleplay homework call: opens the situation and roles sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'See situation and roles'**
+  String get callRoleplayInfoA11y;
+
   /// Title of the sheet shown when a FREE member hits the 5-minute call limit. The call is over; there is no extend option.
   ///
   /// In en, this message translates to:

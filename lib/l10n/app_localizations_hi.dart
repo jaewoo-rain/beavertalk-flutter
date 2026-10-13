@@ -2193,6 +2193,12 @@ class AppLocalizationsHi extends AppLocalizations {
   String get hwCallDoneBackToHomework => 'होमवर्क पर वापस जाएँ';
 
   @override
+  String get callRoleplayMe => 'आप';
+
+  @override
+  String get callRoleplayInfoA11y => 'स्थिति और भूमिकाएँ देखें';
+
+  @override
   String get fcEndedTitle => 'आपकी मुफ़्त कॉल ख़त्म हो गई';
 
   @override

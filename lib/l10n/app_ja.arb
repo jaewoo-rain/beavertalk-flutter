@@ -644,6 +644,8 @@
   "hwCallDoneTitle": "宿題の会話を終えました",
   "hwCallDoneSeeResults": "結果を見る",
   "hwCallDoneBackToHomework": "宿題に戻る",
+  "callRoleplayMe": "あなた",
+  "callRoleplayInfoA11y": "状況と役割を見る",
   "fcEndedTitle": "無料通話が終了しました",
   "fcEndedBody": "今日の無料通話5分を使い切りました\n購読すればもっと長く話せます",
   "ctaSubscribeKeepTalking": "購読して会話を続ける",

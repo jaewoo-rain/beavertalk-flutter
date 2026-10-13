@@ -644,6 +644,8 @@
   "hwCallDoneTitle": "Үй тапсырмасы қоңырауын аяқтадыңыз",
   "hwCallDoneSeeResults": "Нәтижені көру",
   "hwCallDoneBackToHomework": "Үй тапсырмасына оралу",
+  "callRoleplayMe": "Сіз",
+  "callRoleplayInfoA11y": "Жағдай мен рөлдерді көру",
   "fcEndedTitle": "Тегін қоңырауыңыз аяқталды",
   "fcEndedBody": "Бүгінгі 5 минуттық тегін қоңырау уақыты бітті\nҰзағырақ сөйлесу үшін жазылыңыз",
   "ctaSubscribeKeepTalking": "Жазылып, сөйлесуді жалғастыру",

@@ -644,6 +644,8 @@
   "hwCallDoneTitle": "คุณโทรทำการบ้านเสร็จแล้ว",
   "hwCallDoneSeeResults": "ดูผลลัพธ์",
   "hwCallDoneBackToHomework": "กลับไปที่การบ้าน",
+  "callRoleplayMe": "คุณ",
+  "callRoleplayInfoA11y": "ดูสถานการณ์และบทบาท",
   "fcEndedTitle": "การโทรฟรีของคุณสิ้นสุดแล้ว",
   "fcEndedBody": "ใช้เวลาโทรฟรี 5 นาทีของวันนี้หมดแล้ว\nสมัครสมาชิกเพื่อคุยต่อได้นานขึ้น",
   "ctaSubscribeKeepTalking": "สมัครสมาชิกและคุยต่อ",

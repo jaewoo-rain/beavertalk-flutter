@@ -1500,6 +1500,14 @@
   "@hwCallDoneBackToHomework": {
     "description": "Secondary button of the homework 5-minute sheet: returns to this assignment's homework detail."
   },
+  "callRoleplayMe": "You",
+  "@callRoleplayMe": {
+    "description": "Label of the learner's own row in the roleplay homework info sheet (opened from the i button on the call screen)."
+  },
+  "callRoleplayInfoA11y": "See situation and roles",
+  "@callRoleplayInfoA11y": {
+    "description": "Accessibility label of the i button on a roleplay homework call: opens the situation and roles sheet."
+  },
   "fcEndedTitle": "Your free call has ended",
   "@fcEndedTitle": {
     "description": "Title of the sheet shown when a FREE member hits the 5-minute call limit. The call is over; there is no extend option."

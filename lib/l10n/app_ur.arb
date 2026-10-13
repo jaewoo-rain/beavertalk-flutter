@@ -644,6 +644,8 @@
   "hwCallDoneTitle": "آپ نے ہوم ورک کال مکمل کر لی",
   "hwCallDoneSeeResults": "نتائج دیکھیں",
   "hwCallDoneBackToHomework": "ہوم ورک پر واپس جائیں",
+  "callRoleplayMe": "آپ",
+  "callRoleplayInfoA11y": "صورتِ حال اور کردار دیکھیں",
   "fcEndedTitle": "آپ کی مفت کال ختم ہو گئی",
   "fcEndedBody": "آج کی 5 منٹ کی مفت کال کا وقت ختم ہو گیا\nمزید بات کرنے کے لیے سبسکرائب کریں",
   "ctaSubscribeKeepTalking": "سبسکرائب کریں اور بات جاری رکھیں",

@@ -2193,6 +2193,12 @@ class AppLocalizationsKk extends AppLocalizations {
   String get hwCallDoneBackToHomework => 'Үй тапсырмасына оралу';
 
   @override
+  String get callRoleplayMe => 'Сіз';
+
+  @override
+  String get callRoleplayInfoA11y => 'Жағдай мен рөлдерді көру';
+
+  @override
   String get fcEndedTitle => 'Тегін қоңырауыңыз аяқталды';
 
   @override

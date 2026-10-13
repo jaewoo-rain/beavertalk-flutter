@@ -23,6 +23,7 @@ import 'package:beavertalk/components/organisms/bottom_sheet_call_lesson_hint.da
 import 'package:beavertalk/features/normalcall/domain/entities/call_course.dart';
 import 'package:beavertalk/features/normalcall/domain/entities/call_hint.dart';
 import 'package:beavertalk/features/normalcall/domain/entities/cur_me.dart';
+import 'package:beavertalk/features/normalcall/domain/entities/homework_roleplay.dart';
 import 'package:beavertalk/features/normalcall/presentation/normalcall_controller.dart';
 import 'package:beavertalk/features/normalcall/presentation/normalcall_providers.dart';
 import 'package:beavertalk/features/subscription/domain/entities/subscription_state.dart';
@@ -68,6 +69,7 @@ Future<_StubCallController> _pump(
   CallCourse? course,
   bool partner = true,
   bool homeworkExpression = false,
+  HomeworkRoleplay? homeworkRoleplay,
 }) async {
   tester.view.physicalSize = const Size(375, 812);
   tester.view.devicePixelRatio = 1.0;
@@ -79,6 +81,7 @@ Future<_StubCallController> _pump(
     hintOn: true,
     course: course,
     homeworkExpression: homeworkExpression,
+    homeworkRoleplay: homeworkRoleplay,
   );
   final controller = _StubCallController(state);
   await tester.pumpWidget(const SizedBox.shrink());
@@ -301,5 +304,62 @@ void main() {
   testWidgets('역할극 숙제(homework_mode=roleplay) — 힌트 카드 그대로', (tester) async {
     await _pump(tester);
     expect(find.byType(HintCard), findsOneWidget);
+  });
+
+  // PM-DEC-622·623·624 — 역할극 숙제 GNB 왼쪽 i 안내.
+  Finder infoButton(BuildContext ctx) =>
+      find.bySemanticsLabel(AppLocalizations.of(ctx).callRoleplayInfoA11y);
+
+  testWidgets('homework_roleplay 를 받기 전·일반 통화 — i 버튼 없음', (tester) async {
+    await _pump(tester);
+    final ctx = tester.element(find.byType(CallScreen));
+    expect(infoButton(ctx), findsNothing);
+  });
+
+  testWidgets('역할극 숙제 — i 버튼 · 시트에 상황·상대·나와 번역이 보이고 힌트는 그대로', (tester) async {
+    await _pump(tester,
+        homeworkRoleplay: HomeworkRoleplay.fromJson(const {
+          'topic': '공원 산책과 사진',
+          'situation': '공원에서 처음 만난 사람에게 사진을 부탁한다',
+          'ai_role': '공원에서 만난 친절한 사람',
+          'learner_role': '사진을 부탁하는 관광객',
+          'situation_translation': 'Ask a stranger in the park to take a photo',
+          'ai_role_translation': 'A kind person you meet in the park',
+        }));
+    final ctx = tester.element(find.byType(CallScreen));
+    final l10n = AppLocalizations.of(ctx);
+    expect(find.byType(HintCard), findsOneWidget, reason: '힌트는 살린다(PM-DEC-622)');
+    await tester.tap(infoButton(ctx));
+    await _flush(tester);
+    expect(find.byType(BottomSheetCallRoleplayInfo), findsOneWidget);
+    expect(find.text(l10n.callHintSituation), findsOneWidget);
+    expect(find.text('공원에서 처음 만난 사람에게 사진을 부탁한다'), findsOneWidget);
+    expect(find.text('Ask a stranger in the park to take a photo'), findsOneWidget);
+    expect(find.text('공원에서 만난 친절한 사람'), findsOneWidget);
+    expect(find.text('A kind person you meet in the park'), findsOneWidget);
+    expect(find.text(l10n.callRoleplayMe), findsOneWidget);
+    expect(find.text('사진을 부탁하는 관광객'), findsOneWidget);
+  });
+
+  testWidgets('역할극 숙제 · learner_role 없음 — 나 줄 숨김 · 상황이 없으면 주제', (tester) async {
+    await _pump(tester,
+        homeworkRoleplay: HomeworkRoleplay.fromJson(const {
+          'topic': '공원 산책과 사진',
+          'ai_role': '공원에서 만난 친절한 사람',
+        }));
+    final ctx = tester.element(find.byType(CallScreen));
+    final l10n = AppLocalizations.of(ctx);
+    await tester.tap(infoButton(ctx));
+    await _flush(tester);
+    expect(find.text('공원 산책과 사진'), findsOneWidget);
+    expect(find.text(l10n.callRoleplayMe), findsNothing);
+  });
+
+  test('homework_roleplay 프레임 — 빈 칸은 버리고 상황·상대역이 모두 없으면 비어 있다', () {
+    expect(HomeworkRoleplay.fromJson(const {'topic': ' ', 'learner_role': '손님'}).isEmpty,
+        isTrue);
+    final r = HomeworkRoleplay.fromJson(const {'situation': ' 가게 ', 'ai_role': '사장님'});
+    expect(r.scene, '가게');
+    expect(r.learnerRole, isNull);
   });
 }

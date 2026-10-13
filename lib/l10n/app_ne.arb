@@ -644,6 +644,8 @@
   "hwCallDoneTitle": "तपाईंले गृहकार्यको कल सक्नुभयो",
   "hwCallDoneSeeResults": "नतिजा हेर्नुहोस्",
   "hwCallDoneBackToHomework": "गृहकार्यमा फर्कनुहोस्",
+  "callRoleplayMe": "तपाईं",
+  "callRoleplayInfoA11y": "स्थिति र भूमिका हेर्नुहोस्",
   "fcEndedTitle": "तपाईंको नि:शुल्क कल सकियो",
   "fcEndedBody": "आजको ५ मिनेटको नि:शुल्क कल सकियो\nलामो कुराकानीका लागि सदस्यता लिनुहोस्",
   "ctaSubscribeKeepTalking": "सदस्यता लिई कुराकानी जारी राख्नुहोस्",

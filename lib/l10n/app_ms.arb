@@ -644,6 +644,8 @@
   "hwCallDoneTitle": "Anda sudah selesai panggilan kerja rumah",
   "hwCallDoneSeeResults": "Lihat keputusan",
   "hwCallDoneBackToHomework": "Kembali ke kerja rumah",
+  "callRoleplayMe": "Anda",
+  "callRoleplayInfoA11y": "Lihat situasi dan peranan",
   "fcEndedTitle": "Panggilan percuma anda telah tamat",
   "fcEndedBody": "Masa panggilan percuma 5 minit hari ini sudah habis\nLanggan untuk terus berbual lebih lama",
   "ctaSubscribeKeepTalking": "Langgan dan terus berbual",

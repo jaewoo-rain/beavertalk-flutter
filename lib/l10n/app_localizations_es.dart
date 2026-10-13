@@ -2218,6 +2218,12 @@ class AppLocalizationsEs extends AppLocalizations {
   String get hwCallDoneBackToHomework => 'Volver a la tarea';
 
   @override
+  String get callRoleplayMe => 'Tú';
+
+  @override
+  String get callRoleplayInfoA11y => 'Ver la situación y los roles';
+
+  @override
   String get fcEndedTitle => 'Tu llamada gratuita ha terminado';
 
   @override

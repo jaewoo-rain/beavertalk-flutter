@@ -2218,6 +2218,12 @@ class AppLocalizationsFil extends AppLocalizations {
   String get hwCallDoneBackToHomework => 'Bumalik sa takdang-aralin';
 
   @override
+  String get callRoleplayMe => 'Ikaw';
+
+  @override
+  String get callRoleplayInfoA11y => 'Tingnan ang sitwasyon at mga papel';
+
+  @override
   String get fcEndedTitle => 'Tapos na ang libre mong tawag';
 
   @override

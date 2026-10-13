@@ -168,6 +168,50 @@ class CallLockButton extends StatelessWidget {
   }
 }
 
+/// GNB 왼쪽 i — `CallButton/Info`(`6738:3257` · PM-DEC-623). [CallLockButton] idle 과 같은 상자 52 · 원 40.
+///
+/// 역할극 숙제 통화에서만 놓인다. 누르면 상황과 역할 안내 시트를 연다(길게 누르기 없음).
+class CallInfoButton extends StatelessWidget {
+  const CallInfoButton({
+    super.key,
+    required this.onPressed,
+    required this.semanticLabel,
+  });
+
+  final VoidCallback onPressed;
+
+  /// 접근성 이름(「상황과 역할 보기」).
+  final String semanticLabel;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.c;
+    return Semantics(
+      button: true,
+      label: semanticLabel,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: onPressed,
+        child: SizedBox.square(
+          dimension: CallLockButton.boxSize,
+          child: Center(
+            child: Container(
+              width: AppSpacing.s40,
+              height: AppSpacing.s40,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: c.fillNormal,
+              ),
+              alignment: Alignment.center,
+              child: AppIcons.info(size: AppSpacing.s20, color: c.labelNormal),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 /// 잠긴 화면 가운데 해제 버튼 — `Call/LockRelease`(202×148).
 ///
 /// 링 96(트랙 상시) + 원 80 + 12 아래 알약 「길게 누르면 잠금이 풀려요」.

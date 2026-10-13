@@ -644,6 +644,8 @@
   "hwCallDoneTitle": "Вы завершили звонок по домашнему заданию",
   "hwCallDoneSeeResults": "Посмотреть результаты",
   "hwCallDoneBackToHomework": "Вернуться к заданию",
+  "callRoleplayMe": "Вы",
+  "callRoleplayInfoA11y": "Посмотреть ситуацию и роли",
   "fcEndedTitle": "Бесплатный звонок завершён",
   "fcEndedBody": "Бесплатные 5 минут звонков на сегодня закончились\nОформите подписку, чтобы говорить дольше",
   "ctaSubscribeKeepTalking": "Оформить подписку и продолжить",

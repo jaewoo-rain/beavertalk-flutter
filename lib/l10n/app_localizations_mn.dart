@@ -2193,6 +2193,12 @@ class AppLocalizationsMn extends AppLocalizations {
   String get hwCallDoneBackToHomework => 'Гэрийн даалгавар руу буцах';
 
   @override
+  String get callRoleplayMe => 'Та';
+
+  @override
+  String get callRoleplayInfoA11y => 'Нөхцөл байдал ба дүрийг харах';
+
+  @override
   String get fcEndedTitle => 'Таны үнэгүй дуудлага дууслаа';
 
   @override

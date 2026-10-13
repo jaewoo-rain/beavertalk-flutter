@@ -47,6 +47,7 @@ import '../domain/seamless_fragment.dart';
 import '../domain/segment_call_id_recovery.dart';
 import '../domain/entities/call_channel.dart';
 import '../domain/entities/call_course.dart';
+import '../domain/entities/homework_roleplay.dart';
 import '../domain/entities/call_hint.dart';
 import '../domain/entities/playback_ledger.dart';
 import '../domain/pcm_gain.dart';
@@ -344,6 +345,7 @@ class CallState {
     this.homeworkTimeUp = false,
     this.homeworkExpression = false,
     this.assignmentId,
+    this.homeworkRoleplay,
   });
 
   /// 서버 `error` 프레임의 `code`([CallPhase.error] 와 함께만 있다). 화면이 코드별로
@@ -371,6 +373,10 @@ class CallState {
 
   /// 숙제 통화인가.
   bool get homework => assignmentId != null;
+
+  /// 역할극 숙제의 상황·역할(서버 `homework_roleplay` 프레임 · PM-DEC-624). 받기 전·역할극이 아니면 null
+  /// — 화면은 이 값이 있을 때만 GNB 왼쪽 i 버튼을 띄운다.
+  final HomeworkRoleplay? homeworkRoleplay;
 
   /// 유료 통화가 **상한(15분)을 다 써서** 끝났는가 — [CallPhase.ended] 와 함께만 참.
   ///
@@ -526,6 +532,7 @@ class CallState {
     bool? homeworkTimeUp,
     bool? homeworkExpression,
     int? assignmentId,
+    HomeworkRoleplay? homeworkRoleplay,
   }) {
     return CallState(
       phase: phase ?? this.phase,
@@ -552,6 +559,7 @@ class CallState {
       homeworkTimeUp: homeworkTimeUp ?? this.homeworkTimeUp,
       homeworkExpression: homeworkExpression ?? this.homeworkExpression,
       assignmentId: assignmentId ?? this.assignmentId,
+      homeworkRoleplay: homeworkRoleplay ?? this.homeworkRoleplay,
     );
   }
 }
@@ -5149,6 +5157,17 @@ class NormalCallController extends Notifier<CallState> {
           } else {
             _hintDropped++;
             _log('⚠ hint 버림 — ${parsed.drop} (turn=${msg['turn_id']})');
+          }
+        }
+      case 'homework_roleplay':
+        // 역할극 숙제의 상황·역할(PM-DEC-624) — 통화 화면 i 안내 시트 재료. 비어 있으면 버린다.
+        {
+          final info = HomeworkRoleplay.fromJson(msg);
+          if (info.isEmpty) {
+            _log('⚠ homework_roleplay 버림 — 상황·상대역 없음');
+          } else {
+            state = state.copyWith(homeworkRoleplay: info);
+            _log('homework_roleplay 수신 — 나 줄 ${info.learnerRole != null ? '있음' : '없음'}');
           }
         }
       case 'teaching_plan':

@@ -644,6 +644,8 @@
   "hwCallDoneTitle": "Ödev görüşmeni tamamladın",
   "hwCallDoneSeeResults": "Sonuçları gör",
   "hwCallDoneBackToHomework": "Ödeve dön",
+  "callRoleplayMe": "Sen",
+  "callRoleplayInfoA11y": "Durumu ve rolleri gör",
   "fcEndedTitle": "Ücretsiz görüşmen sona erdi",
   "fcEndedBody": "Bugünkü 5 dakikalık ücretsiz görüşme süreni doldurdun\nDaha uzun konuşmak için abone ol",
   "ctaSubscribeKeepTalking": "Abone ol ve konuşmaya devam et",

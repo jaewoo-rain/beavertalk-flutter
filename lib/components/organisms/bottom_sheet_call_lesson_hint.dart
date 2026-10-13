@@ -3,6 +3,8 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import '../../features/normalcall/domain/entities/cur_me.dart';
+import '../../features/normalcall/domain/entities/homework_roleplay.dart';
+import '../icons/app_icons.dart';
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_color_tokens.dart';
 import '../../theme/app_radius.dart';
@@ -162,6 +164,75 @@ class _BottomSheetCallLessonHintState extends State<BottomSheetCallLessonHint> {
   }
 }
 
+/// 역할극 숙제 통화 i 안내 시트 — Figma ko `6737:17682` · en `6737:18101`(PM-DEC-623 A안).
+///
+/// 회화학습 힌트 시트의 「이번 대화」 칸을 탭 없이 그대로 쓰고 「나」 줄을 더한다. 버튼은 없고
+/// 딤 탭·아래로 내리기로 닫는다. 값은 교사가 쓴 한국어 원문, 번역 줄은 있을 때만 보인다.
+class BottomSheetCallRoleplayInfo extends StatelessWidget {
+  const BottomSheetCallRoleplayInfo({
+    super.key,
+    required this.roleplay,
+    required this.partnerName,
+    required this.partnerImage,
+  });
+
+  final HomeworkRoleplay roleplay;
+
+  /// 상대 줄 라벨 — 통화 상대 캐릭터 이름(GNB 이름과 같은 값). 없으면 「상대」.
+  final String? partnerName;
+
+  final ImageProvider? partnerImage;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.c;
+    final l10n = AppLocalizations.of(context);
+    final name = partnerName?.trim();
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: c.backgroundNormalNormal,
+        borderRadius: const BorderRadius.vertical(
+          top: Radius.circular(AppSpacing.s20),
+        ),
+      ),
+      padding: const EdgeInsets.only(bottom: 34), // 힌트 시트와 같음
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const SizedBox(height: AppSpacing.s12),
+          Center(
+            child: Container(
+              width: 36,
+              height: 4,
+              decoration: BoxDecoration(
+                color: c.backgroundElevatedNormal,
+                borderRadius: BorderRadius.circular(AppRadius.pill),
+              ),
+            ),
+          ),
+          const SizedBox(height: AppSpacing.s16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
+            child: _ConversationTab(
+              situation: roleplay.scene,
+              situationTranslation: roleplay.situationTranslation,
+              partner: roleplay.aiRole,
+              partnerTranslation: roleplay.aiRoleTranslation,
+              partnerImage: partnerImage,
+              partnerLabel: (name == null || name.isEmpty) ? null : name,
+              me: roleplay.learnerRole,
+              meTranslation: roleplay.learnerRoleTranslation,
+              meLabel: l10n.callRoleplayMe,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _Tab extends StatelessWidget {
   const _Tab({
     required this.label,
@@ -212,6 +283,10 @@ class _ConversationTab extends StatelessWidget {
     required this.partner,
     required this.partnerTranslation,
     required this.partnerImage,
+    this.partnerLabel,
+    this.me,
+    this.meTranslation,
+    this.meLabel,
   });
 
   final String? situation;
@@ -219,6 +294,14 @@ class _ConversationTab extends StatelessWidget {
   final String? partner;
   final String? partnerTranslation;
   final ImageProvider? partnerImage;
+
+  /// 상대 줄 라벨. null 이면 「상대」(회화학습 힌트).
+  final String? partnerLabel;
+
+  /// 「나」 줄(`Row/Role` who=me) — 역할극 숙제 안내에서만. 값이 없으면 줄째 숨긴다.
+  final String? me;
+  final String? meTranslation;
+  final String? meLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -261,65 +344,106 @@ class _ConversationTab extends StatelessWidget {
         // ── 상대 줄(`Row/Role` who=partner) — 상대역이 없으면 숨긴다 ──
         if (partner != null) ...[
           const SizedBox(height: AppSpacing.s16),
-          Container(
-            padding: const EdgeInsets.symmetric(
-              vertical: AppSpacing.s12,
-              horizontal: AppSpacing.s16,
+          _RoleRow(
+            avatar: Container(
+              width: AppSpacing.s40,
+              height: AppSpacing.s40,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: c.fillNormal,
+                image: partnerImage == null
+                    ? null
+                    : DecorationImage(
+                        image: partnerImage!,
+                        fit: BoxFit.cover,
+                      ),
+              ),
             ),
-            decoration: BoxDecoration(
-              color: c.backgroundElevatedAlternative,
-              borderRadius: BorderRadius.circular(AppRadius.md),
+            label: partnerLabel ?? l10n.callHintPartner,
+            value: partner!,
+            translation: partnerTranslation,
+          ),
+        ],
+        // ── 나 줄(`Row/Role` who=me) — 역할극 숙제 안내에서만 · 값이 없으면 숨긴다 ──
+        if (me != null) ...[
+          const SizedBox(height: AppSpacing.s16),
+          _RoleRow(
+            avatar: Container(
+              width: AppSpacing.s40,
+              height: AppSpacing.s40,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: c.fillNormal,
+              ),
+              alignment: Alignment.center,
+              child: AppIcons.user(size: AppSpacing.s20, color: c.labelNormal),
             ),
-            child: Row(
+            label: meLabel ?? '',
+            value: me!,
+            translation: meTranslation,
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+/// `Row/Role` — 사진 40 + 라벨 · 값 · 번역(있을 때만).
+class _RoleRow extends StatelessWidget {
+  const _RoleRow({
+    required this.avatar,
+    required this.label,
+    required this.value,
+    required this.translation,
+  });
+
+  final Widget avatar;
+  final String label;
+  final String value;
+  final String? translation;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.c;
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        vertical: AppSpacing.s12,
+        horizontal: AppSpacing.s16,
+      ),
+      decoration: BoxDecoration(
+        color: c.backgroundElevatedAlternative,
+        borderRadius: BorderRadius.circular(AppRadius.md),
+      ),
+      child: Row(
+        children: [
+          avatar,
+          const SizedBox(width: AppSpacing.s12),
+          Expanded(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  width: AppSpacing.s40,
-                  height: AppSpacing.s40,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: c.fillNormal,
-                    image: partnerImage == null
-                        ? null
-                        : DecorationImage(
-                            image: partnerImage!,
-                            fit: BoxFit.cover,
-                          ),
-                  ),
+                Text(
+                  label,
+                  style: AppType.caption1.r.copyWith(color: c.labelAlternative),
                 ),
-                const SizedBox(width: AppSpacing.s12),
-                Expanded(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        l10n.callHintPartner,
-                        style: AppType.caption1.r.copyWith(
-                          color: c.labelAlternative,
-                        ),
-                      ),
-                      const SizedBox(height: AppSpacing.s2),
-                      Text(
-                        partner!,
-                        style: AppType.label1.m.copyWith(color: c.labelStrong),
-                      ),
-                      if (partnerTranslation != null) ...[
-                        const SizedBox(height: AppSpacing.s2),
-                        Text(
-                          partnerTranslation!,
-                          style: AppType.caption1.r.copyWith(
-                            color: c.labelNeutral,
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
+                const SizedBox(height: AppSpacing.s2),
+                Text(
+                  value,
+                  style: AppType.label1.m.copyWith(color: c.labelStrong),
                 ),
+                if (translation != null) ...[
+                  const SizedBox(height: AppSpacing.s2),
+                  Text(
+                    translation!,
+                    style: AppType.caption1.r.copyWith(color: c.labelNeutral),
+                  ),
+                ],
               ],
             ),
           ),
         ],
-      ],
+      ),
     );
   }
 }

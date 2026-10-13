@@ -2204,6 +2204,12 @@ class AppLocalizationsId extends AppLocalizations {
   String get hwCallDoneBackToHomework => 'Kembali ke pekerjaan rumah';
 
   @override
+  String get callRoleplayMe => 'Kamu';
+
+  @override
+  String get callRoleplayInfoA11y => 'Lihat situasi dan peran';
+
+  @override
   String get fcEndedTitle => 'Panggilan gratis kamu sudah berakhir';
 
   @override

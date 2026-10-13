@@ -644,6 +644,8 @@
   "hwCallDoneTitle": "숙제 회화를 마쳤어요",
   "hwCallDoneSeeResults": "결과 보기",
   "hwCallDoneBackToHomework": "숙제로 돌아가기",
+  "callRoleplayMe": "나",
+  "callRoleplayInfoA11y": "상황과 역할 보기",
   "fcEndedTitle": "무료 통화가 끝났어요",
   "fcEndedBody": "오늘 무료 통화 5분을 다 썼어요\n구독하면 더 길게 이어갈 수 있어요",
   "ctaSubscribeKeepTalking": "구독하고 계속 대화하기",

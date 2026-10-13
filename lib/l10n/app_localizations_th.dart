@@ -2181,6 +2181,12 @@ class AppLocalizationsTh extends AppLocalizations {
   String get hwCallDoneBackToHomework => 'กลับไปที่การบ้าน';
 
   @override
+  String get callRoleplayMe => 'คุณ';
+
+  @override
+  String get callRoleplayInfoA11y => 'ดูสถานการณ์และบทบาท';
+
+  @override
   String get fcEndedTitle => 'การโทรฟรีของคุณสิ้นสุดแล้ว';
 
   @override

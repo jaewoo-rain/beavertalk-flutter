@@ -2191,6 +2191,12 @@ class AppLocalizationsNe extends AppLocalizations {
   String get hwCallDoneBackToHomework => 'गृहकार्यमा फर्कनुहोस्';
 
   @override
+  String get callRoleplayMe => 'तपाईं';
+
+  @override
+  String get callRoleplayInfoA11y => 'स्थिति र भूमिका हेर्नुहोस्';
+
+  @override
   String get fcEndedTitle => 'तपाईंको नि:शुल्क कल सकियो';
 
   @override

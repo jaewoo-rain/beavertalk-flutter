@@ -31,6 +31,7 @@ import '../../features/incoming_call/services/lockscreen_call_service.dart';
 import '../../features/normalcall/domain/entities/call_allowance.dart';
 import '../../features/normalcall/domain/entities/call_course.dart';
 import '../../features/normalcall/domain/entities/call_hint.dart';
+import '../../features/normalcall/domain/entities/homework_roleplay.dart';
 import '../../features/normalcall/presentation/avatar_assets.dart';
 import '../../features/normalcall/presentation/cascade_experiment.dart';
 import '../../features/normalcall/presentation/normalcall_controller.dart';
@@ -764,6 +765,8 @@ class _CallScreenState extends ConsumerState<CallScreen> {
     final course =
         ref.watch(normalCallControllerProvider.select((s) => s.course));
     // 표현학습 숙제도 일반 표현학습과 같은 잠금이다(PM-DEC-607) — 서버도 힌트를 안 만든다.
+    final homeworkRoleplay = ref.watch(
+        normalCallControllerProvider.select((s) => s.homeworkRoleplay));
     final homeworkExpression = ref.watch(
         normalCallControllerProvider.select((s) => s.homeworkExpression));
     final hintsAvailable =
@@ -899,6 +902,21 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                 ],
               ),
             ),
+                // 역할극 숙제만 왼쪽 i(PM-DEC-623 · `6737:17630`) — 잠금 버튼과 좌우 대칭.
+                // 서버 `homework_roleplay` 를 받기 전·역할극이 아니면 없다. 잠금 막이 위를 덮어 잠금 중엔 안 눌린다.
+                if (homeworkRoleplay != null)
+                  PositionedDirectional(
+                    top: 14,
+                    start: 14,
+                    child: CallInfoButton(
+                      semanticLabel: l10n.callRoleplayInfoA11y,
+                      onPressed: () => _showRoleplayInfoSheet(
+                        homeworkRoleplay,
+                        partnerName: selectedChar?.name,
+                        partnerImage: partnerImage,
+                      ),
+                    ),
+                  ),
                 PositionedDirectional(
                   top: 14, // Figma y14(AppSpacing 토큰 없음)
                   end: 14, // 원 40 의 끝이 화면 끝에서 20 — 상자 52 라 14
@@ -1348,6 +1366,25 @@ class _CallScreenState extends ConsumerState<CallScreen> {
   /// 값은 서버가 준다: 상황·상대역 = `GET /cur/me` lesson(상대역은 PM-DEC-485 서버 추가분 —
   /// 구서버면 null 이라 상대 줄이 숨는다), 목록 = `GET /cur/lessons?level=`. 시트 안에서 지켜보므로
   /// 늦게 와도 열린 시트가 채워진다. 닫기는 막 탭·아래로 끌기.
+  /// 역할극 숙제 i 안내 시트(PM-DEC-623 A안) — 힌트 시트와 같은 틀 · 딤 탭·아래로 내려 닫는다.
+  Future<void> _showRoleplayInfoSheet(
+    HomeworkRoleplay roleplay, {
+    required String? partnerName,
+    required ImageProvider? partnerImage,
+  }) {
+    return showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      barrierColor: context.c.materialDim,
+      builder: (_) => BottomSheetCallRoleplayInfo(
+        roleplay: roleplay,
+        partnerName: partnerName,
+        partnerImage: partnerImage,
+      ),
+    );
+  }
+
   Future<void> _showLessonHintSheet(ImageProvider? partnerImage) {
     return showModalBottomSheet<void>(
       context: context,

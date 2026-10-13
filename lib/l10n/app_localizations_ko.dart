@@ -2135,6 +2135,12 @@ class AppLocalizationsKo extends AppLocalizations {
   String get hwCallDoneBackToHomework => '숙제로 돌아가기';
 
   @override
+  String get callRoleplayMe => '나';
+
+  @override
+  String get callRoleplayInfoA11y => '상황과 역할 보기';
+
+  @override
   String get fcEndedTitle => '무료 통화가 끝났어요';
 
   @override

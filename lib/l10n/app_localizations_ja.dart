@@ -2134,6 +2134,12 @@ class AppLocalizationsJa extends AppLocalizations {
   String get hwCallDoneBackToHomework => '宿題に戻る';
 
   @override
+  String get callRoleplayMe => 'あなた';
+
+  @override
+  String get callRoleplayInfoA11y => '状況と役割を見る';
+
+  @override
   String get fcEndedTitle => '無料通話が終了しました';
 
   @override

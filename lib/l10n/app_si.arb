@@ -644,6 +644,8 @@
   "hwCallDoneTitle": "ඔබ ගෙදර වැඩ ඇමතුම අවසන් කළා",
   "hwCallDoneSeeResults": "ප්‍රතිඵල බලන්න",
   "hwCallDoneBackToHomework": "ගෙදර වැඩ වෙත ආපසු",
+  "callRoleplayMe": "ඔබ",
+  "callRoleplayInfoA11y": "තත්ත්වය සහ භූමිකා බලන්න",
   "fcEndedTitle": "ඔබේ නොමිලේ ඇමතුම අවසන් විය",
   "fcEndedBody": "අද නොමිලේ ඇමතුම් විනාඩි 5 අවසන්\nවැඩි වේලාවක් කතා කිරීමට දායක වන්න",
   "ctaSubscribeKeepTalking": "දායක වී කතාව දිගටම කරගෙන යන්න",

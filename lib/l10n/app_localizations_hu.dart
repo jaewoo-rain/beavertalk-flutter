@@ -2214,6 +2214,12 @@ class AppLocalizationsHu extends AppLocalizations {
   String get hwCallDoneBackToHomework => 'Vissza a házi feladathoz';
 
   @override
+  String get callRoleplayMe => 'Te';
+
+  @override
+  String get callRoleplayInfoA11y => 'Helyzet és szerepek megtekintése';
+
+  @override
   String get fcEndedTitle => 'A díjmentes hívásod véget ért';
 
   @override
