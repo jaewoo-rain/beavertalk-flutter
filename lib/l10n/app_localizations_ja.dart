@@ -2341,7 +2341,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get hwJoinConsentNotShared1 => 'メールアドレスと電話番号';
 
   @override
-  String get hwJoinConsentNotShared2 => 'アプリで使う名前・プロフィール・キャラクター';
+  String get hwJoinConsentNotShared2 => 'アプリで使う名前、プロフィール、キャラクター';
 
   @override
   String get hwJoinConsentNotShared3 => '国籍';

@@ -2323,10 +2323,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get hwJoinConsentShared2 => '숙제를 했는지 여부';
 
   @override
-  String get hwJoinConsentShared3 => '통과한 문장 수 · 못 한 문장';
+  String get hwJoinConsentShared3 => '통과한 문장 수와 못 한 문장';
 
   @override
-  String get hwJoinConsentShared4 => '과제 통화의 시간 · 요약';
+  String get hwJoinConsentShared4 => '과제 통화의 시간과 요약';
 
   @override
   String get hwJoinConsentShared5 => '모국어';
@@ -2338,10 +2338,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get hwJoinConsentNotSharedHeading => '공유되지 않아요';
 
   @override
-  String get hwJoinConsentNotShared1 => '이메일 · 전화번호';
+  String get hwJoinConsentNotShared1 => '이메일과 전화번호';
 
   @override
-  String get hwJoinConsentNotShared2 => '앱 이름 · 프로필 · 캐릭터';
+  String get hwJoinConsentNotShared2 => '앱에서 쓰는 이름, 프로필, 캐릭터';
 
   @override
   String get hwJoinConsentNotShared3 => '국적';
@@ -2350,7 +2350,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get hwJoinConsentNotShared4 => '반 밖에서 한 통화와 학습';
 
   @override
-  String get hwJoinConsentNotShared5 => '구독 · 결제 정보';
+  String get hwJoinConsentNotShared5 => '구독과 결제 정보';
 
   @override
   String get hwJoinConsentAgree => '위 내용에 동의합니다';

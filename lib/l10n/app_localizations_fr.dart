@@ -3112,12 +3112,24 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String hwWorkbookPages(int count) {
-    return '$count pages';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count pages',
+      one: '$count page',
+    );
+    return '$_temp0';
   }
 
   @override
   String hwWorkbookWords(int count) {
-    return '$count mots';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count mots',
+      one: '$count mot',
+    );
+    return '$_temp0';
   }
 
   @override

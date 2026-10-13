@@ -3071,12 +3071,24 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String hwWorkbookPages(int count) {
-    return '$count sivua';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count sivua',
+      one: '1 sivu',
+    );
+    return '$_temp0';
   }
 
   @override
   String hwWorkbookWords(int count) {
-    return '$count sanaa';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count sanaa',
+      one: '1 sana',
+    );
+    return '$_temp0';
   }
 
   @override
