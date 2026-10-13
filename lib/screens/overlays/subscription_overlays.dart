@@ -136,6 +136,10 @@ enum SubscriptionOverlay {
   /// 도달이 곧 오늘 예산 소진이다 — 실사용에서는 「내일 또」 쪽이다. 「통화가 더 남음」
   /// 쪽은 서버가 예산이 남았다고 답할 때(한도 면제 admin)만 쓴다.
   premiumCallEnded,
+
+  /// **숙제 통화가 과제 5분을 다 썼다**(PM-DEC-551). 결제 유도 없이 안내만 한다 — 기관이
+  /// 낸 숙제에 구독을 권하지 않는다. 버튼은 「End Call」 하나다([premiumCallEnded] 와 같은 틀).
+  homeworkCallEnded,
 }
 
 /// Shows [overlay] as a modal bottom sheet over the current screen.
@@ -169,7 +173,8 @@ Future<void> showSubscriptionOverlay(
   // 딤 탭·드래그로 닫히지 않게 한다.
   final mustDecide = overlay == SubscriptionOverlay.keepGoing ||
       overlay == SubscriptionOverlay.freeCallEnded ||
-      overlay == SubscriptionOverlay.premiumCallEnded;
+      overlay == SubscriptionOverlay.premiumCallEnded ||
+      overlay == SubscriptionOverlay.homeworkCallEnded;
   return showModalBottomSheet<void>(
     context: context,
     backgroundColor: Colors.transparent,
@@ -857,6 +862,14 @@ class _OverlaySheet extends StatelessWidget {
             topic: lastTopic ?? '',
             usage: usage == null ? '' : l10n.flUsage(usage!.used, usage!.limit),
           ),
+          primaryAction: SheetAction(
+              label: l10n.endCall,
+              onPressed: () => _then(context, () => onEndCall?.call())),
+        );
+      case SubscriptionOverlay.homeworkCallEnded:
+        return BottomSheetContent(
+          title: l10n.homeworkCallTimeLimit,
+          body: '',
           primaryAction: SheetAction(
               label: l10n.endCall,
               onPressed: () => _then(context, () => onEndCall?.call())),

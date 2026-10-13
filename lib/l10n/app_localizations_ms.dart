@@ -2191,11 +2191,14 @@ class AppLocalizationsMs extends AppLocalizations {
   String get unlockedWithMax => 'Termasuk dalam pelan anda';
 
   @override
+  String get homeworkCallTimeLimit => 'Panggilan kerja rumah hanya 5 minit.';
+
+  @override
   String get fcEndedTitle => 'Panggilan percuma anda telah tamat';
 
   @override
   String get fcEndedBody =>
-      'Panggilan percuma berlangsung sehingga 5 minit\nLanggan untuk terus berbual lebih lama';
+      'Masa panggilan percuma 5 minit hari ini sudah habis\nLanggan untuk terus berbual lebih lama';
 
   @override
   String get ctaSubscribeKeepTalking => 'Langgan dan terus berbual';

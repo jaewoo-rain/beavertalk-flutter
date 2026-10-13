@@ -2195,11 +2195,15 @@ class AppLocalizationsEs extends AppLocalizations {
   String get unlockedWithMax => 'Incluido en tu plan';
 
   @override
+  String get homeworkCallTimeLimit =>
+      'Las llamadas de tareas duran solo 5 minutos.';
+
+  @override
   String get fcEndedTitle => 'Tu llamada gratuita ha terminado';
 
   @override
   String get fcEndedBody =>
-      'Las llamadas gratuitas duran hasta 5 minutos\nSuscríbete para seguir hablando más tiempo';
+      'Ya usaste tus 5 minutos de llamada gratis de hoy\nSuscríbete para seguir hablando más tiempo';
 
   @override
   String get ctaSubscribeKeepTalking => 'Suscribirse y seguir hablando';

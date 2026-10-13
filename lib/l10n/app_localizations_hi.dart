@@ -2171,11 +2171,14 @@ class AppLocalizationsHi extends AppLocalizations {
   String get unlockedWithMax => 'आपके प्लान में शामिल';
 
   @override
+  String get homeworkCallTimeLimit => 'होमवर्क कॉल सिर्फ़ 5 मिनट की होती है।';
+
+  @override
   String get fcEndedTitle => 'आपकी मुफ़्त कॉल ख़त्म हो गई';
 
   @override
   String get fcEndedBody =>
-      'मुफ़्त कॉल 5 मिनट तक चलती है\nलंबी बातचीत के लिए सब्सक्राइब करें';
+      'आज के 5 मिनट की मुफ़्त कॉल पूरी हो गई\nलंबी बातचीत के लिए सब्सक्राइब करें';
 
   @override
   String get ctaSubscribeKeepTalking => 'सब्सक्राइब करें और बात जारी रखें';

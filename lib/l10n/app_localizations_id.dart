@@ -2180,11 +2180,15 @@ class AppLocalizationsId extends AppLocalizations {
   String get unlockedWithMax => 'Termasuk dalam paketmu';
 
   @override
+  String get homeworkCallTimeLimit =>
+      'Panggilan pekerjaan rumah hanya 5 menit.';
+
+  @override
   String get fcEndedTitle => 'Panggilan gratis kamu sudah berakhir';
 
   @override
   String get fcEndedBody =>
-      'Panggilan gratis berlangsung hingga 5 menit\nBerlangganan untuk mengobrol lebih lama';
+      'Waktu panggilan gratis 5 menit hari ini sudah habis\nBerlangganan untuk mengobrol lebih lama';
 
   @override
   String get ctaSubscribeKeepTalking => 'Berlangganan dan lanjut mengobrol';

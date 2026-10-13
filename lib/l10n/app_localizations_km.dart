@@ -2169,11 +2169,15 @@ class AppLocalizationsKm extends AppLocalizations {
   String get unlockedWithMax => 'រួមបញ្ចូលក្នុងគម្រោងរបស់អ្នក';
 
   @override
+  String get homeworkCallTimeLimit =>
+      'ការហៅសម្រាប់កិច្ចការផ្ទះមានតែ ៥ នាទីប៉ុណ្ណោះ។';
+
+  @override
   String get fcEndedTitle => 'ការហៅទូរស័ព្ទឥតគិតថ្លៃរបស់អ្នកបានបញ្ចប់';
 
   @override
   String get fcEndedBody =>
-      'ការហៅឥតគិតថ្លៃមានរយៈពេលដល់ទៅ ៥ នាទី\nជាវដើម្បីនិយាយបានយូរជាងនេះ';
+      'អ្នកបានប្រើការហៅឥតគិតថ្លៃ ៥ នាទីសម្រាប់ថ្ងៃនេះអស់ហើយ\nជាវដើម្បីនិយាយបានយូរជាងនេះ';
 
   @override
   String get ctaSubscribeKeepTalking => 'ជាវ ហើយបន្តនិយាយ';

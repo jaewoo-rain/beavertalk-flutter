@@ -2105,10 +2105,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get unlockedWithMax => '已包含在你的套餐中';
 
   @override
+  String get homeworkCallTimeLimit => '作业通话只有5分钟。';
+
+  @override
   String get fcEndedTitle => '免费通话已结束';
 
   @override
-  String get fcEndedBody => '免费通话最长5分钟\n订阅后可继续畅聊';
+  String get fcEndedBody => '今天的5分钟免费通话已用完\n订阅后可继续畅聊';
 
   @override
   String get ctaSubscribeKeepTalking => '订阅并继续通话';

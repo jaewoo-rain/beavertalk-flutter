@@ -2170,11 +2170,14 @@ class AppLocalizationsBn extends AppLocalizations {
   String get unlockedWithMax => 'আপনার প্ল্যানে অন্তর্ভুক্ত';
 
   @override
+  String get homeworkCallTimeLimit => 'হোমওয়ার্কের কল শুধু ৫ মিনিট করা যায়।';
+
+  @override
   String get fcEndedTitle => 'আপনার ফ্রি কল শেষ হয়েছে';
 
   @override
   String get fcEndedBody =>
-      'ফ্রি কল সর্বোচ্চ ৫ মিনিট চলে\nআরও বেশি কথা বলতে সাবস্ক্রাইব করুন';
+      'আজকের ৫ মিনিটের ফ্রি কল শেষ হয়ে গেছে\nআরও বেশি কথা বলতে সাবস্ক্রাইব করুন';
 
   @override
   String get ctaSubscribeKeepTalking => 'সাবস্ক্রাইব করে কথা চালিয়ে যান';

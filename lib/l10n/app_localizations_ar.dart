@@ -2160,11 +2160,14 @@ class AppLocalizationsAr extends AppLocalizations {
   String get unlockedWithMax => 'مضمّن في خطتك';
 
   @override
+  String get homeworkCallTimeLimit => 'مكالمة الواجب مدتها 5 دقائق فقط.';
+
+  @override
   String get fcEndedTitle => 'انتهت مكالمتك المجانية';
 
   @override
   String get fcEndedBody =>
-      'المكالمات المجانية تصل إلى 5 دقائق\nاشترك لمواصلة الحديث لفترة أطول';
+      'لقد استخدمت دقائق المكالمات المجانية الخمس لهذا اليوم\nاشترك لمواصلة الحديث لفترة أطول';
 
   @override
   String get ctaSubscribeKeepTalking => 'اشترك وواصل الحديث';

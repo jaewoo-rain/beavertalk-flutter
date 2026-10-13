@@ -2184,11 +2184,15 @@ class AppLocalizationsMy extends AppLocalizations {
   String get unlockedWithMax => 'သင့်အစီအစဉ်တွင် ပါဝင်သည်';
 
   @override
+  String get homeworkCallTimeLimit =>
+      'အိမ်စာခေါ်ဆိုမှုကို ၅ မိနစ်သာ ပြုလုပ်နိုင်ပါသည်။';
+
+  @override
   String get fcEndedTitle => 'သင့်အခမဲ့ခေါ်ဆိုမှု ပြီးဆုံးသွားပါပြီ';
 
   @override
   String get fcEndedBody =>
-      'အခမဲ့ခေါ်ဆိုမှုသည် ၅ မိနစ်အထိ ကြာပါသည်\nပိုမိုကြာရှည်စွာ စကားပြောရန် စာရင်းသွင်းပါ';
+      'ယနေ့အတွက် အခမဲ့ခေါ်ဆိုချိန် ၅ မိနစ် ကုန်သွားပါပြီ\nပိုမိုကြာရှည်စွာ စကားပြောရန် စာရင်းသွင်းပါ';
 
   @override
   String get ctaSubscribeKeepTalking => 'စာရင်းသွင်းပြီး ဆက်ပြောပါ';

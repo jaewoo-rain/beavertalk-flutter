@@ -2170,11 +2170,14 @@ class AppLocalizationsTr extends AppLocalizations {
   String get unlockedWithMax => 'Planına dahil';
 
   @override
+  String get homeworkCallTimeLimit => 'Ödev görüşmesi yalnızca 5 dakika sürer.';
+
+  @override
   String get fcEndedTitle => 'Ücretsiz görüşmen sona erdi';
 
   @override
   String get fcEndedBody =>
-      'Ücretsiz görüşmeler en fazla 5 dakika sürer\nDaha uzun konuşmak için abone ol';
+      'Bugünkü 5 dakikalık ücretsiz görüşme süreni doldurdun\nDaha uzun konuşmak için abone ol';
 
   @override
   String get ctaSubscribeKeepTalking => 'Abone ol ve konuşmaya devam et';

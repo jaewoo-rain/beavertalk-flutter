@@ -2180,11 +2180,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get unlockedWithMax => 'Included with your plan';
 
   @override
+  String get homeworkCallTimeLimit =>
+      'Homework calls are limited to 5 minutes.';
+
+  @override
   String get fcEndedTitle => 'Your free call has ended';
 
   @override
   String get fcEndedBody =>
-      'Free calls last up to 5 minutes\nSubscribe to keep talking for longer';
+      'You\'ve used today\'s 5 free call minutes\nSubscribe to keep talking for longer';
 
   @override
   String get ctaSubscribeKeepTalking => 'Subscribe and keep talking';

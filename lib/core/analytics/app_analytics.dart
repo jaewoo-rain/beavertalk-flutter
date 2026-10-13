@@ -72,6 +72,20 @@ abstract final class AppEvent {
   /// 결제 실패·취소·스토어 오류. 파라미터 `reason`(failed · canceled · store_error) · `cycle`.
   static const purchaseFailed = 'purchase_failed';
 
+  /// 결제 성공(스토어 결제·복원이 확인됨). 파라미터 `cycle`(monthly · annual) · `state`.
+  static const purchaseSucceeded = 'purchase_succeeded';
+
+  /// 숙제 회화 통화 시작(서버 `call_started` 확정). 파라미터 `assignment_id`.
+  static const homeworkCallStarted = 'homework_call_started';
+
+  /// 숙제 회화 통화 종료. 파라미터 `assignment_id` · `seconds` · `time_up`(1 = 과제 5분 소진).
+  /// 과제 완료 판정(5분 사용 또는 목표 단어 소진)은 서버가 한다 — 이 이벤트는 통화 종료다.
+  static const homeworkCallCompleted = 'homework_call_completed';
+
+  /// 통화 한도 안내 표시. 파라미터 `kind`(daily = 오늘 무료 시간 소진 · call_end = 무료 통화
+  /// 5분 끝 · homework = 숙제 과제 5분 끝).
+  static const freeLimitHit = 'free_limit_hit';
+
   /// 발음 챌린지 결과 표시. 파라미터 `score`, `ended_by`(game_over·user).
   static const challengeCompleted = 'challenge_completed';
 }

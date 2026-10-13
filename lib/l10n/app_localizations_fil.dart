@@ -2195,11 +2195,15 @@ class AppLocalizationsFil extends AppLocalizations {
   String get unlockedWithMax => 'Kasama sa plan mo';
 
   @override
+  String get homeworkCallTimeLimit =>
+      'Hanggang 5 minuto lang ang tawag para sa takdang-aralin.';
+
+  @override
   String get fcEndedTitle => 'Tapos na ang libre mong tawag';
 
   @override
   String get fcEndedBody =>
-      'Hanggang 5 minuto lang ang libreng tawag\nMag-subscribe para mas mahabang usapan';
+      'Nagamit mo na ang 5 minutong libreng tawag ngayong araw\nMag-subscribe para mas mahabang usapan';
 
   @override
   String get ctaSubscribeKeepTalking => 'Mag-subscribe at ituloy ang usapan';

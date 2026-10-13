@@ -2196,11 +2196,15 @@ class AppLocalizationsPt extends AppLocalizations {
   String get unlockedWithMax => 'Incluído no seu plano';
 
   @override
+  String get homeworkCallTimeLimit =>
+      'As ligações de tarefa duram só 5 minutos.';
+
+  @override
   String get fcEndedTitle => 'A sua chamada gratuita terminou';
 
   @override
   String get fcEndedBody =>
-      'As chamadas gratuitas duram até 5 minutos\nAssine para continuar a conversar por mais tempo';
+      'Você já usou os 5 minutos de ligação grátis de hoje\nAssine para continuar a conversar por mais tempo';
 
   @override
   String get ctaSubscribeKeepTalking => 'Assinar e continuar a conversar';

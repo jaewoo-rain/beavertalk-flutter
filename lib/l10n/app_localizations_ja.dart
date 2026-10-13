@@ -2112,10 +2112,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get unlockedWithMax => 'ご利用中のプランに含まれます';
 
   @override
+  String get homeworkCallTimeLimit => '宿題の通話は5分までです。';
+
+  @override
   String get fcEndedTitle => '無料通話が終了しました';
 
   @override
-  String get fcEndedBody => '無料通話は5分までです\n購読すればもっと長く話せます';
+  String get fcEndedBody => '今日の無料通話5分を使い切りました\n購読すればもっと長く話せます';
 
   @override
   String get ctaSubscribeKeepTalking => '購読して会話を続ける';

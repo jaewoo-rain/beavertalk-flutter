@@ -2171,11 +2171,14 @@ class AppLocalizationsSi extends AppLocalizations {
   String get unlockedWithMax => 'ඔබේ සැලැස්මට ඇතුළත්';
 
   @override
+  String get homeworkCallTimeLimit => 'ගෙදර වැඩ ඇමතුම විනාඩි 5ක් පමණි.';
+
+  @override
   String get fcEndedTitle => 'ඔබේ නොමිලේ ඇමතුම අවසන් විය';
 
   @override
   String get fcEndedBody =>
-      'නොමිලේ ඇමතුම් විනාඩි 5ක් දක්වා පවතී\nවැඩි වේලාවක් කතා කිරීමට දායක වන්න';
+      'අද නොමිලේ ඇමතුම් විනාඩි 5 අවසන්\nවැඩි වේලාවක් කතා කිරීමට දායක වන්න';
 
   @override
   String get ctaSubscribeKeepTalking => 'දායක වී කතාව දිගටම කරගෙන යන්න';
