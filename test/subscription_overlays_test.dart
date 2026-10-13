@@ -107,6 +107,8 @@ void main() {
       SubscriptionOverlay.keepGoing: 'Keep going?',
       // 기본은 「더 남음」 문구 — 오늘 마지막 통화 문구는 아래 별도 시험.
       SubscriptionOverlay.premiumCallEnded: "Let's wrap up this call.",
+      SubscriptionOverlay.homeworkCallEnded:
+          'Homework calls are limited to 5 minutes.',
     };
 
     /// 결정을 받아야 하는 시트 — 딤 탭으로 닫히지 않는다. CTA 로 닫아야 한다.
@@ -114,6 +116,7 @@ void main() {
       SubscriptionOverlay.freeCallEnded,
       SubscriptionOverlay.keepGoing,
       SubscriptionOverlay.premiumCallEnded,
+      SubscriptionOverlay.homeworkCallEnded,
     };
 
     test('제목 표가 enum 을 빠짐없이 덮는다', () {

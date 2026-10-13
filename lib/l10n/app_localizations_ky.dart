@@ -2176,11 +2176,14 @@ class AppLocalizationsKy extends AppLocalizations {
   String get unlockedWithMax => 'Планыңызга кирет';
 
   @override
+  String get homeworkCallTimeLimit => 'Үй тапшырмасы чалуусу 5 мүнөт гана.';
+
+  @override
   String get fcEndedTitle => 'Акысыз чалууңуз аяктады';
 
   @override
   String get fcEndedBody =>
-      'Акысыз чалуулар 5 мүнөткө чейин созулат\nУзагыраак сүйлөшүү үчүн жазылыңыз';
+      'Бүгүнкү 5 мүнөттүк акысыз чалуу убактысы бүттү\nУзагыраак сүйлөшүү үчүн жазылыңыз';
 
   @override
   String get ctaSubscribeKeepTalking => 'Жазылып, сүйлөшүүнү улантуу';

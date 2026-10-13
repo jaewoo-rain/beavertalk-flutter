@@ -2215,11 +2215,15 @@ class AppLocalizationsFr extends AppLocalizations {
   String get unlockedWithMax => 'Inclus dans votre forfait';
 
   @override
+  String get homeworkCallTimeLimit =>
+      'Les appels de devoirs durent 5 minutes maximum.';
+
+  @override
   String get fcEndedTitle => 'Ton appel gratuit est terminé';
 
   @override
   String get fcEndedBody =>
-      'Les appels gratuits durent jusqu\'à 5 minutes\nAbonne-toi pour continuer plus longtemps';
+      'Tu as utilisé tes 5 minutes d\'appel gratuites du jour\nAbonne-toi pour continuer plus longtemps';
 
   @override
   String get ctaSubscribeKeepTalking => 'S\'abonner et continuer à parler';

@@ -21,6 +21,7 @@ import '../../components/molecules/hint_card.dart';
 import '../../components/molecules/tooltip_bubble.dart';
 import '../../components/organisms/bottom_sheet_call_lesson_hint.dart';
 import '../../components/organisms/dialog_basic.dart';
+import '../../core/analytics/app_analytics.dart';
 import '../../features/auth/presentation/providers/my_profile_provider.dart';
 import '../../features/bookmark/presentation/providers/bookmark_providers.dart';
 import '../../features/bookmark/presentation/providers/bookmark_toggle_controller.dart';
@@ -40,6 +41,7 @@ import '../../features/review/presentation/review_providers.dart';
 import '../../features/subscription/domain/entities/subscription_state.dart';
 import '../../features/subscription/presentation/providers/subscription_state_providers.dart';
 import '../../l10n/app_localizations.dart';
+import 'call_rejection.dart';
 import '../../mock/mock_data.dart';
 import '../overlays/subscription_overlays.dart';
 import '../../theme/app_color_tokens.dart';
@@ -481,6 +483,18 @@ class _CallScreenState extends ConsumerState<CallScreen> {
     _goFinish(s.callId, s.elapsedSec, s.baselineCallId);
   }
 
+  /// 숙제 통화가 과제 5분을 다 썼다 — 결제 유도 대신 「숙제는 5분 통화만 가능해요.」를
+  /// 띄우고 종료 화면으로 간다(PM-DEC-551). 5분은 서버가 과제별로 센다.
+  Future<void> _showHomeworkTimeUpSheet(CallState s) async {
+    if (_navigated || _capSheetOpen) return;
+    _capSheetOpen = true;
+    AppAnalytics.instance.log(AppEvent.freeLimitHit, {'kind': 'homework'});
+    await showSubscriptionOverlay(
+        context, SubscriptionOverlay.homeworkCallEnded);
+    if (!mounted) return;
+    _goFinish(s.callId, s.elapsedSec, s.baselineCallId);
+  }
+
   /// 오늘 남은 예산이 이보다 적으면 「오늘 마지막」 으로 본다 — 1분 미만으로는 통화가
   /// 성립하지 않는다(인사만 하고 끝난다).
   static const _minUsefulCallSec = 60;
@@ -524,6 +538,9 @@ class _CallScreenState extends ConsumerState<CallScreen> {
     final used = s.segmentsUsed;
     final limit = CallAllowance.limitFor(paidAccess: s.paidCallTime);
 
+    if (!s.paidCallTime) {
+      AppAnalytics.instance.log(AppEvent.freeLimitHit, {'kind': 'call_end'});
+    }
     try {
       await showSubscriptionOverlay(
         context,
@@ -663,7 +680,9 @@ class _CallScreenState extends ConsumerState<CallScreen> {
           avatarImage: partnerImage,
         );
       } else if (next.phase == CallPhase.ended) {
-        if (next.endedAtCap) {
+        if (next.homeworkTimeUp) {
+          _showHomeworkTimeUpSheet(next);
+        } else if (next.endedAtCap) {
           _showCapSheet(
             next,
             characterName: selectedChar?.name ?? '',
@@ -676,14 +695,11 @@ class _CallScreenState extends ConsumerState<CallScreen> {
         if (_navigated) return;
         _navigated = true;
         final msg = next.errorMsg ?? l10n.callEnded;
+        final paid = ref.read(subscriptionStatusProvider).grantsPaidAccess;
         // 잠금화면 통화의 실패도 잠금화면으로 돌아가야 한다. 여기서 홈으로 보내면
         // 키가드 위에 홈 화면이 남는다(스낵바도 볼 사람이 없다).
-        _leave(() {
-          ScaffoldMessenger.of(context)
-            ..clearSnackBars()
-            ..showSnackBar(SnackBar(content: Text(msg)));
-          Navigator.of(context).popUntil((r) => r.isFirst);
-        });
+        _leave(() => leaveAfterCallRejection(context,
+            code: next.errorCode, message: msg, paidAccess: paid));
       }
     });
 

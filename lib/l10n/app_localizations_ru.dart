@@ -2187,11 +2187,15 @@ class AppLocalizationsRu extends AppLocalizations {
   String get unlockedWithMax => 'Входит в ваш план';
 
   @override
+  String get homeworkCallTimeLimit =>
+      'Звонок по домашнему заданию длится только 5 минут.';
+
+  @override
   String get fcEndedTitle => 'Бесплатный звонок завершён';
 
   @override
   String get fcEndedBody =>
-      'Бесплатные звонки длятся до 5 минут\nОформите подписку, чтобы говорить дольше';
+      'Бесплатные 5 минут звонков на сегодня закончились\nОформите подписку, чтобы говорить дольше';
 
   @override
   String get ctaSubscribeKeepTalking => 'Оформить подписку и продолжить';

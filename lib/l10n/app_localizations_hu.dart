@@ -2191,11 +2191,15 @@ class AppLocalizationsHu extends AppLocalizations {
   String get unlockedWithMax => 'A csomagod része';
 
   @override
+  String get homeworkCallTimeLimit =>
+      'A házi feladat hívás csak 5 perces lehet.';
+
+  @override
   String get fcEndedTitle => 'A díjmentes hívásod véget ért';
 
   @override
   String get fcEndedBody =>
-      'A díjmentes hívások legfeljebb 5 percig tartanak\nElőfizetéssel tovább beszélgethetsz';
+      'Elhasználtad a mai 5 perc díjmentes hívásidődet\nElőfizetéssel tovább beszélgethetsz';
 
   @override
   String get ctaSubscribeKeepTalking => 'Előfizetés és beszélgetés folytatása';

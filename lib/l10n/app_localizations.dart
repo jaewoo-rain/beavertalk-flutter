@@ -4018,6 +4018,12 @@ abstract class AppLocalizations {
   /// **'Included with your plan'**
   String get unlockedWithMax;
 
+  /// Shown when a homework call reaches the 5-minute limit per assignment (instead of a paywall). The learner cannot call longer for this assignment.
+  ///
+  /// In en, this message translates to:
+  /// **'Homework calls are limited to 5 minutes.'**
+  String get homeworkCallTimeLimit;
+
   /// Title of the sheet shown when a FREE member hits the 5-minute call limit. The call is over; there is no extend option.
   ///
   /// In en, this message translates to:
@@ -4027,7 +4033,7 @@ abstract class AppLocalizations {
   /// Body of the free 5-minute limit sheet. Two lines separated by a newline.
   ///
   /// In en, this message translates to:
-  /// **'Free calls last up to 5 minutes\nSubscribe to keep talking for longer'**
+  /// **'You\'ve used today\'s 5 free call minutes\nSubscribe to keep talking for longer'**
   String get fcEndedBody;
 
   /// Primary CTA on the free 5-minute limit sheet. Opens the paywall.

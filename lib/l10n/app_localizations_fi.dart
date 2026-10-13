@@ -2187,11 +2187,15 @@ class AppLocalizationsFi extends AppLocalizations {
   String get unlockedWithMax => 'Sisältyy pakettiisi';
 
   @override
+  String get homeworkCallTimeLimit =>
+      'Kotitehtäväpuhelu kestää vain 5 minuuttia.';
+
+  @override
   String get fcEndedTitle => 'Ilmainen puhelusi päättyi';
 
   @override
   String get fcEndedBody =>
-      'Ilmaiset puhelut kestävät enintään 5 minuuttia\nTilaa, niin voit jutella pidempään';
+      'Olet käyttänyt tämän päivän 5 ilmaista puheluminuuttia\nTilaa, niin voit jutella pidempään';
 
   @override
   String get ctaSubscribeKeepTalking => 'Tilaa ja jatka juttelua';

@@ -2205,11 +2205,15 @@ class AppLocalizationsDe extends AppLocalizations {
   String get unlockedWithMax => 'In deinem Plan enthalten';
 
   @override
+  String get homeworkCallTimeLimit =>
+      'Hausaufgaben-Gespräche dauern nur 5 Minuten.';
+
+  @override
   String get fcEndedTitle => 'Dein kostenloses Gespräch ist beendet';
 
   @override
   String get fcEndedBody =>
-      'Kostenlose Gespräche dauern bis zu 5 Minuten\nAbonniere, um länger zu sprechen';
+      'Du hast deine 5 kostenlosen Gesprächsminuten für heute aufgebraucht\nAbonniere, um länger zu sprechen';
 
   @override
   String get ctaSubscribeKeepTalking => 'Abonnieren und weitersprechen';

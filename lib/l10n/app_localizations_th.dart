@@ -2159,11 +2159,14 @@ class AppLocalizationsTh extends AppLocalizations {
   String get unlockedWithMax => 'รวมอยู่ในแพ็กเกจของคุณ';
 
   @override
+  String get homeworkCallTimeLimit => 'การโทรทำการบ้านใช้ได้แค่ 5 นาที';
+
+  @override
   String get fcEndedTitle => 'การโทรฟรีของคุณสิ้นสุดแล้ว';
 
   @override
   String get fcEndedBody =>
-      'การโทรฟรีใช้ได้สูงสุด 5 นาที\nสมัครสมาชิกเพื่อคุยต่อได้นานขึ้น';
+      'ใช้เวลาโทรฟรี 5 นาทีของวันนี้หมดแล้ว\nสมัครสมาชิกเพื่อคุยต่อได้นานขึ้น';
 
   @override
   String get ctaSubscribeKeepTalking => 'สมัครสมาชิกและคุยต่อ';

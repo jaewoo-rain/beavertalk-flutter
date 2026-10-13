@@ -2172,11 +2172,14 @@ class AppLocalizationsVi extends AppLocalizations {
   String get unlockedWithMax => 'Đã bao gồm trong gói của bạn';
 
   @override
+  String get homeworkCallTimeLimit => 'Cuộc gọi bài tập chỉ được 5 phút.';
+
+  @override
   String get fcEndedTitle => 'Cuộc gọi miễn phí đã kết thúc';
 
   @override
   String get fcEndedBody =>
-      'Cuộc gọi miễn phí kéo dài tối đa 5 phút\nĐăng ký để trò chuyện lâu hơn';
+      'Bạn đã dùng hết 5 phút gọi miễn phí hôm nay\nĐăng ký để trò chuyện lâu hơn';
 
   @override
   String get ctaSubscribeKeepTalking => 'Đăng ký và tiếp tục trò chuyện';

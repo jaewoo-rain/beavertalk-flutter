@@ -14,6 +14,7 @@ import '../../features/incoming_call/services/lockscreen_call_service.dart';
 import '../../features/normalcall/presentation/normalcall_controller.dart';
 import '../../features/subscription/presentation/providers/subscription_state_providers.dart';
 import '../../l10n/app_localizations.dart';
+import 'call_rejection.dart';
 import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
@@ -88,7 +89,7 @@ class _CallLoadingScreenState extends ConsumerState<CallLoadingScreen> {
       case CallPhase.ended:
         _goFinish(s);
       case CallPhase.error:
-        _goHomeWithError(s.errorMsg);
+        _goHomeWithError(s);
       case CallPhase.idle:
         // 실제로 여기서 시작하는 유일한 경우 — 홈에서 진입.
         // 캐릭터를 넘기지 않는다 — 서버가 member.character_id 로 정한다.
@@ -173,17 +174,14 @@ class _CallLoadingScreenState extends ConsumerState<CallLoadingScreen> {
     );
   }
 
-  /// 실패 안내 후 홈으로.
-  void _goHomeWithError(String? msg) {
+  /// 실패 안내 후 홈으로(숙제 5분 소진은 숙제 화면으로 · 무료 하루 소진은 한도 시트).
+  void _goHomeWithError(CallState s) {
     if (_navigated || !mounted) return;
     _navigated = true;
-    final text = msg ?? AppLocalizations.of(context).callConnectFailed;
-    _leave(() {
-      ScaffoldMessenger.of(context)
-        ..clearSnackBars()
-        ..showSnackBar(SnackBar(content: Text(text)));
-      Navigator.of(context).popUntil((r) => r.isFirst);
-    });
+    final text = s.errorMsg ?? AppLocalizations.of(context).callConnectFailed;
+    final paid = ref.read(subscriptionStatusProvider).grantsPaidAccess;
+    _leave(() => leaveAfterCallRejection(context,
+        code: s.errorCode, message: text, paidAccess: paid));
   }
 
   /// Cancels connecting and returns home.
@@ -230,7 +228,7 @@ class _CallLoadingScreenState extends ConsumerState<CallLoadingScreen> {
         case CallPhase.ended:
           _goFinish(next);
         case CallPhase.error:
-          _goHomeWithError(next.errorMsg);
+          _goHomeWithError(next);
         case CallPhase.idle:
         case CallPhase.connecting:
         case CallPhase.ending:

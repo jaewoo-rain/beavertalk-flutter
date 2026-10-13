@@ -2113,10 +2113,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get unlockedWithMax => '내 요금제에 포함';
 
   @override
+  String get homeworkCallTimeLimit => '숙제는 5분 통화만 가능해요.';
+
+  @override
   String get fcEndedTitle => '무료 통화가 끝났어요';
 
   @override
-  String get fcEndedBody => '무료 통화는 5분까지예요\n구독하면 더 길게 이어갈 수 있어요';
+  String get fcEndedBody => '오늘 무료 통화 5분을 다 썼어요\n구독하면 더 길게 이어갈 수 있어요';
 
   @override
   String get ctaSubscribeKeepTalking => '구독하고 계속 대화하기';

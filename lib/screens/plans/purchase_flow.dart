@@ -102,6 +102,7 @@ class _PurchaseProcessingScreenState
           // rendering the resolver's assumed Pro (the "bought Max, shows Pro"
           // bug). Then drop the server caches so a real backend refetches.
           ref.read(sessionEntitlementProvider.notifier).state = tier;
+          _logPurchaseSucceeded(p, request);
           ref.invalidate(serverSubscriptionStatusProvider);
           // 방금 산 구독으로 주기·전환 판단을 다시 읽는다 — 안 하면 앱을 다시 켤 때까지 요금 줄이
           // 비고 「Compare plans」 가 남는다(09-28 실기기).
@@ -207,6 +208,13 @@ class _PurchaseProcessingScreenState
         retryAnnual: request.annual,
         retrySwitch: _switching);
   }
+
+  /// GA4 — 결제 성공(스토어 결제·복원 확인). 늦게 온 결과([watchLatePurchaseResult])도 같다.
+  void _logPurchaseSucceeded(IapPurchase p, PurchaseRequest request) =>
+      AppAnalytics.instance.log(AppEvent.purchaseSucceeded, {
+        'cycle': request.annual ? 'annual' : 'monthly',
+        'state': p.state.name,
+      });
 
   /// GA4 — 결제 실패·취소·스토어 오류.
   void _logPurchaseFailed(String reason, PurchaseRequest request) =>
@@ -344,6 +352,10 @@ void watchLatePurchaseResult({
       case IapPurchaseState.purchased:
       case IapPurchaseState.restored:
         container.read(sessionEntitlementProvider.notifier).state = request.tier;
+        AppAnalytics.instance.log(AppEvent.purchaseSucceeded, {
+          'cycle': request.annual ? 'annual' : 'monthly',
+          'state': p.state.name,
+        });
         container.invalidate(serverSubscriptionStatusProvider);
         container.invalidate(premiumAnnualProvider);
         container.invalidate(subscriptionsProvider);

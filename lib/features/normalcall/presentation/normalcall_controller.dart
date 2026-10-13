@@ -340,7 +340,19 @@ class CallState {
     this.paidCallTime = false,
     this.micMuted = false,
     this.endedAtCap = false,
+    this.errorCode,
+    this.homeworkTimeUp = false,
   });
+
+  /// 서버 `error` 프레임의 `code`([CallPhase.error] 와 함께만 있다). 화면이 코드별로
+  /// 다음 화면을 가른다 — `DAILY_LIMIT` 는 한도 시트, `HOMEWORK_TIME_LIMIT` 는 숙제 안내.
+  final String? errorCode;
+
+  /// 숙제 통화가 **과제 5분을 다 써서** 끝났는가 — [CallPhase.ended] 와 함께만 참.
+  ///
+  /// 화면이 결제 유도 대신 「숙제는 5분 통화만 가능해요.」를 띄운 뒤 종료 화면으로
+  /// 간다(PM-DEC-551). 5분은 서버가 과제별로 센다(`call_started.remaining_s`).
+  final bool homeworkTimeUp;
 
   /// 유료 통화가 **상한(15분)을 다 써서** 끝났는가 — [CallPhase.ended] 와 함께만 참.
   ///
@@ -492,6 +504,8 @@ class CallState {
     bool? paidCallTime,
     bool? micMuted,
     bool? endedAtCap,
+    String? errorCode,
+    bool? homeworkTimeUp,
   }) {
     return CallState(
       phase: phase ?? this.phase,
@@ -514,6 +528,8 @@ class CallState {
       paidCallTime: paidCallTime ?? this.paidCallTime,
       micMuted: micMuted ?? this.micMuted,
       endedAtCap: endedAtCap ?? this.endedAtCap,
+      errorCode: errorCode ?? this.errorCode,
+      homeworkTimeUp: homeworkTimeUp ?? this.homeworkTimeUp,
     );
   }
 }
@@ -1291,7 +1307,20 @@ class NormalCallController extends Notifier<CallState> {
     AppAnalytics.instance.log(AppEvent.callStarted, {
       'course': state.course?.wireValue ?? 'none',
     });
+    _gaHomeworkAssignmentId = _assignmentId;
+    final assignmentId = _assignmentId;
+    if (assignmentId != null) {
+      AppAnalytics.instance.log(AppEvent.homeworkCallStarted, {
+        'assignment_id': assignmentId,
+      });
+    }
   }
+
+  /// GA4 `homework_call_started` 를 보낸 과제 — 종료 이벤트가 같은 과제로 짝을 맞춘다.
+  int? _gaHomeworkAssignmentId;
+
+  /// 이 숙제 통화가 과제 5분을 다 써서 끝나는가 — `homework_call_completed` 의 `time_up`.
+  bool _gaHomeworkTimeUp = false;
 
   /// 대화가 끝났다 — 종료 경로 여럿(사용자 끊기·서버 `call_ended`·마지막 조각·
   /// 오류 teardown)에서 불려도 한 번만 보낸다.
@@ -1301,6 +1330,16 @@ class NormalCallController extends Notifier<CallState> {
     _gaCallStartedAtMs = null;
     final seconds = (DateTime.now().millisecondsSinceEpoch - at) ~/ 1000;
     AppAnalytics.instance.log(AppEvent.callEnded, {'seconds': seconds});
+    final assignmentId = _gaHomeworkAssignmentId;
+    _gaHomeworkAssignmentId = null;
+    if (assignmentId != null) {
+      AppAnalytics.instance.log(AppEvent.homeworkCallCompleted, {
+        'assignment_id': assignmentId,
+        'seconds': seconds,
+        'time_up': _gaHomeworkTimeUp ? 1 : 0,
+      });
+    }
+    _gaHomeworkTimeUp = false;
   }
 
   /// 지금까지의 응답시간 중앙값(표본이 없으면 -1).
@@ -5061,6 +5100,7 @@ class NormalCallController extends Notifier<CallState> {
         state = state.copyWith(
           phase: CallPhase.error,
           errorMsg: serverErrorMessage(msg, _l10n),
+          errorCode: msg['code'] as String?,
         );
         unawaited(_teardown(keepError: true));
       case 'hint':
@@ -5719,6 +5759,24 @@ class NormalCallController extends Notifier<CallState> {
       // 서버가 `call_started` 로 id 를 줬다면 되짚을 게 없다 — 정답을 이미 갖고 있다.
       if (_serverCallId == null && preservedCallId == null) {
         _pendingSegmentCallId = _recoverSegmentCallId(preservedBaseline, gen);
+      }
+
+      // ⭐ 숙제 통화는 과제 5분(서버 `remaining_s`)에서 끝난다 — 이어가기도 결제 유도도
+      //   없다(PM-DEC-551). 화면이 「숙제는 5분 통화만 가능해요.」를 띄운 뒤 종료 화면으로
+      //   간다. 아래 유료 상한 갈래와 같은 이유로 CallKit 콜을 끝내고 상태를 직접 만든다.
+      if (_assignmentId != null) {
+        _log('숙제 통화 과제 5분 도달 — 결제 유도 없이 종료');
+        _gaHomeworkTimeUp = true;
+        _gaCallEnded();
+        await _endCallkitCall();
+        state = CallState(
+          phase: CallPhase.ended,
+          callId: _serverCallId ?? preservedCallId,
+          elapsedSec: preservedElapsed,
+          baselineCallId: preservedBaseline,
+          homeworkTimeUp: true,
+        );
+        return;
       }
 
       // ⭐ **이어갈 수 있는지 서버에 묻는다.** 여기가 오늘(2026-08-24) 하루를 태운
@@ -6502,5 +6560,10 @@ String serverErrorMessage(Map<String, dynamic> msg, AppLocalizations l10n) =>
     switch (msg['code']) {
       'DAILY_LIMIT' => l10n.callDailyLimit,
       'ALREADY_IN_CALL' => l10n.callAlreadyInCall,
+      // 과제 5분 소진. b2b 가 과제 회화를 끝냈다고 보면(5분 또는 목표 소진) 재료 단계에서
+      // `HOMEWORK_CONVERSATION_COMPLETED` 로 먼저 거절된다 — 같은 안내다(PM-DEC-560).
+      'HOMEWORK_TIME_LIMIT' ||
+      'HOMEWORK_CONVERSATION_COMPLETED' =>
+        l10n.homeworkCallTimeLimit,
       _ => (msg['message'] as String?) ?? l10n.callErrorGeneric,
     };

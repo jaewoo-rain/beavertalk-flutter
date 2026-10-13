@@ -2175,11 +2175,14 @@ class AppLocalizationsUr extends AppLocalizations {
   String get unlockedWithMax => 'آپ کے پلان میں شامل';
 
   @override
+  String get homeworkCallTimeLimit => 'ہوم ورک کال صرف 5 منٹ کی ہوتی ہے۔';
+
+  @override
   String get fcEndedTitle => 'آپ کی مفت کال ختم ہو گئی';
 
   @override
   String get fcEndedBody =>
-      'مفت کالیں زیادہ سے زیادہ 5 منٹ کی ہوتی ہیں\nمزید بات کرنے کے لیے سبسکرائب کریں';
+      'آج کی 5 منٹ کی مفت کال کا وقت ختم ہو گیا\nمزید بات کرنے کے لیے سبسکرائب کریں';
 
   @override
   String get ctaSubscribeKeepTalking => 'سبسکرائب کریں اور بات جاری رکھیں';

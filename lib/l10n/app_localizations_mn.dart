@@ -2170,11 +2170,15 @@ class AppLocalizationsMn extends AppLocalizations {
   String get unlockedWithMax => 'Таны багцад багтсан';
 
   @override
+  String get homeworkCallTimeLimit =>
+      'Гэрийн даалгаврын дуудлага зөвхөн 5 минут.';
+
+  @override
   String get fcEndedTitle => 'Таны үнэгүй дуудлага дууслаа';
 
   @override
   String get fcEndedBody =>
-      'Үнэгүй дуудлага хамгийн ихдээ 5 минут үргэлжилнэ\nУрт ярихын тулд захиалга аваарай';
+      'Өнөөдрийн 5 минутын үнэгүй дуудлага дууслаа\nУрт ярихын тулд захиалга аваарай';
 
   @override
   String get ctaSubscribeKeepTalking => 'Захиалж, яриаг үргэлжлүүлэх';

@@ -2169,11 +2169,14 @@ class AppLocalizationsNe extends AppLocalizations {
   String get unlockedWithMax => 'तपाईंको प्लानमा समावेश';
 
   @override
+  String get homeworkCallTimeLimit => 'गृहकार्यको कल ५ मिनेट मात्र हुन्छ।';
+
+  @override
   String get fcEndedTitle => 'तपाईंको नि:शुल्क कल सकियो';
 
   @override
   String get fcEndedBody =>
-      'नि:शुल्क कल ५ मिनेटसम्म चल्छ\nलामो कुराकानीका लागि सदस्यता लिनुहोस्';
+      'आजको ५ मिनेटको नि:शुल्क कल सकियो\nलामो कुराकानीका लागि सदस्यता लिनुहोस्';
 
   @override
   String get ctaSubscribeKeepTalking => 'सदस्यता लिई कुराकानी जारी राख्नुहोस्';

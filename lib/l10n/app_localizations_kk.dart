@@ -2171,11 +2171,14 @@ class AppLocalizationsKk extends AppLocalizations {
   String get unlockedWithMax => 'Жоспарыңызға кіреді';
 
   @override
+  String get homeworkCallTimeLimit => 'Үй тапсырмасы қоңырауы тек 5 минут.';
+
+  @override
   String get fcEndedTitle => 'Тегін қоңырауыңыз аяқталды';
 
   @override
   String get fcEndedBody =>
-      'Тегін қоңыраулар 5 минутқа дейін созылады\nҰзағырақ сөйлесу үшін жазылыңыз';
+      'Бүгінгі 5 минуттық тегін қоңырау уақыты бітті\nҰзағырақ сөйлесу үшін жазылыңыз';
 
   @override
   String get ctaSubscribeKeepTalking => 'Жазылып, сөйлесуді жалғастыру';

@@ -2186,11 +2186,15 @@ class AppLocalizationsUz extends AppLocalizations {
   String get unlockedWithMax => 'Tarifingizga kiritilgan';
 
   @override
+  String get homeworkCallTimeLimit =>
+      'Uyga vazifa qo\'ng\'irog\'i faqat 5 daqiqa.';
+
+  @override
   String get fcEndedTitle => 'Bepul qo\'ng\'irog\'ingiz tugadi';
 
   @override
   String get fcEndedBody =>
-      'Bepul qo\'ng\'iroqlar 5 daqiqagacha davom etadi\nUzoqroq suhbatlashish uchun obuna bo\'ling';
+      'Bugungi 5 daqiqalik bepul qo\'ng\'iroq vaqti tugadi\nUzoqroq suhbatlashish uchun obuna bo\'ling';
 
   @override
   String get ctaSubscribeKeepTalking =>
