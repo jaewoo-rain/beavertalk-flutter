@@ -3081,7 +3081,15 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String hwWorkbookWords(int count) {
-    return '$count слов';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count слова',
+      many: '$count слов',
+      few: '$count слова',
+      one: '$count слово',
+    );
+    return '$_temp0';
   }
 
   @override

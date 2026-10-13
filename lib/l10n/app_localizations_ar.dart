@@ -3031,12 +3031,30 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String hwWorkbookPages(int count) {
-    return '$count صفحة';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count صفحة',
+      many: '$count صفحة',
+      few: '$count صفحات',
+      two: 'صفحتان',
+      one: 'صفحة واحدة',
+    );
+    return '$_temp0';
   }
 
   @override
   String hwWorkbookWords(int count) {
-    return '$count كلمة';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count كلمة',
+      many: '$count كلمة',
+      few: '$count كلمات',
+      two: 'كلمتان',
+      one: 'كلمة واحدة',
+    );
+    return '$_temp0';
   }
 
   @override

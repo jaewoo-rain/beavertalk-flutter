@@ -5611,13 +5611,13 @@ abstract class AppLocalizations {
   /// Workbook card info line: page count.
   ///
   /// In en, this message translates to:
-  /// **'{count} pages'**
+  /// **'{count, plural, =1{1 page} other{{count} pages}}'**
   String hwWorkbookPages(int count);
 
   /// Workbook card info line: vocabulary count.
   ///
   /// In en, this message translates to:
-  /// **'{count} words'**
+  /// **'{count, plural, =1{1 word} other{{count} words}}'**
   String hwWorkbookWords(int count);
 
   /// Screen-reader label of an activity icon on a homework card (done).

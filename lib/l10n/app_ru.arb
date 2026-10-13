@@ -910,7 +910,7 @@
   "hwCtaDone": "Выполнено",
   "hwWorkbookTitle": "Рабочая тетрадь Chapter {chapter}",
   "hwWorkbookPages": "{count} стр.",
-  "hwWorkbookWords": "{count} слов",
+  "hwWorkbookWords": "{count, plural, one{{count} слово} few{{count} слова} many{{count} слов} other{{count} слова}}",
   "hwA11yActivityDone": "{activity}: выполнено",
   "hwA11yActivityTodo": "{activity}: не выполнено",
   "hwTabTodoEmptyTitle": "Вы выполнили все домашние задания",
