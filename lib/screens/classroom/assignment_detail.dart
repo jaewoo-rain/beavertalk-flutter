@@ -337,6 +337,8 @@ class _AssignmentDetailScreenState
       }
     }
     if (teacher == null || teacher.isEmpty) return a.classroomName;
+    // 호칭까지 적힌 이름이면 덧붙이지 않는다('김 선생님 선생님' 방지).
+    if (teacherNameHasTitle(teacher)) return '${a.classroomName}, $teacher';
     return l10n.hwDetailClassLine(a.classroomName, teacher);
   }
 
