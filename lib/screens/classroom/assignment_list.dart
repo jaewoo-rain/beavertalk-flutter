@@ -17,6 +17,7 @@ import '../../l10n/app_localizations.dart';
 import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
+import 'language_consent_prompt.dart';
 import 'leave_class_sheet.dart';
 import 'widgets/homework_list_parts.dart';
 
@@ -59,6 +60,20 @@ class _AssignmentListScreenState extends ConsumerState<AssignmentListScreen> {
       });
     }
     unawaited(_restorePicked());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) unawaited(_consentPrompt());
+    });
+  }
+
+  /// 모국어 재동의 또는 처리방침 개정 안내를 한 번 띄운다(PM-DEC-543).
+  Future<void> _consentPrompt() async {
+    try {
+      final rooms = await ref.read(myClassroomsProvider.future);
+      if (!mounted) return;
+      await maybeShowClassroomConsentPrompt(context, ref, rooms);
+    } catch (_) {
+      // 반 목록을 못 받으면 이번에는 묻지 않는다.
+    }
   }
 
   Future<void> _restorePicked() async {

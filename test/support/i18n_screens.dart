@@ -10,12 +10,14 @@ import 'i18n_data_screens.dart';
 
 import 'package:beavertalk/l10n/app_localizations.dart';
 import 'package:beavertalk/features/classroom/domain/entities/classroom_assignment.dart';
+import 'package:beavertalk/features/classroom/domain/entities/classroom_membership.dart';
 import 'package:beavertalk/screens/classroom/assignment_detail.dart';
 import 'package:beavertalk/screens/classroom/assignment_list.dart';
 import 'package:beavertalk/screens/classroom/join_code.dart';
 import 'package:beavertalk/screens/classroom/join_consent.dart';
 import 'package:beavertalk/screens/classroom/join_done.dart';
 import 'package:beavertalk/screens/classroom/join_profile.dart';
+import 'package:beavertalk/screens/classroom/language_consent_prompt.dart';
 import 'package:beavertalk/components/atoms/button.dart';
 import 'package:beavertalk/components/organisms/dialog_confirm_icon.dart';
 import 'package:beavertalk/components/molecules/card_homework.dart';
@@ -523,6 +525,21 @@ Map<String, Widget Function()> i18nScreens() {
     'HwJoinProfile': () => const JoinProfileScreen(),
     'HwJoinConsent': () => const JoinConsentScreen(),
     'HwJoinDone': () => const JoinDoneScreen(),
+    // 모국어 재동의·처리방침 개정 안내(PM-DEC-543). 반 화면이 첫 프레임 뒤에 띄우므로
+    // 직접 띄운다. 반 이름은 길게 — 본문 자리표시에 그대로 들어간다.
+    'HwLangReconsentSheet': () => const Align(
+          alignment: Alignment.bottomCenter,
+          child: LanguageReconsentSheet(
+            classroom: JoinedClassroom(
+              classroomId: 1,
+              name: '2026 가을학기 TOPIK 1 A반 (주말 집중반)',
+            ),
+          ),
+        ),
+    'HwPrivacyNoticeSheet': () => const Align(
+          alignment: Alignment.bottomCenter,
+          child: PrivacyNoticeSheet(),
+        ),
     'HwAssignmentList': () => const AssignmentListScreen(),
     'HwAssignmentDetail': () => AssignmentDetailScreen(
       assignment: _assignment(status: AssignmentStatus.notStarted),

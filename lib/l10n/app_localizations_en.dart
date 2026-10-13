@@ -2394,7 +2394,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hwJoinConsentSharedHeading => 'Shared with your teacher';
 
   @override
-  String get hwJoinConsentShared1 => 'Class name and student ID';
+  String get hwJoinConsentShared1 => 'Name used in class and student ID';
 
   @override
   String get hwJoinConsentShared2 => 'Whether you did the homework';
@@ -2406,16 +2406,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hwJoinConsentShared4 => 'Assignment call length and summary';
 
   @override
+  String get hwJoinConsentShared5 => 'Native language';
+
+  @override
+  String get hwJoinConsentShared6 => 'Join date and last active date';
+
+  @override
   String get hwJoinConsentNotSharedHeading => 'Not shared';
 
   @override
   String get hwJoinConsentNotShared1 => 'Email and phone number';
 
   @override
-  String get hwJoinConsentNotShared2 => 'App name, profile and character';
+  String get hwJoinConsentNotShared2 =>
+      'Name in the app, profile and character';
 
   @override
-  String get hwJoinConsentNotShared3 => 'Nationality and first language';
+  String get hwJoinConsentNotShared3 => 'Nationality';
 
   @override
   String get hwJoinConsentNotShared4 => 'Calls and study outside the class';
@@ -3089,4 +3096,33 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hwA11yClassPicker => 'Change class';
+
+  @override
+  String get hwLangConsentTitle =>
+      'Share your native language with your teacher?';
+
+  @override
+  String hwLangConsentBody(String className) {
+    return 'If you agree, the teacher of \'$className\' can see your native language. You can keep using the class either way.';
+  }
+
+  @override
+  String get hwLangConsentAgree => 'Agree';
+
+  @override
+  String get hwLangConsentDecline => 'Don\'t agree';
+
+  @override
+  String get hwLangConsentFailed => 'Couldn\'t save. Please try again later.';
+
+  @override
+  String get hwPolicyNoticeTitle => 'Our privacy policy is changing';
+
+  @override
+  String hwPolicyNoticeBody(String date) {
+    return 'It takes effect on $date. When you join a class, your native language is also shared with your teacher.';
+  }
+
+  @override
+  String get hwPolicyNoticeOk => 'OK';
 }

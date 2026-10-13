@@ -2309,7 +2309,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get hwJoinConsentSharedHeading => '会分享给老师';
 
   @override
-  String get hwJoinConsentShared1 => '班级名称和学号';
+  String get hwJoinConsentShared1 => '班级中使用的姓名和学号';
 
   @override
   String get hwJoinConsentShared2 => '是否完成了作业';
@@ -2321,16 +2321,22 @@ class AppLocalizationsZh extends AppLocalizations {
   String get hwJoinConsentShared4 => '作业通话时长和摘要';
 
   @override
+  String get hwJoinConsentShared5 => '母语';
+
+  @override
+  String get hwJoinConsentShared6 => '加入日期和最近活跃日期';
+
+  @override
   String get hwJoinConsentNotSharedHeading => '不会分享';
 
   @override
   String get hwJoinConsentNotShared1 => '邮箱和电话号码';
 
   @override
-  String get hwJoinConsentNotShared2 => '应用名称、个人资料和角色';
+  String get hwJoinConsentNotShared2 => '应用内使用的名称、个人资料和角色';
 
   @override
-  String get hwJoinConsentNotShared3 => '国籍和母语';
+  String get hwJoinConsentNotShared3 => '国籍';
 
   @override
   String get hwJoinConsentNotShared4 => '班级以外的通话和学习';
@@ -2984,4 +2990,32 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get hwA11yClassPicker => '切换班级';
+
+  @override
+  String get hwLangConsentTitle => '要与老师分享你的母语吗？';
+
+  @override
+  String hwLangConsentBody(String className) {
+    return '同意后，\'$className\'的老师可以看到你的母语。无论是否同意，你都可以继续使用这个班级。';
+  }
+
+  @override
+  String get hwLangConsentAgree => '同意';
+
+  @override
+  String get hwLangConsentDecline => '不同意';
+
+  @override
+  String get hwLangConsentFailed => '保存失败，请稍后再试。';
+
+  @override
+  String get hwPolicyNoticeTitle => '我们的隐私政策即将变更';
+
+  @override
+  String hwPolicyNoticeBody(String date) {
+    return '自$date起生效。加入班级后，你的母语也会分享给老师。';
+  }
+
+  @override
+  String get hwPolicyNoticeOk => '确定';
 }

@@ -2386,7 +2386,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get hwJoinConsentSharedHeading => 'Chia sẻ với giáo viên';
 
   @override
-  String get hwJoinConsentShared1 => 'Tên lớp và mã học viên';
+  String get hwJoinConsentShared1 => 'Tên dùng trong lớp và mã học viên';
 
   @override
   String get hwJoinConsentShared2 => 'Bạn đã làm bài tập hay chưa';
@@ -2398,6 +2398,12 @@ class AppLocalizationsVi extends AppLocalizations {
   String get hwJoinConsentShared4 => 'Thời lượng và tóm tắt cuộc gọi bài tập';
 
   @override
+  String get hwJoinConsentShared5 => 'Tiếng mẹ đẻ';
+
+  @override
+  String get hwJoinConsentShared6 => 'Ngày tham gia và lần hoạt động gần nhất';
+
+  @override
   String get hwJoinConsentNotSharedHeading => 'Không chia sẻ';
 
   @override
@@ -2407,7 +2413,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get hwJoinConsentNotShared2 => 'Tên trong ứng dụng, hồ sơ và nhân vật';
 
   @override
-  String get hwJoinConsentNotShared3 => 'Quốc tịch và tiếng mẹ đẻ';
+  String get hwJoinConsentNotShared3 => 'Quốc tịch';
 
   @override
   String get hwJoinConsentNotShared4 => 'Cuộc gọi và việc học ngoài lớp';
@@ -3079,4 +3085,32 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get hwA11yClassPicker => 'Đổi lớp';
+
+  @override
+  String get hwLangConsentTitle => 'Chia sẻ tiếng mẹ đẻ của bạn với giáo viên?';
+
+  @override
+  String hwLangConsentBody(String className) {
+    return 'Nếu đồng ý, giáo viên của \'$className\' có thể xem tiếng mẹ đẻ của bạn. Dù chọn thế nào, bạn vẫn dùng lớp như bình thường.';
+  }
+
+  @override
+  String get hwLangConsentAgree => 'Đồng ý';
+
+  @override
+  String get hwLangConsentDecline => 'Không đồng ý';
+
+  @override
+  String get hwLangConsentFailed => 'Không lưu được. Vui lòng thử lại sau.';
+
+  @override
+  String get hwPolicyNoticeTitle => 'Chính sách bảo mật của chúng tôi thay đổi';
+
+  @override
+  String hwPolicyNoticeBody(String date) {
+    return 'Áp dụng từ $date. Khi tham gia lớp, tiếng mẹ đẻ của bạn cũng được chia sẻ với giáo viên.';
+  }
+
+  @override
+  String get hwPolicyNoticeOk => 'OK';
 }

@@ -2397,7 +2397,8 @@ class AppLocalizationsMy extends AppLocalizations {
   String get hwJoinConsentSharedHeading => 'ဆရာနှင့် မျှဝေသည်';
 
   @override
-  String get hwJoinConsentShared1 => 'အတန်းအမည်နှင့် ကျောင်းသားနံပါတ်';
+  String get hwJoinConsentShared1 =>
+      'အတန်းတွင် သုံးသောအမည်နှင့် ကျောင်းသားနံပါတ်';
 
   @override
   String get hwJoinConsentShared2 => 'အိမ်စာ လုပ်ခဲ့ခြင်း ရှိ၊ မရှိ';
@@ -2410,16 +2411,24 @@ class AppLocalizationsMy extends AppLocalizations {
       'အိမ်စာခေါ်ဆိုမှု ကြာချိန်နှင့် အကျဉ်းချုပ်';
 
   @override
+  String get hwJoinConsentShared5 => 'မိခင်ဘာသာစကား';
+
+  @override
+  String get hwJoinConsentShared6 =>
+      'ဝင်ရောက်သည့်ရက်နှင့် နောက်ဆုံးအသုံးပြုသည့်ရက်';
+
+  @override
   String get hwJoinConsentNotSharedHeading => 'မမျှဝေပါ';
 
   @override
   String get hwJoinConsentNotShared1 => 'အီးမေးလ်နှင့် ဖုန်းနံပါတ်';
 
   @override
-  String get hwJoinConsentNotShared2 => 'အက်ပ်အမည်၊ ပရိုဖိုင်နှင့် ဇာတ်ကောင်';
+  String get hwJoinConsentNotShared2 =>
+      'အက်ပ်တွင် သုံးသောအမည်၊ ပရိုဖိုင်နှင့် ဇာတ်ကောင်';
 
   @override
-  String get hwJoinConsentNotShared3 => 'နိုင်ငံသားနှင့် မိခင်ဘာသာစကား';
+  String get hwJoinConsentNotShared3 => 'နိုင်ငံသား';
 
   @override
   String get hwJoinConsentNotShared4 => 'အတန်းပြင်ပ ခေါ်ဆိုမှုနှင့် လေ့လာမှု';
@@ -3092,4 +3101,32 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get hwA11yClassPicker => 'အတန်း ပြောင်းရန်';
+
+  @override
+  String get hwLangConsentTitle => 'သင့်မိခင်ဘာသာစကားကို ဆရာနှင့် မျှဝေမလား။';
+
+  @override
+  String hwLangConsentBody(String className) {
+    return 'သဘောတူပါက \'$className\' ၏ ဆရာက သင့်မိခင်ဘာသာစကားကို မြင်နိုင်ပါမည်။ မည်သို့ရွေးချယ်စေကာမူ အတန်းကို ဆက်သုံးနိုင်ပါသည်။';
+  }
+
+  @override
+  String get hwLangConsentAgree => 'သဘောတူသည်';
+
+  @override
+  String get hwLangConsentDecline => 'သဘောမတူပါ';
+
+  @override
+  String get hwLangConsentFailed => 'သိမ်းဆည်း၍ မရပါ။ နောက်မှ ထပ်ကြိုးစားပါ။';
+
+  @override
+  String get hwPolicyNoticeTitle => 'ကိုယ်ရေးအချက်အလက် မူဝါဒ ပြောင်းလဲပါမည်';
+
+  @override
+  String hwPolicyNoticeBody(String date) {
+    return '$date မှစ၍ အကျိုးသက်ရောက်ပါမည်။ အတန်းဝင်ရောက်ပါက သင့်မိခင်ဘာသာစကားကိုလည်း ဆရာနှင့် မျှဝေပါမည်။';
+  }
+
+  @override
+  String get hwPolicyNoticeOk => 'အိုကေ';
 }

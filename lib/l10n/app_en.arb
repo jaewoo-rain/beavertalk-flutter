@@ -1727,7 +1727,7 @@
   "@hwJoinConsentSharedHeading": {
     "description": "Homework (class join / assignments) copy"
   },
-  "hwJoinConsentShared1": "Class name and student ID",
+  "hwJoinConsentShared1": "Name used in class and student ID",
   "@hwJoinConsentShared1": {
     "description": "Homework (class join / assignments) copy"
   },
@@ -1743,6 +1743,14 @@
   "@hwJoinConsentShared4": {
     "description": "Homework (class join / assignments) copy"
   },
+  "hwJoinConsentShared5": "Native language",
+  "@hwJoinConsentShared5": {
+    "description": "Join consent: shared with teacher - first language (PM-DEC-542)"
+  },
+  "hwJoinConsentShared6": "Join date and last active date",
+  "@hwJoinConsentShared6": {
+    "description": "Join consent: shared with teacher - join date and last active date (PM-DEC-542)"
+  },
   "hwJoinConsentNotSharedHeading": "Not shared",
   "@hwJoinConsentNotSharedHeading": {
     "description": "Homework (class join / assignments) copy"
@@ -1751,11 +1759,11 @@
   "@hwJoinConsentNotShared1": {
     "description": "Homework (class join / assignments) copy"
   },
-  "hwJoinConsentNotShared2": "App name, profile and character",
+  "hwJoinConsentNotShared2": "Name in the app, profile and character",
   "@hwJoinConsentNotShared2": {
     "description": "Homework (class join / assignments) copy"
   },
-  "hwJoinConsentNotShared3": "Nationality and first language",
+  "hwJoinConsentNotShared3": "Nationality",
   "@hwJoinConsentNotShared3": {
     "description": "Homework (class join / assignments) copy"
   },
@@ -2389,5 +2397,21 @@
   "hwClassPickerTitle": "Choose a class",
   "@hwClassPickerTitle": {"description": "Title of the class picker sheet (learner in two or more classes)."},
   "hwA11yClassPicker": "Change class",
-  "@hwA11yClassPicker": {"description": "Screen-reader label of the class name row that opens the class picker."}
+  "@hwA11yClassPicker": {"description": "Screen-reader label of the class name row that opens the class picker."},
+  "hwLangConsentTitle": "Share your native language with your teacher?",
+  "@hwLangConsentTitle": {"description": "Re-consent sheet title shown once to learners who joined a class before native language sharing (PM-DEC-543)."},
+  "hwLangConsentBody": "If you agree, the teacher of '{className}' can see your native language. You can keep using the class either way.",
+  "@hwLangConsentBody": {"description": "Re-consent sheet body. className = the class name. Declining keeps the class usable; only the native language stays hidden.", "placeholders": {"className": {"type": "String"}}},
+  "hwLangConsentAgree": "Agree",
+  "@hwLangConsentAgree": {"description": "Re-consent sheet primary button: agree to share native language."},
+  "hwLangConsentDecline": "Don't agree",
+  "@hwLangConsentDecline": {"description": "Re-consent sheet secondary button: do not share native language."},
+  "hwLangConsentFailed": "Couldn't save. Please try again later.",
+  "@hwLangConsentFailed": {"description": "Snackbar when the re-consent could not be saved."},
+  "hwPolicyNoticeTitle": "Our privacy policy is changing",
+  "@hwPolicyNoticeTitle": {"description": "One-time notice sheet title: the privacy policy is being revised."},
+  "hwPolicyNoticeBody": "It takes effect on {date}. When you join a class, your native language is also shared with your teacher.",
+  "@hwPolicyNoticeBody": {"description": "One-time notice body. date = effective date in YYYY-MM-DD.", "placeholders": {"date": {"type": "String"}}},
+  "hwPolicyNoticeOk": "OK",
+  "@hwPolicyNoticeOk": {"description": "One-time notice button that closes the sheet."}
 }

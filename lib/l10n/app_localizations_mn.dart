@@ -2383,7 +2383,7 @@ class AppLocalizationsMn extends AppLocalizations {
   String get hwJoinConsentSharedHeading => 'Багштай хуваалцана';
 
   @override
-  String get hwJoinConsentShared1 => 'Ангийн нэр ба оюутны дугаар';
+  String get hwJoinConsentShared1 => 'Ангид ашиглах нэр ба оюутны дугаар';
 
   @override
   String get hwJoinConsentShared2 => 'Даалгавраа хийсэн эсэх';
@@ -2396,6 +2396,12 @@ class AppLocalizationsMn extends AppLocalizations {
       'Даалгаврын дуудлагын үргэлжлэх хугацаа ба хураангуй';
 
   @override
+  String get hwJoinConsentShared5 => 'Эх хэл';
+
+  @override
+  String get hwJoinConsentShared6 => 'Нэгдсэн огноо ба сүүлд нэвтэрсэн огноо';
+
+  @override
   String get hwJoinConsentNotSharedHeading => 'Хуваалцахгүй';
 
   @override
@@ -2405,7 +2411,7 @@ class AppLocalizationsMn extends AppLocalizations {
   String get hwJoinConsentNotShared2 => 'Апп дахь нэр, профайл ба дүр';
 
   @override
-  String get hwJoinConsentNotShared3 => 'Иргэншил ба төрөлх хэл';
+  String get hwJoinConsentNotShared3 => 'Иргэншил';
 
   @override
   String get hwJoinConsentNotShared4 => 'Ангиас гадуурх дуудлага ба суралцалт';
@@ -3075,4 +3081,33 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get hwA11yClassPicker => 'Анги солих';
+
+  @override
+  String get hwLangConsentTitle => 'Эх хэлээ багштайгаа хуваалцах уу?';
+
+  @override
+  String hwLangConsentBody(String className) {
+    return 'Зөвшөөрвөл \'$className\' ангийн багш таны эх хэлийг харах боломжтой. Аль ч тохиолдолд ангиа үргэлжлүүлэн ашиглаж болно.';
+  }
+
+  @override
+  String get hwLangConsentAgree => 'Зөвшөөрөх';
+
+  @override
+  String get hwLangConsentDecline => 'Зөвшөөрөхгүй';
+
+  @override
+  String get hwLangConsentFailed =>
+      'Хадгалж чадсангүй. Дараа дахин оролдоно уу.';
+
+  @override
+  String get hwPolicyNoticeTitle => 'Нууцлалын бодлого өөрчлөгдөнө';
+
+  @override
+  String hwPolicyNoticeBody(String date) {
+    return '$date-с эхлэн хүчинтэй. Ангид нэгдэхэд таны эх хэлийг мөн багштай хуваалцана.';
+  }
+
+  @override
+  String get hwPolicyNoticeOk => 'OK';
 }

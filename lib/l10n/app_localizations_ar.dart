@@ -2372,7 +2372,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get hwJoinConsentSharedHeading => 'يُشارَك مع معلّمك';
 
   @override
-  String get hwJoinConsentShared1 => 'اسم الصف ورقم الطالب';
+  String get hwJoinConsentShared1 => 'اسمك في الصف ورقم الطالب';
 
   @override
   String get hwJoinConsentShared2 => 'ما إذا كنت قد أنجزت الواجب';
@@ -2384,16 +2384,23 @@ class AppLocalizationsAr extends AppLocalizations {
   String get hwJoinConsentShared4 => 'مدة مكالمة الواجب وملخّصها';
 
   @override
+  String get hwJoinConsentShared5 => 'اللغة الأم';
+
+  @override
+  String get hwJoinConsentShared6 => 'تاريخ الانضمام وآخر نشاط';
+
+  @override
   String get hwJoinConsentNotSharedHeading => 'لا يُشارَك';
 
   @override
   String get hwJoinConsentNotShared1 => 'البريد الإلكتروني ورقم الهاتف';
 
   @override
-  String get hwJoinConsentNotShared2 => 'اسم التطبيق والملف الشخصي والشخصية';
+  String get hwJoinConsentNotShared2 =>
+      'اسمك في التطبيق والملف الشخصي والشخصية';
 
   @override
-  String get hwJoinConsentNotShared3 => 'الجنسية واللغة الأم';
+  String get hwJoinConsentNotShared3 => 'الجنسية';
 
   @override
   String get hwJoinConsentNotShared4 => 'المكالمات والدراسة خارج الصف';
@@ -3057,4 +3064,32 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get hwA11yClassPicker => 'تغيير الصف';
+
+  @override
+  String get hwLangConsentTitle => 'هل تريد مشاركة لغتك الأم مع معلمك؟';
+
+  @override
+  String hwLangConsentBody(String className) {
+    return 'إذا وافقت، يمكن لمعلم \'$className\' رؤية لغتك الأم. يمكنك متابعة استخدام الصف في الحالتين.';
+  }
+
+  @override
+  String get hwLangConsentAgree => 'موافق';
+
+  @override
+  String get hwLangConsentDecline => 'غير موافق';
+
+  @override
+  String get hwLangConsentFailed => 'تعذّر الحفظ. حاول مرة أخرى لاحقًا.';
+
+  @override
+  String get hwPolicyNoticeTitle => 'سياسة الخصوصية ستتغير';
+
+  @override
+  String hwPolicyNoticeBody(String date) {
+    return 'تسري اعتبارًا من $date. عند الانضمام إلى صف، تتم مشاركة لغتك الأم أيضًا مع معلمك.';
+  }
+
+  @override
+  String get hwPolicyNoticeOk => 'حسنًا';
 }

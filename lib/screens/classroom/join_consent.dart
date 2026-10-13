@@ -11,6 +11,7 @@ import '../../components/icons/app_icons.dart';
 import '../../components/organisms/gnb.dart';
 import '../../core/error/app_exception.dart';
 import '../../features/classroom/domain/entities/classroom_membership.dart';
+import '../../features/classroom/domain/language_share.dart';
 import '../../features/classroom/presentation/classroom_providers.dart';
 import '../../features/classroom/presentation/join_draft_provider.dart';
 import '../../l10n/app_localizations.dart';
@@ -56,6 +57,8 @@ class _JoinConsentScreenState extends ConsumerState<JoinConsentScreen> {
             rosterName: draft.rosterName,
             shareConsent: draft.consent,
             studentNo: draft.studentNo,
+            // 이 화면의 '공유돼요' 목록에 모국어가 있다 — 그 문구의 버전이다.
+            languageShareVersion: kLanguageShareVersion,
           );
       if (!mounted) return;
       switch (result) {
@@ -152,6 +155,8 @@ class _JoinConsentScreenState extends ConsumerState<JoinConsentScreen> {
                         l10n.hwJoinConsentShared2,
                         l10n.hwJoinConsentShared3,
                         l10n.hwJoinConsentShared4,
+                        l10n.hwJoinConsentShared5,
+                        l10n.hwJoinConsentShared6,
                       ],
                     ),
                     const SizedBox(height: AppSpacing.s12),

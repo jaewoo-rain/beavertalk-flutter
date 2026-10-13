@@ -2416,7 +2416,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get hwJoinConsentSharedHeading => 'Condiviso con l’insegnante';
 
   @override
-  String get hwJoinConsentShared1 => 'Nome della classe e matricola';
+  String get hwJoinConsentShared1 => 'Nome nella classe e matricola';
 
   @override
   String get hwJoinConsentShared2 => 'Se hai fatto i compiti';
@@ -2429,6 +2429,12 @@ class AppLocalizationsIt extends AppLocalizations {
       'Durata e riepilogo della chiamata del compito';
 
   @override
+  String get hwJoinConsentShared5 => 'Lingua madre';
+
+  @override
+  String get hwJoinConsentShared6 => 'Data di iscrizione e ultimo accesso';
+
+  @override
   String get hwJoinConsentNotSharedHeading => 'Non condiviso';
 
   @override
@@ -2438,7 +2444,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get hwJoinConsentNotShared2 => 'Nome nell’app, profilo e personaggio';
 
   @override
-  String get hwJoinConsentNotShared3 => 'Nazionalità e lingua madre';
+  String get hwJoinConsentNotShared3 => 'Nazionalità';
 
   @override
   String get hwJoinConsentNotShared4 => 'Chiamate e studio fuori dalla classe';
@@ -3120,4 +3126,34 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get hwA11yClassPicker => 'Cambia classe';
+
+  @override
+  String get hwLangConsentTitle =>
+      'Condividere la tua lingua madre con l’insegnante?';
+
+  @override
+  String hwLangConsentBody(String className) {
+    return 'Se accetti, l’insegnante di \'$className\' potrà vedere la tua lingua madre. Puoi continuare a usare la classe in ogni caso.';
+  }
+
+  @override
+  String get hwLangConsentAgree => 'Accetto';
+
+  @override
+  String get hwLangConsentDecline => 'Non accetto';
+
+  @override
+  String get hwLangConsentFailed => 'Impossibile salvare. Riprova più tardi.';
+
+  @override
+  String get hwPolicyNoticeTitle =>
+      'La nostra informativa sulla privacy cambia';
+
+  @override
+  String hwPolicyNoticeBody(String date) {
+    return 'In vigore dal $date. Quando entri in una classe, anche la tua lingua madre viene condivisa con l’insegnante.';
+  }
+
+  @override
+  String get hwPolicyNoticeOk => 'OK';
 }

@@ -14,6 +14,8 @@ class JoinedClassroom {
     this.term,
     this.rosterName = '',
     this.archived = false,
+    this.languageShareVersion,
+    this.reportsLanguageShare = false,
   });
 
   /// 응답을 읽는다.
@@ -26,6 +28,8 @@ class JoinedClassroom {
       term: json['term'] as String?,
       rosterName: json['roster_name'] as String? ?? '',
       archived: json['archived'] as bool? ?? false,
+      languageShareVersion: (json['language_share_version'] as num?)?.toInt(),
+      reportsLanguageShare: json.containsKey('language_share_version'),
     );
   }
 
@@ -49,6 +53,13 @@ class JoinedClassroom {
 
   /// 교사가 보관한 반인지. 보관돼도 **내 반은 내 반이다**.
   final bool archived;
+
+  /// 내가 동의한 모국어 공개 문구의 버전. 동의 안 했으면 null 이다(PM-DEC-543).
+  final int? languageShareVersion;
+
+  /// 서버가 [languageShareVersion] 칸을 주는가. 옛 서버는 칸이 없다 — 그때는
+  /// 동의 여부를 모르므로 재동의를 묻지 않는다.
+  final bool reportsLanguageShare;
 }
 
 /// 반 참여 결과 — `POST /classrooms/join` 응답.

@@ -2383,7 +2383,8 @@ class AppLocalizationsTr extends AppLocalizations {
   String get hwJoinConsentSharedHeading => 'Öğretmeninle paylaşılır';
 
   @override
-  String get hwJoinConsentShared1 => 'Sınıf adı ve öğrenci numarası';
+  String get hwJoinConsentShared1 =>
+      'Sınıfta kullanılan ad ve öğrenci numarası';
 
   @override
   String get hwJoinConsentShared2 => 'Ödevi yapıp yapmadığın';
@@ -2395,16 +2396,22 @@ class AppLocalizationsTr extends AppLocalizations {
   String get hwJoinConsentShared4 => 'Ödev görüşmesinin süresi ve özeti';
 
   @override
+  String get hwJoinConsentShared5 => 'Ana dil';
+
+  @override
+  String get hwJoinConsentShared6 => 'Katılma tarihi ve son etkinlik tarihi';
+
+  @override
   String get hwJoinConsentNotSharedHeading => 'Paylaşılmaz';
 
   @override
   String get hwJoinConsentNotShared1 => 'E-posta ve telefon numarası';
 
   @override
-  String get hwJoinConsentNotShared2 => 'Uygulama adı, profil ve karakter';
+  String get hwJoinConsentNotShared2 => 'Uygulamadaki ad, profil ve karakter';
 
   @override
-  String get hwJoinConsentNotShared3 => 'Uyruk ve ana dil';
+  String get hwJoinConsentNotShared3 => 'Uyruk';
 
   @override
   String get hwJoinConsentNotShared4 => 'Sınıf dışındaki görüşmeler ve çalışma';
@@ -3074,4 +3081,34 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get hwA11yClassPicker => 'Sınıfı değiştir';
+
+  @override
+  String get hwLangConsentTitle =>
+      'Ana dilini öğretmeninle paylaşmak ister misin?';
+
+  @override
+  String hwLangConsentBody(String className) {
+    return 'Kabul edersen \'$className\' öğretmeni ana dilini görebilir. Her iki durumda da sınıfı kullanmaya devam edebilirsin.';
+  }
+
+  @override
+  String get hwLangConsentAgree => 'Kabul et';
+
+  @override
+  String get hwLangConsentDecline => 'Kabul etme';
+
+  @override
+  String get hwLangConsentFailed =>
+      'Kaydedilemedi. Lütfen daha sonra tekrar dene.';
+
+  @override
+  String get hwPolicyNoticeTitle => 'Gizlilik politikamız değişiyor';
+
+  @override
+  String hwPolicyNoticeBody(String date) {
+    return '$date tarihinden itibaren geçerlidir. Bir sınıfa katıldığında ana dilin de öğretmenle paylaşılır.';
+  }
+
+  @override
+  String get hwPolicyNoticeOk => 'Tamam';
 }

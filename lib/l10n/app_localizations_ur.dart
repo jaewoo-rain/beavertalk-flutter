@@ -2390,7 +2390,8 @@ class AppLocalizationsUr extends AppLocalizations {
   String get hwJoinConsentSharedHeading => 'استاد کے ساتھ شیئر کیا جاتا ہے';
 
   @override
-  String get hwJoinConsentShared1 => 'کلاس کا نام اور طالب علم نمبر';
+  String get hwJoinConsentShared1 =>
+      'کلاس میں استعمال ہونے والا نام اور طالب علم نمبر';
 
   @override
   String get hwJoinConsentShared2 => 'آپ نے ہوم ورک کیا یا نہیں';
@@ -2402,16 +2403,24 @@ class AppLocalizationsUr extends AppLocalizations {
   String get hwJoinConsentShared4 => 'اسائنمنٹ کال کا دورانیہ اور خلاصہ';
 
   @override
+  String get hwJoinConsentShared5 => 'مادری زبان';
+
+  @override
+  String get hwJoinConsentShared6 =>
+      'شامل ہونے کی تاریخ اور آخری بار فعال ہونے کی تاریخ';
+
+  @override
   String get hwJoinConsentNotSharedHeading => 'شیئر نہیں کیا جاتا';
 
   @override
   String get hwJoinConsentNotShared1 => 'ای میل اور فون نمبر';
 
   @override
-  String get hwJoinConsentNotShared2 => 'ایپ کا نام، پروفائل اور کردار';
+  String get hwJoinConsentNotShared2 =>
+      'ایپ میں استعمال ہونے والا نام، پروفائل اور کردار';
 
   @override
-  String get hwJoinConsentNotShared3 => 'قومیت اور مادری زبان';
+  String get hwJoinConsentNotShared3 => 'قومیت';
 
   @override
   String get hwJoinConsentNotShared4 => 'کلاس سے باہر کی کالیں اور مطالعہ';
@@ -3083,4 +3092,34 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get hwA11yClassPicker => 'کلاس بدلیں';
+
+  @override
+  String get hwLangConsentTitle =>
+      'کیا اپنی مادری زبان استاد کے ساتھ شیئر کریں؟';
+
+  @override
+  String hwLangConsentBody(String className) {
+    return 'اگر آپ متفق ہوں تو \'$className\' کے استاد آپ کی مادری زبان دیکھ سکیں گے۔ آپ جو بھی چنیں، کلاس استعمال کرتے رہ سکتے ہیں۔';
+  }
+
+  @override
+  String get hwLangConsentAgree => 'متفق ہوں';
+
+  @override
+  String get hwLangConsentDecline => 'متفق نہیں';
+
+  @override
+  String get hwLangConsentFailed =>
+      'محفوظ نہیں ہو سکا۔ براہ کرم بعد میں دوبارہ کوشش کریں۔';
+
+  @override
+  String get hwPolicyNoticeTitle => 'ہماری پرائیویسی پالیسی بدل رہی ہے';
+
+  @override
+  String hwPolicyNoticeBody(String date) {
+    return '$date سے نافذ ہوگی۔ کلاس میں شامل ہونے پر آپ کی مادری زبان بھی استاد کے ساتھ شیئر ہوتی ہے۔';
+  }
+
+  @override
+  String get hwPolicyNoticeOk => 'ٹھیک ہے';
 }

@@ -4429,7 +4429,7 @@ abstract class AppLocalizations {
   /// Homework (class join / assignments) copy
   ///
   /// In en, this message translates to:
-  /// **'Class name and student ID'**
+  /// **'Name used in class and student ID'**
   String get hwJoinConsentShared1;
 
   /// Homework (class join / assignments) copy
@@ -4450,6 +4450,18 @@ abstract class AppLocalizations {
   /// **'Assignment call length and summary'**
   String get hwJoinConsentShared4;
 
+  /// Join consent: shared with teacher - first language (PM-DEC-542)
+  ///
+  /// In en, this message translates to:
+  /// **'Native language'**
+  String get hwJoinConsentShared5;
+
+  /// Join consent: shared with teacher - join date and last active date (PM-DEC-542)
+  ///
+  /// In en, this message translates to:
+  /// **'Join date and last active date'**
+  String get hwJoinConsentShared6;
+
   /// Homework (class join / assignments) copy
   ///
   /// In en, this message translates to:
@@ -4465,13 +4477,13 @@ abstract class AppLocalizations {
   /// Homework (class join / assignments) copy
   ///
   /// In en, this message translates to:
-  /// **'App name, profile and character'**
+  /// **'Name in the app, profile and character'**
   String get hwJoinConsentNotShared2;
 
   /// Homework (class join / assignments) copy
   ///
   /// In en, this message translates to:
-  /// **'Nationality and first language'**
+  /// **'Nationality'**
   String get hwJoinConsentNotShared3;
 
   /// Homework (class join / assignments) copy
@@ -5649,6 +5661,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Change class'**
   String get hwA11yClassPicker;
+
+  /// Re-consent sheet title shown once to learners who joined a class before native language sharing (PM-DEC-543).
+  ///
+  /// In en, this message translates to:
+  /// **'Share your native language with your teacher?'**
+  String get hwLangConsentTitle;
+
+  /// Re-consent sheet body. className = the class name. Declining keeps the class usable; only the native language stays hidden.
+  ///
+  /// In en, this message translates to:
+  /// **'If you agree, the teacher of \'{className}\' can see your native language. You can keep using the class either way.'**
+  String hwLangConsentBody(String className);
+
+  /// Re-consent sheet primary button: agree to share native language.
+  ///
+  /// In en, this message translates to:
+  /// **'Agree'**
+  String get hwLangConsentAgree;
+
+  /// Re-consent sheet secondary button: do not share native language.
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t agree'**
+  String get hwLangConsentDecline;
+
+  /// Snackbar when the re-consent could not be saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save. Please try again later.'**
+  String get hwLangConsentFailed;
+
+  /// One-time notice sheet title: the privacy policy is being revised.
+  ///
+  /// In en, this message translates to:
+  /// **'Our privacy policy is changing'**
+  String get hwPolicyNoticeTitle;
+
+  /// One-time notice body. date = effective date in YYYY-MM-DD.
+  ///
+  /// In en, this message translates to:
+  /// **'It takes effect on {date}. When you join a class, your native language is also shared with your teacher.'**
+  String hwPolicyNoticeBody(String date);
+
+  /// One-time notice button that closes the sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'OK'**
+  String get hwPolicyNoticeOk;
 }
 
 class _AppLocalizationsDelegate

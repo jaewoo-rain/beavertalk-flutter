@@ -26,6 +26,11 @@ abstract final class ApiEndpoints {
   /// 아니다.
   static const classroomMy = '/classrooms/my';
 
+  /// 모국어 공개 동의 버전(재동의·철회). `/classrooms/{id}/language-consent`.
+  /// 본문 `{"version": 2}` · 0 은 철회(b2b developer 계약 · PM-DEC-543).
+  static String classroomLanguageConsent(int classroomId) =>
+      '/classrooms/$classroomId/language-consent';
+
   /// DA1 반 나가기 = 공유 동의 철회. `/classrooms/{id}/leave`.
   static String classroomLeave(int classroomId) =>
       '/classrooms/$classroomId/leave';

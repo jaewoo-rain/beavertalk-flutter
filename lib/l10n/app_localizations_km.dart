@@ -2381,7 +2381,7 @@ class AppLocalizationsKm extends AppLocalizations {
   String get hwJoinConsentSharedHeading => 'ចែករំលែកជាមួយគ្រូ';
 
   @override
-  String get hwJoinConsentShared1 => 'ឈ្មោះថ្នាក់ និងលេខសិស្ស';
+  String get hwJoinConsentShared1 => 'ឈ្មោះក្នុងថ្នាក់ និងលេខសិស្ស';
 
   @override
   String get hwJoinConsentShared2 => 'ថាតើអ្នកបានធ្វើកិច្ចការផ្ទះឬអត់';
@@ -2391,6 +2391,12 @@ class AppLocalizationsKm extends AppLocalizations {
 
   @override
   String get hwJoinConsentShared4 => 'រយៈពេល និងសេចក្ដីសង្ខេបនៃការហៅកិច្ចការ';
+
+  @override
+  String get hwJoinConsentShared5 => 'ភាសាកំណើត';
+
+  @override
+  String get hwJoinConsentShared6 => 'កាលបរិច្ឆេទចូលរួម និងការចូលប្រើចុងក្រោយ';
 
   @override
   String get hwJoinConsentNotSharedHeading => 'មិនចែករំលែក';
@@ -2403,7 +2409,7 @@ class AppLocalizationsKm extends AppLocalizations {
       'ឈ្មោះក្នុងកម្មវិធី ប្រវត្តិរូប និងតួអង្គ';
 
   @override
-  String get hwJoinConsentNotShared3 => 'សញ្ជាតិ និងភាសាកំណើត';
+  String get hwJoinConsentNotShared3 => 'សញ្ជាតិ';
 
   @override
   String get hwJoinConsentNotShared4 => 'ការហៅ និងការសិក្សានៅក្រៅថ្នាក់';
@@ -3069,4 +3075,33 @@ class AppLocalizationsKm extends AppLocalizations {
 
   @override
   String get hwA11yClassPicker => 'ប្ដូរថ្នាក់';
+
+  @override
+  String get hwLangConsentTitle => 'ចែករំលែកភាសាកំណើតរបស់អ្នកជាមួយគ្រូឬ?';
+
+  @override
+  String hwLangConsentBody(String className) {
+    return 'ប្រសិនបើអ្នកយល់ព្រម គ្រូនៃ \'$className\' អាចមើលឃើញភាសាកំណើតរបស់អ្នក។ អ្នកនៅតែអាចប្រើថ្នាក់បាន ទោះជ្រើសរើសបែបណាក៏ដោយ។';
+  }
+
+  @override
+  String get hwLangConsentAgree => 'យល់ព្រម';
+
+  @override
+  String get hwLangConsentDecline => 'មិនយល់ព្រម';
+
+  @override
+  String get hwLangConsentFailed =>
+      'មិនអាចរក្សាទុកបានទេ។ សូមព្យាយាមម្តងទៀតនៅពេលក្រោយ។';
+
+  @override
+  String get hwPolicyNoticeTitle => 'គោលការណ៍ភាពឯកជនរបស់យើងនឹងផ្លាស់ប្តូរ';
+
+  @override
+  String hwPolicyNoticeBody(String date) {
+    return 'មានប្រសិទ្ធភាពចាប់ពី $date។ ពេលចូលរួមថ្នាក់ ភាសាកំណើតរបស់អ្នកក៏ត្រូវបានចែករំលែកជាមួយគ្រូដែរ។';
+  }
+
+  @override
+  String get hwPolicyNoticeOk => 'យល់ព្រម';
 }

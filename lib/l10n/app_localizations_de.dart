@@ -2423,7 +2423,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get hwJoinConsentSharedHeading => 'Mit der Lehrkraft geteilt';
 
   @override
-  String get hwJoinConsentShared1 => 'Kursname und Matrikelnummer';
+  String get hwJoinConsentShared1 => 'Name im Kurs und Matrikelnummer';
 
   @override
   String get hwJoinConsentShared2 => 'Ob du die Hausaufgabe gemacht hast';
@@ -2436,16 +2436,22 @@ class AppLocalizationsDe extends AppLocalizations {
       'Dauer und Zusammenfassung des Aufgabengesprächs';
 
   @override
+  String get hwJoinConsentShared5 => 'Muttersprache';
+
+  @override
+  String get hwJoinConsentShared6 => 'Beitrittsdatum und letzte Aktivität';
+
+  @override
   String get hwJoinConsentNotSharedHeading => 'Nicht geteilt';
 
   @override
   String get hwJoinConsentNotShared1 => 'E-Mail und Telefonnummer';
 
   @override
-  String get hwJoinConsentNotShared2 => 'App-Name, Profil und Charakter';
+  String get hwJoinConsentNotShared2 => 'Name in der App, Profil und Charakter';
 
   @override
-  String get hwJoinConsentNotShared3 => 'Nationalität und Muttersprache';
+  String get hwJoinConsentNotShared3 => 'Staatsangehörigkeit';
 
   @override
   String get hwJoinConsentNotShared4 =>
@@ -3133,4 +3139,34 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get hwA11yClassPicker => 'Kurs wechseln';
+
+  @override
+  String get hwLangConsentTitle =>
+      'Deine Muttersprache mit deiner Lehrkraft teilen?';
+
+  @override
+  String hwLangConsentBody(String className) {
+    return 'Wenn du zustimmst, kann die Lehrkraft von \'$className\' deine Muttersprache sehen. Den Kurs kannst du in jedem Fall weiter nutzen.';
+  }
+
+  @override
+  String get hwLangConsentAgree => 'Zustimmen';
+
+  @override
+  String get hwLangConsentDecline => 'Nicht zustimmen';
+
+  @override
+  String get hwLangConsentFailed =>
+      'Speichern fehlgeschlagen. Bitte versuche es später erneut.';
+
+  @override
+  String get hwPolicyNoticeTitle => 'Unsere Datenschutzerklärung ändert sich';
+
+  @override
+  String hwPolicyNoticeBody(String date) {
+    return 'Gilt ab $date. Wenn du einem Kurs beitrittst, wird auch deine Muttersprache mit der Lehrkraft geteilt.';
+  }
+
+  @override
+  String get hwPolicyNoticeOk => 'OK';
 }

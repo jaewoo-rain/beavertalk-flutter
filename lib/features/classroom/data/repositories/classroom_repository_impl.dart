@@ -49,6 +49,7 @@ class ClassroomRepositoryImpl implements ClassroomRepository {
     required String rosterName,
     required bool shareConsent,
     String? studentNo,
+    int? languageShareVersion,
   }) async {
     try {
       final json = await _ds.join(
@@ -56,6 +57,7 @@ class ClassroomRepositoryImpl implements ClassroomRepository {
         rosterName: rosterName,
         shareConsent: shareConsent,
         studentNo: studentNo,
+        languageShareVersion: languageShareVersion,
       );
       return JoinSucceeded(ClassroomMembership.fromJson(json));
     } on DioException catch (e) {
@@ -87,6 +89,15 @@ class ClassroomRepositoryImpl implements ClassroomRepository {
       return AssignmentItems.fromJson(
         await _ds.assignmentItems(assignmentId, locale: locale),
       );
+    } on DioException catch (e) {
+      throw mapDioException(e);
+    }
+  }
+
+  @override
+  Future<void> setLanguageConsent(int classroomId, int version) async {
+    try {
+      await _ds.setLanguageConsent(classroomId, version);
     } on DioException catch (e) {
       throw mapDioException(e);
     }

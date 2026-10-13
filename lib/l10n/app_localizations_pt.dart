@@ -2413,7 +2413,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get hwJoinConsentSharedHeading => 'Compartilhado com seu professor';
 
   @override
-  String get hwJoinConsentShared1 => 'Nome da turma e matrícula';
+  String get hwJoinConsentShared1 => 'Nome na turma e matrícula';
 
   @override
   String get hwJoinConsentShared2 => 'Se você fez a tarefa';
@@ -2425,6 +2425,12 @@ class AppLocalizationsPt extends AppLocalizations {
   String get hwJoinConsentShared4 => 'Duração e resumo da chamada da tarefa';
 
   @override
+  String get hwJoinConsentShared5 => 'Idioma nativo';
+
+  @override
+  String get hwJoinConsentShared6 => 'Data de entrada e último acesso';
+
+  @override
   String get hwJoinConsentNotSharedHeading => 'Não compartilhado';
 
   @override
@@ -2434,7 +2440,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get hwJoinConsentNotShared2 => 'Nome no app, perfil e personagem';
 
   @override
-  String get hwJoinConsentNotShared3 => 'Nacionalidade e língua materna';
+  String get hwJoinConsentNotShared3 => 'Nacionalidade';
 
   @override
   String get hwJoinConsentNotShared4 => 'Chamadas e estudo fora da turma';
@@ -3114,4 +3120,34 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get hwA11yClassPicker => 'Trocar de turma';
+
+  @override
+  String get hwLangConsentTitle =>
+      'Compartilhar seu idioma nativo com o professor?';
+
+  @override
+  String hwLangConsentBody(String className) {
+    return 'Se você concordar, o professor de \'$className\' poderá ver seu idioma nativo. Você pode continuar usando a turma de qualquer forma.';
+  }
+
+  @override
+  String get hwLangConsentAgree => 'Concordo';
+
+  @override
+  String get hwLangConsentDecline => 'Não concordo';
+
+  @override
+  String get hwLangConsentFailed =>
+      'Não foi possível salvar. Tente novamente mais tarde.';
+
+  @override
+  String get hwPolicyNoticeTitle => 'Nossa política de privacidade vai mudar';
+
+  @override
+  String hwPolicyNoticeBody(String date) {
+    return 'Vale a partir de $date. Ao entrar em uma turma, seu idioma nativo também é compartilhado com o professor.';
+  }
+
+  @override
+  String get hwPolicyNoticeOk => 'OK';
 }

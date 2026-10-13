@@ -2403,7 +2403,7 @@ class AppLocalizationsUz extends AppLocalizations {
   String get hwJoinConsentSharedHeading => 'Oʻqituvchi bilan ulashiladi';
 
   @override
-  String get hwJoinConsentShared1 => 'Sinf nomi va talaba raqami';
+  String get hwJoinConsentShared1 => 'Sinfdagi ism va talaba raqami';
 
   @override
   String get hwJoinConsentShared2 => 'Uyga vazifani bajarganingiz';
@@ -2416,6 +2416,12 @@ class AppLocalizationsUz extends AppLocalizations {
       'Vazifa qoʻngʻirogʻining davomiyligi va xulosasi';
 
   @override
+  String get hwJoinConsentShared5 => 'Ona tili';
+
+  @override
+  String get hwJoinConsentShared6 => 'Qoʻshilgan sana va oxirgi faollik sanasi';
+
+  @override
   String get hwJoinConsentNotSharedHeading => 'Ulashilmaydi';
 
   @override
@@ -2425,7 +2431,7 @@ class AppLocalizationsUz extends AppLocalizations {
   String get hwJoinConsentNotShared2 => 'Ilovadagi ism, profil va qahramon';
 
   @override
-  String get hwJoinConsentNotShared3 => 'Fuqarolik va ona tili';
+  String get hwJoinConsentNotShared3 => 'Fuqarolik';
 
   @override
   String get hwJoinConsentNotShared4 =>
@@ -3102,4 +3108,34 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get hwA11yClassPicker => 'Guruhni almashtirish';
+
+  @override
+  String get hwLangConsentTitle =>
+      'Ona tilingizni oʻqituvchi bilan ulashasizmi?';
+
+  @override
+  String hwLangConsentBody(String className) {
+    return 'Rozi boʻlsangiz, \'$className\' oʻqituvchisi ona tilingizni koʻra oladi. Qaysi birini tanlasangiz ham sinfdan foydalanishda davom etasiz.';
+  }
+
+  @override
+  String get hwLangConsentAgree => 'Roziman';
+
+  @override
+  String get hwLangConsentDecline => 'Rozi emasman';
+
+  @override
+  String get hwLangConsentFailed =>
+      'Saqlab boʻlmadi. Keyinroq qayta urinib koʻring.';
+
+  @override
+  String get hwPolicyNoticeTitle => 'Maxfiylik siyosatimiz oʻzgaradi';
+
+  @override
+  String hwPolicyNoticeBody(String date) {
+    return '$date dan kuchga kiradi. Sinfga qoʻshilganingizda ona tilingiz ham oʻqituvchiga koʻrsatiladi.';
+  }
+
+  @override
+  String get hwPolicyNoticeOk => 'OK';
 }

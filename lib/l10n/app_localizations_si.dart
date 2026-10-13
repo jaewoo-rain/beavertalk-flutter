@@ -2381,7 +2381,7 @@ class AppLocalizationsSi extends AppLocalizations {
   String get hwJoinConsentSharedHeading => 'ගුරුතුමා සමඟ බෙදාගනී';
 
   @override
-  String get hwJoinConsentShared1 => 'පන්තියේ නම සහ ශිෂ්‍ය අංකය';
+  String get hwJoinConsentShared1 => 'පන්තියේ භාවිත කරන නම සහ ශිෂ්‍ය අංකය';
 
   @override
   String get hwJoinConsentShared2 => 'ඔබ ගෙදර වැඩ කළාද යන්න';
@@ -2393,16 +2393,22 @@ class AppLocalizationsSi extends AppLocalizations {
   String get hwJoinConsentShared4 => 'පැවරුම් ඇමතුමේ දිග සහ සාරාංශය';
 
   @override
+  String get hwJoinConsentShared5 => 'මව් භාෂාව';
+
+  @override
+  String get hwJoinConsentShared6 => 'එක් වූ දිනය සහ අවසන් වරට සක්‍රිය වූ දිනය';
+
+  @override
   String get hwJoinConsentNotSharedHeading => 'බෙදා නොගනී';
 
   @override
   String get hwJoinConsentNotShared1 => 'ඊමේල් සහ දුරකථන අංකය';
 
   @override
-  String get hwJoinConsentNotShared2 => 'යෙදුමේ නම, පැතිකඩ සහ චරිතය';
+  String get hwJoinConsentNotShared2 => 'යෙදුමේ භාවිත කරන නම, පැතිකඩ සහ චරිතය';
 
   @override
-  String get hwJoinConsentNotShared3 => 'ජාතිකත්වය සහ මව් භාෂාව';
+  String get hwJoinConsentNotShared3 => 'ජාතිකත්වය';
 
   @override
   String get hwJoinConsentNotShared4 => 'පන්තියෙන් පිටත ඇමතුම් සහ ඉගෙනීම';
@@ -3068,4 +3074,33 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get hwA11yClassPicker => 'පන්තිය මාරු කරන්න';
+
+  @override
+  String get hwLangConsentTitle => 'ඔබේ මව් භාෂාව ගුරුවරයා සමඟ බෙදා ගන්නද?';
+
+  @override
+  String hwLangConsentBody(String className) {
+    return 'ඔබ එකඟ වුවහොත් \'$className\' හි ගුරුවරයාට ඔබේ මව් භාෂාව දැකිය හැක. ඔබ කුමක් තෝරා ගත්තත් පන්තිය දිගටම භාවිත කළ හැක.';
+  }
+
+  @override
+  String get hwLangConsentAgree => 'එකඟයි';
+
+  @override
+  String get hwLangConsentDecline => 'එකඟ නැත';
+
+  @override
+  String get hwLangConsentFailed =>
+      'සුරැකීමට නොහැකි විය. පසුව නැවත උත්සාහ කරන්න.';
+
+  @override
+  String get hwPolicyNoticeTitle => 'අපගේ රහස්‍යතා ප්‍රතිපත්තිය වෙනස් වේ';
+
+  @override
+  String hwPolicyNoticeBody(String date) {
+    return '$date සිට බලපැවැත්වේ. පන්තියකට එක් වූ විට ඔබේ මව් භාෂාවද ගුරුවරයා සමඟ බෙදා ගැනේ.';
+  }
+
+  @override
+  String get hwPolicyNoticeOk => 'හරි';
 }

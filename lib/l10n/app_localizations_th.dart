@@ -2370,7 +2370,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get hwJoinConsentSharedHeading => 'แชร์กับครู';
 
   @override
-  String get hwJoinConsentShared1 => 'ชื่อชั้นเรียนและรหัสนักเรียน';
+  String get hwJoinConsentShared1 => 'ชื่อที่ใช้ในชั้นเรียนและรหัสนักเรียน';
 
   @override
   String get hwJoinConsentShared2 => 'คุณทำการบ้านหรือไม่';
@@ -2382,6 +2382,12 @@ class AppLocalizationsTh extends AppLocalizations {
   String get hwJoinConsentShared4 => 'ความยาวและสรุปการโทรของการบ้าน';
 
   @override
+  String get hwJoinConsentShared5 => 'ภาษาแม่';
+
+  @override
+  String get hwJoinConsentShared6 => 'วันที่เข้าร่วมและวันที่ใช้งานล่าสุด';
+
+  @override
   String get hwJoinConsentNotSharedHeading => 'ไม่แชร์';
 
   @override
@@ -2391,7 +2397,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get hwJoinConsentNotShared2 => 'ชื่อในแอป โปรไฟล์ และตัวละคร';
 
   @override
-  String get hwJoinConsentNotShared3 => 'สัญชาติและภาษาแม่';
+  String get hwJoinConsentNotShared3 => 'สัญชาติ';
 
   @override
   String get hwJoinConsentNotShared4 => 'การโทรและการเรียนนอกชั้นเรียน';
@@ -3054,4 +3060,32 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get hwA11yClassPicker => 'เปลี่ยนชั้นเรียน';
+
+  @override
+  String get hwLangConsentTitle => 'แชร์ภาษาแม่ของคุณกับครูไหม?';
+
+  @override
+  String hwLangConsentBody(String className) {
+    return 'หากยินยอม ครูของ \'$className\' จะเห็นภาษาแม่ของคุณ ไม่ว่าจะเลือกแบบไหนก็ยังใช้ชั้นเรียนได้ตามเดิม';
+  }
+
+  @override
+  String get hwLangConsentAgree => 'ยินยอม';
+
+  @override
+  String get hwLangConsentDecline => 'ไม่ยินยอม';
+
+  @override
+  String get hwLangConsentFailed => 'บันทึกไม่สำเร็จ โปรดลองอีกครั้งภายหลัง';
+
+  @override
+  String get hwPolicyNoticeTitle => 'นโยบายความเป็นส่วนตัวของเรากำลังเปลี่ยน';
+
+  @override
+  String hwPolicyNoticeBody(String date) {
+    return 'มีผลตั้งแต่ $date เมื่อเข้าร่วมชั้นเรียน ภาษาแม่ของคุณจะถูกแชร์กับครูด้วย';
+  }
+
+  @override
+  String get hwPolicyNoticeOk => 'ตกลง';
 }

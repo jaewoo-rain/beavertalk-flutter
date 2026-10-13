@@ -2390,7 +2390,7 @@ class AppLocalizationsKy extends AppLocalizations {
   String get hwJoinConsentSharedHeading => 'Мугалим менен бөлүшүлөт';
 
   @override
-  String get hwJoinConsentShared1 => 'Класстын аты жана окуучу номери';
+  String get hwJoinConsentShared1 => 'Класстагы аты жана окуучу номери';
 
   @override
   String get hwJoinConsentShared2 => 'Үй тапшырмасын аткардыңызбы';
@@ -2403,6 +2403,12 @@ class AppLocalizationsKy extends AppLocalizations {
       'Тапшырма чалуусунун узактыгы жана корутундусу';
 
   @override
+  String get hwJoinConsentShared5 => 'Эне тил';
+
+  @override
+  String get hwJoinConsentShared6 => 'Кошулган күнү жана акыркы кирген күнү';
+
+  @override
   String get hwJoinConsentNotSharedHeading => 'Бөлүшүлбөйт';
 
   @override
@@ -2413,7 +2419,7 @@ class AppLocalizationsKy extends AppLocalizations {
       'Колдонмодогу аты, профиль жана каарман';
 
   @override
-  String get hwJoinConsentNotShared3 => 'Жарандыгы жана эне тили';
+  String get hwJoinConsentNotShared3 => 'Жарандык';
 
   @override
   String get hwJoinConsentNotShared4 => 'Класстан тышкаркы чалуулар жана окуу';
@@ -3085,4 +3091,33 @@ class AppLocalizationsKy extends AppLocalizations {
 
   @override
   String get hwA11yClassPicker => 'Классты алмаштыруу';
+
+  @override
+  String get hwLangConsentTitle => 'Эне тилиңизди мугалим менен бөлүшөсүзбү?';
+
+  @override
+  String hwLangConsentBody(String className) {
+    return 'Макул болсоңуз, \'$className\' мугалими эне тилиңизди көрө алат. Кандай тандасаңыз да, классты колдоно бересиз.';
+  }
+
+  @override
+  String get hwLangConsentAgree => 'Макулмун';
+
+  @override
+  String get hwLangConsentDecline => 'Макул эмесмин';
+
+  @override
+  String get hwLangConsentFailed =>
+      'Сактоо мүмкүн болгон жок. Кийинчерээк кайра аракет кылыңыз.';
+
+  @override
+  String get hwPolicyNoticeTitle => 'Купуялык саясатыбыз өзгөрөт';
+
+  @override
+  String hwPolicyNoticeBody(String date) {
+    return '$date баштап күчүнө кирет. Класска кошулганда эне тилиңиз да мугалим менен бөлүшүлөт.';
+  }
+
+  @override
+  String get hwPolicyNoticeOk => 'Макул';
 }
