@@ -84,6 +84,9 @@ final List<ProviderOrFamily> userScopedProviders = <ProviderOrFamily>[
   // A 가 방금 친 발음 과제 점수가 B 의 숙제 상세에 그려진다. 서버가 보관하지
   // 않는 값이라 여기서 안 지우면 되돌릴 방법이 없다.
   assignmentAttemptProvider,
+  // A 가 이번 실행에서 회화 5분을 다 쓴 과제 id — 안 지우면 같은 반의 B 숙제 상세에
+  // 회화 카드가 「학습완료」로 그려진다(PM-DEC-611).
+  homeworkConversationEndedProvider,
   // A 의 취약 발음 목록이 B 에게 보인다. 억양 국가·소리별 점수가 전부 회원 기준
   // 계산값이라, 남기면 B 의 화면에 A 의 국적과 A 의 발음 점수가 그대로 뜬다.
   weakSoundListProvider,

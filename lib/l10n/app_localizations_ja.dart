@@ -21,7 +21,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get callErrorGeneric => '通話中にエラーが発生しました。';
 
   @override
-  String get callDailyLimit => '今日の学習時間を使い切りました。';
+  String get callDailyLimit => '今日の通話時間を使い切りました。';
 
   @override
   String get callAlreadyInCall => 'すでに通話中です。';
@@ -2113,6 +2113,25 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get homeworkCallTimeLimit => '宿題の通話は5分までです。';
+
+  @override
+  String get homeworkCallClosed => 'この宿題は締め切られました。';
+
+  @override
+  String get homeworkCallUnavailable =>
+      '今はこの宿題の通話を始められません。宿題を確認して、もう一度お試しください。';
+
+  @override
+  String get callResumeUnavailable => 'この通話は続けられません。';
+
+  @override
+  String get hwCallDoneTitle => '宿題の会話を終えました';
+
+  @override
+  String get hwCallDoneSeeResults => '結果を見る';
+
+  @override
+  String get hwCallDoneBackToHomework => '宿題に戻る';
 
   @override
   String get fcEndedTitle => '無料通話が終了しました';

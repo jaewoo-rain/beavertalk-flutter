@@ -23,8 +23,7 @@ class AppLocalizationsFil extends AppLocalizations {
   String get callErrorGeneric => 'May naganap na problema habang tumatawag.';
 
   @override
-  String get callDailyLimit =>
-      'Nagamit mo na ang oras ng pag-aaral ngayong araw.';
+  String get callDailyLimit => 'Nagamit mo na ang oras ng tawag ngayong araw.';
 
   @override
   String get callAlreadyInCall => 'Nasa tawag ka na.';
@@ -2197,6 +2196,26 @@ class AppLocalizationsFil extends AppLocalizations {
   @override
   String get homeworkCallTimeLimit =>
       'Hanggang 5 minuto lang ang tawag para sa takdang-aralin.';
+
+  @override
+  String get homeworkCallClosed => 'Sarado na ang takdang-aralin na ito.';
+
+  @override
+  String get homeworkCallUnavailable =>
+      'Hindi mo masisimulan ang tawag para sa takdang-aralin na ito ngayon. Tingnan ang takdang-aralin at subukang muli.';
+
+  @override
+  String get callResumeUnavailable => 'Hindi na maitutuloy ang tawag na ito.';
+
+  @override
+  String get hwCallDoneTitle =>
+      'Natapos mo na ang tawag para sa takdang-aralin';
+
+  @override
+  String get hwCallDoneSeeResults => 'Tingnan ang resulta';
+
+  @override
+  String get hwCallDoneBackToHomework => 'Bumalik sa takdang-aralin';
 
   @override
   String get fcEndedTitle => 'Tapos na ang libre mong tawag';

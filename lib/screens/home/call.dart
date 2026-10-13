@@ -26,6 +26,7 @@ import '../../features/auth/presentation/providers/my_profile_provider.dart';
 import '../../features/bookmark/presentation/providers/bookmark_providers.dart';
 import '../../features/bookmark/presentation/providers/bookmark_toggle_controller.dart';
 import '../../features/character/presentation/providers/character_providers.dart';
+import '../../features/classroom/presentation/classroom_providers.dart';
 import '../../features/incoming_call/services/lockscreen_call_service.dart';
 import '../../features/normalcall/domain/entities/call_allowance.dart';
 import '../../features/normalcall/domain/entities/call_course.dart';
@@ -489,10 +490,47 @@ class _CallScreenState extends ConsumerState<CallScreen> {
     if (_navigated || _capSheetOpen) return;
     _capSheetOpen = true;
     AppAnalytics.instance.log(AppEvent.freeLimitHit, {'kind': 'homework'});
+    // PM-DEC-611 C안 — [결과 보기]·시스템 뒤로가기는 종료 화면, [숙제로 돌아가기]는 그 과제 상세.
+    var backToHomework = false;
     await showSubscriptionOverlay(
-        context, SubscriptionOverlay.homeworkCallEnded);
+      context,
+      SubscriptionOverlay.homeworkCallEnded,
+      onBackToHomework: () => backToHomework = true,
+    );
     if (!mounted) return;
+    final assignmentId = s.assignmentId;
+    if (backToHomework && assignmentId != null) {
+      _goHomework(assignmentId);
+      return;
+    }
     _goFinish(s.callId, s.elapsedSec, s.baselineCallId);
+  }
+
+  /// 통화 스택을 걷고 이 과제의 숙제 상세로 돌아간다(PM-DEC-611).
+  ///
+  /// 숙제 상세 → 연결 화면 → (교체) 통화 화면 순으로 쌓이므로 상세는 바로 아래에 있다.
+  /// 알림 등으로 상세 없이 들어왔으면 숙제 목록으로 보낸다. 돌아온 상세가 회화 카드를
+  /// 「학습완료」로 그리도록 표시하고 목록을 다시 받는다(b2b 판정은 분석 뒤에 온다).
+  void _goHomework(int assignmentId) {
+    if (_navigated) return;
+    _navigated = true;
+    ref
+        .read(homeworkConversationEndedProvider.notifier)
+        .update((ids) => {...ids, assignmentId});
+    ref.invalidate(myAssignmentsProvider);
+    _leave(() {
+      var foundDetail = false;
+      Navigator.of(context).popUntil((r) {
+        if (r.settings.name == Routes.assignmentDetail) {
+          foundDetail = true;
+          return true;
+        }
+        return r.isFirst;
+      });
+      if (!foundDetail) {
+        Navigator.of(context).pushNamed(Routes.assignments);
+      }
+    });
   }
 
   /// 오늘 남은 예산이 이보다 적으면 「오늘 마지막」 으로 본다 — 1분 미만으로는 통화가
@@ -699,7 +737,10 @@ class _CallScreenState extends ConsumerState<CallScreen> {
         // 잠금화면 통화의 실패도 잠금화면으로 돌아가야 한다. 여기서 홈으로 보내면
         // 키가드 위에 홈 화면이 남는다(스낵바도 볼 사람이 없다).
         _leave(() => leaveAfterCallRejection(context,
-            code: next.errorCode, message: msg, paidAccess: paid));
+            code: next.errorCode,
+            message: msg,
+            paidAccess: paid,
+            homework: next.homework));
       }
     });
 
@@ -722,7 +763,11 @@ class _CallScreenState extends ConsumerState<CallScreen> {
     //   freetalk 이면」 으로 쓰면 auto 순간에 토글이 깜빡 사라졌다 돌아온다.
     final course =
         ref.watch(normalCallControllerProvider.select((s) => s.course));
-    final hintsAvailable = course != CallCourse.expression;
+    // 표현학습 숙제도 일반 표현학습과 같은 잠금이다(PM-DEC-607) — 서버도 힌트를 안 만든다.
+    final homeworkExpression = ref.watch(
+        normalCallControllerProvider.select((s) => s.homeworkExpression));
+    final hintsAvailable =
+        course != CallCourse.expression && !homeworkExpression;
     // ⭐ 회화학습(freetalk)은 문장 힌트 카드 대신 **시트만** 연다(사용자 10-10 「회화학습에서는 시트만
     //   띄우자」 · 디자인 `BottomSheet/CallLessonHint`). 위 09-12 「프리토킹엔 힌트 카드」 결정을 이
     //   코스에 한해 바꾼다. 일반 통화·레벨테스트(null)·auto 순간은 그대로 카드다.

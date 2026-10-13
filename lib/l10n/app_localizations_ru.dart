@@ -23,7 +23,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get callErrorGeneric => 'Во время звонка произошла ошибка.';
 
   @override
-  String get callDailyLimit => 'Время занятий на сегодня закончилось.';
+  String get callDailyLimit => 'Время звонков на сегодня закончилось.';
 
   @override
   String get callAlreadyInCall => 'Вы уже в звонке.';
@@ -2189,6 +2189,25 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get homeworkCallTimeLimit =>
       'Звонок по домашнему заданию длится только 5 минут.';
+
+  @override
+  String get homeworkCallClosed => 'Это домашнее задание закрыто.';
+
+  @override
+  String get homeworkCallUnavailable =>
+      'Сейчас нельзя начать звонок по этому домашнему заданию. Проверьте задание и попробуйте снова.';
+
+  @override
+  String get callResumeUnavailable => 'Этот звонок нельзя продолжить.';
+
+  @override
+  String get hwCallDoneTitle => 'Вы завершили звонок по домашнему заданию';
+
+  @override
+  String get hwCallDoneSeeResults => 'Посмотреть результаты';
+
+  @override
+  String get hwCallDoneBackToHomework => 'Вернуться к заданию';
 
   @override
   String get fcEndedTitle => 'Бесплатный звонок завершён';

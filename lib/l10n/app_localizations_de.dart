@@ -24,7 +24,7 @@ class AppLocalizationsDe extends AppLocalizations {
       'Während des Anrufs ist ein Fehler aufgetreten.';
 
   @override
-  String get callDailyLimit => 'Deine Lernzeit für heute ist aufgebraucht.';
+  String get callDailyLimit => 'Deine Anrufzeit für heute ist aufgebraucht.';
 
   @override
   String get callAlreadyInCall => 'Du bist bereits in einem Anruf.';
@@ -2207,6 +2207,26 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get homeworkCallTimeLimit =>
       'Hausaufgaben-Gespräche dauern nur 5 Minuten.';
+
+  @override
+  String get homeworkCallClosed => 'Diese Hausaufgabe ist abgeschlossen.';
+
+  @override
+  String get homeworkCallUnavailable =>
+      'Das Hausaufgaben-Gespräch kann gerade nicht starten. Prüfe die Hausaufgabe und versuche es erneut.';
+
+  @override
+  String get callResumeUnavailable =>
+      'Dieses Gespräch kann nicht fortgesetzt werden.';
+
+  @override
+  String get hwCallDoneTitle => 'Du hast dein Hausaufgaben-Gespräch beendet';
+
+  @override
+  String get hwCallDoneSeeResults => 'Ergebnisse ansehen';
+
+  @override
+  String get hwCallDoneBackToHomework => 'Zurück zur Hausaufgabe';
 
   @override
   String get fcEndedTitle => 'Dein kostenloses Gespräch ist beendet';

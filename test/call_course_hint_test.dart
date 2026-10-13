@@ -67,6 +67,7 @@ Future<_StubCallController> _pump(
   WidgetTester tester, {
   CallCourse? course,
   bool partner = true,
+  bool homeworkExpression = false,
 }) async {
   tester.view.physicalSize = const Size(375, 812);
   tester.view.devicePixelRatio = 1.0;
@@ -77,6 +78,7 @@ Future<_StubCallController> _pump(
     hint: _hint,
     hintOn: true,
     course: course,
+    homeworkExpression: homeworkExpression,
   );
   final controller = _StubCallController(state);
   await tester.pumpWidget(const SizedBox.shrink());
@@ -279,5 +281,25 @@ void main() {
     await _settle(tester);
     expect(_bubble, findsNothing);
     expect(controller.hintOnCalls, [false]);
+  });
+
+  // PM-DEC-607 — 표현학습 숙제(call_started.homework_mode=expression)는 course 가 없어도
+  // 일반 표현학습과 같은 잠금이다. 역할극 숙제는 현행 유지(PM-DEC-609).
+  testWidgets('표현학습 숙제 — 힌트 카드 없음 · 버튼은 잠금 안내 말풍선', (tester) async {
+    final controller = await _pump(tester, homeworkExpression: true);
+
+    expect(_hintToggle, findsOneWidget);
+    expect(find.byType(HintCard), findsNothing);
+
+    await tester.tap(_hintToggle);
+    await _settle(tester);
+    final l10n = AppLocalizations.of(tester.element(_bubble));
+    expect(find.text(l10n.callHintLockedTitle), findsOneWidget);
+    expect(controller.hintOnCalls, isEmpty);
+  });
+
+  testWidgets('역할극 숙제(homework_mode=roleplay) — 힌트 카드 그대로', (tester) async {
+    await _pump(tester);
+    expect(find.byType(HintCard), findsOneWidget);
   });
 }

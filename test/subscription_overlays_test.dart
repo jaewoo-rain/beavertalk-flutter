@@ -107,8 +107,7 @@ void main() {
       SubscriptionOverlay.keepGoing: 'Keep going?',
       // 기본은 「더 남음」 문구 — 오늘 마지막 통화 문구는 아래 별도 시험.
       SubscriptionOverlay.premiumCallEnded: "Let's wrap up this call.",
-      SubscriptionOverlay.homeworkCallEnded:
-          'Homework calls are limited to 5 minutes.',
+      SubscriptionOverlay.homeworkCallEnded: 'You finished your homework call',
     };
 
     /// 결정을 받아야 하는 시트 — 딤 탭으로 닫히지 않는다. CTA 로 닫아야 한다.
@@ -133,7 +132,11 @@ void main() {
         expect(find.text(e.value), findsAtLeastNWidgets(1), reason: '${e.key}');
         // Dismiss for the next round.
         if (mustDecide.contains(e.key)) {
-          await tester.tap(find.text('End Call'));
+          // 숙제 5분 시트(PM-DEC-611 C안)는 End Call 대신 결과 보기다.
+          await tester.tap(find.text(
+              e.key == SubscriptionOverlay.homeworkCallEnded
+                  ? 'See results'
+                  : 'End Call'));
         } else {
           await tester.tapAt(const Offset(187, 10));
         }

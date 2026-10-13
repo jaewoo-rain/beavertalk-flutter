@@ -23,7 +23,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get callErrorGeneric => 'حدث خطأ أثناء المكالمة.';
 
   @override
-  String get callDailyLimit => 'لقد استنفدت وقت التعلّم لهذا اليوم.';
+  String get callDailyLimit => 'انتهى وقت مكالمات اليوم.';
 
   @override
   String get callAlreadyInCall => 'أنت في مكالمة بالفعل.';
@@ -2161,6 +2161,25 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get homeworkCallTimeLimit => 'مكالمة الواجب مدتها 5 دقائق فقط.';
+
+  @override
+  String get homeworkCallClosed => 'انتهى موعد هذا الواجب.';
+
+  @override
+  String get homeworkCallUnavailable =>
+      'لا يمكنك بدء مكالمة هذا الواجب الآن. تحقّق من الواجب وحاول مرة أخرى.';
+
+  @override
+  String get callResumeUnavailable => 'لا يمكن متابعة هذه المكالمة.';
+
+  @override
+  String get hwCallDoneTitle => 'أنهيت مكالمة الواجب';
+
+  @override
+  String get hwCallDoneSeeResults => 'عرض النتائج';
+
+  @override
+  String get hwCallDoneBackToHomework => 'العودة إلى الواجب';
 
   @override
   String get fcEndedTitle => 'انتهت مكالمتك المجانية';

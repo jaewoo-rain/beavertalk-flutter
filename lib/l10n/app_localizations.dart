@@ -181,7 +181,7 @@ abstract class AppLocalizations {
   /// Server refused the call: daily time budget used up (WS error code DAILY_LIMIT).
   ///
   /// In en, this message translates to:
-  /// **'You\'ve used up today\'s learning time.'**
+  /// **'You\'ve used up today\'s call time.'**
   String get callDailyLimit;
 
   /// Server refused the call: another call of this member is live (WS error code ALREADY_IN_CALL). Do not retry.
@@ -4023,6 +4023,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Homework calls are limited to 5 minutes.'**
   String get homeworkCallTimeLimit;
+
+  /// Shown when a homework call is refused because the teacher closed the assignment (server code HOMEWORK_ASSIGNMENT_CLOSED).
+  ///
+  /// In en, this message translates to:
+  /// **'This homework is closed.'**
+  String get homeworkCallClosed;
+
+  /// Shown when a homework call is refused for any other assignment reason (not published, materials error, service unavailable).
+  ///
+  /// In en, this message translates to:
+  /// **'You can\'t start this homework call right now. Check the homework and try again.'**
+  String get homeworkCallUnavailable;
+
+  /// Shown when a call cannot be continued (server code RESUME_UNAVAILABLE).
+  ///
+  /// In en, this message translates to:
+  /// **'This call can\'t be continued.'**
+  String get callResumeUnavailable;
+
+  /// Title of the sheet shown when a homework call uses up its 5 minutes. Line breaks allowed. No subscription prompt.
+  ///
+  /// In en, this message translates to:
+  /// **'You finished your homework call'**
+  String get hwCallDoneTitle;
+
+  /// Primary button of the homework 5-minute sheet: opens the call wrap-up screen.
+  ///
+  /// In en, this message translates to:
+  /// **'See results'**
+  String get hwCallDoneSeeResults;
+
+  /// Secondary button of the homework 5-minute sheet: returns to this assignment's homework detail.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to homework'**
+  String get hwCallDoneBackToHomework;
 
   /// Title of the sheet shown when a FREE member hits the 5-minute call limit. The call is over; there is no extend option.
   ///

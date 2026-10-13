@@ -23,7 +23,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get callErrorGeneric => 'Terjadi kesalahan saat panggilan.';
 
   @override
-  String get callDailyLimit => 'Waktu belajar hari ini sudah habis.';
+  String get callDailyLimit => 'Waktu panggilan hari ini sudah habis.';
 
   @override
   String get callAlreadyInCall => 'Kamu sedang dalam panggilan.';
@@ -2182,6 +2182,26 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get homeworkCallTimeLimit =>
       'Panggilan pekerjaan rumah hanya 5 menit.';
+
+  @override
+  String get homeworkCallClosed => 'Pekerjaan rumah ini sudah ditutup.';
+
+  @override
+  String get homeworkCallUnavailable =>
+      'Panggilan pekerjaan rumah ini belum bisa dimulai sekarang. Periksa pekerjaan rumahnya dan coba lagi.';
+
+  @override
+  String get callResumeUnavailable => 'Panggilan ini tidak bisa dilanjutkan.';
+
+  @override
+  String get hwCallDoneTitle =>
+      'Kamu sudah menyelesaikan panggilan pekerjaan rumah';
+
+  @override
+  String get hwCallDoneSeeResults => 'Lihat hasil';
+
+  @override
+  String get hwCallDoneBackToHomework => 'Kembali ke pekerjaan rumah';
 
   @override
   String get fcEndedTitle => 'Panggilan gratis kamu sudah berakhir';

@@ -15,6 +15,8 @@ import '../overlays/subscription_overlays.dart';
 /// - `DAILY_LIMIT` + 무료 회원(오늘 무료 5분 소진 · PM-DEC-560): 홈으로 가서 한도
 ///   시트([SubscriptionOverlay.freeLimitCall])를 띄운다.
 /// - 그 밖(유료 회원의 하루 15분 소진 포함): 종전대로 문구 스낵바 뒤 홈.
+/// - [homework] 통화의 거절은 코드와 무관하게 결제 유도 없이 숙제 화면으로 돌아간다
+///   (QA F004·F008 · 2026-10-14). 과제 마감·자료 오류에도 홈까지 밀려 나가던 것을 막는다.
 ///
 /// [message] 는 이미 현지화된 문구다(`serverErrorMessage`).
 void leaveAfterCallRejection(
@@ -22,6 +24,7 @@ void leaveAfterCallRejection(
   required String? code,
   required String message,
   required bool paidAccess,
+  bool homework = false,
 }) {
   final navigator = Navigator.of(context);
   final rootNavigator = Navigator.of(context, rootNavigator: true);
@@ -29,9 +32,13 @@ void leaveAfterCallRejection(
     ..clearSnackBars()
     ..showSnackBar(SnackBar(content: Text(message)));
 
-  if (code == 'HOMEWORK_TIME_LIMIT' ||
-      code == 'HOMEWORK_CONVERSATION_COMPLETED') {
-    AppAnalytics.instance.log(AppEvent.freeLimitHit, {'kind': 'homework'});
+  final homeworkTimeLimit = code == 'HOMEWORK_TIME_LIMIT' ||
+      code == 'HOMEWORK_CONVERSATION_COMPLETED' ||
+      (homework && code == 'DAILY_LIMIT');
+  if (homeworkTimeLimit || homework) {
+    if (homeworkTimeLimit) {
+      AppAnalytics.instance.log(AppEvent.freeLimitHit, {'kind': 'homework'});
+    }
     snack();
     navigator.pop();
     return;

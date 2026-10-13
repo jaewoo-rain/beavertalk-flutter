@@ -23,7 +23,7 @@ class AppLocalizationsMy extends AppLocalizations {
   String get callErrorGeneric => 'ခေါ်ဆိုနေစဉ် အမှားတစ်ခု ဖြစ်ပွားခဲ့သည်။';
 
   @override
-  String get callDailyLimit => 'ယနေ့ လေ့လာချိန် ကုန်သွားပါပြီ။';
+  String get callDailyLimit => 'ယနေ့ ခေါ်ဆိုချိန် ကုန်ပါပြီ။';
 
   @override
   String get callAlreadyInCall => 'သင် ဖုန်းခေါ်ဆိုမှုထဲတွင် ရှိနေပြီးဖြစ်သည်။';
@@ -2186,6 +2186,25 @@ class AppLocalizationsMy extends AppLocalizations {
   @override
   String get homeworkCallTimeLimit =>
       'အိမ်စာခေါ်ဆိုမှုကို ၅ မိနစ်သာ ပြုလုပ်နိုင်ပါသည်။';
+
+  @override
+  String get homeworkCallClosed => 'ဤအိမ်စာကို ပိတ်ပြီးပါပြီ။';
+
+  @override
+  String get homeworkCallUnavailable =>
+      'ယခု ဤအိမ်စာခေါ်ဆိုမှုကို စတင်၍မရပါ။ အိမ်စာကို စစ်ဆေးပြီး ထပ်မံကြိုးစားပါ။';
+
+  @override
+  String get callResumeUnavailable => 'ဤခေါ်ဆိုမှုကို ဆက်လုပ်၍မရပါ။';
+
+  @override
+  String get hwCallDoneTitle => 'အိမ်စာခေါ်ဆိုမှုကို ပြီးဆုံးပါပြီ';
+
+  @override
+  String get hwCallDoneSeeResults => 'ရလဒ်ကြည့်ရန်';
+
+  @override
+  String get hwCallDoneBackToHomework => 'အိမ်စာသို့ ပြန်သွားရန်';
 
   @override
   String get fcEndedTitle => 'သင့်အခမဲ့ခေါ်ဆိုမှု ပြီးဆုံးသွားပါပြီ';

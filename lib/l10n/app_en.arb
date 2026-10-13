@@ -4,7 +4,7 @@
   "callWebNotSupported": "Voice calls aren't supported on the web. Please use the app.",
   "micPermissionRequiredForCall": "Microphone access is required. Allow the microphone to start a call.",
   "callErrorGeneric": "Something went wrong during the call.",
-  "callDailyLimit": "You've used up today's learning time.",
+  "callDailyLimit": "You've used up today's call time.",
   "@callDailyLimit": {
     "description": "Server refused the call: daily time budget used up (WS error code DAILY_LIMIT)."
   },
@@ -1475,6 +1475,30 @@
   "homeworkCallTimeLimit": "Homework calls are limited to 5 minutes.",
   "@homeworkCallTimeLimit": {
     "description": "Shown when a homework call reaches the 5-minute limit per assignment (instead of a paywall). The learner cannot call longer for this assignment."
+  },
+  "homeworkCallClosed": "This homework is closed.",
+  "@homeworkCallClosed": {
+    "description": "Shown when a homework call is refused because the teacher closed the assignment (server code HOMEWORK_ASSIGNMENT_CLOSED)."
+  },
+  "homeworkCallUnavailable": "You can't start this homework call right now. Check the homework and try again.",
+  "@homeworkCallUnavailable": {
+    "description": "Shown when a homework call is refused for any other assignment reason (not published, materials error, service unavailable)."
+  },
+  "callResumeUnavailable": "This call can't be continued.",
+  "@callResumeUnavailable": {
+    "description": "Shown when a call cannot be continued (server code RESUME_UNAVAILABLE)."
+  },
+  "hwCallDoneTitle": "You finished your homework call",
+  "@hwCallDoneTitle": {
+    "description": "Title of the sheet shown when a homework call uses up its 5 minutes. Line breaks allowed. No subscription prompt."
+  },
+  "hwCallDoneSeeResults": "See results",
+  "@hwCallDoneSeeResults": {
+    "description": "Primary button of the homework 5-minute sheet: opens the call wrap-up screen."
+  },
+  "hwCallDoneBackToHomework": "Back to homework",
+  "@hwCallDoneBackToHomework": {
+    "description": "Secondary button of the homework 5-minute sheet: returns to this assignment's homework detail."
   },
   "fcEndedTitle": "Your free call has ended",
   "@fcEndedTitle": {

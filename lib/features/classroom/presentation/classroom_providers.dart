@@ -99,3 +99,12 @@ final assignmentReportProvider = FutureProvider.autoDispose
           .watch(classroomRepositoryProvider)
           .assignmentReport(assignmentId);
     });
+
+/// 이번 실행에서 숙제 통화 5분을 다 쓰고 「숙제로 돌아가기」로 돌아온 과제 id(PM-DEC-611).
+///
+/// b2b 의 회화 완료 판정(`conversation_met`)은 통화 분석이 끝난 뒤에 와서, 돌아온 직후의
+/// 숙제 상세가 아직 「학습하기」로 보인다. 그 사이 회화 카드를 「학습완료」로 그린다
+/// (5분 소진 = 완료 · PM-DEC-560). 목록을 다시 받으면 서버 값이 같은 답을 준다.
+final homeworkConversationEndedProvider = StateProvider<Set<int>>(
+  (ref) => const <int>{},
+);

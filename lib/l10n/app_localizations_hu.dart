@@ -23,7 +23,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get callErrorGeneric => 'Hiba történt a hívás közben.';
 
   @override
-  String get callDailyLimit => 'Elhasználtad a mai tanulási idődet.';
+  String get callDailyLimit => 'Elfogyott a mai hívásidőd.';
 
   @override
   String get callAlreadyInCall => 'Már hívásban vagy.';
@@ -2193,6 +2193,25 @@ class AppLocalizationsHu extends AppLocalizations {
   @override
   String get homeworkCallTimeLimit =>
       'A házi feladat hívás csak 5 perces lehet.';
+
+  @override
+  String get homeworkCallClosed => 'Ez a házi feladat lezárult.';
+
+  @override
+  String get homeworkCallUnavailable =>
+      'A házi feladat hívása most nem indítható. Nézd meg a házi feladatot, és próbáld újra.';
+
+  @override
+  String get callResumeUnavailable => 'Ez a hívás nem folytatható.';
+
+  @override
+  String get hwCallDoneTitle => 'Befejezted a házi feladat hívását';
+
+  @override
+  String get hwCallDoneSeeResults => 'Eredmények';
+
+  @override
+  String get hwCallDoneBackToHomework => 'Vissza a házi feladathoz';
 
   @override
   String get fcEndedTitle => 'A díjmentes hívásod véget ért';

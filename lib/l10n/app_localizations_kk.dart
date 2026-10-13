@@ -23,7 +23,7 @@ class AppLocalizationsKk extends AppLocalizations {
   String get callErrorGeneric => 'Қоңырау кезінде қате шықты.';
 
   @override
-  String get callDailyLimit => 'Бүгінгі оқу уақыты таусылды.';
+  String get callDailyLimit => 'Бүгінгі қоңырау уақыты бітті.';
 
   @override
   String get callAlreadyInCall => 'Сіз қазір қоңырауда отырсыз.';
@@ -2172,6 +2172,25 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get homeworkCallTimeLimit => 'Үй тапсырмасы қоңырауы тек 5 минут.';
+
+  @override
+  String get homeworkCallClosed => 'Бұл үй тапсырмасы жабылды.';
+
+  @override
+  String get homeworkCallUnavailable =>
+      'Қазір бұл үй тапсырмасының қоңырауын бастау мүмкін емес. Тапсырманы тексеріп, қайта көріңіз.';
+
+  @override
+  String get callResumeUnavailable => 'Бұл қоңырауды жалғастыру мүмкін емес.';
+
+  @override
+  String get hwCallDoneTitle => 'Үй тапсырмасы қоңырауын аяқтадыңыз';
+
+  @override
+  String get hwCallDoneSeeResults => 'Нәтижені көру';
+
+  @override
+  String get hwCallDoneBackToHomework => 'Үй тапсырмасына оралу';
 
   @override
   String get fcEndedTitle => 'Тегін қоңырауыңыз аяқталды';

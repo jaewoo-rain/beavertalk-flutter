@@ -23,7 +23,7 @@ class AppLocalizationsSi extends AppLocalizations {
   String get callErrorGeneric => 'ඇමතුම අතරතුර දෝෂයක් ඇති විය.';
 
   @override
-  String get callDailyLimit => 'අද ඉගෙනුම් කාලය අවසන්.';
+  String get callDailyLimit => 'අද ඇමතුම් කාලය අවසන්.';
 
   @override
   String get callAlreadyInCall => 'ඔබ දැනටමත් ඇමතුමක සිටී.';
@@ -2172,6 +2172,25 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get homeworkCallTimeLimit => 'ගෙදර වැඩ ඇමතුම විනාඩි 5ක් පමණි.';
+
+  @override
+  String get homeworkCallClosed => 'මෙම ගෙදර වැඩය වසා ඇත.';
+
+  @override
+  String get homeworkCallUnavailable =>
+      'දැන් මෙම ගෙදර වැඩ ඇමතුම ආරම්භ කළ නොහැක. ගෙදර වැඩය පරීක්ෂා කර නැවත උත්සාහ කරන්න.';
+
+  @override
+  String get callResumeUnavailable => 'මෙම ඇමතුම දිගටම කරගෙන යා නොහැක.';
+
+  @override
+  String get hwCallDoneTitle => 'ඔබ ගෙදර වැඩ ඇමතුම අවසන් කළා';
+
+  @override
+  String get hwCallDoneSeeResults => 'ප්‍රතිඵල බලන්න';
+
+  @override
+  String get hwCallDoneBackToHomework => 'ගෙදර වැඩ වෙත ආපසු';
 
   @override
   String get fcEndedTitle => 'ඔබේ නොමිලේ ඇමතුම අවසන් විය';

@@ -23,7 +23,7 @@ class AppLocalizationsUz extends AppLocalizations {
   String get callErrorGeneric => 'Qoʻngʻiroq paytida xatolik yuz berdi.';
 
   @override
-  String get callDailyLimit => 'Bugungi o\'qish vaqti tugadi.';
+  String get callDailyLimit => 'Bugungi qoʻngʻiroq vaqti tugadi.';
 
   @override
   String get callAlreadyInCall => 'Siz allaqachon qo\'ng\'iroqdasiz.';
@@ -2188,6 +2188,26 @@ class AppLocalizationsUz extends AppLocalizations {
   @override
   String get homeworkCallTimeLimit =>
       'Uyga vazifa qo\'ng\'irog\'i faqat 5 daqiqa.';
+
+  @override
+  String get homeworkCallClosed => 'Bu uy vazifasi yopilgan.';
+
+  @override
+  String get homeworkCallUnavailable =>
+      'Hozir bu uy vazifasi qo\'ng\'irog\'ini boshlab bo\'lmaydi. Vazifani tekshirib, qayta urinib ko\'ring.';
+
+  @override
+  String get callResumeUnavailable =>
+      'Bu qo\'ng\'iroqni davom ettirib bo\'lmaydi.';
+
+  @override
+  String get hwCallDoneTitle => 'Uy vazifasi qo\'ng\'irog\'ini tugatdingiz';
+
+  @override
+  String get hwCallDoneSeeResults => 'Natijalarni ko\'rish';
+
+  @override
+  String get hwCallDoneBackToHomework => 'Uy vazifasiga qaytish';
 
   @override
   String get fcEndedTitle => 'Bepul qo\'ng\'irog\'ingiz tugadi';

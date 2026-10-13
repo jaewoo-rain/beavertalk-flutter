@@ -23,7 +23,7 @@ class AppLocalizationsKm extends AppLocalizations {
   String get callErrorGeneric => 'មានបញ្ហាកើតឡើងកំឡុងពេលហៅ។';
 
   @override
-  String get callDailyLimit => 'ពេលវេលាសិក្សាថ្ងៃនេះបានអស់ហើយ។';
+  String get callDailyLimit => 'ពេលហៅថ្ងៃនេះអស់ហើយ។';
 
   @override
   String get callAlreadyInCall => 'អ្នកកំពុងនៅក្នុងការហៅរួចហើយ។';
@@ -2171,6 +2171,25 @@ class AppLocalizationsKm extends AppLocalizations {
   @override
   String get homeworkCallTimeLimit =>
       'ការហៅសម្រាប់កិច្ចការផ្ទះមានតែ ៥ នាទីប៉ុណ្ណោះ។';
+
+  @override
+  String get homeworkCallClosed => 'កិច្ចការផ្ទះនេះបានបិទហើយ។';
+
+  @override
+  String get homeworkCallUnavailable =>
+      'មិនអាចចាប់ផ្តើមការហៅសម្រាប់កិច្ចការផ្ទះនេះបានទេឥឡូវនេះ។ សូមពិនិត្យកិច្ចការផ្ទះ ហើយព្យាយាមម្តងទៀត។';
+
+  @override
+  String get callResumeUnavailable => 'មិនអាចបន្តការហៅនេះបានទេ។';
+
+  @override
+  String get hwCallDoneTitle => 'អ្នកបានបញ្ចប់ការហៅសម្រាប់កិច្ចការផ្ទះហើយ';
+
+  @override
+  String get hwCallDoneSeeResults => 'មើលលទ្ធផល';
+
+  @override
+  String get hwCallDoneBackToHomework => 'ត្រឡប់ទៅកិច្ចការផ្ទះ';
 
   @override
   String get fcEndedTitle => 'ការហៅទូរស័ព្ទឥតគិតថ្លៃរបស់អ្នកបានបញ្ចប់';

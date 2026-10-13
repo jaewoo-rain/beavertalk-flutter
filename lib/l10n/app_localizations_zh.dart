@@ -21,7 +21,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get callErrorGeneric => '通话过程中出现错误。';
 
   @override
-  String get callDailyLimit => '今天的学习时间已用完。';
+  String get callDailyLimit => '今天的通话时间用完了。';
 
   @override
   String get callAlreadyInCall => '你已经在通话中了。';
@@ -2106,6 +2106,24 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get homeworkCallTimeLimit => '作业通话只有5分钟。';
+
+  @override
+  String get homeworkCallClosed => '这份作业已截止。';
+
+  @override
+  String get homeworkCallUnavailable => '现在无法开始这份作业的通话。请检查作业后再试一次。';
+
+  @override
+  String get callResumeUnavailable => '这通电话无法继续。';
+
+  @override
+  String get hwCallDoneTitle => '你完成了作业通话';
+
+  @override
+  String get hwCallDoneSeeResults => '查看结果';
+
+  @override
+  String get hwCallDoneBackToHomework => '返回作业';
 
   @override
   String get fcEndedTitle => '免费通话已结束';

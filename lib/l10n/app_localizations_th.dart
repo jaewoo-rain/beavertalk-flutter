@@ -22,7 +22,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get callErrorGeneric => 'เกิดข้อผิดพลาดระหว่างการโทร';
 
   @override
-  String get callDailyLimit => 'ใช้เวลาเรียนของวันนี้หมดแล้ว';
+  String get callDailyLimit => 'เวลาโทรของวันนี้หมดแล้ว';
 
   @override
   String get callAlreadyInCall => 'คุณอยู่ในสายอยู่แล้ว';
@@ -2160,6 +2160,25 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get homeworkCallTimeLimit => 'การโทรทำการบ้านใช้ได้แค่ 5 นาที';
+
+  @override
+  String get homeworkCallClosed => 'การบ้านนี้ปิดแล้ว';
+
+  @override
+  String get homeworkCallUnavailable =>
+      'ตอนนี้ยังเริ่มการโทรทำการบ้านนี้ไม่ได้ ตรวจสอบการบ้านแล้วลองอีกครั้ง';
+
+  @override
+  String get callResumeUnavailable => 'ไม่สามารถโทรต่อสายนี้ได้';
+
+  @override
+  String get hwCallDoneTitle => 'คุณโทรทำการบ้านเสร็จแล้ว';
+
+  @override
+  String get hwCallDoneSeeResults => 'ดูผลลัพธ์';
+
+  @override
+  String get hwCallDoneBackToHomework => 'กลับไปที่การบ้าน';
 
   @override
   String get fcEndedTitle => 'การโทรฟรีของคุณสิ้นสุดแล้ว';

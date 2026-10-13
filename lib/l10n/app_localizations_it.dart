@@ -24,7 +24,7 @@ class AppLocalizationsIt extends AppLocalizations {
       'Si è verificato un errore durante la chiamata.';
 
   @override
-  String get callDailyLimit => 'Hai esaurito il tempo di studio di oggi.';
+  String get callDailyLimit => 'Hai finito il tempo di chiamata di oggi.';
 
   @override
   String get callAlreadyInCall => 'Sei già in una chiamata.';
@@ -2202,6 +2202,25 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get homeworkCallTimeLimit =>
       'Le chiamate per i compiti durano solo 5 minuti.';
+
+  @override
+  String get homeworkCallClosed => 'Questo compito è chiuso.';
+
+  @override
+  String get homeworkCallUnavailable =>
+      'Non puoi avviare ora la chiamata di questo compito. Controlla il compito e riprova.';
+
+  @override
+  String get callResumeUnavailable => 'Questa chiamata non può continuare.';
+
+  @override
+  String get hwCallDoneTitle => 'Hai finito la chiamata del compito';
+
+  @override
+  String get hwCallDoneSeeResults => 'Vedi i risultati';
+
+  @override
+  String get hwCallDoneBackToHomework => 'Torna al compito';
 
   @override
   String get fcEndedTitle => 'La tua chiamata gratuita è terminata';

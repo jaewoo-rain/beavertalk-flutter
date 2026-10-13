@@ -23,7 +23,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get callErrorGeneric => 'Something went wrong during the call.';
 
   @override
-  String get callDailyLimit => 'You\'ve used up today\'s learning time.';
+  String get callDailyLimit => 'You\'ve used up today\'s call time.';
 
   @override
   String get callAlreadyInCall => 'You\'re already on a call.';
@@ -2182,6 +2182,25 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get homeworkCallTimeLimit =>
       'Homework calls are limited to 5 minutes.';
+
+  @override
+  String get homeworkCallClosed => 'This homework is closed.';
+
+  @override
+  String get homeworkCallUnavailable =>
+      'You can\'t start this homework call right now. Check the homework and try again.';
+
+  @override
+  String get callResumeUnavailable => 'This call can\'t be continued.';
+
+  @override
+  String get hwCallDoneTitle => 'You finished your homework call';
+
+  @override
+  String get hwCallDoneSeeResults => 'See results';
+
+  @override
+  String get hwCallDoneBackToHomework => 'Back to homework';
 
   @override
   String get fcEndedTitle => 'Your free call has ended';

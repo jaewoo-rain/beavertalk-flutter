@@ -23,7 +23,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get callErrorGeneric => 'Se produjo un error durante la llamada.';
 
   @override
-  String get callDailyLimit => 'Ya usaste tu tiempo de aprendizaje de hoy.';
+  String get callDailyLimit => 'Ya usaste el tiempo de llamada de hoy.';
 
   @override
   String get callAlreadyInCall => 'Ya estás en una llamada.';
@@ -2197,6 +2197,25 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get homeworkCallTimeLimit =>
       'Las llamadas de tareas duran solo 5 minutos.';
+
+  @override
+  String get homeworkCallClosed => 'Esta tarea ya está cerrada.';
+
+  @override
+  String get homeworkCallUnavailable =>
+      'Ahora no puedes iniciar la llamada de esta tarea. Revisa la tarea e inténtalo de nuevo.';
+
+  @override
+  String get callResumeUnavailable => 'Esta llamada no se puede continuar.';
+
+  @override
+  String get hwCallDoneTitle => 'Terminaste la llamada de tu tarea';
+
+  @override
+  String get hwCallDoneSeeResults => 'Ver resultados';
+
+  @override
+  String get hwCallDoneBackToHomework => 'Volver a la tarea';
 
   @override
   String get fcEndedTitle => 'Tu llamada gratuita ha terminado';

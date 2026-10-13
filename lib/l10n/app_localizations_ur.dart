@@ -23,7 +23,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get callErrorGeneric => 'کال کے دوران خرابی پیش آئی۔';
 
   @override
-  String get callDailyLimit => 'آج کا سیکھنے کا وقت ختم ہو گیا ہے۔';
+  String get callDailyLimit => 'آج کا کال کا وقت ختم۔';
 
   @override
   String get callAlreadyInCall => 'آپ پہلے سے ایک کال پر ہیں۔';
@@ -2176,6 +2176,25 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get homeworkCallTimeLimit => 'ہوم ورک کال صرف 5 منٹ کی ہوتی ہے۔';
+
+  @override
+  String get homeworkCallClosed => 'یہ ہوم ورک بند ہو چکا ہے۔';
+
+  @override
+  String get homeworkCallUnavailable =>
+      'ابھی اس ہوم ورک کی کال شروع نہیں ہو سکتی۔ ہوم ورک دیکھ کر دوبارہ کوشش کریں۔';
+
+  @override
+  String get callResumeUnavailable => 'یہ کال جاری نہیں رکھی جا سکتی۔';
+
+  @override
+  String get hwCallDoneTitle => 'آپ نے ہوم ورک کال مکمل کر لی';
+
+  @override
+  String get hwCallDoneSeeResults => 'نتائج دیکھیں';
+
+  @override
+  String get hwCallDoneBackToHomework => 'ہوم ورک پر واپس جائیں';
 
   @override
   String get fcEndedTitle => 'آپ کی مفت کال ختم ہو گئی';

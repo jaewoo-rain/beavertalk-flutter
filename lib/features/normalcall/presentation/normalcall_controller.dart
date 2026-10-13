@@ -342,6 +342,8 @@ class CallState {
     this.endedAtCap = false,
     this.errorCode,
     this.homeworkTimeUp = false,
+    this.homeworkExpression = false,
+    this.assignmentId,
   });
 
   /// 서버 `error` 프레임의 `code`([CallPhase.error] 와 함께만 있다). 화면이 코드별로
@@ -353,6 +355,22 @@ class CallState {
   /// 화면이 결제 유도 대신 「숙제는 5분 통화만 가능해요.」를 띄운 뒤 종료 화면으로
   /// 간다(PM-DEC-551). 5분은 서버가 과제별로 센다(`call_started.remaining_s`).
   final bool homeworkTimeUp;
+
+  /// 이 통화가 **표현학습 숙제**인가 — 서버 `call_started.homework_mode == "expression"`.
+  ///
+  /// 화면이 일반 표현학습처럼 힌트 버튼을 잠근다(PM-DEC-607 · 정답 문장 노출 방지).
+  /// 숙제는 [course] 가 비어 있어 그것만으로는 못 가른다. ⛔ course 를 expression 으로
+  /// 덮지 않는다 — 조각 전환 갈래가 바뀌어 숙제 5분 종료가 다른 길로 샌다.
+  /// 역할극 숙제·옛 서버는 false(힌트 현행 유지 · PM-DEC-609).
+  final bool homeworkExpression;
+
+  /// 숙제 통화의 과제 id(숙제가 아니면 null). 거절([CallPhase.error]) 때 화면이 결제 유도
+  /// 없이 숙제 화면으로 돌아갈지 가르고(QA F004·F008), 5분 종료 시트의 「숙제로 돌아가기」가
+  /// 어느 과제로 돌아갈지 정한다(PM-DEC-611).
+  final int? assignmentId;
+
+  /// 숙제 통화인가.
+  bool get homework => assignmentId != null;
 
   /// 유료 통화가 **상한(15분)을 다 써서** 끝났는가 — [CallPhase.ended] 와 함께만 참.
   ///
@@ -506,6 +524,8 @@ class CallState {
     bool? endedAtCap,
     String? errorCode,
     bool? homeworkTimeUp,
+    bool? homeworkExpression,
+    int? assignmentId,
   }) {
     return CallState(
       phase: phase ?? this.phase,
@@ -530,6 +550,8 @@ class CallState {
       endedAtCap: endedAtCap ?? this.endedAtCap,
       errorCode: errorCode ?? this.errorCode,
       homeworkTimeUp: homeworkTimeUp ?? this.homeworkTimeUp,
+      homeworkExpression: homeworkExpression ?? this.homeworkExpression,
+      assignmentId: assignmentId ?? this.assignmentId,
     );
   }
 }
@@ -1834,6 +1856,7 @@ class NormalCallController extends Notifier<CallState> {
         channel: _channelMode,
         course: _callCourse,
         planOverride: _planOverride,
+        assignmentId: assignmentId,
       );
 
       // Every failure below tears down with keepError so the error phase SURVIVES
@@ -4776,6 +4799,12 @@ class NormalCallController extends Notifier<CallState> {
             _log('⚠ call_started: course=${msg['course']} ⛔모르는값 — 코스 없음으로 둔다');
           }
         }
+        // 숙제 대본 방식(PM-DEC-607) — 표현학습 숙제면 힌트 버튼을 잠근다. 조각마다 오므로 덮어쓴다.
+        if (msg['homework_mode'] is String) {
+          state = state.copyWith(
+              homeworkExpression: msg['homework_mode'] == 'expression');
+          _log('call_started: homework_mode=${msg['homework_mode']}');
+        }
         // ⭐ 서버는 **이 통화의 call_id 를 여기서 이미 알려준다.** 그런데 클라는
         //   `character_id` 만 읽고 이 값을 버리고 있었다(2026-08-24 실기기 로그:
         //   `{"type":"call_started","character_id":1,"call_id":"1182"}`).
@@ -5099,7 +5128,8 @@ class NormalCallController extends Notifier<CallState> {
         // 단계는 재연결 경로를 타지 않는다). 나머지 코드는 종전대로 서버 문구 그대로.
         state = state.copyWith(
           phase: CallPhase.error,
-          errorMsg: serverErrorMessage(msg, _l10n),
+          errorMsg:
+              serverErrorMessage(msg, _l10n, homework: _assignmentId != null),
           errorCode: msg['code'] as String?,
         );
         unawaited(_teardown(keepError: true));
@@ -5775,6 +5805,7 @@ class NormalCallController extends Notifier<CallState> {
           elapsedSec: preservedElapsed,
           baselineCallId: preservedBaseline,
           homeworkTimeUp: true,
+          assignmentId: _assignmentId,
         );
         return;
       }
@@ -6555,9 +6586,16 @@ enum _FragmentSwitch {
 ///
 /// 서버 `premium` 브랜치(09-23)의 두 거절 코드는 앱 문구로 바꾼다 — 사용자가 다음에 할 일이
 /// 코드마다 다르다(오늘은 끝 / 다른 통화를 먼저 끊기). 나머지는 서버 문구 그대로다.
+///
+/// [homework] 는 숙제 통화인가다. 숙제 통화의 거절은 서버 한국어 문구를 그대로 쓰지 않고
+/// 전부 앱 문구로 바꾼다(QA F008 · 2026-10-14) — `HOMEWORK_` + b2b 코드(과제 마감·미공개·
+/// 자료 오류·b2b 장애)와 `RESUME_UNAVAILABLE`(내부 사유가 섞인 문구)가 그대로 새고 있었다.
+/// 숙제에는 오지 않기로 한 `DAILY_LIMIT` 도 숙제 안내로 흡수한다(F004 · 결제 유도 금지 PM-DEC-551).
 @visibleForTesting
-String serverErrorMessage(Map<String, dynamic> msg, AppLocalizations l10n) =>
+String serverErrorMessage(Map<String, dynamic> msg, AppLocalizations l10n,
+        {bool homework = false}) =>
     switch (msg['code']) {
+      'DAILY_LIMIT' when homework => l10n.homeworkCallTimeLimit,
       'DAILY_LIMIT' => l10n.callDailyLimit,
       'ALREADY_IN_CALL' => l10n.callAlreadyInCall,
       // 과제 5분 소진. b2b 가 과제 회화를 끝냈다고 보면(5분 또는 목표 소진) 재료 단계에서
@@ -6565,5 +6603,9 @@ String serverErrorMessage(Map<String, dynamic> msg, AppLocalizations l10n) =>
       'HOMEWORK_TIME_LIMIT' ||
       'HOMEWORK_CONVERSATION_COMPLETED' =>
         l10n.homeworkCallTimeLimit,
+      'HOMEWORK_ASSIGNMENT_CLOSED' => l10n.homeworkCallClosed,
+      final String code when code.startsWith('HOMEWORK_') =>
+        l10n.homeworkCallUnavailable,
+      'RESUME_UNAVAILABLE' => l10n.callResumeUnavailable,
       _ => (msg['message'] as String?) ?? l10n.callErrorGeneric,
     };

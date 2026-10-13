@@ -367,7 +367,11 @@ class _AssignmentDetailScreenState
     final attempt = ref.watch(assignmentAttemptProvider)[a.assignmentId];
     final bool done =
         activityDone(a, act) ||
-        (act == AssignmentActivity.workbook && _workbookOpenedHere);
+        (act == AssignmentActivity.workbook && _workbookOpenedHere) ||
+        (act == AssignmentActivity.conversation &&
+            ref
+                .watch(homeworkConversationEndedProvider)
+                .contains(a.assignmentId));
     // 끝낸 활동은 배지가 아니라 Primary 테두리로 말한다(2026-10-12 확정 · 정본 발음
     // 완료 카드 `5672:5257` 도 배지 없음).
 

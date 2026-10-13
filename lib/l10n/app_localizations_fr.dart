@@ -23,8 +23,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get callErrorGeneric => 'Une erreur est survenue pendant l\'appel.';
 
   @override
-  String get callDailyLimit =>
-      'Tu as utilisé tout ton temps d\'apprentissage du jour.';
+  String get callDailyLimit => 'Votre temps d\'appel du jour est écoulé.';
 
   @override
   String get callAlreadyInCall => 'Tu es déjà en appel.';
@@ -2217,6 +2216,25 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get homeworkCallTimeLimit =>
       'Les appels de devoirs durent 5 minutes maximum.';
+
+  @override
+  String get homeworkCallClosed => 'Ce devoir est clôturé.';
+
+  @override
+  String get homeworkCallUnavailable =>
+      'Impossible de lancer l\'appel de ce devoir pour le moment. Vérifie le devoir et réessaie.';
+
+  @override
+  String get callResumeUnavailable => 'Cet appel ne peut pas être poursuivi.';
+
+  @override
+  String get hwCallDoneTitle => 'Tu as terminé l\'appel de ton devoir';
+
+  @override
+  String get hwCallDoneSeeResults => 'Voir les résultats';
+
+  @override
+  String get hwCallDoneBackToHomework => 'Retour au devoir';
 
   @override
   String get fcEndedTitle => 'Ton appel gratuit est terminé';

@@ -23,7 +23,7 @@ class AppLocalizationsMn extends AppLocalizations {
   String get callErrorGeneric => 'Дуудлагын үеэр алдаа гарлаа.';
 
   @override
-  String get callDailyLimit => 'Өнөөдрийн суралцах цаг дууслаа.';
+  String get callDailyLimit => 'Өнөөдрийн дуудлагын хугацаа дууслаа.';
 
   @override
   String get callAlreadyInCall => 'Та аль хэдийн дуудлага дээр байна.';
@@ -2172,6 +2172,25 @@ class AppLocalizationsMn extends AppLocalizations {
   @override
   String get homeworkCallTimeLimit =>
       'Гэрийн даалгаврын дуудлага зөвхөн 5 минут.';
+
+  @override
+  String get homeworkCallClosed => 'Энэ гэрийн даалгавар хаагдсан.';
+
+  @override
+  String get homeworkCallUnavailable =>
+      'Одоогоор энэ гэрийн даалгаврын дуудлагыг эхлүүлэх боломжгүй. Даалгавраа шалгаад дахин оролдоно уу.';
+
+  @override
+  String get callResumeUnavailable => 'Энэ дуудлагыг үргэлжлүүлэх боломжгүй.';
+
+  @override
+  String get hwCallDoneTitle => 'Гэрийн даалгаврын дуудлагаа дуусгалаа';
+
+  @override
+  String get hwCallDoneSeeResults => 'Үр дүнг харах';
+
+  @override
+  String get hwCallDoneBackToHomework => 'Гэрийн даалгавар руу буцах';
 
   @override
   String get fcEndedTitle => 'Таны үнэгүй дуудлага дууслаа';

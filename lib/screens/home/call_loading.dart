@@ -1,9 +1,13 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../../app/adaptive.dart';
 import '../../features/normalcall/domain/entities/call_channel.dart';
 import '../../features/normalcall/domain/entities/call_course.dart';
+import '../../features/normalcall/presentation/cascade_auto_talk.dart';
 
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
@@ -91,37 +95,62 @@ class _CallLoadingScreenState extends ConsumerState<CallLoadingScreen> {
       case CallPhase.error:
         _goHomeWithError(s);
       case CallPhase.idle:
-        // 실제로 여기서 시작하는 유일한 경우 — 홈에서 진입.
-        // 캐릭터를 넘기지 않는다 — 서버가 member.character_id 로 정한다.
-        // 예전엔 `args is int ? args : 1` 로 폴백해, 인자를 안 주는 진입점
-        // (마이페이지·기록·온보딩완료)에서 건 전화가 전부 1(BABA)로 갔다.
-        // ⭐ 라우트 인자로 **통로**가 오면 그걸로 건다(디버그 전용 캐스케이드 진입점).
-        //   인자가 없으면 null → [CallChannel.defaultChannel] = 라이브. 즉 기존 진입점
-        //   (홈·마이페이지·기록·온보딩완료·수신통화)의 동작은 **한 글자도 안 바뀐다.**
-        final arg = ModalRoute.of(context)?.settings.arguments;
-        ref
-            .read(normalCallControllerProvider.notifier)
-            .start(
-              callChannel: arg is CallChannel ? arg : null,
-              // ⭐ 숙제 회화 과제에서 들어오면 과제 id(int)를 그대로 넘긴다.
-              //   ⛔ 예전에 이 자리의 int 는 **캐릭터 id** 였다(그리고 폴백 1 이
-              //     통화 60%를 엉뚱한 상대로 보냈다). 그 통로는 이미 닫혔고 지금
-              //     int 를 보내는 진입점은 숙제뿐이다 — 캐릭터로 해석되지 않는다.
-              assignmentId: arg is int ? arg : null,
-              // ⭐ 코스(표현학습·프리토킹·자동)로 들어오면 그걸 싣는다. 인자는 맨
-              //   [CallCourse] 이거나 [CourseCallRequest](QA 우회 플래그 동반) 둘 다다.
-              //   검사가 전부 `is` 라 **서로 배타적이고**, 아무것도 아니면 전부
-              //   null/false 다 — 그래서 기존 진입점(홈·기록·온보딩완료·수신통화)의
-              //   동작이 한 글자도 안 바뀐다.
-              callCourse: switch (arg) {
-                CourseCallRequest(:final course) => course,
-                CallCourse() => arg,
-                _ => null,
-              },
-              forceCourse: arg is CourseCallRequest && arg.forceCourse,
-              planOverride: arg is CourseCallRequest ? arg.planOverride : null,
-            );
+        unawaited(_startWithMic());
     }
+  }
+
+  /// 마이크 권한을 **통화를 열기 전에** 받는다(QA F006 · 2026-10-14).
+  ///
+  /// ⛔ 예전엔 권한 창을 `start()` 안([_startAudio])에서 띄웠다 — 그때는 소켓이 이미 열려
+  ///   서버가 인사를 하고 통화 시계가 돈다. 숙제 첫 통화(call 1951)가 권한 창을 띄운 채
+  ///   무음 3단으로 끝나 과제 5분 중 115초를 잃었다. 홈은 이미 버튼에서 먼저 받고 있었고
+  ///   숙제·마이페이지·기록·온보딩완료 진입점만 빠져 있어, 진입점을 다 모으는 이 화면에서 받는다.
+  ///   허용돼 있으면 창 없이 바로 통과한다(홈 진입은 두 번 묻지 않는다).
+  Future<void> _startWithMic() async {
+    if (!CascadeAutoTalk.enabled) {
+      final status = await Permission.microphone.request();
+      if (!mounted || _navigated) return;
+      if (!status.isGranted) {
+        _navigated = true;
+        // 교체 — 안내 화면의 닫기가 들어온 곳(숙제 상세·홈)으로 돌아가게 한다.
+        Navigator.of(context).pushReplacementNamed(Routes.permissionMicDenied);
+        return;
+      }
+    }
+    _startCall();
+  }
+
+  void _startCall() {
+    // 실제로 여기서 시작하는 유일한 경우 — 홈에서 진입.
+    // 캐릭터를 넘기지 않는다 — 서버가 member.character_id 로 정한다.
+    // 예전엔 `args is int ? args : 1` 로 폴백해, 인자를 안 주는 진입점
+    // (마이페이지·기록·온보딩완료)에서 건 전화가 전부 1(BABA)로 갔다.
+    // ⭐ 라우트 인자로 **통로**가 오면 그걸로 건다(디버그 전용 캐스케이드 진입점).
+    //   인자가 없으면 null → [CallChannel.defaultChannel] = 라이브. 즉 기존 진입점
+    //   (홈·마이페이지·기록·온보딩완료·수신통화)의 동작은 **한 글자도 안 바뀐다.**
+    final arg = ModalRoute.of(context)?.settings.arguments;
+    ref
+        .read(normalCallControllerProvider.notifier)
+        .start(
+          callChannel: arg is CallChannel ? arg : null,
+          // ⭐ 숙제 회화 과제에서 들어오면 과제 id(int)를 그대로 넘긴다.
+          //   ⛔ 예전에 이 자리의 int 는 **캐릭터 id** 였다(그리고 폴백 1 이
+          //     통화 60%를 엉뚱한 상대로 보냈다). 그 통로는 이미 닫혔고 지금
+          //     int 를 보내는 진입점은 숙제뿐이다 — 캐릭터로 해석되지 않는다.
+          assignmentId: arg is int ? arg : null,
+          // ⭐ 코스(표현학습·프리토킹·자동)로 들어오면 그걸 싣는다. 인자는 맨
+          //   [CallCourse] 이거나 [CourseCallRequest](QA 우회 플래그 동반) 둘 다다.
+          //   검사가 전부 `is` 라 **서로 배타적이고**, 아무것도 아니면 전부
+          //   null/false 다 — 그래서 기존 진입점(홈·기록·온보딩완료·수신통화)의
+          //   동작이 한 글자도 안 바뀐다.
+          callCourse: switch (arg) {
+            CourseCallRequest(:final course) => course,
+            CallCourse() => arg,
+            _ => null,
+          },
+          forceCourse: arg is CourseCallRequest && arg.forceCourse,
+          planOverride: arg is CourseCallRequest ? arg.planOverride : null,
+        );
   }
 
   /// 통화 화면으로 교체.
@@ -181,7 +210,7 @@ class _CallLoadingScreenState extends ConsumerState<CallLoadingScreen> {
     final text = s.errorMsg ?? AppLocalizations.of(context).callConnectFailed;
     final paid = ref.read(subscriptionStatusProvider).grantsPaidAccess;
     _leave(() => leaveAfterCallRejection(context,
-        code: s.errorCode, message: text, paidAccess: paid));
+        code: s.errorCode, message: text, paidAccess: paid, homework: s.homework));
   }
 
   /// Cancels connecting and returns home.

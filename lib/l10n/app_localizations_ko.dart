@@ -22,7 +22,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get callErrorGeneric => '통화 중 오류가 발생했어요.';
 
   @override
-  String get callDailyLimit => '오늘 학습 시간을 다 썼어요.';
+  String get callDailyLimit => '오늘 통화 시간을 다 썼어요.';
 
   @override
   String get callAlreadyInCall => '이미 통화 중이에요.';
@@ -2114,6 +2114,25 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get homeworkCallTimeLimit => '숙제는 5분 통화만 가능해요.';
+
+  @override
+  String get homeworkCallClosed => '마감된 숙제예요.';
+
+  @override
+  String get homeworkCallUnavailable =>
+      '지금은 이 숙제 통화를 시작할 수 없어요. 숙제를 확인하고 다시 시도해 주세요.';
+
+  @override
+  String get callResumeUnavailable => '이 통화는 이어할 수 없어요.';
+
+  @override
+  String get hwCallDoneTitle => '숙제 회화를 마쳤어요';
+
+  @override
+  String get hwCallDoneSeeResults => '결과 보기';
+
+  @override
+  String get hwCallDoneBackToHomework => '숙제로 돌아가기';
 
   @override
   String get fcEndedTitle => '무료 통화가 끝났어요';

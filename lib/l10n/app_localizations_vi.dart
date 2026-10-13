@@ -23,7 +23,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get callErrorGeneric => 'Đã xảy ra lỗi trong cuộc gọi.';
 
   @override
-  String get callDailyLimit => 'Bạn đã dùng hết thời gian học hôm nay.';
+  String get callDailyLimit => 'Bạn đã dùng hết thời gian gọi hôm nay.';
 
   @override
   String get callAlreadyInCall => 'Bạn đang trong một cuộc gọi.';
@@ -2173,6 +2173,25 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get homeworkCallTimeLimit => 'Cuộc gọi bài tập chỉ được 5 phút.';
+
+  @override
+  String get homeworkCallClosed => 'Bài tập này đã đóng.';
+
+  @override
+  String get homeworkCallUnavailable =>
+      'Hiện chưa thể bắt đầu cuộc gọi bài tập này. Hãy kiểm tra bài tập rồi thử lại.';
+
+  @override
+  String get callResumeUnavailable => 'Không thể tiếp tục cuộc gọi này.';
+
+  @override
+  String get hwCallDoneTitle => 'Bạn đã hoàn thành cuộc gọi bài tập';
+
+  @override
+  String get hwCallDoneSeeResults => 'Xem kết quả';
+
+  @override
+  String get hwCallDoneBackToHomework => 'Quay lại bài tập';
 
   @override
   String get fcEndedTitle => 'Cuộc gọi miễn phí đã kết thúc';

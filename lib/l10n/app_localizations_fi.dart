@@ -23,7 +23,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get callErrorGeneric => 'Puhelun aikana tapahtui virhe.';
 
   @override
-  String get callDailyLimit => 'Tämän päivän opiskeluaika on käytetty.';
+  String get callDailyLimit => 'Tämän päivän puheluaika on käytetty.';
 
   @override
   String get callAlreadyInCall => 'Olet jo puhelussa.';
@@ -2189,6 +2189,25 @@ class AppLocalizationsFi extends AppLocalizations {
   @override
   String get homeworkCallTimeLimit =>
       'Kotitehtäväpuhelu kestää vain 5 minuuttia.';
+
+  @override
+  String get homeworkCallClosed => 'Tämä kotitehtävä on suljettu.';
+
+  @override
+  String get homeworkCallUnavailable =>
+      'Kotitehtäväpuhelua ei voi aloittaa juuri nyt. Tarkista kotitehtävä ja yritä uudelleen.';
+
+  @override
+  String get callResumeUnavailable => 'Tätä puhelua ei voi jatkaa.';
+
+  @override
+  String get hwCallDoneTitle => 'Kotitehtäväpuhelusi on valmis';
+
+  @override
+  String get hwCallDoneSeeResults => 'Katso tulokset';
+
+  @override
+  String get hwCallDoneBackToHomework => 'Takaisin kotitehtävään';
 
   @override
   String get fcEndedTitle => 'Ilmainen puhelusi päättyi';

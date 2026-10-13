@@ -23,7 +23,7 @@ class AppLocalizationsNe extends AppLocalizations {
   String get callErrorGeneric => 'कलको क्रममा त्रुटि भयो।';
 
   @override
-  String get callDailyLimit => 'आजको सिक्ने समय सकियो।';
+  String get callDailyLimit => 'आजको कल समय सकियो।';
 
   @override
   String get callAlreadyInCall => 'तपाईं पहिले नै कलमा हुनुहुन्छ।';
@@ -2170,6 +2170,25 @@ class AppLocalizationsNe extends AppLocalizations {
 
   @override
   String get homeworkCallTimeLimit => 'गृहकार्यको कल ५ मिनेट मात्र हुन्छ।';
+
+  @override
+  String get homeworkCallClosed => 'यो गृहकार्य बन्द भइसक्यो।';
+
+  @override
+  String get homeworkCallUnavailable =>
+      'अहिले यो गृहकार्यको कल सुरु गर्न सकिँदैन। गृहकार्य हेरेर फेरि प्रयास गर्नुहोस्।';
+
+  @override
+  String get callResumeUnavailable => 'यो कल जारी राख्न सकिँदैन।';
+
+  @override
+  String get hwCallDoneTitle => 'तपाईंले गृहकार्यको कल सक्नुभयो';
+
+  @override
+  String get hwCallDoneSeeResults => 'नतिजा हेर्नुहोस्';
+
+  @override
+  String get hwCallDoneBackToHomework => 'गृहकार्यमा फर्कनुहोस्';
 
   @override
   String get fcEndedTitle => 'तपाईंको नि:शुल्क कल सकियो';

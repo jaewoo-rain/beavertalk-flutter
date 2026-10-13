@@ -23,7 +23,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get callErrorGeneric => 'Arama sırasında bir hata oluştu.';
 
   @override
-  String get callDailyLimit => 'Bugünkü öğrenme süreni doldurdun.';
+  String get callDailyLimit => 'Bugünkü arama süren doldu.';
 
   @override
   String get callAlreadyInCall => 'Zaten bir aramadasın.';
@@ -2171,6 +2171,25 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get homeworkCallTimeLimit => 'Ödev görüşmesi yalnızca 5 dakika sürer.';
+
+  @override
+  String get homeworkCallClosed => 'Bu ödev kapandı.';
+
+  @override
+  String get homeworkCallUnavailable =>
+      'Bu ödevin görüşmesi şu anda başlatılamıyor. Ödevi kontrol edip tekrar dene.';
+
+  @override
+  String get callResumeUnavailable => 'Bu görüşmeye devam edilemiyor.';
+
+  @override
+  String get hwCallDoneTitle => 'Ödev görüşmeni tamamladın';
+
+  @override
+  String get hwCallDoneSeeResults => 'Sonuçları gör';
+
+  @override
+  String get hwCallDoneBackToHomework => 'Ödeve dön';
 
   @override
   String get fcEndedTitle => 'Ücretsiz görüşmen sona erdi';

@@ -166,6 +166,7 @@ Future<void> showSubscriptionOverlay(
   VoidCallback? onContinue,
   VoidCallback? onEndCall,
   VoidCallback? onSubscribe,
+  VoidCallback? onBackToHomework,
   bool lastCallToday = false,
 }) {
   // 통화 구간 시트는 **결정을 받아야 하는** 시트다. 딤을 눌러서 흘려보내면 통화가
@@ -197,6 +198,7 @@ Future<void> showSubscriptionOverlay(
       onContinue: onContinue,
       onEndCall: onEndCall,
       onSubscribe: onSubscribe,
+      onBackToHomework: onBackToHomework,
       lastCallToday: lastCallToday,
     ),
   );
@@ -349,6 +351,7 @@ class _OverlaySheet extends StatelessWidget {
     this.onContinue,
     this.onEndCall,
     this.onSubscribe,
+    this.onBackToHomework,
     this.lastCallToday = false,
   });
 
@@ -394,6 +397,9 @@ class _OverlaySheet extends StatelessWidget {
   /// 안 주면 결제 화면으로 밀기만 한다(마이페이지 데모 허브처럼 통화가 없는 곳).
   /// 통화 중에는 **반드시 넘겨야 한다** — 이유는 호출 지점 주석 참조.
   final VoidCallback? onSubscribe;
+
+  /// 「숙제로 돌아가기」 — [SubscriptionOverlay.homeworkCallEnded] 전용(PM-DEC-611).
+  final VoidCallback? onBackToHomework;
 
   String _date(BuildContext context, DateTime? d) =>
       d == null ? '—' : localizedFullDate(context, d);
@@ -866,13 +872,19 @@ class _OverlaySheet extends StatelessWidget {
               label: l10n.endCall,
               onPressed: () => _then(context, () => onEndCall?.call())),
         );
+      // PM-DEC-611 C안(Figma `6730:48592`) — 완료 표시 + 결과 보기 / 숙제로 돌아가기.
+      //   구독 유도 없음. 결과 보기는 [onEndCall](종료 화면), 숙제로 돌아가기는 [onBackToHomework].
       case SubscriptionOverlay.homeworkCallEnded:
         return BottomSheetContent(
-          title: l10n.homeworkCallTimeLimit,
+          mark: SheetMarkTone.success,
+          title: l10n.hwCallDoneTitle,
           body: '',
           primaryAction: SheetAction(
-              label: l10n.endCall,
+              label: l10n.hwCallDoneSeeResults,
               onPressed: () => _then(context, () => onEndCall?.call())),
+          secondaryAction: SheetAction(
+              label: l10n.hwCallDoneBackToHomework,
+              onPressed: () => _then(context, () => onBackToHomework?.call())),
         );
       case SubscriptionOverlay.keepGoing:
         return BottomSheetContent(

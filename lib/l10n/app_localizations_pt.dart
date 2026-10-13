@@ -23,7 +23,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get callErrorGeneric => 'Ocorreu um erro durante a chamada.';
 
   @override
-  String get callDailyLimit => 'Você já usou o tempo de estudo de hoje.';
+  String get callDailyLimit => 'Acabou o tempo de ligação de hoje.';
 
   @override
   String get callAlreadyInCall => 'Você já está em uma chamada.';
@@ -2198,6 +2198,25 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get homeworkCallTimeLimit =>
       'As ligações de tarefa duram só 5 minutos.';
+
+  @override
+  String get homeworkCallClosed => 'Esta tarefa está encerrada.';
+
+  @override
+  String get homeworkCallUnavailable =>
+      'Não é possível iniciar a ligação desta tarefa agora. Confira a tarefa e tente de novo.';
+
+  @override
+  String get callResumeUnavailable => 'Esta ligação não pode continuar.';
+
+  @override
+  String get hwCallDoneTitle => 'Você terminou a ligação da tarefa';
+
+  @override
+  String get hwCallDoneSeeResults => 'Ver resultados';
+
+  @override
+  String get hwCallDoneBackToHomework => 'Voltar para a tarefa';
 
   @override
   String get fcEndedTitle => 'A sua chamada gratuita terminou';
