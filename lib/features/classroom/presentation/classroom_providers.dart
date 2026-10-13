@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/di/providers.dart';
 import '../../../core/network/env.dart';
 import '../data/datasources/classroom_remote_data_source.dart';
+import '../data/datasources/classroom_consent_store.dart';
 import '../data/datasources/joined_class_store.dart';
 import '../data/repositories/classroom_repository_impl.dart';
 import '../domain/entities/classroom_assignment.dart';
@@ -24,6 +25,11 @@ final classroomRemoteDataSourceProvider = Provider<ClassroomRemoteDataSource>((
 /// 참여한 반 id 저장소 — 목록 응답에 `classroom_id` 가 없어 필요하다.
 final joinedClassStoreProvider = Provider<JoinedClassStore>((ref) {
   return const JoinedClassStore();
+});
+
+/// 모국어 재동의·처리방침 개정 안내를 한 번만 띄우려는 기기 기록(PM-DEC-543).
+final classroomConsentStoreProvider = Provider<ClassroomConsentStore>((ref) {
+  return const ClassroomConsentStore();
 });
 
 /// 반 참여·숙제 리포지토리.

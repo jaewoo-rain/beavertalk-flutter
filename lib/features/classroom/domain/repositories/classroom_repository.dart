@@ -23,12 +23,19 @@ abstract interface class ClassroomRepository {
   ///
   /// [shareConsent] 가 false 면 서버가 400 으로 거절한다 — 화면이 먼저 막는다.
   /// [rosterName] 은 반에서 쓸 이름이며 앱 계정 이름과 별개다.
+  /// [languageShareVersion] 은 동의 화면에 적힌 모국어 공개 문구의 버전이다.
   Future<JoinResult> join({
     required String joinCode,
     required String rosterName,
     required bool shareConsent,
     String? studentNo,
+    int? languageShareVersion,
   });
+
+  /// 이미 들어가 있는 반에서 모국어 공개에 다시 동의한다(PM-DEC-543).
+  ///
+  /// [version] 0 은 철회다. 동의한 반에서만 교사 명단에 모국어가 보인다.
+  Future<void> setLanguageConsent(int classroomId, int version);
 
   /// A6. 내가 속한 반들의 과제를 마감 역순으로 받는다.
   Future<List<ClassroomAssignment>> myAssignments();

@@ -2432,7 +2432,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get hwJoinConsentSharedHeading => 'Partagé avec votre enseignant';
 
   @override
-  String get hwJoinConsentShared1 => 'Nom de la classe et numéro d’étudiant';
+  String get hwJoinConsentShared1 => 'Nom dans la classe et numéro d’étudiant';
 
   @override
   String get hwJoinConsentShared2 => 'Si vous avez fait les devoirs';
@@ -2444,6 +2444,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get hwJoinConsentShared4 => 'Durée et résumé de l’appel du devoir';
 
   @override
+  String get hwJoinConsentShared5 => 'Langue maternelle';
+
+  @override
+  String get hwJoinConsentShared6 => 'Date d’inscription et dernière activité';
+
+  @override
   String get hwJoinConsentNotSharedHeading => 'Non partagé';
 
   @override
@@ -2453,7 +2459,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get hwJoinConsentNotShared2 => 'Nom dans l’app, profil et personnage';
 
   @override
-  String get hwJoinConsentNotShared3 => 'Nationalité et langue maternelle';
+  String get hwJoinConsentNotShared3 => 'Nationalité';
 
   @override
   String get hwJoinConsentNotShared4 =>
@@ -3139,4 +3145,34 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get hwA11yClassPicker => 'Changer de classe';
+
+  @override
+  String get hwLangConsentTitle =>
+      'Partager votre langue maternelle avec votre enseignant ?';
+
+  @override
+  String hwLangConsentBody(String className) {
+    return 'Si vous acceptez, l’enseignant de \'$className\' pourra voir votre langue maternelle. Vous pouvez continuer à utiliser la classe dans tous les cas.';
+  }
+
+  @override
+  String get hwLangConsentAgree => 'Accepter';
+
+  @override
+  String get hwLangConsentDecline => 'Refuser';
+
+  @override
+  String get hwLangConsentFailed =>
+      'Enregistrement impossible. Réessayez plus tard.';
+
+  @override
+  String get hwPolicyNoticeTitle => 'Notre politique de confidentialité change';
+
+  @override
+  String hwPolicyNoticeBody(String date) {
+    return 'Elle s’applique à partir du $date. Quand vous rejoignez une classe, votre langue maternelle est aussi partagée avec votre enseignant.';
+  }
+
+  @override
+  String get hwPolicyNoticeOk => 'OK';
 }

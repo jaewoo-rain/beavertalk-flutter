@@ -2385,7 +2385,7 @@ class AppLocalizationsKk extends AppLocalizations {
   String get hwJoinConsentSharedHeading => 'Мұғаліммен бөлісіледі';
 
   @override
-  String get hwJoinConsentShared1 => 'Сынып атауы және оқушы нөмірі';
+  String get hwJoinConsentShared1 => 'Сыныптағы аты және оқушы нөмірі';
 
   @override
   String get hwJoinConsentShared2 => 'Үй тапсырмасын орындағаныңыз';
@@ -2395,6 +2395,12 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get hwJoinConsentShared4 => 'Тапсырма қоңырауының ұзақтығы мен түйіні';
+
+  @override
+  String get hwJoinConsentShared5 => 'Ана тілі';
+
+  @override
+  String get hwJoinConsentShared6 => 'Қосылған күні және соңғы кірген күні';
 
   @override
   String get hwJoinConsentNotSharedHeading => 'Бөлісілмейді';
@@ -2407,7 +2413,7 @@ class AppLocalizationsKk extends AppLocalizations {
       'Қолданбадағы аты, профиль және кейіпкер';
 
   @override
-  String get hwJoinConsentNotShared3 => 'Азаматтығы және ана тілі';
+  String get hwJoinConsentNotShared3 => 'Азаматтық';
 
   @override
   String get hwJoinConsentNotShared4 => 'Сыныптан тыс қоңыраулар мен оқу';
@@ -3078,4 +3084,33 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get hwA11yClassPicker => 'Сыныпты ауыстыру';
+
+  @override
+  String get hwLangConsentTitle => 'Ана тіліңізді мұғаліммен бөлісесіз бе?';
+
+  @override
+  String hwLangConsentBody(String className) {
+    return 'Келіссеңіз, \'$className\' мұғалімі ана тіліңізді көре алады. Қалай таңдасаңыз да, сыныпты пайдалана бересіз.';
+  }
+
+  @override
+  String get hwLangConsentAgree => 'Келісемін';
+
+  @override
+  String get hwLangConsentDecline => 'Келіспеймін';
+
+  @override
+  String get hwLangConsentFailed =>
+      'Сақтау мүмкін болмады. Кейінірек қайталап көріңіз.';
+
+  @override
+  String get hwPolicyNoticeTitle => 'Құпиялылық саясатымыз өзгереді';
+
+  @override
+  String hwPolicyNoticeBody(String date) {
+    return '$date бастап күшіне енеді. Сыныпқа қосылғанда ана тіліңіз де мұғаліммен бөлісіледі.';
+  }
+
+  @override
+  String get hwPolicyNoticeOk => 'Жарайды';
 }

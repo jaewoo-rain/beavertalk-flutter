@@ -2412,7 +2412,7 @@ class AppLocalizationsFil extends AppLocalizations {
   String get hwJoinConsentSharedHeading => 'Ibinabahagi sa guro mo';
 
   @override
-  String get hwJoinConsentShared1 => 'Pangalan ng klase at student number';
+  String get hwJoinConsentShared1 => 'Pangalan sa klase at student number';
 
   @override
   String get hwJoinConsentShared2 => 'Kung ginawa mo ang takdang-aralin';
@@ -2425,6 +2425,12 @@ class AppLocalizationsFil extends AppLocalizations {
       'Haba at buod ng tawag para sa takdang-aralin';
 
   @override
+  String get hwJoinConsentShared5 => 'Katutubong wika';
+
+  @override
+  String get hwJoinConsentShared6 => 'Petsa ng pagsali at huling aktibo';
+
+  @override
   String get hwJoinConsentNotSharedHeading => 'Hindi ibinabahagi';
 
   @override
@@ -2434,7 +2440,7 @@ class AppLocalizationsFil extends AppLocalizations {
   String get hwJoinConsentNotShared2 => 'Pangalan sa app, profile at karakter';
 
   @override
-  String get hwJoinConsentNotShared3 => 'Nasyonalidad at unang wika';
+  String get hwJoinConsentNotShared3 => 'Nasyonalidad';
 
   @override
   String get hwJoinConsentNotShared4 =>
@@ -3115,4 +3121,33 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get hwA11yClassPicker => 'Palitan ang klase';
+
+  @override
+  String get hwLangConsentTitle =>
+      'Ibahagi ang iyong katutubong wika sa iyong guro?';
+
+  @override
+  String hwLangConsentBody(String className) {
+    return 'Kung papayag ka, makikita ng guro ng \'$className\' ang iyong katutubong wika. Magagamit mo pa rin ang klase kahit ano ang piliin mo.';
+  }
+
+  @override
+  String get hwLangConsentAgree => 'Pumayag';
+
+  @override
+  String get hwLangConsentDecline => 'Huwag pumayag';
+
+  @override
+  String get hwLangConsentFailed => 'Hindi ma-save. Pakisubukang muli mamaya.';
+
+  @override
+  String get hwPolicyNoticeTitle => 'Magbabago ang aming patakaran sa privacy';
+
+  @override
+  String hwPolicyNoticeBody(String date) {
+    return 'Epektibo simula $date. Kapag sumali ka sa klase, ibabahagi rin sa guro ang iyong katutubong wika.';
+  }
+
+  @override
+  String get hwPolicyNoticeOk => 'OK';
 }

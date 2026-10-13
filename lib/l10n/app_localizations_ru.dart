@@ -2403,7 +2403,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get hwJoinConsentSharedHeading => 'Передаётся преподавателю';
 
   @override
-  String get hwJoinConsentShared1 => 'Название класса и номер студента';
+  String get hwJoinConsentShared1 => 'Имя в классе и номер студента';
 
   @override
   String get hwJoinConsentShared2 => 'Выполнили ли вы задание';
@@ -2416,6 +2416,12 @@ class AppLocalizationsRu extends AppLocalizations {
       'Длительность и краткое содержание учебного звонка';
 
   @override
+  String get hwJoinConsentShared5 => 'Родной язык';
+
+  @override
+  String get hwJoinConsentShared6 => 'Дата вступления и последнего входа';
+
+  @override
   String get hwJoinConsentNotSharedHeading => 'Не передаётся';
 
   @override
@@ -2425,7 +2431,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get hwJoinConsentNotShared2 => 'Имя в приложении, профиль и персонаж';
 
   @override
-  String get hwJoinConsentNotShared3 => 'Гражданство и родной язык';
+  String get hwJoinConsentNotShared3 => 'Гражданство';
 
   @override
   String get hwJoinConsentNotShared4 => 'Звонки и занятия вне класса';
@@ -3103,4 +3109,32 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get hwA11yClassPicker => 'Сменить группу';
+
+  @override
+  String get hwLangConsentTitle => 'Показать учителю ваш родной язык?';
+
+  @override
+  String hwLangConsentBody(String className) {
+    return 'Если вы согласитесь, учитель класса \'$className\' увидит ваш родной язык. Пользоваться классом можно в любом случае.';
+  }
+
+  @override
+  String get hwLangConsentAgree => 'Согласен';
+
+  @override
+  String get hwLangConsentDecline => 'Не согласен';
+
+  @override
+  String get hwLangConsentFailed => 'Не удалось сохранить. Попробуйте позже.';
+
+  @override
+  String get hwPolicyNoticeTitle => 'Политика конфиденциальности меняется';
+
+  @override
+  String hwPolicyNoticeBody(String date) {
+    return 'Вступает в силу $date. Когда вы вступаете в класс, учитель также видит ваш родной язык.';
+  }
+
+  @override
+  String get hwPolicyNoticeOk => 'ОК';
 }

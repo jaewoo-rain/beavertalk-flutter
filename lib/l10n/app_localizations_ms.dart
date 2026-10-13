@@ -2408,7 +2408,7 @@ class AppLocalizationsMs extends AppLocalizations {
   String get hwJoinConsentSharedHeading => 'Dikongsi dengan guru anda';
 
   @override
-  String get hwJoinConsentShared1 => 'Nama kelas dan nombor pelajar';
+  String get hwJoinConsentShared1 => 'Nama dalam kelas dan nombor pelajar';
 
   @override
   String get hwJoinConsentShared2 => 'Sama ada anda buat kerja rumah';
@@ -2420,16 +2420,22 @@ class AppLocalizationsMs extends AppLocalizations {
   String get hwJoinConsentShared4 => 'Tempoh dan ringkasan panggilan tugasan';
 
   @override
+  String get hwJoinConsentShared5 => 'Bahasa ibunda';
+
+  @override
+  String get hwJoinConsentShared6 => 'Tarikh menyertai dan kali terakhir aktif';
+
+  @override
   String get hwJoinConsentNotSharedHeading => 'Tidak dikongsi';
 
   @override
   String get hwJoinConsentNotShared1 => 'E-mel dan nombor telefon';
 
   @override
-  String get hwJoinConsentNotShared2 => 'Nama apl, profil dan watak';
+  String get hwJoinConsentNotShared2 => 'Nama dalam apl, profil dan watak';
 
   @override
-  String get hwJoinConsentNotShared3 => 'Kewarganegaraan dan bahasa ibunda';
+  String get hwJoinConsentNotShared3 => 'Kewarganegaraan';
 
   @override
   String get hwJoinConsentNotShared4 =>
@@ -3106,4 +3112,32 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get hwA11yClassPicker => 'Tukar kelas';
+
+  @override
+  String get hwLangConsentTitle => 'Kongsi bahasa ibunda anda dengan guru?';
+
+  @override
+  String hwLangConsentBody(String className) {
+    return 'Jika anda bersetuju, guru \'$className\' boleh melihat bahasa ibunda anda. Anda tetap boleh menggunakan kelas walau apa pun pilihan anda.';
+  }
+
+  @override
+  String get hwLangConsentAgree => 'Setuju';
+
+  @override
+  String get hwLangConsentDecline => 'Tidak setuju';
+
+  @override
+  String get hwLangConsentFailed => 'Gagal menyimpan. Sila cuba lagi nanti.';
+
+  @override
+  String get hwPolicyNoticeTitle => 'Dasar privasi kami berubah';
+
+  @override
+  String hwPolicyNoticeBody(String date) {
+    return 'Berkuat kuasa mulai $date. Apabila anda menyertai kelas, bahasa ibunda anda juga dikongsi dengan guru.';
+  }
+
+  @override
+  String get hwPolicyNoticeOk => 'OK';
 }

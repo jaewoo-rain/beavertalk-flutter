@@ -2317,7 +2317,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get hwJoinConsentSharedHeading => '先生に共有されます';
 
   @override
-  String get hwJoinConsentShared1 => 'クラス名と学籍番号';
+  String get hwJoinConsentShared1 => 'クラスで使う名前と学籍番号';
 
   @override
   String get hwJoinConsentShared2 => '宿題をしたかどうか';
@@ -2329,16 +2329,22 @@ class AppLocalizationsJa extends AppLocalizations {
   String get hwJoinConsentShared4 => '課題通話の長さと要約';
 
   @override
+  String get hwJoinConsentShared5 => '母国語';
+
+  @override
+  String get hwJoinConsentShared6 => '参加日と最終利用日';
+
+  @override
   String get hwJoinConsentNotSharedHeading => '共有されません';
 
   @override
   String get hwJoinConsentNotShared1 => 'メールアドレスと電話番号';
 
   @override
-  String get hwJoinConsentNotShared2 => 'アプリの名前・プロフィール・キャラクター';
+  String get hwJoinConsentNotShared2 => 'アプリで使う名前・プロフィール・キャラクター';
 
   @override
-  String get hwJoinConsentNotShared3 => '国籍と母語';
+  String get hwJoinConsentNotShared3 => '国籍';
 
   @override
   String get hwJoinConsentNotShared4 => 'クラス外の通話と学習';
@@ -2993,4 +2999,32 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get hwA11yClassPicker => 'クラスを変更';
+
+  @override
+  String get hwLangConsentTitle => '母語を先生に共有しますか？';
+
+  @override
+  String hwLangConsentBody(String className) {
+    return '同意すると、\'$className\'の先生があなたの母語を見られるようになります。同意しなくてもクラスはそのまま使えます。';
+  }
+
+  @override
+  String get hwLangConsentAgree => '同意する';
+
+  @override
+  String get hwLangConsentDecline => '同意しない';
+
+  @override
+  String get hwLangConsentFailed => '保存できませんでした。しばらくしてからもう一度お試しください。';
+
+  @override
+  String get hwPolicyNoticeTitle => 'プライバシーポリシーが変わります';
+
+  @override
+  String hwPolicyNoticeBody(String date) {
+    return '$dateから適用されます。クラスに参加すると、母語も先生に共有されます。';
+  }
+
+  @override
+  String get hwPolicyNoticeOk => 'OK';
 }

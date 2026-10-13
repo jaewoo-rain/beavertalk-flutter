@@ -2405,7 +2405,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get hwJoinConsentSharedHeading => 'Megosztva a tanároddal';
 
   @override
-  String get hwJoinConsentShared1 => 'Osztály neve és tanulói azonosító';
+  String get hwJoinConsentShared1 => 'Osztálybeli név és tanulói azonosító';
 
   @override
   String get hwJoinConsentShared2 => 'Elkészítetted-e a házi feladatot';
@@ -2417,6 +2417,12 @@ class AppLocalizationsHu extends AppLocalizations {
   String get hwJoinConsentShared4 => 'A feladathívás hossza és összefoglalója';
 
   @override
+  String get hwJoinConsentShared5 => 'Anyanyelv';
+
+  @override
+  String get hwJoinConsentShared6 => 'Csatlakozás dátuma és utolsó aktivitás';
+
+  @override
   String get hwJoinConsentNotSharedHeading => 'Nincs megosztva';
 
   @override
@@ -2426,7 +2432,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get hwJoinConsentNotShared2 => 'Appbeli név, profil és karakter';
 
   @override
-  String get hwJoinConsentNotShared3 => 'Állampolgárság és anyanyelv';
+  String get hwJoinConsentNotShared3 => 'Állampolgárság';
 
   @override
   String get hwJoinConsentNotShared4 =>
@@ -3100,4 +3106,33 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get hwA11yClassPicker => 'Csoport váltása';
+
+  @override
+  String get hwLangConsentTitle => 'Megosztod az anyanyelvedet a tanároddal?';
+
+  @override
+  String hwLangConsentBody(String className) {
+    return 'Ha beleegyezel, a(z) \'$className\' tanára láthatja az anyanyelvedet. Az osztályt mindkét esetben tovább használhatod.';
+  }
+
+  @override
+  String get hwLangConsentAgree => 'Elfogadom';
+
+  @override
+  String get hwLangConsentDecline => 'Nem fogadom el';
+
+  @override
+  String get hwLangConsentFailed =>
+      'Nem sikerült menteni. Próbáld újra később.';
+
+  @override
+  String get hwPolicyNoticeTitle => 'Változik az adatvédelmi irányelvünk';
+
+  @override
+  String hwPolicyNoticeBody(String date) {
+    return '$date-tól érvényes. Ha csatlakozol egy osztályhoz, az anyanyelved is megosztásra kerül a tanárral.';
+  }
+
+  @override
+  String get hwPolicyNoticeOk => 'Rendben';
 }

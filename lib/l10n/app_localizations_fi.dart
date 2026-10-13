@@ -2402,7 +2402,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get hwJoinConsentSharedHeading => 'Jaetaan opettajallesi';
 
   @override
-  String get hwJoinConsentShared1 => 'Luokan nimi ja opiskelijanumero';
+  String get hwJoinConsentShared1 => 'Nimi luokassa ja opiskelijanumero';
 
   @override
   String get hwJoinConsentShared2 => 'Teitkö kotitehtävän';
@@ -2414,16 +2414,22 @@ class AppLocalizationsFi extends AppLocalizations {
   String get hwJoinConsentShared4 => 'Tehtäväpuhelun kesto ja tiivistelmä';
 
   @override
+  String get hwJoinConsentShared5 => 'Äidinkieli';
+
+  @override
+  String get hwJoinConsentShared6 => 'Liittymispäivä ja viimeisin käyttöpäivä';
+
+  @override
   String get hwJoinConsentNotSharedHeading => 'Ei jaeta';
 
   @override
   String get hwJoinConsentNotShared1 => 'Sähköposti ja puhelinnumero';
 
   @override
-  String get hwJoinConsentNotShared2 => 'Sovelluksen nimi, profiili ja hahmo';
+  String get hwJoinConsentNotShared2 => 'Nimi sovelluksessa, profiili ja hahmo';
 
   @override
-  String get hwJoinConsentNotShared3 => 'Kansalaisuus ja äidinkieli';
+  String get hwJoinConsentNotShared3 => 'Kansalaisuus';
 
   @override
   String get hwJoinConsentNotShared4 =>
@@ -3098,4 +3104,33 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get hwA11yClassPicker => 'Vaihda ryhmää';
+
+  @override
+  String get hwLangConsentTitle => 'Jaetaanko äidinkielesi opettajalle?';
+
+  @override
+  String hwLangConsentBody(String className) {
+    return 'Jos hyväksyt, luokan \'$className\' opettaja näkee äidinkielesi. Voit käyttää luokkaa joka tapauksessa.';
+  }
+
+  @override
+  String get hwLangConsentAgree => 'Hyväksy';
+
+  @override
+  String get hwLangConsentDecline => 'En hyväksy';
+
+  @override
+  String get hwLangConsentFailed =>
+      'Tallennus epäonnistui. Yritä myöhemmin uudelleen.';
+
+  @override
+  String get hwPolicyNoticeTitle => 'Tietosuojakäytäntömme muuttuu';
+
+  @override
+  String hwPolicyNoticeBody(String date) {
+    return 'Voimassa $date alkaen. Kun liityt luokkaan, äidinkielesi jaetaan myös opettajalle.';
+  }
+
+  @override
+  String get hwPolicyNoticeOk => 'OK';
 }

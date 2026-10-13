@@ -2412,7 +2412,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get hwJoinConsentShared1 =>
-      'Nombre de la clase y número de estudiante';
+      'Nombre en la clase y número de estudiante';
 
   @override
   String get hwJoinConsentShared2 => 'Si hiciste la tarea';
@@ -2425,6 +2425,12 @@ class AppLocalizationsEs extends AppLocalizations {
       'Duración y resumen de la llamada de la tarea';
 
   @override
+  String get hwJoinConsentShared5 => 'Idioma nativo';
+
+  @override
+  String get hwJoinConsentShared6 => 'Fecha de ingreso y última actividad';
+
+  @override
   String get hwJoinConsentNotSharedHeading => 'No se comparte';
 
   @override
@@ -2434,7 +2440,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get hwJoinConsentNotShared2 => 'Nombre en la app, perfil y personaje';
 
   @override
-  String get hwJoinConsentNotShared3 => 'Nacionalidad e idioma materno';
+  String get hwJoinConsentNotShared3 => 'Nacionalidad';
 
   @override
   String get hwJoinConsentNotShared4 => 'Llamadas y estudio fuera de la clase';
@@ -3117,4 +3123,34 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get hwA11yClassPicker => 'Cambiar de clase';
+
+  @override
+  String get hwLangConsentTitle =>
+      '¿Compartir tu idioma nativo con tu profesor?';
+
+  @override
+  String hwLangConsentBody(String className) {
+    return 'Si aceptas, el profesor de \'$className\' podrá ver tu idioma nativo. Puedes seguir usando la clase en cualquier caso.';
+  }
+
+  @override
+  String get hwLangConsentAgree => 'Aceptar';
+
+  @override
+  String get hwLangConsentDecline => 'No aceptar';
+
+  @override
+  String get hwLangConsentFailed =>
+      'No se pudo guardar. Inténtalo de nuevo más tarde.';
+
+  @override
+  String get hwPolicyNoticeTitle => 'Nuestra política de privacidad cambia';
+
+  @override
+  String hwPolicyNoticeBody(String date) {
+    return 'Entra en vigor el $date. Al unirte a una clase, tu idioma nativo también se comparte con tu profesor.';
+  }
+
+  @override
+  String get hwPolicyNoticeOk => 'Aceptar';
 }

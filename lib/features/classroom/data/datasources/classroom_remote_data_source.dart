@@ -31,11 +31,15 @@ class ClassroomRemoteDataSource {
   ///
   /// `student_no` 는 선택이라 비어 있으면 **키 자체를 보내지 않는다** — 빈
   /// 문자열을 보내면 명단에 빈 학번이 남는다.
+  ///
+  /// [languageShareVersion] 은 학습자가 동의한 「모국어 공개」 문구의 버전이다.
+  /// 없으면 키를 빼서 옛 동의(모국어 비공개)로 남긴다.
   Future<Map<String, dynamic>> join({
     required String joinCode,
     required String rosterName,
     required bool shareConsent,
     String? studentNo,
+    int? languageShareVersion,
   }) async {
     final res = await _dio.post<Map<String, dynamic>>(
       ApiEndpoints.classroomJoin,
@@ -45,7 +49,20 @@ class ClassroomRemoteDataSource {
         'share_consent': shareConsent,
         if (studentNo != null && studentNo.trim().isNotEmpty)
           'student_no': studentNo.trim(),
+        'language_share_version': ?languageShareVersion,
       },
+    );
+    return res.data ?? const <String, dynamic>{};
+  }
+
+  /// 모국어 공개 재동의. [version] 0 은 철회다.
+  Future<Map<String, dynamic>> setLanguageConsent(
+    int classroomId,
+    int version,
+  ) async {
+    final res = await _dio.post<Map<String, dynamic>>(
+      ApiEndpoints.classroomLanguageConsent(classroomId),
+      data: <String, dynamic>{'version': version},
     );
     return res.data ?? const <String, dynamic>{};
   }

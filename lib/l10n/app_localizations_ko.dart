@@ -2317,7 +2317,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get hwJoinConsentSharedHeading => '선생님에게 공유돼요';
 
   @override
-  String get hwJoinConsentShared1 => '반 이름 · 학번';
+  String get hwJoinConsentShared1 => '반에서 쓰는 이름, 학번';
 
   @override
   String get hwJoinConsentShared2 => '숙제를 했는지 여부';
@@ -2329,6 +2329,12 @@ class AppLocalizationsKo extends AppLocalizations {
   String get hwJoinConsentShared4 => '과제 통화의 시간 · 요약';
 
   @override
+  String get hwJoinConsentShared5 => '모국어';
+
+  @override
+  String get hwJoinConsentShared6 => '참여일, 최근 접속일';
+
+  @override
   String get hwJoinConsentNotSharedHeading => '공유되지 않아요';
 
   @override
@@ -2338,7 +2344,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get hwJoinConsentNotShared2 => '앱 이름 · 프로필 · 캐릭터';
 
   @override
-  String get hwJoinConsentNotShared3 => '국적 · 모국어';
+  String get hwJoinConsentNotShared3 => '국적';
 
   @override
   String get hwJoinConsentNotShared4 => '반 밖에서 한 통화와 학습';
@@ -2992,4 +2998,32 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get hwA11yClassPicker => '반 바꾸기';
+
+  @override
+  String get hwLangConsentTitle => '선생님에게 모국어를 공유할까요?';
+
+  @override
+  String hwLangConsentBody(String className) {
+    return '동의하면 \'$className\' 선생님이 내 모국어를 볼 수 있어요. 동의하지 않아도 반은 그대로 쓸 수 있어요.';
+  }
+
+  @override
+  String get hwLangConsentAgree => '동의';
+
+  @override
+  String get hwLangConsentDecline => '동의 안 함';
+
+  @override
+  String get hwLangConsentFailed => '저장하지 못했어요. 잠시 뒤 다시 해 주세요.';
+
+  @override
+  String get hwPolicyNoticeTitle => '개인정보처리방침이 바뀌어요';
+
+  @override
+  String hwPolicyNoticeBody(String date) {
+    return '$date부터 적용돼요. 반에 참여하면 선생님에게 모국어도 공유돼요.';
+  }
+
+  @override
+  String get hwPolicyNoticeOk => '확인';
 }
