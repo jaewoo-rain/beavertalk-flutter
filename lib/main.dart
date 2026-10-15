@@ -14,6 +14,7 @@ import 'core/analytics/app_analytics.dart';
 import 'core/config/feature_flags.dart';
 import 'core/device/client_info.dart';
 import 'core/i18n/locale_controller.dart';
+import 'core/i18n/server_messages.dart';
 import 'core/network/supabase_config.dart';
 import 'features/subscription/presentation/providers/subscription_state_providers.dart';
 import 'l10n/app_localizations.dart';
@@ -116,6 +117,8 @@ class BeaverTalkApp extends ConsumerWidget {
     // ([localeControllerProvider], persisted); any language without a matching
     // `app_<code>.arb` (or an unfilled key) falls back to the English template.
     final locale = ref.watch(localeControllerProvider);
+    // 서버 오류 문구 사전 — 언어가 정해지거나 바뀔 때 1회 받는다(기다리지 않음 · 실패해도 원문 표시).
+    ref.watch(serverMessagesSyncProvider);
     return MaterialApp(
       title: 'BeaverTalk',
       debugShowCheckedModeBanner: false,

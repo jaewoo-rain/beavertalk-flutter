@@ -33,6 +33,7 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 
 import '../../../core/analytics/app_analytics.dart';
 import '../../../core/i18n/locale_controller.dart';
+import '../../../core/i18n/server_messages.dart';
 import '../../../core/network/ws_url.dart';
 import '../../../core/time/device_timezone.dart';
 import '../../../l10n/app_localizations.dart';
@@ -6626,5 +6627,9 @@ String serverErrorMessage(Map<String, dynamic> msg, AppLocalizations l10n,
       final String code when code.startsWith('HOMEWORK_') =>
         l10n.homeworkCallUnavailable,
       'RESUME_UNAVAILABLE' => l10n.callResumeUnavailable,
-      _ => (msg['message'] as String?) ?? l10n.callErrorGeneric,
+      // 그 밖의 코드는 서버 문구 — 사전으로 회원 언어로(없으면 원문 · 2026-10-16 PM-DEC-674).
+      _ => switch (msg['message']) {
+          final String m => ServerMessages.localize(m),
+          _ => l10n.callErrorGeneric,
+        },
     };

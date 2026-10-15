@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 
+import '../i18n/server_messages.dart';
 import 'app_exception.dart';
 
 /// Converts a [DioException] into a typed [AppException].
@@ -96,15 +97,17 @@ class _ParsedDetail {
     if (data is! Map) return const _ParsedDetail();
     final detail = data['detail'];
 
-    // Plain string detail.
-    if (detail is String) return _ParsedDetail(message: detail);
+    // Plain string detail. 서버 한국어 문구는 사전으로 회원 언어로 바꾼다(없으면 원문 · 2026-10-16).
+    if (detail is String) {
+      return _ParsedDetail(message: ServerMessages.localize(detail));
+    }
 
     // `{code, message, ...}` shape.
     if (detail is Map) {
       final msg = detail['message'];
       final code = detail['code'];
       return _ParsedDetail(
-        message: msg is String ? msg : null,
+        message: msg is String ? ServerMessages.localize(msg) : null,
         code: code is String ? code : null,
         extra: {
           for (final e in detail.entries)
