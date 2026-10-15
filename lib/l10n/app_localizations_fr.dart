@@ -26,7 +26,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get callDailyLimit => 'Votre temps d\'appel du jour est écoulé.';
 
   @override
-  String get callAlreadyInCall => 'Tu es déjà en appel.';
+  String get callAlreadyInCall => 'Vous êtes déjà en appel.';
 
   @override
   String get callNetworkError => 'Une erreur réseau est survenue.';
@@ -112,14 +112,14 @@ class AppLocalizationsFr extends AppLocalizations {
   String get callHistory => 'Historique des appels';
 
   @override
-  String get conversationRecord => 'Enregistrement de la conversation';
+  String get conversationRecord => 'Historique de la conversation';
 
   @override
   String get noCallRecords => 'Aucun appel enregistré pour le moment';
 
   @override
   String get noCallRecordsBody =>
-      'Une fois votre premier appel avec l\'IA terminé,\nvos enregistrements apparaîtront ici.';
+      'Une fois votre premier appel avec l\'IA terminé,\nvotre historique apparaîtra ici.';
 
   @override
   String get startCall => 'Démarrer un appel';
@@ -139,7 +139,7 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get scheduleManagement => 'Planning';
+  String get scheduleManagement => 'Gérer les horaires';
 
   @override
   String get alarms => 'Alarmes';
@@ -187,7 +187,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get repeat => 'Répéter';
 
   @override
-  String get callPartner => 'Personnage';
+  String get callPartner => 'Interlocuteur';
 
   @override
   String get alarmModeLearnSub => 'Pratiquer les expressions du programme';
@@ -243,7 +243,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get conversation => 'Conversation';
 
   @override
-  String get newExpressions => 'Nouvelles expressions';
+  String get newExpressions => 'Nouvelles expressions apprises';
 
   @override
   String get analysisPrepNote => 'Nous revenons sur l\'appel d\'aujourd\'hui.';
@@ -389,7 +389,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get payMethodKakao => 'KakaoPay';
 
   @override
-  String get productName => 'Avatar Beaver agaçant';
+  String get productName => 'Avatar Beaver espiègle';
 
   @override
   String get productTrait => 'Personnage premium · À vous pour toujours';
@@ -514,7 +514,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String homeExpressionsLeft(int count) {
-    return 'Encore $count expressions avant la conversation';
+    return 'Expressions restantes avant la conversation : $count';
   }
 
   @override
@@ -660,7 +660,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String myPartnersOwned(int count) {
-    return 'Mes personnages · $count possédés';
+    return 'Mes personnages · Possédés : $count';
   }
 
   @override
@@ -683,10 +683,10 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get noSavedSentences =>
-      'Aucune phrase enregistrée pour le moment.\nMarquez des phrases depuis vos enregistrements de conversation.';
+      'Aucune phrase enregistrée pour le moment.\nAjoutez des phrases à vos favoris depuis votre historique de conversation.';
 
   @override
-  String get noAlarms => 'Aucune alarme pour le moment';
+  String get noAlarms => 'Aucune alarme enregistrée';
 
   @override
   String get noAlarmsBody =>
@@ -740,10 +740,10 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get challengeIntro =>
-      'Prononcez correctement en coréen chaque carte de la zone pour la valider.\nPas de micro ? Vous pouvez aussi jouer en tapant sur l\'écran.';
+      'Lisez à voix haute chaque mot qui arrive vers vous, pendant 30 secondes.\nPas de micro ? Vous pouvez aussi jouer en tapant sur l\'écran.';
 
   @override
-  String get challengeStart => 'Activer caméra et micro';
+  String get challengeStart => 'Commencer';
 
   @override
   String get challengePermissionNote =>
@@ -906,7 +906,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get continueLabel => 'Continuer';
 
   @override
-  String get onboardingDoneTitle => 'Beaver attend votre appel';
+  String get onboardingDoneTitle => 'Le castor attend votre appel';
 
   @override
   String get onboardingDoneSubtitle => 'Démarrez un appel dès maintenant';
@@ -1199,6 +1199,15 @@ class AppLocalizationsFr extends AppLocalizations {
   String get paymentLabelFallback => 'Paiement';
 
   @override
+  String get paymentLabelSubscription => 'Paiement de l\'abonnement';
+
+  @override
+  String get paymentLabelCharacter => 'Achat de personnage';
+
+  @override
+  String get paymentLabelBundle => 'Achat d\'un pack de personnages';
+
+  @override
   String learningPassed(int passed, int total) {
     return '$passed phrases sur $total réussies';
   }
@@ -1289,7 +1298,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get pronunciationAnalysis => 'Analyse de prononciation';
 
   @override
-  String get recentSessionsAverage => 'Moyenne sur 10 sessions';
+  String get recentSessionsAverage => 'Moyenne des 10 dernières sessions';
 
   @override
   String levelStage(int stage) {
@@ -1314,7 +1323,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get levelTestOncePerDay =>
-      'Tu peux passer le test de niveau une fois par jour. Réessaie demain.';
+      'Vous pouvez passer le test de niveau une fois par jour. Réessayez demain.';
 
   @override
   String get levelRetakeTitle => 'Refaire le test de niveau ?';
@@ -1450,7 +1459,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String callsUsedOfLimit(int used, int limit) {
-    return '$used min utilisées sur $limit';
+    return 'Utilisation : $used min sur $limit';
   }
 
   @override
@@ -1517,7 +1526,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String noteEnding(String date) {
-    return 'Votre forfait prend fin. Vos avantages restent actifs jusqu\'au $date, puis vous passez à Gratuit. Vous pouvez vous réabonner à tout moment.';
+    return 'La fin de votre forfait est programmée. Vos avantages restent actifs jusqu\'au $date, puis vous passez à Gratuit. Vous pouvez vous réabonner à tout moment.';
   }
 
   @override
@@ -1582,7 +1591,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String paywallTutorCompare(String price) {
-    return 'Une heure avec un tuteur coûte \$25. Un mois de Premium coûte $price.';
+    return 'Une heure avec un tuteur coûte 25 \$. Un mois de Premium coûte $price.';
   }
 
   @override
@@ -1795,7 +1804,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get ovCharacterOfferBody =>
-      'Choisissez un personnage et gardez-le. Un achat unique — sans abonnement, sans renouvellement.';
+      'Choisissez un personnage et gardez-le pour toujours. Un achat unique — sans abonnement, sans renouvellement.';
 
   @override
   String get rowOneCharacter => 'Un personnage';
@@ -2196,16 +2205,16 @@ class AppLocalizationsFr extends AppLocalizations {
   String get playAgain => 'Rejouer';
 
   @override
-  String get difficultySlow => 'Lent';
+  String get difficultySlow => 'Facile';
 
   @override
   String get difficultyNormal => 'Normal';
 
   @override
-  String get difficultyFast => 'Rapide';
+  String get difficultyFast => 'Difficile';
 
   @override
-  String get difficultyLabel => 'Difficulté';
+  String get difficultyLabel => 'Choisissez une difficulté';
 
   @override
   String get connected => 'Connecté';
@@ -2222,13 +2231,13 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get homeworkCallUnavailable =>
-      'Impossible de lancer l\'appel de ce devoir pour le moment. Vérifie le devoir et réessaie.';
+      'Impossible de lancer l\'appel de ce devoir pour le moment. Vérifiez le devoir et réessayez.';
 
   @override
   String get callResumeUnavailable => 'Cet appel ne peut pas être poursuivi.';
 
   @override
-  String get hwCallDoneTitle => 'Tu as terminé l\'appel de ton devoir';
+  String get hwCallDoneTitle => 'Vous avez terminé l\'appel de votre devoir';
 
   @override
   String get hwCallDoneSeeResults => 'Voir les résultats';
@@ -2237,17 +2246,17 @@ class AppLocalizationsFr extends AppLocalizations {
   String get hwCallDoneBackToHomework => 'Retour au devoir';
 
   @override
-  String get callRoleplayMe => 'Toi';
+  String get callRoleplayMe => 'Vous';
 
   @override
   String get callRoleplayInfoA11y => 'Voir la situation et les rôles';
 
   @override
-  String get fcEndedTitle => 'Ton appel gratuit est terminé';
+  String get fcEndedTitle => 'Votre appel gratuit est terminé';
 
   @override
   String get fcEndedBody =>
-      'Tu as utilisé tes 5 minutes d\'appel gratuites du jour\nAbonne-toi pour continuer plus longtemps';
+      'Vous avez utilisé vos 5 minutes d\'appel gratuites du jour\nAbonnez-vous pour continuer plus longtemps';
 
   @override
   String get ctaSubscribeKeepTalking => 'S\'abonner et continuer à parler';
@@ -2510,7 +2519,13 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String hwJoinDoneSubtitle(int count) {
-    return '$count devoirs vous attendent';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count devoirs vous attendent',
+      one: '$count devoir vous attend',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -2675,12 +2690,24 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String hwHomeBannerDueTomorrow(int count) {
-    return '$count devoirs à rendre demain';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count devoirs à rendre demain',
+      one: '$count devoir à rendre demain',
+    );
+    return '$_temp0';
   }
 
   @override
   String hwHomeBannerOverdue(int count) {
-    return 'Vous avez $count devoirs non rendus';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Vous avez $count devoirs non rendus',
+      one: 'Vous avez $count devoir non rendu',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -2770,7 +2797,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get callHintLockedTitle =>
-      'Les indices ne sont pas disponibles en mode Étude';
+      'Les indices ne sont pas disponibles dans le cours Expressions';
 
   @override
   String get wsTitle => 'Sons difficiles';
@@ -2966,17 +2993,29 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String wsAccentOf(String country) {
-    return 'Accent $country';
+    return 'Accent : $country';
   }
 
   @override
   String wsWordsRepeated(int count) {
-    return '$count mots répétés';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count mots répétés',
+      one: '$count mot répété',
+    );
+    return '$_temp0';
   }
 
   @override
   String wsChunksRepeated(int count) {
-    return '$count segments répétés';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count segments répétés',
+      one: '$count segment répété',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -3135,7 +3174,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String hwWorkbookTitle(String chapter) {
-    return 'Cahier du Chapter $chapter';
+    return 'Cahier du chapitre $chapter';
   }
 
   @override
@@ -3162,7 +3201,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String hwA11yActivityDone(String activity) {
-    return '$activity terminé';
+    return '$activity : terminé';
   }
 
   @override

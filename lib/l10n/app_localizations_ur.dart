@@ -137,7 +137,7 @@ class AppLocalizationsUr extends AppLocalizations {
   }
 
   @override
-  String get scheduleManagement => 'شیڈول';
+  String get scheduleManagement => 'شیڈول کا انتظام';
 
   @override
   String get alarms => 'الارمز';
@@ -152,7 +152,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get alarmEveryDay => 'روزانہ';
 
   @override
-  String get alarmWeekdays => 'ہفتے کے دن';
+  String get alarmWeekdays => 'کام کے دن';
 
   @override
   String get alarmWeekend => 'ہفتے کا اختتام';
@@ -161,7 +161,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get alarmNoRepeat => 'دہرایا نہیں جائے گا';
 
   @override
-  String get addSchedule => 'شیڈول شامل کریں';
+  String get addSchedule => 'نیا شیڈول شامل کریں';
 
   @override
   String get editSchedule => 'شیڈول میں ترمیم کریں';
@@ -185,7 +185,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get repeat => 'دہرائیں';
 
   @override
-  String get callPartner => 'کریکٹر';
+  String get callPartner => 'کال پارٹنر';
 
   @override
   String get alarmModeLearnSub => 'نصاب کے جملوں کی مشق';
@@ -241,7 +241,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get conversation => 'گفتگو';
 
   @override
-  String get newExpressions => 'نئے تاثرات';
+  String get newExpressions => 'نئے جملے';
 
   @override
   String get analysisPrepNote => 'آج کی کال کا جائزہ لیا جا رہا ہے۔';
@@ -275,7 +275,7 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String quizExpressionsCount(int count) {
-    return 'اس بار سیکھے گئے تاثرات $count';
+    return 'اس بار سیکھے گئے جملے $count';
   }
 
   @override
@@ -291,10 +291,10 @@ class AppLocalizationsUr extends AppLocalizations {
   String get analysisResult => 'تجزیہ کا نتیجہ';
 
   @override
-  String get noNewExpressions => 'اس گفتگو سے کوئی نیا تاثر نہیں ملا۔';
+  String get noNewExpressions => 'اس گفتگو میں کوئی نیا جملہ نہیں ملا۔';
 
   @override
-  String get practice => 'مشق';
+  String get practice => 'مشق کریں';
 
   @override
   String get analysisNativeLabel => 'مقامی';
@@ -306,7 +306,7 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String callSequence(int count) {
-    return '$countویں کال';
+    return 'کال نمبر $count';
   }
 
   @override
@@ -381,7 +381,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get payMethodKakao => 'KakaoPay';
 
   @override
-  String get productName => 'تنگ کرنے والا بیور اوتار';
+  String get productName => 'شرارتی بیور اوتار';
 
   @override
   String get productTrait => 'پریمیم کریکٹر · ہمیشہ کے لیے آپ کا';
@@ -609,7 +609,7 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get homeCurriculumPendingNote =>
-      'کالز میں آپ عام تاثرات کی مشق کریں گے';
+      'کالز میں آپ عام اظہار کی مشق کریں گے';
 
   @override
   String get myPage => 'میرا صفحہ';
@@ -650,7 +650,7 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String myPartnersOwned(int count) {
-    return 'میرے پارٹنرز · $count کے مالک';
+    return 'میرے پارٹنرز · $count ملکیت میں';
   }
 
   @override
@@ -676,11 +676,11 @@ class AppLocalizationsUr extends AppLocalizations {
       'ابھی تک کوئی جملہ محفوظ نہیں کیا گیا۔\nاپنی گفتگو کے ریکارڈز سے جملوں کو بک مارک کریں۔';
 
   @override
-  String get noAlarms => 'ابھی تک کوئی الارم نہیں';
+  String get noAlarms => 'کوئی الارم شامل نہیں کیا گیا';
 
   @override
   String get noAlarmsBody =>
-      'مستقل عادت بنانے کے لیے\nسیکھنے کی یاد دہانی شامل کریں۔';
+      'سیکھنے کی یاد دہانی شامل کریں تو\nآپ مستقل عادت بنا سکتے ہیں۔';
 
   @override
   String get subscriptionManage => 'سبسکرپشن کا انتظام کریں';
@@ -728,10 +728,10 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get challengeIntro =>
-      'زون میں موجود ہر کارڈ کو کلیئر کرنے کے لیے اسے صحیح کوریائی تلفظ میں ادا کریں۔\nمائیک نہیں ہے؟ آپ اسکرین پر ٹیپ کر کے بھی کھیل سکتے ہیں۔';
+      '30 سیکنڈ تک سامنے آنے والے ہر لفظ کو بلند آواز سے پڑھیں۔\nمائیک نہیں ہے؟ آپ ٹیپ کر کے بھی کھیل سکتے ہیں۔';
 
   @override
-  String get challengeStart => 'کیمرہ اور مائیک شروع کریں';
+  String get challengeStart => 'شروع کریں';
 
   @override
   String get challengePermissionNote =>
@@ -770,7 +770,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get reasonDailyTitle => 'روزمرہ کی گفتگو';
 
   @override
-  String get reasonDailyDesc => 'وہ تاثرات جو آپ روزانہ استعمال کرتے ہیں';
+  String get reasonDailyDesc => 'وہ جملے جو آپ روزانہ استعمال کرتے ہیں';
 
   @override
   String get reasonFriendsTitle => 'غیر ملکی دوست بنانا';
@@ -816,7 +816,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get currentPlan => 'موجودہ پلان';
 
   @override
-  String get paymentHistory => 'ادائیگی کی تاریخ';
+  String get paymentHistory => 'ادائیگی کی ہسٹری';
 
   @override
   String get contactUs => 'ہم سے رابطہ کریں';
@@ -936,10 +936,10 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get savedExpressionsLoadError =>
-      'آپ کے محفوظ شدہ تاثرات لوڈ نہیں ہو سکے۔';
+      'آپ کے محفوظ شدہ جملے لوڈ نہیں ہو سکے۔';
 
   @override
-  String get mySavedExpressions => 'میرے محفوظ شدہ تاثرات';
+  String get mySavedExpressions => 'میرے محفوظ شدہ جملے';
 
   @override
   String get avatarTraits => 'پرتپاک · پرسکون · نرم';
@@ -1165,7 +1165,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get availableForPurchase => 'خریداری کے لیے دستیاب';
 
   @override
-  String get paymentsLoadError => 'ادائیگی کی تاریخ لوڈ نہیں ہو سکی';
+  String get paymentsLoadError => 'ادائیگی کی ہسٹری لوڈ نہیں ہو سکی';
 
   @override
   String get noPayments => 'ابھی کوئی ادائیگی نہیں';
@@ -1177,12 +1177,21 @@ class AppLocalizationsUr extends AppLocalizations {
   String get paymentLabelFallback => 'ادائیگی';
 
   @override
+  String get paymentLabelSubscription => 'سبسکرپشن ادائیگی';
+
+  @override
+  String get paymentLabelCharacter => 'کردار کی خریداری';
+
+  @override
+  String get paymentLabelBundle => 'کردار پیک خریدیں';
+
+  @override
   String learningPassed(int passed, int total) {
     return '$total میں سے $passed جملے کامیاب';
   }
 
   @override
-  String get hardestSound => 'آج کی سب سے مشکل آواز';
+  String get hardestSound => 'سب سے مشکل آواز';
 
   @override
   String get soundAccuracy => 'آواز کے لحاظ سے درستگی';
@@ -1292,7 +1301,7 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get levelTestOncePerDay =>
-      'سطح کا امتحان دن میں ایک بار دیا جا سکتا ہے۔ کل دوبارہ کوشش کریں۔';
+      'لیول ٹیسٹ دن میں ایک بار دیا جا سکتا ہے۔ کل دوبارہ کوشش کریں۔';
 
   @override
   String get levelRetakeTitle => 'لیول ٹیسٹ دوبارہ دیں؟';
@@ -1341,7 +1350,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get billingRedeemCode => 'کوڈ استعمال کریں';
 
   @override
-  String get billingPaymentHistory => 'ادائیگی کی تاریخ';
+  String get billingPaymentHistory => 'ادائیگی کی ہسٹری';
 
   @override
   String get billingManageInTheStore => 'اسٹور میں منظم کریں';
@@ -1362,7 +1371,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get badgeTrial => 'ٹرائل';
 
   @override
-  String get badgeRenewing => 'تجدید جاری';
+  String get badgeRenewing => 'تجدید ہوگی';
 
   @override
   String get badgePastDue => 'ادائیگی باقی';
@@ -1371,7 +1380,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get badgePaused => 'موقوف';
 
   @override
-  String get badgeCanceling => 'منسوخی جاری';
+  String get badgeCanceling => 'منسوخی طے شدہ';
 
   @override
   String get subscriptionTitle => 'سبسکرپشن';
@@ -1380,7 +1389,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get plansTitle => 'پلانز';
 
   @override
-  String get planFree => 'Free';
+  String get planFree => 'مفت';
 
   @override
   String get planPro => 'Pro';
@@ -1435,7 +1444,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get nextPaymentLabel => 'اگلی ادائیگی';
 
   @override
-  String get retryingUntilLabel => 'دوبارہ کوشش جاری رہے گی';
+  String get retryingUntilLabel => 'دوبارہ کوشش کی آخری تاریخ';
 
   @override
   String get pausedSinceLabel => 'موقوف از';
@@ -1622,7 +1631,7 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get ctaCaptionAutoRenew =>
-      'منسوخ کرنے تک خودکار طور پر تجدید ہوتا ہے۔';
+      'منسوخ کرنے تک خودکار طور پر تجدید ہوتی ہے۔';
 
   @override
   String get footerTerms => 'شرائط';
@@ -1813,7 +1822,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get rowCharactersYouBought => 'آپ کے خریدے ہوئے کردار';
 
   @override
-  String get rowProRunsUntil => 'Premium جاری رہے گا';
+  String get rowProRunsUntil => 'Premium کی میعاد';
 
   @override
   String get ctaSwitchToYearly => 'سالانہ پر سوئچ کریں';
@@ -1869,7 +1878,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get rowMonthlyLabel => 'ماہانہ';
 
   @override
-  String get rowYearlyWorkedOut => 'سالانہ پلان کا حساب تھا';
+  String get rowYearlyWorkedOut => 'سالانہ حساب سے رقم';
 
   @override
   String get ctaSwitchToMonthly => 'ماہانہ پر سوئچ کریں';
@@ -2157,16 +2166,16 @@ class AppLocalizationsUr extends AppLocalizations {
   String get playAgain => 'دوبارہ کھیلیں';
 
   @override
-  String get difficultySlow => 'آہستہ';
+  String get difficultySlow => 'آسان';
 
   @override
-  String get difficultyNormal => 'معمول';
+  String get difficultyNormal => 'درمیانہ';
 
   @override
-  String get difficultyFast => 'تیز';
+  String get difficultyFast => 'مشکل';
 
   @override
-  String get difficultyLabel => 'دشواری';
+  String get difficultyLabel => 'دشواری منتخب کریں';
 
   @override
   String get connected => 'منسلک';
@@ -2258,7 +2267,7 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get callExitSubtitle =>
-      'ابھی ختم کرنے پر بھی بات کیا گیا وقت آج میں شمار ہوگا';
+      'ابھی ختم کرنے پر بھی بات کیا گیا وقت آج کے استعمال میں شمار ہوگا';
 
   @override
   String get callExitKeep => 'بات جاری رکھیں';
@@ -2314,7 +2323,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get reportReasonSexual => 'جنسی مواد';
 
   @override
-  String get reportReasonHate => 'نفرت یا امتیاز';
+  String get reportReasonHate => 'نفرت انگیز یا امتیازی باتیں';
 
   @override
   String get reportReasonViolence => 'پرتشدد یا دھمکی آمیز مواد';
@@ -2376,7 +2385,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get hwJoinFieldLearners => 'طلبہ';
 
   @override
-  String get hwJoinFieldTerm => 'مدت';
+  String get hwJoinFieldTerm => 'سمسٹر';
 
   @override
   String get hwJoinConfirmNote =>
@@ -2425,7 +2434,8 @@ class AppLocalizationsUr extends AppLocalizations {
   String get hwJoinConsentShared2 => 'آپ نے ہوم ورک کیا یا نہیں';
 
   @override
-  String get hwJoinConsentShared3 => 'کامیاب اور ناکام جملے';
+  String get hwJoinConsentShared3 =>
+      'کامیاب جملوں کی تعداد اور رہ جانے والے جملے';
 
   @override
   String get hwJoinConsentShared4 => 'اسائنمنٹ کال کا دورانیہ اور خلاصہ';
@@ -2469,11 +2479,17 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String hwJoinDoneSubtitle(int count) {
-    return '$count اسائنمنٹ آپ کے منتظر ہیں';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ہوم ورک آپ کے منتظر ہیں',
+      one: '1 ہوم ورک آپ کا منتظر ہے',
+    );
+    return '$_temp0';
   }
 
   @override
-  String get hwJoinDoneNoAssignment => 'ابھی کوئی اسائنمنٹ نہیں';
+  String get hwJoinDoneNoAssignment => 'ابھی کوئی ہوم ورک نہیں ملا';
 
   @override
   String get hwJoinDoneNextDue => 'اگلی آخری تاریخ';
@@ -2488,7 +2504,8 @@ class AppLocalizationsUr extends AppLocalizations {
   String get hwJoinErrorNotFound => 'وہ کوڈ نہیں ملا';
 
   @override
-  String get hwJoinErrorNotFoundBody => 'براہ کرم چھ ہندسے دوبارہ دیکھیں۔';
+  String get hwJoinErrorNotFoundBody =>
+      'براہ کرم چھ کیریکٹر والا کوڈ دوبارہ دیکھیں۔';
 
   @override
   String get hwJoinErrorExpired => 'اس کوڈ کی مدت ختم ہو گئی';
@@ -2587,7 +2604,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get hwCtaDownload => 'ڈاؤن لوڈ';
 
   @override
-  String get hwSpeakingNoScore => 'آپ نے ابھی بول چال کا کام نہیں کیا';
+  String get hwSpeakingNoScore => 'آپ نے ابھی تلفظ کا کام نہیں کیا';
 
   @override
   String get hwWorkbookUnavailable => 'ورک بک کی فائل ابھی دستیاب نہیں۔';
@@ -2720,7 +2737,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get callNotifPermissionRequired => 'ترتیبات میں اطلاعات کی اجازت دیں۔';
 
   @override
-  String get callHintLockedTitle => 'مشق موڈ میں اشارے دستیاب نہیں ہیں';
+  String get callHintLockedTitle => 'اظہار کورس میں اشارے دستیاب نہیں ہیں';
 
   @override
   String get wsTitle => 'کمزور آوازیں';
@@ -2869,7 +2886,7 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get wsMicPermissionBody =>
-      'اس ٹیسٹ میں بلند آواز سے پڑھنا ہوتا ہے، اس لیے مائیکروفون درکار ہے۔ سیٹنگز میں مائیکروفون کی اجازت آن کریں۔';
+      'اس جانچ میں بلند آواز سے پڑھنا ہوتا ہے، اس لیے مائیکروفون درکار ہے۔ سیٹنگز میں مائیکروفون کی اجازت آن کریں۔';
 
   @override
   String get wsNoSound => 'کچھ سنائی نہیں دیا۔ دوبارہ بولیں؟';
@@ -2919,7 +2936,13 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String wsWordsRepeated(int count) {
-    return '$count الفاظ دہرائے';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count الفاظ دہرائے',
+      one: '1 لفظ دہرایا',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -3019,7 +3042,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get callHintNowBadge => 'ابھی';
 
   @override
-  String get callHintLevelSurvival => 'بنیادی بقا کی کوریائی';
+  String get callHintLevelSurvival => 'بقا کی کوریائی';
 
   @override
   String get callHintLessonsLoadError => 'اسباق لوڈ نہیں ہو سکے';

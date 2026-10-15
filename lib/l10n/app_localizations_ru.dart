@@ -137,7 +137,7 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get scheduleManagement => 'Расписание';
+  String get scheduleManagement => 'Управление расписанием';
 
   @override
   String get alarms => 'Будильники';
@@ -185,7 +185,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get repeat => 'Повтор';
 
   @override
-  String get callPartner => 'Персонаж';
+  String get callPartner => 'Собеседник';
 
   @override
   String get alarmModeLearnSub => 'Практика выражений из программы';
@@ -216,7 +216,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String alarmSummary(int count, int monthly) {
-    return '$count× в неделю · $monthly звонков в месяц';
+    return '$count× в неделю · звонков в месяц: $monthly';
   }
 
   @override
@@ -241,7 +241,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get conversation => 'Разговор';
 
   @override
-  String get newExpressions => 'Новые выражения';
+  String get newExpressions => 'Новые выученные выражения';
 
   @override
   String get analysisPrepNote => 'Разбираем сегодняшний звонок.';
@@ -317,7 +317,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String characterNoteFooter(String name) {
-    return 'Оставлено $name сразу после звонка';
+    return 'Сообщение от персонажа $name сразу после звонка';
   }
 
   @override
@@ -383,7 +383,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get payMethodKakao => 'KakaoPay';
 
   @override
-  String get productName => 'Аватар «Надоедливый бобр»';
+  String get productName => 'Аватар «Бобр-озорник»';
 
   @override
   String get productTrait => 'Премиум-персонаж · навсегда ваш';
@@ -681,11 +681,11 @@ class AppLocalizationsRu extends AppLocalizations {
       'Пока нет сохранённых предложений.\nОтмечайте предложения в записях разговоров.';
 
   @override
-  String get noAlarms => 'Пока нет будильников';
+  String get noAlarms => 'Нет добавленных будильников';
 
   @override
   String get noAlarmsBody =>
-      'Добавьте напоминание об учёбе,\nчтобы выработать привычку.';
+      'Добавьте напоминание об учёбе,\nчтобы выработать привычку заниматься регулярно.';
 
   @override
   String get subscriptionManage => 'Управление подпиской';
@@ -735,10 +735,10 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get challengeIntro =>
-      'Правильно произносите каждую карточку в зоне на корейском, чтобы пройти её.\nНет микрофона? Можно играть, касаясь экрана.';
+      'В течение 30 секунд читайте вслух приближающиеся слова.\nНет микрофона? Можно играть, касаясь экрана.';
 
   @override
-  String get challengeStart => 'Включить камеру и микрофон';
+  String get challengeStart => 'Начать';
 
   @override
   String get challengePermissionNote =>
@@ -779,7 +779,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get reasonDailyDesc => 'Выражения, которые вы используете каждый день';
 
   @override
-  String get reasonFriendsTitle => 'Заводите иностранных друзей';
+  String get reasonFriendsTitle => 'Дружба с иностранцами';
 
   @override
   String get reasonFriendsDesc => 'Естественное общение';
@@ -795,7 +795,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get challengeRecordHint =>
-      'Сохраняет видео вашей игры для обмена (без звука).';
+      'Сохраняет видео вашей игры, чтобы им можно было поделиться (без звука).';
 
   @override
   String get settingsSection => 'Настройки';
@@ -898,7 +898,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get continueLabel => 'Продолжить';
 
   @override
-  String get onboardingDoneTitle => 'Бобр ждёт вашего звонка';
+  String get onboardingDoneTitle => 'Бобёр ждёт вашего звонка';
 
   @override
   String get onboardingDoneSubtitle => 'Начните звонок прямо сейчас';
@@ -1184,8 +1184,17 @@ class AppLocalizationsRu extends AppLocalizations {
   String get paymentLabelFallback => 'Платёж';
 
   @override
+  String get paymentLabelSubscription => 'Оплата подписки';
+
+  @override
+  String get paymentLabelCharacter => 'Покупка персонажа';
+
+  @override
+  String get paymentLabelBundle => 'Покупка набора персонажей';
+
+  @override
   String learningPassed(int passed, int total) {
-    return 'Пройдено $passed из $total предложений';
+    return 'Пройдено предложений: $passed из $total';
   }
 
   @override
@@ -1196,7 +1205,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String phonemeAttempts(int count) {
-    return 'По фонемам · $count попыток';
+    return 'По фонемам · попыток: $count';
   }
 
   @override
@@ -1233,7 +1242,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String recentSessions(int count) {
-    return 'Последние $count сессий';
+    return 'Последние сессии ($count)';
   }
 
   @override
@@ -1274,11 +1283,11 @@ class AppLocalizationsRu extends AppLocalizations {
   String get pronunciationAnalysis => 'Анализ произношения';
 
   @override
-  String get recentSessionsAverage => 'Среднее за 10 сессий';
+  String get recentSessionsAverage => 'Среднее за последние 10 сессий';
 
   @override
   String levelStage(int stage) {
-    return 'Уровень $stage';
+    return 'Этап $stage';
   }
 
   @override
@@ -1401,7 +1410,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get premiumBulletAnalysis =>
-      'Безлимитная оценка произношения в повторении';
+      'Безлимитная оценка произношения при повторении';
 
   @override
   String get premiumBulletWeakSounds =>
@@ -1445,7 +1454,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get nextPaymentLabel => 'Следующий платёж';
 
   @override
-  String get retryingUntilLabel => 'Повтор попыток до';
+  String get retryingUntilLabel => 'Повторные попытки оплаты до';
 
   @override
   String get pausedSinceLabel => 'Приостановлен с';
@@ -1880,7 +1889,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get rowMonthlyLabel => 'Помесячно';
 
   @override
-  String get rowYearlyWorkedOut => 'Годовой выходил по';
+  String get rowYearlyWorkedOut => 'Сумма в пересчёте на год';
 
   @override
   String get ctaSwitchToMonthly => 'Перейти на помесячный';
@@ -2169,16 +2178,16 @@ class AppLocalizationsRu extends AppLocalizations {
   String get playAgain => 'Играть снова';
 
   @override
-  String get difficultySlow => 'Медленно';
+  String get difficultySlow => 'Легко';
 
   @override
-  String get difficultyNormal => 'Обычно';
+  String get difficultyNormal => 'Средне';
 
   @override
-  String get difficultyFast => 'Быстро';
+  String get difficultyFast => 'Сложно';
 
   @override
-  String get difficultyLabel => 'Сложность';
+  String get difficultyLabel => 'Выберите сложность';
 
   @override
   String get connected => 'Подключено';
@@ -2250,7 +2259,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get ctaKeepTalking => 'Продолжить разговор';
 
   @override
-  String get callModeSheetTitle => 'Как хочешь говорить?';
+  String get callModeSheetTitle => 'Как вы хотите говорить?';
 
   @override
   String get callModeSheetSubtitle => 'Применится к этому звонку сразу';
@@ -2259,7 +2268,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get callModeFreeTalk => 'Свободный разговор';
 
   @override
-  String get callModeFreeTalkDesc => 'Говори без исправлений';
+  String get callModeFreeTalkDesc => 'Говорите без исправлений';
 
   @override
   String get callModeChange => 'Сменить режим';
@@ -2287,7 +2296,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get callMicUnmute => 'Включить микрофон';
 
   @override
-  String get callPushToTalk => 'Удерживай, чтобы говорить';
+  String get callPushToTalk => 'Удерживайте, чтобы говорить';
 
   @override
   String get callFreeEndedTitle => 'Бесплатный звонок закончился';
@@ -2420,7 +2429,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get hwJoinStudentNoHelp =>
-      'Преподаватель использует его для списка класса';
+      'Преподаватель использует его, чтобы сверить со списком класса';
 
   @override
   String get hwJoinConsentTitle => 'Что видит преподаватель';
@@ -2469,7 +2478,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get hwJoinConsentNotShared5 => 'Данные подписки и оплаты';
 
   @override
-  String get hwJoinConsentAgree => 'Я согласен с изложенным выше';
+  String get hwJoinConsentAgree => 'Я соглашаюсь с изложенным выше';
 
   @override
   String get hwJoinConsentCta => 'Согласиться и вступить';
@@ -2601,7 +2610,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get hwCtaDownload => 'Скачать';
 
   @override
-  String get hwSpeakingNoScore => 'Вы ещё не выполнили задание по говорению';
+  String get hwSpeakingNoScore => 'Вы ещё не выполнили задание по произношению';
 
   @override
   String get hwWorkbookUnavailable => 'Файл рабочей тетради пока недоступен.';
@@ -2720,7 +2729,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String callMissedBody(String name) {
-    return '$name пытался вам позвонить';
+    return '$name пытался(-ась) вам позвонить';
   }
 
   @override
@@ -2735,7 +2744,7 @@ class AppLocalizationsRu extends AppLocalizations {
       'Разрешите уведомления в настройках.';
 
   @override
-  String get callHintLockedTitle => 'В режиме «Изучение» подсказки недоступны';
+  String get callHintLockedTitle => 'В курсе «Выражения» подсказки недоступны';
 
   @override
   String get wsTitle => 'Слабые звуки';
@@ -2849,7 +2858,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get wsNoScoreNote =>
-      'На этом шаге баллов нет. Просто говорите за нами.';
+      'На этом шаге баллов нет. Просто повторяйте за нами.';
 
   @override
   String get wsListen => 'Слушайте внимательно';
@@ -2909,17 +2918,17 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String wsPoints(int score) {
-    return '$score баллов';
+    return '$score б.';
   }
 
   @override
   String wsBeforePoints(int score) {
-    return 'До $score баллов';
+    return 'До обучения: $score б.';
   }
 
   @override
   String wsGoalPoints(int score) {
-    return 'Цель $score баллов';
+    return 'Цель: $score б.';
   }
 
   @override
@@ -2951,7 +2960,7 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get wsPointsUnit => 'баллов';
+  String get wsPointsUnit => 'б.';
 
   @override
   String get wsEnterFromMypage => 'Тренировать слабые звуки';
@@ -3100,7 +3109,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String hwWorkbookTitle(String chapter) {
-    return 'Рабочая тетрадь Chapter $chapter';
+    return 'Рабочая тетрадь, глава $chapter';
   }
 
   @override
@@ -3148,15 +3157,15 @@ class AppLocalizationsRu extends AppLocalizations {
   String get hwA11yClassPicker => 'Сменить группу';
 
   @override
-  String get hwLangConsentTitle => 'Показать учителю ваш родной язык?';
+  String get hwLangConsentTitle => 'Показать преподавателю ваш родной язык?';
 
   @override
   String hwLangConsentBody(String className) {
-    return 'Если вы согласитесь, учитель класса \'$className\' увидит ваш родной язык. Пользоваться классом можно в любом случае.';
+    return 'Если вы согласитесь, преподаватель класса «$className» увидит ваш родной язык. Пользоваться классом можно в любом случае.';
   }
 
   @override
-  String get hwLangConsentAgree => 'Согласен';
+  String get hwLangConsentAgree => 'Согласиться';
 
   @override
   String get hwLangConsentDecline => 'Не согласен';
@@ -3169,7 +3178,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String hwPolicyNoticeBody(String date) {
-    return 'Вступает в силу $date. Когда вы вступаете в класс, учитель также видит ваш родной язык.';
+    return 'Вступает в силу $date. Когда вы вступаете в класс, преподаватель также видит ваш родной язык.';
   }
 
   @override

@@ -34,7 +34,7 @@
   "@callRatingPrompt": {
     "description": "Heading asking the user to rate the call just ended."
   },
-  "callRatingBody": "Your rating helps us talk better next time.",
+  "callRatingBody": "Your rating helps make your next call even better.",
   "@callRatingBody": {"description": "Body of the call-rating bottom sheet shown on the call-finished screen, under callRatingPrompt."},
   "callRatingSubmit": "Submit",
   "@callRatingSubmit": {"description": "Primary button of the call-rating sheet: sends the chosen rating."},
@@ -257,7 +257,7 @@
   "paymentMethod": "Payment Method",
   "payMethodCard": "Credit / Debit Card",
   "payMethodKakao": "KakaoPay",
-  "productName": "Annoying Beaver Avatar",
+  "productName": "Mischievous Beaver Avatar",
   "productTrait": "Premium character · Yours forever",
   "amountItemPrice": "Item price",
   "amountDiscount": "Discount",
@@ -312,7 +312,7 @@
   "@homeCourseFreetalk": {
     "description": "Home learning-status block: the course label for a free-conversation session. Sibling of `homeCourseExpression`."
   },
-  "homeExpressionsLeft": "{count} expressions left until conversation",
+  "homeExpressionsLeft": "{count, plural, =1{1 expression left until conversation} other{{count} expressions left until conversation}}",
   "@homeExpressionsLeft": {
     "description": "Home learning-status block, third line: how many expressions remain before free talk unlocks.",
     "placeholders": {
@@ -344,7 +344,7 @@
   "@streakBest": {"description": "Line under the big streak number on the learning calendar: the user's longest streak ever, in days. Figma streak_calendar Hero/Best.", "placeholders": {"count": {"type": "int"}}},
   "streakMetricCallTime": "Call time",
   "@streakMetricCallTime": {"description": "Metric tile label: total call time this month."},
-  "streakMetricLearned": "Expressions",
+  "streakMetricLearned": "Expressions learned",
   "@streakMetricLearned": {"description": "Metric tile label: expressions learned this month (server sentences)."},
   "streakMetricWords": "Words spoken",
   "@streakMetricWords": {"description": "Metric tile label: words the learner spoke this month (approximate, server words)."},
@@ -634,6 +634,9 @@
     "description": "Month-group heading for payments whose payment_date is null."
   },
   "paymentLabelFallback": "Payment",
+  "paymentLabelSubscription": "Subscription payment",
+  "paymentLabelCharacter": "Character purchase",
+  "paymentLabelBundle": "Character bundle purchase",
   "@paymentLabelFallback": {
     "description": "Row label when the server sends no description and the category is unknown."
   },
@@ -649,9 +652,9 @@
       }
     }
   },
-  "hardestSound": "Hardest sound today",
+  "hardestSound": "Hardest sound",
   "soundAccuracy": "Accuracy by sound",
-  "phonemeAttempts": "Per phoneme · {count} attempts",
+  "phonemeAttempts": "Per phoneme · {count, plural, =1{1 attempt} other{{count} attempts}}",
   "@phonemeAttempts": {
     "placeholders": {
       "count": {
@@ -676,7 +679,7 @@
   "colPronunciation": "Pron.",
   "colFluency": "Flu.",
   "colRhythm": "Rhy.",
-  "recentSessions": "Last {count} sessions",
+  "recentSessions": "{count, plural, =1{Last session} other{Last {count} sessions}}",
   "@recentSessions": {
     "placeholders": {
       "count": {
@@ -781,7 +784,7 @@
   "@practicePronunciation": {
     "description": "CTA on the pronunciation card - open the latest call analysis."
   },
-  "analysisNoScoreReview": "Practice the sentences to get your pronunciation score",
+  "analysisNoScoreReview": "Review the sentences to get your pronunciation score",
   "@analysisNoScoreReview": {"description": "One line under the inactive score gauge when the call has learned sentences but none practiced yet (Figma screen/analysis__no_score 4867:7359). Scores come only from practicing sentences."},
   "analysisNoScoreEmpty": "No sentences to score",
   "@analysisNoScoreEmpty": {"description": "One line under the inactive score gauge when the call produced no learned sentences at all (Figma screen/analysis__no_expressions 4849:8823)."},
@@ -1162,7 +1165,7 @@
   "ctaSignInThatAccount": "Sign in to that account",
   "ctaGetHelp": "Get help",
   "ovCharacterOfferTitle": "Not ready for Premium?",
-  "ovCharacterOfferBody": "Pick one character and keep them. A one-off purchase — no subscription, no renewal.",
+  "ovCharacterOfferBody": "Pick one character and keep them forever. A one-off purchase — no subscription, no renewal.",
   "rowOneCharacter": "One character",
   "rowFromPrice": "{price} each",
   "@rowFromPrice": {
@@ -1242,7 +1245,7 @@
   },
   "rowMonthlyBillingStarts": "Monthly billing starts",
   "rowMonthlyLabel": "Monthly",
-  "rowYearlyWorkedOut": "Yearly worked out at",
+  "rowYearlyWorkedOut": "Yearly equivalent",
   "ctaSwitchToMonthly": "Switch to monthly",
   "ovRefundHelpTitle": "Refunds are handled by the store",
   "ovRefundHelpBody": "We cannot issue refunds ourselves. Every request is reviewed by the store.",
@@ -1301,7 +1304,7 @@
     "description": "Body of ovRejectedTitle."
   },
   "ovAlreadyTitle": "You're already on Premium",
-  "ovAlreadyBody": "This store account has an active plan. There's nothing to buy.",
+  "ovAlreadyBody": "This store account has an active plan. You don't need to buy it again.",
   "ctaSeeMySubscription": "See my subscription",
   "subCancelTitle": "Cancel subscription",
   "subCancelBody": "Premium runs until {date}. After that you move to Free.",
@@ -1369,7 +1372,7 @@
   "loginMethodLabel": "Login Method",
   "joinedLabel": "Joined",
   "editNicknameTitle": "Edit Nickname",
-  "nicknameRule": "2–12 characters. Letters and numbers. English Only",
+  "nicknameRule": "2–12 characters · English letters and numbers only",
   "ctaSave": "Save",
   "subscriptionRow": "Subscription",
   "iapSuccessTitle": "Purchase complete",
@@ -1428,7 +1431,7 @@
   "@noPronunciationDataBody": {
     "description": "Mypage pronunciation card, empty state body."
   },
-  "noCharacterNote": "Nothing said yet",
+  "noCharacterNote": "No note from your character yet",
   "@noCharacterNote": {
     "description": "Analysis - the character left no remark for this call."
   },
@@ -1828,7 +1831,7 @@
       }
     }
   },
-  "hwJoinDoneSubtitle": "{count} assignments are waiting",
+  "hwJoinDoneSubtitle": "{count, plural, =1{1 assignment is waiting} other{{count} assignments are waiting}}",
   "@hwJoinDoneSubtitle": {
     "description": "Homework (class join / assignments) copy",
     "placeholders": {
@@ -1845,7 +1848,7 @@
   "@hwJoinDoneNextDue": {
     "description": "Homework (class join / assignments) copy"
   },
-  "hwJoinDoneRosterName": "Your class name",
+  "hwJoinDoneRosterName": "Your name in class",
   "@hwJoinDoneRosterName": {
     "description": "Homework (class join / assignments) copy"
   },
@@ -1969,7 +1972,7 @@
     "description": "Homework (class join / assignments) copy"
   },
   "hwTaskConversationDesc": "Use what you learned in a real talk",
-  "hwConversationOnce": "You can do the conversation once per homework.",
+  "hwConversationOnce": "You can only do the conversation once per assignment.",
   "@hwConversationOnce": {
     "description": "Homework detail, conversation card. Shown once the conversation is done — it can only be done once per assignment, so the button is disabled and this line says why."
   },
@@ -2044,7 +2047,7 @@
   "@hwClassContinueCta": {
     "description": "Homework (class join / assignments) copy"
   },
-  "hwHomeBannerDueTomorrow": "{count} assignments are due tomorrow",
+  "hwHomeBannerDueTomorrow": "{count, plural, =1{1 assignment is due tomorrow} other{{count} assignments are due tomorrow}}",
   "@hwHomeBannerDueTomorrow": {
     "description": "Homework (class join / assignments) copy",
     "placeholders": {
@@ -2053,7 +2056,7 @@
       }
     }
   },
-  "hwHomeBannerOverdue": "You have {count} unsubmitted assignments",
+  "hwHomeBannerOverdue": "{count, plural, =1{You have 1 unsubmitted assignment} other{You have {count} unsubmitted assignments}}",
   "@hwHomeBannerOverdue": {
     "description": "Homework (class join / assignments) copy",
     "placeholders": {
@@ -2136,7 +2139,7 @@
   "@callNotifPermissionRequired": {
     "description": "Shown when notification permission was denied."
   },
-  "callHintLockedTitle": "Hints aren't available in Study",
+  "callHintLockedTitle": "Hints aren't available in Expressions",
   "@callHintLockedTitle": {
     "description": "Call screen - speech bubble above the hint button, shown when the learner taps it during an Expressions-course call. The server sends no hints in that course, so the button stays visible but explains why it does nothing. Name the course with the same word as homeCourseExpression (the home course label) - not a word for 'study'."
   },
@@ -2382,7 +2385,7 @@
   "@nationalitySearchHint": {
     "description": "Placeholder of the country search field."
   },
-  "nationalityAllCountries": "All countries",
+  "nationalityAllCountries": "All countries (A–Z)",
   "@nationalityAllCountries": {
     "description": "Label above the full country list (country names are always English, A-Z)."
   },

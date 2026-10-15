@@ -131,6 +131,7 @@ class CurLesson {
     this.situationTranslation,
     this.partner,
     this.partnerTranslation,
+    this.topicTranslation,
   });
 
   final int no;
@@ -156,6 +157,10 @@ class CurLesson {
   /// [partner] 의 회원 모국어 번역. 없으면 줄을 숨긴다.
   final String? partnerTranslation;
 
+  /// [topic] 의 회원 모국어 표시값(서버 R1 · 2026-10-16 PM-DEC-673). 서버는 번역이 없거나 ko 회원이면
+  /// 원문을 싣는다. 구서버는 키가 없어 null — 화면은 [topic] 으로 폴백한다.
+  final String? topicTranslation;
+
   factory CurLesson.fromJson(Map<String, dynamic> json) => CurLesson(
         no: (json['no'] as num?)?.toInt() ?? 0,
         code: (json['code'] as String?) ?? '',
@@ -165,6 +170,7 @@ class CurLesson {
         situationTranslation: _text(json['situation_translation']),
         partner: _text(json['partner']),
         partnerTranslation: _text(json['partner_translation']),
+        topicTranslation: _text(json['topic_translation']),
       );
 }
 
@@ -185,6 +191,7 @@ class CurLessonRow {
     required this.code,
     required this.levelNo,
     this.situation,
+    this.situationTranslation,
     this.status,
   });
 
@@ -192,6 +199,9 @@ class CurLessonRow {
   final String code;
   final int levelNo;
   final String? situation;
+
+  /// [situation] 의 회원 모국어 표시값(서버 R2 · 캐시만 · 없으면 원문). 구서버는 null — 한국어 줄만 보인다.
+  final String? situationTranslation;
 
   /// 안 시작한 차시는 null. 시트는 완료 표시를 하지 않는다(현재 차시만 강조 · 사용자 10-10).
   final String? status;
@@ -201,6 +211,7 @@ class CurLessonRow {
         code: (json['code'] as String?) ?? '',
         levelNo: (json['level_no'] as num?)?.toInt() ?? 0,
         situation: _text(json['situation']),
+        situationTranslation: _text(json['situation_translation']),
         status: json['status'] as String?,
       );
 }

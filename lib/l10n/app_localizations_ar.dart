@@ -50,7 +50,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get authResetCodeInvalid => 'الرمز غير صحيح أو منتهي الصلاحية.';
 
   @override
-  String get authPasswordUpdated => 'تم إعادة تعيين كلمة المرور.';
+  String get authPasswordUpdated => 'تمت إعادة تعيين كلمة المرور.';
 
   @override
   String get authAppleTokenMissing =>
@@ -134,14 +134,14 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String durationMinSec(int minutes, int seconds) {
-    return '$minutes دقيقة $seconds ثانية';
+    return '$minutes د $seconds ث';
   }
 
   @override
-  String get scheduleManagement => 'الجدول';
+  String get scheduleManagement => 'إدارة المواعيد';
 
   @override
-  String get alarms => 'التنبيهات';
+  String get alarms => 'المنبّهات';
 
   @override
   String get alarmAdd => 'إضافة منبّه';
@@ -153,7 +153,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get alarmEveryDay => 'كل يوم';
 
   @override
-  String get alarmWeekdays => 'أيام الأسبوع';
+  String get alarmWeekdays => 'أيام العمل';
 
   @override
   String get alarmWeekend => 'عطلة نهاية الأسبوع';
@@ -162,7 +162,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get alarmNoRepeat => 'بدون تكرار';
 
   @override
-  String get addSchedule => 'إضافة موعد';
+  String get addSchedule => 'إضافة موعد جديد';
 
   @override
   String get editSchedule => 'تعديل الموعد';
@@ -171,7 +171,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get somethingWentWrong => 'حدث خطأ ما';
 
   @override
-  String get alarmsLoadError => 'تعذّر تحميل التنبيهات';
+  String get alarmsLoadError => 'تعذّر تحميل المنبّهات';
 
   @override
   String get charactersLoadError => 'تعذّر تحميل الشخصيات';
@@ -186,7 +186,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get repeat => 'التكرار';
 
   @override
-  String get callPartner => 'الشخصية';
+  String get callPartner => 'شريك المكالمة';
 
   @override
   String get alarmModeLearnSub => 'تدرّب على تعابير المنهج';
@@ -217,7 +217,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String alarmSummary(int count, int monthly) {
-    return '$count× أسبوعيًا · $monthly مكالمة شهريًا';
+    return '$count× أسبوعيًا · عدد المكالمات شهريًا: $monthly';
   }
 
   @override
@@ -242,7 +242,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get conversation => 'المحادثة';
 
   @override
-  String get newExpressions => 'تعبيرات جديدة';
+  String get newExpressions => 'التعبيرات التي تعلّمتها حديثًا';
 
   @override
   String get analysisPrepNote => 'نراجع مكالمة اليوم.';
@@ -266,13 +266,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get analysisPrepStateDone => 'تم';
 
   @override
-  String get analysisPrepStateWorking => 'جارٍ';
+  String get analysisPrepStateWorking => 'جارٍ الإنشاء';
 
   @override
   String get analysisPrepStateWaiting => 'بالانتظار';
 
   @override
-  String get usedExpressions => 'العبارات التي استخدمتها';
+  String get usedExpressions => 'التعبيرات التي استخدمتها في هذه المكالمة';
 
   @override
   String quizExpressionsCount(int count) {
@@ -381,7 +381,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get payMethodKakao => 'KakaoPay';
 
   @override
-  String get productName => 'أفاتار القندس المزعج';
+  String get productName => 'أفاتار القندس المشاغب';
 
   @override
   String get productTrait => 'شخصية مميزة · ملكك للأبد';
@@ -504,7 +504,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String homeExpressionsLeft(int count) {
-    return 'بقي $count تعبيرًا حتى الحوار';
+    return 'التعبيرات المتبقية حتى الحوار: $count';
   }
 
   @override
@@ -527,7 +527,10 @@ class AppLocalizationsAr extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count أيام متتالية',
+      other: '$count يوم متتالٍ',
+      many: '$count يومًا متتاليًا',
+      few: '$count أيام متتالية',
+      two: 'يومان متتاليان',
       one: 'يوم واحد متتالٍ',
     );
     return '$_temp0';
@@ -541,7 +544,10 @@ class AppLocalizationsAr extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: 'أيام متتالية',
+      other: 'يوم متتالٍ',
+      many: 'يومًا متتاليًا',
+      few: 'أيام متتالية',
+      two: 'يومان متتاليان',
       one: 'يوم متتالٍ',
     );
     return '$_temp0';
@@ -553,6 +559,9 @@ class AppLocalizationsAr extends AppLocalizations {
       count,
       locale: localeName,
       other: 'أفضل سلسلة: $count يوم',
+      many: 'أفضل سلسلة: $count يومًا',
+      few: 'أفضل سلسلة: $count أيام',
+      two: 'أفضل سلسلة: يومان',
       one: 'أفضل سلسلة: يوم واحد',
     );
     return '$_temp0';
@@ -562,7 +571,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get streakMetricCallTime => 'مدة المكالمات';
 
   @override
-  String get streakMetricLearned => 'التعابير';
+  String get streakMetricLearned => 'التعبيرات';
 
   @override
   String get streakMetricWords => 'الكلمات المنطوقة';
@@ -582,6 +591,10 @@ class AppLocalizationsAr extends AppLocalizations {
       count,
       locale: localeName,
       other: '$count دقيقة',
+      many: '$count دقيقة',
+      few: '$count دقائق',
+      two: 'دقيقتان',
+      one: 'دقيقة واحدة',
     );
     return '$_temp0';
   }
@@ -675,7 +688,7 @@ class AppLocalizationsAr extends AppLocalizations {
       'لا توجد جمل محفوظة بعد.\nاحفظ الجمل من سجلات محادثاتك.';
 
   @override
-  String get noAlarms => 'لا توجد تنبيهات بعد';
+  String get noAlarms => 'لا توجد منبّهات مسجّلة';
 
   @override
   String get noAlarmsBody => 'أضف تذكيرًا للتعلّم\nلبناء عادة ثابتة.';
@@ -703,7 +716,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String pricePerMonth(String price) {
-    return '$price / شهريًا';
+    return '$price / شهر';
   }
 
   @override
@@ -726,10 +739,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get challengeIntro =>
-      'انطق كل بطاقة في المنطقة بشكل صحيح باللغة الكورية لتجاوزها.\nلا يوجد ميكروفون؟ يمكنك أيضًا اللعب بالنقر على الشاشة.';
+      'اقرأ بصوت عالٍ الكلمات القادمة نحوك لمدة 30 ثانية.\nلا يوجد ميكروفون؟ يمكنك أيضًا اللعب بالنقر على الشاشة.';
 
   @override
-  String get challengeStart => 'تشغيل الكاميرا والميكروفون';
+  String get challengeStart => 'ابدأ';
 
   @override
   String get challengePermissionNote =>
@@ -888,7 +901,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get continueLabel => 'متابعة';
 
   @override
-  String get onboardingDoneTitle => 'Beaver في انتظار مكالمتك';
+  String get onboardingDoneTitle => 'القندس في انتظار مكالمتك';
 
   @override
   String get onboardingDoneSubtitle => 'ابدأ مكالمة الآن';
@@ -921,7 +934,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get tryAgain => 'حاول مرة أخرى';
 
   @override
-  String get nativeLabel => 'الأصلي';
+  String get nativeLabel => 'المتحدث الأصلي';
 
   @override
   String get meLabel => 'أنا';
@@ -1096,7 +1109,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get passwordNewSubmit => 'إرسال';
 
   @override
-  String get passwordCompleteTitle => 'تم إعادة تعيين كلمة المرور';
+  String get passwordCompleteTitle => 'تمت إعادة تعيين كلمة المرور';
 
   @override
   String get passwordCompleteBody =>
@@ -1171,12 +1184,21 @@ class AppLocalizationsAr extends AppLocalizations {
   String get paymentLabelFallback => 'دفعة';
 
   @override
+  String get paymentLabelSubscription => 'دفعة الاشتراك';
+
+  @override
+  String get paymentLabelCharacter => 'شراء شخصية';
+
+  @override
+  String get paymentLabelBundle => 'شراء حزمة شخصيات';
+
+  @override
   String learningPassed(int passed, int total) {
     return 'نجحت $passed من $total جملة';
   }
 
   @override
-  String get hardestSound => 'أصعب صوت اليوم';
+  String get hardestSound => 'أصعب صوت';
 
   @override
   String get soundAccuracy => 'الدقة حسب الصوت';
@@ -1265,7 +1287,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String levelStage(int stage) {
-    return 'المستوى $stage';
+    return 'المرحلة $stage';
   }
 
   @override
@@ -1278,7 +1300,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String aheadOfLearners(int percent) {
-    return 'أنت متقدم على $percent% من المتعلمين';
+    return 'أنت متقدم على $percent% من جميع المتعلمين';
   }
 
   @override
@@ -1374,7 +1396,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get plansTitle => 'الخطط';
 
   @override
-  String get planFree => 'Free';
+  String get planFree => 'مجاني';
 
   @override
   String get planPro => 'Pro';
@@ -1419,7 +1441,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String callsUsedOfLimit(int used, int limit) {
-    return 'استُخدم $used من $limit دقيقة';
+    return 'الدقائق المستخدمة: $used من $limit';
   }
 
   @override
@@ -1486,14 +1508,14 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String noteEnding(String date) {
-    return 'خطتك على وشك الانتهاء. تستمر المزايا حتى $date، ثم تنتقل إلى Free. يمكنك إعادة الاشتراك في أي وقت.';
+    return 'تمت جدولة إنهاء خطتك. تستمر المزايا حتى $date، ثم تنتقل إلى الخطة المجانية. يمكنك إعادة الاشتراك في أي وقت.';
   }
 
   @override
   String get trialExpiredTitle => 'انتهت تجربة Premium';
 
   @override
-  String get trialExpiredSub => 'أنت الآن على Free';
+  String get trialExpiredSub => 'أنت الآن على الخطة المجانية';
 
   @override
   String get seePlans => 'عرض الخطط';
@@ -1537,7 +1559,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get limitBannerCallTitle => 'انتهى وقت مكالمات اليوم';
 
   @override
-  String get limitBannerCallSub => 'Free يمنحك 5 دقائق من المكالمات يوميًا';
+  String get limitBannerCallSub =>
+      'تمنحك الخطة المجانية 5 دقائق من المكالمات يوميًا';
 
   @override
   String get bulletProCharactersForever =>
@@ -1673,7 +1696,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get winbackTitle => 'انتهت خطة Premium الخاصة بك';
 
   @override
-  String get winbackSub => 'أنت الآن على Free — 5 دقائق من المكالمات يوميًا.';
+  String get winbackSub =>
+      'أنت الآن على الخطة المجانية — 5 دقائق من المكالمات يوميًا.';
 
   @override
   String get winbackQuestion => 'هل تخبرنا لماذا غادرت؟';
@@ -1734,6 +1758,7 @@ class AppLocalizationsAr extends AppLocalizations {
       count,
       locale: localeName,
       other: 'عادت شخصياتك',
+      two: 'عادت شخصيتاك',
       one: 'عادت شخصيتك',
     );
     return '$_temp0';
@@ -1770,7 +1795,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get rowNoRenewal => 'بلا تجديد';
 
   @override
-  String get rowWorksOnFree => 'تعمل على Free';
+  String get rowWorksOnFree => 'تعمل أيضًا على الخطة المجانية';
 
   @override
   String get rowYes => 'نعم';
@@ -1783,7 +1808,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get ovNotEligibleBody =>
-      'أنت على Free. لا يوجد اشتراك نشط على هذا الحساب.';
+      'أنت على الخطة المجانية. لا يوجد اشتراك نشط على هذا الحساب.';
 
   @override
   String get ovCancelDownsellTitle => 'قبل أن تغادر';
@@ -1884,7 +1909,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get rowTrialEnds => 'تنتهي التجربة';
 
   @override
-  String get rowFirstCharge => 'أول خصم';
+  String get rowFirstCharge => 'أول دفعة';
 
   @override
   String get rowThenMonthly => 'ثم شهريًا';
@@ -1923,7 +1948,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get ovFailedCanceledTitle => 'أُلغي الدفع';
 
   @override
-  String get ovFailedCanceledBody => 'ما زلت على Free. لم يُخصم أي مبلغ.';
+  String get ovFailedCanceledBody =>
+      'ما زلت على الخطة المجانية. لم يُخصم أي مبلغ.';
 
   @override
   String get ovFailedStoreTitle => 'حدث خطأ ما';
@@ -1967,7 +1993,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String subCancelBody(String date) {
-    return 'يستمر Premium حتى $date. بعد ذلك تنتقل إلى Free.';
+    return 'يستمر Premium حتى $date. بعد ذلك تنتقل إلى الخطة المجانية.';
   }
 
   @override
@@ -2079,7 +2105,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get iapFailBody => 'يمكنك المحاولة مرة أخرى';
 
   @override
-  String get paywallGuardTitle => 'يمكنك الاستمرار في استخدام Free';
+  String get paywallGuardTitle => 'يمكنك الاستمرار في الاستخدام مجانًا';
 
   @override
   String get paywallGuardBody => 'لا تزال لديك 5 دقائق من المكالمات يوميًا.';
@@ -2127,7 +2153,7 @@ class AppLocalizationsAr extends AppLocalizations {
       'نحلل نطقك من الجمل التي تقولها أثناء المكالمة.';
 
   @override
-  String get noCharacterNote => 'لم يُترك أي كلام بعد';
+  String get noCharacterNote => 'لم تترك الشخصية أي ملاحظة بعد';
 
   @override
   String get noPhonemesYet => 'لا توجد أصوات للتحليل بعد';
@@ -2142,16 +2168,16 @@ class AppLocalizationsAr extends AppLocalizations {
   String get playAgain => 'العب مرة أخرى';
 
   @override
-  String get difficultySlow => 'بطيء';
+  String get difficultySlow => 'سهل';
 
   @override
   String get difficultyNormal => 'عادي';
 
   @override
-  String get difficultyFast => 'سريع';
+  String get difficultyFast => 'صعب';
 
   @override
-  String get difficultyLabel => 'الصعوبة';
+  String get difficultyLabel => 'اختر مستوى الصعوبة';
 
   @override
   String get connected => 'متصل';
@@ -2163,7 +2189,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get homeworkCallTimeLimit => 'مكالمة الواجب مدتها 5 دقائق فقط.';
 
   @override
-  String get homeworkCallClosed => 'انتهى موعد هذا الواجب.';
+  String get homeworkCallClosed => 'أُغلق هذا الواجب.';
 
   @override
   String get homeworkCallUnavailable =>
@@ -2263,7 +2289,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get callFreeEndedTitle => 'انتهت مكالمتك المجانية';
 
   @override
-  String get callFreeEndedCta => 'اشترك وتابع الحديث';
+  String get callFreeEndedCta => 'اشترك وواصل الحديث';
 
   @override
   String get callKeepGoingTitle => 'هل نكمل؟';
@@ -2360,7 +2386,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get hwJoinFieldLearners => 'المتعلّمون';
 
   @override
-  String get hwJoinFieldTerm => 'الفصل';
+  String get hwJoinFieldTerm => 'الفصل الدراسي';
 
   @override
   String get hwJoinConfirmNote =>
@@ -2449,7 +2475,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String hwJoinDoneSubtitle(int count) {
-    return 'ينتظرك $count واجب';
+    return 'الواجبات المنتظرة: $count';
   }
 
   @override
@@ -2518,12 +2544,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String hwBadgeOverdueDays(int days) {
-    return 'لم يُسلَّم، متأخر $days يوم';
+    return 'لم يُسلَّم · أيام التأخير: $days';
   }
 
   @override
   String hwBadgeDday(int days) {
-    return 'باقٍ $days يوم';
+    return 'الأيام المتبقية: $days';
   }
 
   @override
@@ -2565,7 +2591,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get hwCtaDownload => 'تنزيل';
 
   @override
-  String get hwSpeakingNoScore => 'لم تنجز مهمة المحادثة بعد';
+  String get hwSpeakingNoScore => 'لم تنجز مهمة النطق بعد';
 
   @override
   String get hwWorkbookUnavailable => 'ملف كتاب التمارين غير متاح بعد.';
@@ -2605,12 +2631,30 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String hwHomeBannerDueTomorrow(int count) {
-    return '$count واجب موعده غدًا';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count واجب موعدها غدًا',
+      many: '$count واجبًا موعدها غدًا',
+      few: '$count واجبات موعدها غدًا',
+      two: 'واجبان موعدهما غدًا',
+      one: 'واجب واحد موعده غدًا',
+    );
+    return '$_temp0';
   }
 
   @override
   String hwHomeBannerOverdue(int count) {
-    return 'لديك $count واجب لم يُسلَّم';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'لديك $count واجب لم يُسلَّم',
+      many: 'لديك $count واجبًا لم يُسلَّم',
+      few: 'لديك $count واجبات لم تُسلَّم',
+      two: 'لديك واجبان لم يُسلَّما',
+      one: 'لديك واجب واحد لم يُسلَّم',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -2696,7 +2740,7 @@ class AppLocalizationsAr extends AppLocalizations {
       'يرجى السماح بالإشعارات في الإعدادات.';
 
   @override
-  String get callHintLockedTitle => 'التلميحات غير متاحة في وضع التعلّم';
+  String get callHintLockedTitle => 'التلميحات غير متاحة في دورة التعابير';
 
   @override
   String get wsTitle => 'الأصوات الصعبة';
@@ -2871,7 +2915,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String wsBeforePoints(int score) {
-    return 'قبل $score نقطة';
+    return 'قبل التعلّم: $score نقطة';
   }
 
   @override
@@ -2941,7 +2985,8 @@ class AppLocalizationsAr extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count أصوات أخطأت فيها كثيرًا في هذه الجلسة',
+      other: '$count صوت أخطأت فيه كثيرًا في هذه الجلسة',
+      many: '$count صوتًا أخطأت فيه كثيرًا في هذه الجلسة',
       few: '$count أصوات أخطأت فيها كثيرًا في هذه الجلسة',
       two: 'صوتان أخطأت فيهما كثيرًا في هذه الجلسة',
       one: 'صوت واحد أخطأت فيه كثيرًا في هذه الجلسة',
@@ -3054,7 +3099,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String hwWorkbookTitle(String chapter) {
-    return 'كراسة Chapter $chapter';
+    return 'كتاب تمارين الفصل $chapter';
   }
 
   @override

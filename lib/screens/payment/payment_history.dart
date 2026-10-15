@@ -11,6 +11,7 @@ import '../../components/molecules/empty_state.dart';
 import '../../components/molecules/segmented_tabs.dart';
 import '../../components/organisms/gnb.dart';
 import '../../features/payment/domain/entities/payment.dart';
+import '../../features/payment/domain/payment_label.dart';
 import '../../features/payment/presentation/providers/payment_providers.dart';
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_color_tokens.dart';
@@ -353,7 +354,15 @@ class _PaymentHistoryScreenState extends ConsumerState<PaymentHistoryScreen> {
 
     return CardLine(
       type: CardLineType.payment,
-      label: p.description ?? _categoryLabel(l10n, p.category),
+      // 서버 R4(2026-10-16 PM-DEC-674) — 한국어 라벨만 회원 언어로(꼬리 상품 ID·캐릭터 이름은 그대로).
+      label: localizedPaymentLabel(
+            p.description,
+            subscription: l10n.paymentLabelSubscription,
+            character: l10n.paymentLabelCharacter,
+            bundle: l10n.paymentLabelBundle,
+          ) ??
+          p.description ??
+          _categoryLabel(l10n, p.category),
       metaSegments: meta,
       // 가격 없는 결제(Google 캐릭터·묶음)는 「—」 — 「$0」 이 아니다(§22-⑥).
       value: p.price == null ? '—' : _money(p.price!, locale),

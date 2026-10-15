@@ -106,7 +106,7 @@ class AppLocalizationsFil extends AppLocalizations {
   String get tabArchive => 'Archive';
 
   @override
-  String get callHistory => 'Kasaysayan ng Tawag';
+  String get callHistory => 'Mga Record ng Tawag';
 
   @override
   String get conversationRecord => 'Talaan ng usapan';
@@ -132,14 +132,14 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String durationMinSec(int minutes, int seconds) {
-    return '$minutes min $seconds sek';
+    return '$minutes min $seconds seg';
   }
 
   @override
-  String get scheduleManagement => 'Schedule';
+  String get scheduleManagement => 'Pamahalaan ang Schedule';
 
   @override
-  String get alarms => 'Mga Alarma';
+  String get alarms => 'Mga Alarm';
 
   @override
   String get alarmAdd => 'Magdagdag ng alarm';
@@ -160,7 +160,7 @@ class AppLocalizationsFil extends AppLocalizations {
   String get alarmNoRepeat => 'Hindi uulit';
 
   @override
-  String get addSchedule => 'Magdagdag ng Schedule';
+  String get addSchedule => 'Magdagdag ng Bagong Schedule';
 
   @override
   String get editSchedule => 'I-edit ang Schedule';
@@ -184,7 +184,7 @@ class AppLocalizationsFil extends AppLocalizations {
   String get repeat => 'Ulitin';
 
   @override
-  String get callPartner => 'Karakter';
+  String get callPartner => 'Kausap sa tawag';
 
   @override
   String get alarmModeLearnSub => 'Sanayin ang mga ekspresyon ng kurikulum';
@@ -199,7 +199,7 @@ class AppLocalizationsFil extends AppLocalizations {
   String get presetMorning => 'Rutin sa umaga';
 
   @override
-  String get presetMorningSub => 'Karaniwang araw 8:00';
+  String get presetMorningSub => 'Weekdays 8:00';
 
   @override
   String get presetEvening => 'Pagtatapos ng gabi';
@@ -240,7 +240,7 @@ class AppLocalizationsFil extends AppLocalizations {
   String get conversation => 'Usapan';
 
   @override
-  String get newExpressions => 'Mga Bagong Ekspresyon';
+  String get newExpressions => 'Mga Bagong Natutunang Ekspresyon';
 
   @override
   String get analysisPrepNote => 'Binabalikan ang tawag ngayon.';
@@ -295,10 +295,10 @@ class AppLocalizationsFil extends AppLocalizations {
       'Walang bagong ekspresyon mula sa usapang ito.';
 
   @override
-  String get practice => 'Practice';
+  String get practice => 'Magsanay';
 
   @override
-  String get analysisNativeLabel => 'Katutubo';
+  String get analysisNativeLabel => 'Lokal';
 
   @override
   String recentScore(int score) {
@@ -384,7 +384,7 @@ class AppLocalizationsFil extends AppLocalizations {
   String get payMethodKakao => 'KakaoPay';
 
   @override
-  String get productName => 'Nakakainis na Beaver Avatar';
+  String get productName => 'Pilyong Beaver Avatar';
 
   @override
   String get productTrait => 'Premium na karakter · Sa\'yo magpakailanman';
@@ -603,7 +603,8 @@ class AppLocalizationsFil extends AppLocalizations {
   String get homeNoLevelTitle => 'Wala ka pang level';
 
   @override
-  String get homeNoLevelNote => 'Tapusin ang unang tawag para makakuha';
+  String get homeNoLevelNote =>
+      'Tapusin ang unang tawag para makakuha ng level';
 
   @override
   String get homeCurriculumPendingBadge => 'Malapit na';
@@ -682,11 +683,11 @@ class AppLocalizationsFil extends AppLocalizations {
       'Wala ka pang na-save na pangungusap.\nMag-bookmark ng mga pangungusap mula sa iyong mga record ng usapan.';
 
   @override
-  String get noAlarms => 'Wala pang alarma';
+  String get noAlarms => 'Walang naka-set na alarm';
 
   @override
   String get noAlarmsBody =>
-      'Magdagdag ng paalala sa pag-aaral\npara makabuo ng regular na gawi.';
+      'Kapag nagdagdag ka ng paalala sa pag-aaral,\nmakakabuo ka ng regular na gawi.';
 
   @override
   String get subscriptionManage => 'Pamahalaan ang Subscription';
@@ -736,10 +737,10 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get challengeIntro =>
-      'Bigkasin nang tama sa Korean ang bawat card sa zone para malinis ito.\nWalang mic? Puwede ka ring maglaro sa pamamagitan ng pag-tap sa screen.';
+      'Basahin nang malakas ang bawat salitang papalapit sa loob ng 30 segundo.\nWalang mic? Puwede ka ring maglaro sa pamamagitan ng pag-tap.';
 
   @override
-  String get challengeStart => 'Simulan ang Camera at Mic';
+  String get challengeStart => 'Simulan';
 
   @override
   String get challengePermissionNote =>
@@ -858,7 +859,7 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String accentShareText(String country) {
-    return 'Nag-aaral ako ng Korean sa BeaverTalk — ang Korean accent ko ay parang taga-$country! 🦫 Alamin ang accent mo at mag-aral kasama ko: https://beavertalk.im';
+    return 'Nag-aaral ako ng Korean sa BeaverTalk — ang Korean accent ko ay parang accent ng $country! 🦫 Alamin ang accent mo at mag-aral kasama ko: https://beavertalk.im';
   }
 
   @override
@@ -884,7 +885,7 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get onboardingNameSubtitle =>
-      'Aalalahanin ng iyong AI tutor ang iyong pangalan.';
+      'Tatandaan ng iyong AI tutor ang iyong pangalan.';
 
   @override
   String get nameLabel => 'Iyong pangalan';
@@ -928,7 +929,7 @@ class AppLocalizationsFil extends AppLocalizations {
   String get analyzingConversation => 'Sinusuri ang iyong usapan…';
 
   @override
-  String get analyzingSubtitle => 'Sandali lang ito tatagal';
+  String get analyzingSubtitle => 'Sandali lang, pakihintay.';
 
   @override
   String get tryAgain => 'Subukan muli';
@@ -1186,6 +1187,15 @@ class AppLocalizationsFil extends AppLocalizations {
   String get paymentLabelFallback => 'Bayad';
 
   @override
+  String get paymentLabelSubscription => 'Bayad sa subscription';
+
+  @override
+  String get paymentLabelCharacter => 'Pagbili ng karakter';
+
+  @override
+  String get paymentLabelBundle => 'Pagbili ng character bundle';
+
+  @override
   String learningPassed(int passed, int total) {
     return '$passed sa $total pangungusap ang pumasa';
   }
@@ -1211,7 +1221,7 @@ class AppLocalizationsFil extends AppLocalizations {
   String get colCorrect => 'Tama';
 
   @override
-  String get colAccuracy => 'Tumpak';
+  String get colAccuracy => 'Katumpakan';
 
   @override
   String get sentenceResults => 'Resulta kada pangungusap';
@@ -1256,7 +1266,7 @@ class AppLocalizationsFil extends AppLocalizations {
   String get colScore => 'Iskor';
 
   @override
-  String get colChange => 'Bago';
+  String get colChange => 'Pagbabago';
 
   @override
   String dateToday(String date) {
@@ -1293,7 +1303,7 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String aheadOfLearners(int percent) {
-    return 'Nangunguna ka sa $percent% ng mag-aaral';
+    return 'Nangunguna ka sa $percent% ng lahat ng mag-aaral';
   }
 
   @override
@@ -1759,15 +1769,15 @@ class AppLocalizationsFil extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: 'Bumalik na ang mga character mo',
-      one: 'Bumalik na ang character mo',
+      other: 'Bumalik na ang mga karakter mo',
+      one: 'Bumalik na ang karakter mo',
     );
     return '$_temp0';
   }
 
   @override
   String get ovRestoreCharacterOtherTitle =>
-      'Binili ang character na ito sa ibang account';
+      'Binili ang karakter na ito sa ibang account';
 
   @override
   String get ctaSignInThatAccount => 'Mag-sign in sa account na iyon';
@@ -2176,16 +2186,16 @@ class AppLocalizationsFil extends AppLocalizations {
   String get playAgain => 'Ulitin';
 
   @override
-  String get difficultySlow => 'Mabagal';
+  String get difficultySlow => 'Madali';
 
   @override
   String get difficultyNormal => 'Normal';
 
   @override
-  String get difficultyFast => 'Mabilis';
+  String get difficultyFast => 'Mahirap';
 
   @override
-  String get difficultyLabel => 'Antas ng hirap';
+  String get difficultyLabel => 'Pumili ng antas ng hirap';
 
   @override
   String get connected => 'Nakakonekta';
@@ -2228,7 +2238,7 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get fcEndedBody =>
-      'Nagamit mo na ang 5 minutong libreng tawag ngayong araw\nMag-subscribe para mas mahabang usapan';
+      'Nagamit mo na ang 5 minutong libreng tawag ngayong araw\nMag-subscribe para makapag-usap nang mas matagal';
 
   @override
   String get ctaSubscribeKeepTalking => 'Mag-subscribe at ituloy ang usapan';
@@ -2280,7 +2290,7 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get callExitSubtitle =>
-      'Kasama pa rin sa ngayong araw ang oras na naitawag mo';
+      'Kahit tapusin mo na ngayon, kasama pa rin sa paggamit mo ngayong araw ang oras na naitawag mo';
 
   @override
   String get callExitKeep => 'Magpatuloy sa pag-uusap';
@@ -2447,7 +2457,8 @@ class AppLocalizationsFil extends AppLocalizations {
   String get hwJoinConsentShared2 => 'Kung ginawa mo ang takdang-aralin';
 
   @override
-  String get hwJoinConsentShared3 => 'Mga pangungusap na pumasa at hindi';
+  String get hwJoinConsentShared3 =>
+      'Bilang ng mga pangungusap na pumasa at ang mga hindi pumasa';
 
   @override
   String get hwJoinConsentShared4 =>
@@ -2728,7 +2739,7 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get callMissedChannelDescription =>
-      'Ipinapaalam kapag may hindi mong nasagot na tawag mula kay Beaver.';
+      'Ipinapaalam kapag may tawag mula kay Beaver na hindi mo nasagot.';
 
   @override
   String callMissedBody(String name) {
@@ -2747,7 +2758,8 @@ class AppLocalizationsFil extends AppLocalizations {
       'Payagan ang mga notification sa Settings.';
 
   @override
-  String get callHintLockedTitle => 'Hindi available ang hint sa Pag-aaral';
+  String get callHintLockedTitle =>
+      'Hindi available ang hint sa Mga Ekspresyon';
 
   @override
   String get wsTitle => 'Mahihirap na tunog';
@@ -2841,7 +2853,7 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get wsQuitBody =>
-      'Kung aalis ka ngayon, hindi ma-save ang practice na ito.';
+      'Kung aalis ka ngayon, hindi mase-save ang practice na ito.';
 
   @override
   String get wsHowToSound => 'Paano bigkasin ang tunog';
@@ -2904,7 +2916,7 @@ class AppLocalizationsFil extends AppLocalizations {
   String get wsNoSound => 'Wala kaming narinig. Subukan muli?';
 
   @override
-  String get wsScoreFailed => 'Nabigo ang pag-iskor. Pakisubukan muli.';
+  String get wsScoreFailed => 'Nabigo ang pag-score. Pakisubukan muli.';
 
   @override
   String get wsSomethingWrong => 'May nangyaring mali.';
@@ -2913,7 +2925,7 @@ class AppLocalizationsFil extends AppLocalizations {
   String get wsLearnDone => 'Tapos na ang aralin';
 
   @override
-  String get wsRetest => 'Test muli';
+  String get wsRetest => 'Mag-test muli';
 
   @override
   String get wsFirstMeasure => 'Unang pagsukat';
@@ -2977,7 +2989,7 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String wsSoundOf(String label) {
-    return 'Tunog $label';
+    return 'Tunog na $label';
   }
 
   @override
@@ -2991,15 +3003,17 @@ class AppLocalizationsFil extends AppLocalizations {
   }
 
   @override
-  String get wsRetryPackLabel => 'Sanayin ang mga tunog na madalas mong mali';
+  String get wsRetryPackLabel =>
+      'Sanayin ang mga tunog na madalas mong mabigkas nang mali';
 
   @override
   String wsRetryPackTitle(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count tunog na madalas mong mali sa session na ito',
-      one: '1 tunog na madalas mong mali sa session na ito',
+      other:
+          '$count tunog na madalas mong mabigkas nang mali sa session na ito',
+      one: '1 tunog na madalas mong mabigkas nang mali sa session na ito',
     );
     return '$_temp0';
   }
@@ -3012,7 +3026,7 @@ class AppLocalizationsFil extends AppLocalizations {
   String get wsRetryPackCta => 'Sanayin ang lahat';
 
   @override
-  String get wsRetryListTitle => 'Mga tunog na madalas mong mali';
+  String get wsRetryListTitle => 'Mga tunog na madalas mong mabigkas nang mali';
 
   @override
   String get wsRetryListSection => 'Mga tunog mula sa session na ito';

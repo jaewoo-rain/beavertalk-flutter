@@ -50,7 +50,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get authResetCodeInvalid => 'A kód hibás vagy lejárt.';
 
   @override
-  String get authPasswordUpdated => 'A jelszavad visszaállt.';
+  String get authPasswordUpdated => 'A jelszavad visszaállítása sikerült.';
 
   @override
   String get authAppleTokenMissing =>
@@ -102,7 +102,7 @@ class AppLocalizationsHu extends AppLocalizations {
       'A hívás adatai nem találhatók, az elemzés kimarad.';
 
   @override
-  String get tabRecords => 'Felvételek';
+  String get tabRecords => 'Előzmények';
 
   @override
   String get tabArchive => 'Archívum';
@@ -111,20 +111,20 @@ class AppLocalizationsHu extends AppLocalizations {
   String get callHistory => 'Hívástörténet';
 
   @override
-  String get conversationRecord => 'Beszélgetés felvétele';
+  String get conversationRecord => 'Beszélgetésnapló';
 
   @override
-  String get noCallRecords => 'Még nincs hívásfelvétel';
+  String get noCallRecords => 'Még nincsenek korábbi hívások';
 
   @override
   String get noCallRecordsBody =>
-      'Miután befejezed az első hívásodat az AI-val,\na felvételeid itt jelennek meg.';
+      'Miután befejezed az első hívásodat az AI-val,\na korábbi hívásaid itt jelennek meg.';
 
   @override
   String get startCall => 'Hívás indítása';
 
   @override
-  String get recordsLoadError => 'Nem sikerült betölteni a felvételeket';
+  String get recordsLoadError => 'Nem sikerült betölteni az előzményeket';
 
   @override
   String get tryAgainLater => 'Kérjük, próbáld újra később.';
@@ -138,10 +138,10 @@ class AppLocalizationsHu extends AppLocalizations {
   }
 
   @override
-  String get scheduleManagement => 'Ütemezés';
+  String get scheduleManagement => 'Ütemezés kezelése';
 
   @override
-  String get alarms => 'Riasztások';
+  String get alarms => 'Ébresztők';
 
   @override
   String get alarmAdd => 'Ébresztő hozzáadása';
@@ -162,7 +162,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get alarmNoRepeat => 'Soha';
 
   @override
-  String get addSchedule => 'Ütemezés hozzáadása';
+  String get addSchedule => 'Új ütemezés hozzáadása';
 
   @override
   String get editSchedule => 'Ütemezés szerkesztése';
@@ -171,7 +171,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get somethingWentWrong => 'Valami hiba történt';
 
   @override
-  String get alarmsLoadError => 'Nem sikerült betölteni a riasztásokat';
+  String get alarmsLoadError => 'Nem sikerült betölteni az ébresztőket';
 
   @override
   String get charactersLoadError => 'Nem sikerült betölteni a karaktereket';
@@ -186,7 +186,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get repeat => 'Ismétlés';
 
   @override
-  String get callPartner => 'Karakter';
+  String get callPartner => 'Hívópartner';
 
   @override
   String get alarmModeLearnSub => 'Tananyag kifejezéseinek gyakorlása';
@@ -242,7 +242,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get conversation => 'Beszélgetés';
 
   @override
-  String get newExpressions => 'Új kifejezések';
+  String get newExpressions => 'Újonnan tanult kifejezések';
 
   @override
   String get analysisPrepNote => 'Átnézzük a mai hívást.';
@@ -386,7 +386,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get payMethodKakao => 'KakaoPay';
 
   @override
-  String get productName => 'Bosszantó hódavatar';
+  String get productName => 'Csintalan hódavatar';
 
   @override
   String get productTrait => 'Prémium karakter · Örökre a tiéd';
@@ -449,7 +449,7 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get connectingHint =>
-      'Ez általában kevesebb mint 5 másodpercet vesz igénybe';
+      'Ez általában kevesebb, mint 5 másodpercet vesz igénybe';
 
   @override
   String get callConnectFailed => 'Nem sikerült kapcsolódni a híváshoz.';
@@ -515,7 +515,7 @@ class AppLocalizationsHu extends AppLocalizations {
   }
 
   @override
-  String get homeFreetalkNote => 'Használd a tanultakat és beszélj szabadon';
+  String get homeFreetalkNote => 'Használd a tanultakat, és beszélj szabadon';
 
   @override
   String get homeTalkTitle => 'Mi történt ma?';
@@ -594,7 +594,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get streakNoCallsThatDay => 'Ezen a napon nem volt hívás.';
 
   @override
-  String get homeLevelPending => 'Szint nincs meg';
+  String get homeLevelPending => 'Szint függőben';
 
   @override
   String get homeNoLevelTitle => 'Még nincs szinted';
@@ -679,11 +679,11 @@ class AppLocalizationsHu extends AppLocalizations {
       'Még nincs elmentett mondatod.\nJelölj meg mondatokat a beszélgetésfelvételeidből.';
 
   @override
-  String get noAlarms => 'Még nincs riasztás';
+  String get noAlarms => 'Nincs beállított ébresztő';
 
   @override
   String get noAlarmsBody =>
-      'Adj hozzá egy tanulási emlékeztetőt,\nhogy kialakítsd a rendszeres szokást.';
+      'Ha hozzáadsz egy tanulási emlékeztetőt,\nkialakíthatod a rendszeres szokást.';
 
   @override
   String get subscriptionManage => 'Előfizetés kezelése';
@@ -733,10 +733,10 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get challengeIntro =>
-      'Ejtsd ki helyesen koreaiul a zóna minden kártyáját, hogy teljesítsd.\nNincs mikrofonod? A képernyő koppintásával is játszhatsz.';
+      '30 másodpercig olvasd fel hangosan a feléd érkező szavakat.\nNincs mikrofonod? Koppintással is játszhatsz.';
 
   @override
-  String get challengeStart => 'Kamera és mikrofon indítása';
+  String get challengeStart => 'Indítás';
 
   @override
   String get challengePermissionNote =>
@@ -891,7 +891,7 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get nameHelper =>
-      'Nem kell a valódi neved legyen — egy becenév is megteszi.';
+      'Nem kell, hogy a valódi neved legyen — egy becenév is megteszi.';
 
   @override
   String get continueLabel => 'Tovább';
@@ -948,7 +948,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get mySavedExpressions => 'Mentett kifejezéseim';
 
   @override
-  String get avatarTraits => 'Meleg szívű · Nyugodt · Kedves';
+  String get avatarTraits => 'Meleg szívű · Nyugodt · Gyengéd';
 
   @override
   String get priceFree => 'Ingyenes';
@@ -962,7 +962,8 @@ class AppLocalizationsHu extends AppLocalizations {
       'A Google bejelentkezés sikertelen volt.';
 
   @override
-  String get loginAppleSignInFailed => 'A Apple bejelentkezés sikertelen volt.';
+  String get loginAppleSignInFailed =>
+      'Az Apple bejelentkezés sikertelen volt.';
 
   @override
   String get loginFacebookSignInFailed =>
@@ -999,7 +1000,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get loginTermsNoticePrefix => 'A folytatással elfogadod a ';
 
   @override
-  String get loginTermsNoticeAnd => ' és a ';
+  String get loginTermsNoticeAnd => ' és az ';
 
   @override
   String get loginTermsNoticeSuffix => ' feltételeit.';
@@ -1187,6 +1188,15 @@ class AppLocalizationsHu extends AppLocalizations {
   String get paymentLabelFallback => 'Fizetés';
 
   @override
+  String get paymentLabelSubscription => 'Előfizetési díj';
+
+  @override
+  String get paymentLabelCharacter => 'Karakter vásárlása';
+
+  @override
+  String get paymentLabelBundle => 'Karakter csomag vásárlása';
+
+  @override
   String learningPassed(int passed, int total) {
     return '$total mondatból $passed sikerült';
   }
@@ -1212,7 +1222,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get colCorrect => 'Helyes';
 
   @override
-  String get colAccuracy => 'Pont.';
+  String get colAccuracy => 'Pontosság';
 
   @override
   String get sentenceResults => 'Eredmények mondatonként';
@@ -1382,7 +1392,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get badgePaused => 'Szüneteltetve';
 
   @override
-  String get badgeCanceling => 'Lemondva';
+  String get badgeCanceling => 'Lejár';
 
   @override
   String get subscriptionTitle => 'Előfizetés';
@@ -1776,7 +1786,7 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get ovCharacterOfferBody =>
-      'Válassz egy karaktert, és tartsd meg. Egyszeri vásárlás — nincs előfizetés, nincs megújulás.';
+      'Válassz egy karaktert, és tartsd meg örökre. Egyszeri vásárlás — nincs előfizetés, nincs megújulás.';
 
   @override
   String get rowOneCharacter => 'Egy karakter';
@@ -1883,7 +1893,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get rowMonthlyLabel => 'Havi';
 
   @override
-  String get rowYearlyWorkedOut => 'Az éves így jött ki';
+  String get rowYearlyWorkedOut => 'Éves összegre átszámítva';
 
   @override
   String get ctaSwitchToMonthly => 'Váltás havira';
@@ -1995,7 +2005,7 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String subCancelBody(String date) {
-    return 'A Premium $date napjáig érvényes. Utána Ingyenesre váltasz.';
+    return 'A Premium $date napjáig érvényes. Utána az Ingyenes csomagra kerülsz át.';
   }
 
   @override
@@ -2079,7 +2089,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get editNicknameTitle => 'Becenév szerkesztése';
 
   @override
-  String get nicknameRule => '2–12 karakter. Betűk és számok. Csak angolul';
+  String get nicknameRule => '2–12 karakter · csak angol betűk és számok';
 
   @override
   String get ctaSave => 'Mentés';
@@ -2173,16 +2183,16 @@ class AppLocalizationsHu extends AppLocalizations {
   String get playAgain => 'Újra';
 
   @override
-  String get difficultySlow => 'Lassú';
+  String get difficultySlow => 'Könnyű';
 
   @override
   String get difficultyNormal => 'Normál';
 
   @override
-  String get difficultyFast => 'Gyors';
+  String get difficultyFast => 'Nehéz';
 
   @override
-  String get difficultyLabel => 'Nehézség';
+  String get difficultyLabel => 'Válaszd ki a nehézséget';
 
   @override
   String get connected => 'Csatlakozva';
@@ -2192,7 +2202,7 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get homeworkCallTimeLimit =>
-      'A házi feladat hívás csak 5 perces lehet.';
+      'A házi feladathoz tartozó hívás legfeljebb 5 perces lehet.';
 
   @override
   String get homeworkCallClosed => 'Ez a házi feladat lezárult.';
@@ -2315,10 +2325,10 @@ class AppLocalizationsHu extends AppLocalizations {
   String get articulationTargetSound => 'Cél';
 
   @override
-  String get reportEntry => 'Jelentés';
+  String get reportEntry => 'Bejelentés';
 
   @override
-  String get reportTitle => 'Jelentés';
+  String get reportTitle => 'Bejelentés';
 
   @override
   String get reportPrompt => 'Mi volt a probléma?';
@@ -2393,7 +2403,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get hwJoinFieldLearners => 'Tanulók';
 
   @override
-  String get hwJoinFieldTerm => 'Időszak';
+  String get hwJoinFieldTerm => 'Félév';
 
   @override
   String get hwJoinConfirmNote =>
@@ -2440,7 +2450,8 @@ class AppLocalizationsHu extends AppLocalizations {
   String get hwJoinConsentShared2 => 'Elkészítetted-e a házi feladatot';
 
   @override
-  String get hwJoinConsentShared3 => 'A teljesített és elrontott mondatok';
+  String get hwJoinConsentShared3 =>
+      'A teljesített mondatok száma és a nem teljesített mondatok';
 
   @override
   String get hwJoinConsentShared4 => 'A feladathívás hossza és összefoglalója';
@@ -2609,7 +2620,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get hwWorkbookUnavailable => 'A munkafüzet fájlja még nem érhető el.';
 
   @override
-  String get hwDetailClosed => 'Ez a feladat lezárult. Már nem tudsz beadni.';
+  String get hwDetailClosed => 'Ez a feladat lezárult. Már nem adhatod be.';
 
   @override
   String get hwLeaveTitle => 'Kilépsz az osztályból?';
@@ -2737,7 +2748,8 @@ class AppLocalizationsHu extends AppLocalizations {
       'Engedélyezd az értesítéseket a Beállításokban.';
 
   @override
-  String get callHintLockedTitle => 'Tanulás módban nem érhetők el tippek';
+  String get callHintLockedTitle =>
+      'A Kifejezések kurzusban nem érhetők el tippek';
 
   @override
   String get wsTitle => 'Nehéz hangok';
@@ -2786,7 +2798,7 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get wsNationalEmptyBody =>
-      'Beszélj még néhányat, és elemezzük az akcentusodat.';
+      'Indíts még néhány hívást, és elemezzük az akcentusodat.';
 
   @override
   String get wsMineTitle => 'Az én nehéz hangjaim';
@@ -2996,7 +3008,7 @@ class AppLocalizationsHu extends AppLocalizations {
       'Összegyűjtöttük a legalább 2-szer rontott hangokat. Mindegyiket 4 lépésben gyakorolhatod.';
 
   @override
-  String get wsRetryPackCta => 'Hangok gyakorlása';
+  String get wsRetryPackCta => 'Az összes hang gyakorlása';
 
   @override
   String get wsRetryListTitle => 'Gyakran rontott hangok';
@@ -3159,7 +3171,7 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String hwPolicyNoticeBody(String date) {
-    return '$date-tól érvényes. Ha csatlakozol egy osztályhoz, az anyanyelved is megosztásra kerül a tanárral.';
+    return 'Hatálybalépés dátuma: $date. Ha csatlakozol egy osztályhoz, az anyanyelved is megosztásra kerül a tanárral.';
   }
 
   @override

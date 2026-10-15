@@ -137,7 +137,7 @@ class AppLocalizationsSi extends AppLocalizations {
   }
 
   @override
-  String get scheduleManagement => 'කාලසටහන';
+  String get scheduleManagement => 'කාලසටහන කළමනාකරණය';
 
   @override
   String get alarms => 'එලාම්';
@@ -161,7 +161,7 @@ class AppLocalizationsSi extends AppLocalizations {
   String get alarmNoRepeat => 'නැවත නොකෙරේ';
 
   @override
-  String get addSchedule => 'කාලසටහනක් එක් කරන්න';
+  String get addSchedule => 'නව කාලසටහනක් එක් කරන්න';
 
   @override
   String get editSchedule => 'කාලසටහන සංස්කරණය කරන්න';
@@ -185,7 +185,7 @@ class AppLocalizationsSi extends AppLocalizations {
   String get repeat => 'පුනරාවර්තනය';
 
   @override
-  String get callPartner => 'චරිතය';
+  String get callPartner => 'ඇමතුම් සහකරු';
 
   @override
   String get alarmModeLearnSub => 'විෂයමාලා ප්‍රකාශන පුහුණුව';
@@ -216,7 +216,7 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String alarmSummary(int count, int monthly) {
-    return 'සතියකට $countක් · මසකට ඇමතුම් $monthlyක්';
+    return 'සතියකට $count වරක් · මසකට ඇමතුම් $monthlyක්';
   }
 
   @override
@@ -241,7 +241,7 @@ class AppLocalizationsSi extends AppLocalizations {
   String get conversation => 'සංවාදය';
 
   @override
-  String get newExpressions => 'නව වචන ප්‍රකාශන';
+  String get newExpressions => 'නව ප්‍රකාශන';
 
   @override
   String get analysisPrepNote => 'අද ඇමතුම නැවත බලමින් සිටී.';
@@ -295,7 +295,7 @@ class AppLocalizationsSi extends AppLocalizations {
   String get noNewExpressions => 'මෙම සංවාදයෙන් නව ප්‍රකාශන නොමැත.';
 
   @override
-  String get practice => 'පුහුණුව';
+  String get practice => 'පුහුණු වන්න';
 
   @override
   String get analysisNativeLabel => 'දේශීය';
@@ -386,7 +386,7 @@ class AppLocalizationsSi extends AppLocalizations {
   String get productName => 'කරදරකාරී බීවර් අවතාරය';
 
   @override
-  String get productTrait => 'වාරික චරිතයක් · සදහටම ඔබේ';
+  String get productTrait => 'Premium චරිතයක් · සදහටම ඔබේ';
 
   @override
   String get amountItemPrice => 'අයිතමයේ මිල';
@@ -566,7 +566,7 @@ class AppLocalizationsSi extends AppLocalizations {
   String get streakMetricLearned => 'ඉගෙනගත් ප්‍රකාශන';
 
   @override
-  String get streakMetricWords => 'කී වචන';
+  String get streakMetricWords => 'කතා කළ වචන';
 
   @override
   String streakCountValue(int count) {
@@ -650,7 +650,7 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String myPartnersOwned(int count) {
-    return 'මගේ හවුල්කරුවන් · $count ක් හිමිකම්';
+    return 'මගේ හවුල්කරුවන් · $countක් සතුයි';
   }
 
   @override
@@ -663,7 +663,7 @@ class AppLocalizationsSi extends AppLocalizations {
   String get inUse => 'භාවිතයේ';
 
   @override
-  String get owned => 'හිමිකම්';
+  String get owned => 'ඔබ සතුයි';
 
   @override
   String get noCharactersToShow => 'පෙන්වීමට චරිත නොමැත';
@@ -676,7 +676,7 @@ class AppLocalizationsSi extends AppLocalizations {
       'තවම සුරැකි වාක්‍ය නැත.\nඔබේ සංවාද වාර්තාවලින් වාක්‍ය පිටු සලකුණු කරන්න.';
 
   @override
-  String get noAlarms => 'තවම එලාම් නැත';
+  String get noAlarms => 'සකසා ඇති එලාම් නැත';
 
   @override
   String get noAlarmsBody =>
@@ -728,10 +728,10 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get challengeIntro =>
-      'කලාපයේ ඇති සෑම කාඩ්පතක්ම කොරියානු භාෂාවෙන් නිවැරදිව උච්චාරණය කර එය නිමකරන්න.\nමයික් නැද්ද? තිරය තට්ටු කර ද ක්‍රීඩා කළ හැක.';
+      'තත්පර 30ක් තුළ ඔබ වෙත එන වචන හඬ නගා කියවන්න.\nමයික් නැද්ද? තිරය තට්ටු කර ද ක්‍රීඩා කළ හැක.';
 
   @override
-  String get challengeStart => 'කැමරාව සහ මයික් ආරම්භ කරන්න';
+  String get challengeStart => 'ආරම්භ කරන්න';
 
   @override
   String get challengePermissionNote =>
@@ -784,7 +784,7 @@ class AppLocalizationsSi extends AppLocalizations {
   String get reasonBrainDesc => 'මතකය සහ අවධානය වැඩි දියුණු කරන්න';
 
   @override
-  String get challengeRecordToggle => 'මෙම ධාවනය පටිගත කරන්න';
+  String get challengeRecordToggle => 'මෙම ක්‍රීඩාව පටිගත කරන්න';
 
   @override
   String get challengeRecordHint =>
@@ -846,7 +846,7 @@ class AppLocalizationsSi extends AppLocalizations {
   String get share => 'බෙදාගන්න';
 
   @override
-  String get accentSoundsLike => 'ඔබේ කොරියානු උච්චාරණය පෙනෙන්නේ';
+  String get accentSoundsLike => 'ඔබේ කොරියානු උච්චාරණය ඇහෙන්නේ';
 
   @override
   String accentShareText(String country) {
@@ -992,7 +992,7 @@ class AppLocalizationsSi extends AppLocalizations {
   String get loginTermsNoticeAnd => ' සහ ';
 
   @override
-  String get loginTermsNoticeSuffix => ' ට එකඟ වේ.';
+  String get loginTermsNoticeSuffix => 'ට එකඟ වේ.';
 
   @override
   String get loginLogIn => 'ලොග් වන්න';
@@ -1066,7 +1066,7 @@ class AppLocalizationsSi extends AppLocalizations {
       'අපි ඔබේ විද්‍යුත් තැපෑලට ප්‍රතිසාධන කේතයක් යවා ඇත. ඉදිරියට යාමට එය ඇතුළත් කරන්න.';
 
   @override
-  String get passwordCodeNoCode => 'කේතය ලැබුනේ නැද්ද?';
+  String get passwordCodeNoCode => 'කේතය ලැබුණේ නැද්ද?';
 
   @override
   String get passwordCodeResend => 'කේතය නැවත යවන්න';
@@ -1175,8 +1175,17 @@ class AppLocalizationsSi extends AppLocalizations {
   String get paymentLabelFallback => 'ගෙවීම';
 
   @override
+  String get paymentLabelSubscription => 'දායකත්ව ගෙවීම';
+
+  @override
+  String get paymentLabelCharacter => 'චරිත මිලදී ගැනීම';
+
+  @override
+  String get paymentLabelBundle => 'චරිත පැකේජය මිලදී ගැනීම';
+
+  @override
   String learningPassed(int passed, int total) {
-    return 'වාක්‍ය $totalෙන් $passedක් සමත්';
+    return 'වාක්‍ය $totalකින් $passedක් සමත්';
   }
 
   @override
@@ -1253,7 +1262,7 @@ class AppLocalizationsSi extends AppLocalizations {
   }
 
   @override
-  String get accentAnalysis => 'උච්චාරණ රටාව විශ්ලේෂණය';
+  String get accentAnalysis => 'ස්වර රටාව විශ්ලේෂණය';
 
   @override
   String get overallLevel => 'සමස්ත මට්ටම';
@@ -1269,7 +1278,7 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String levelStage(int stage) {
-    return 'මට්ටම $stage';
+    return 'අදියර $stage';
   }
 
   @override
@@ -1282,7 +1291,7 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String aheadOfLearners(int percent) {
-    return 'ඔබ ඉගෙනුම්කරුවන්ගෙන් $percent% ට වඩා ඉදිරියෙන්';
+    return 'ඔබ සියලු ඉගෙනුම්කරුවන්ගෙන් $percent% ට වඩා ඉදිරියෙන්';
   }
 
   @override
@@ -1345,7 +1354,7 @@ class AppLocalizationsSi extends AppLocalizations {
   String get billingManageInTheStore => 'වෙළඳසැලෙන් කළමනාකරණය';
 
   @override
-  String get billingRefundHelp => 'මුදල් ආපසු උදව්';
+  String get billingRefundHelp => 'මුදල් ආපසු ගැනීම පිළිබඳ උදව්';
 
   @override
   String get billingCancelSubscription => 'දායකත්වය අවලංගු කරන්න';
@@ -1470,7 +1479,7 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get noteRestoreHint =>
-      'වෙනත් උපාංගයක දායක වී තිබේද? යළි ලබාගැනීමෙන් මෙයටත් ගෙනෙයි.';
+      'වෙනත් උපාංගයක දැනටමත් දායක වී තිබේද? යළි ලබාගැනීමෙන් මෙම උපාංගයේත් භාවිත කළ හැක.';
 
   @override
   String get noteStoreHandled =>
@@ -1679,7 +1688,7 @@ class AppLocalizationsSi extends AppLocalizations {
   String get winbackSub => 'ඔබ දැන් Free හි — දිනකට ඇමතුම් මිනිත්තු 5.';
 
   @override
-  String get winbackQuestion => 'ඇයි ගියේ කියා කියනවාද?';
+  String get winbackQuestion => 'ඔබ ඉවත් වූයේ ඇයිදැයි අපට කියන්න කැමතිද?';
 
   @override
   String get winbackReasonExpensive => 'මිල වැඩියි';
@@ -1825,7 +1834,7 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get ovAnnualSwitchBody =>
-      'මාසිකව ගෙවීමට වඩා වාර්ෂික සැලැස්ම ලාභදායී වේ.';
+      'මාසිකව ගෙවීමට වඩා වාර්ෂික සැලසුම ලාභදායී වේ.';
 
   @override
   String get rowYouSave => 'ඔබේ ඉතිරිය';
@@ -2027,11 +2036,11 @@ class AppLocalizationsSi extends AppLocalizations {
   String get flTodayTitle => 'අද ඇමතුම් කාලය අවසන්';
 
   @override
-  String get flTodayBody => 'නැවතුණු තැනින්ම — දැන්ම.';
+  String get flTodayBody => 'නැවතුණු තැනින්ම දැන්ම දිගටම කතා කරන්න.';
 
   @override
   String flCaption(String price) {
-    return 'මසකට $price · ඕනෑම විටෙක අවලංගු කරන්න';
+    return 'මසකට $price · ඕනෑම විටෙක අවලංගු කළ හැක';
   }
 
   @override
@@ -2153,16 +2162,16 @@ class AppLocalizationsSi extends AppLocalizations {
   String get playAgain => 'නැවත සෙල්ලම් කරන්න';
 
   @override
-  String get difficultySlow => 'සෙමින්';
+  String get difficultySlow => 'පහසු';
 
   @override
   String get difficultyNormal => 'සාමාන්‍ය';
 
   @override
-  String get difficultyFast => 'වේගයෙන්';
+  String get difficultyFast => 'අපහසු';
 
   @override
-  String get difficultyLabel => 'දුෂ්කරතාව';
+  String get difficultyLabel => 'දුෂ්කරතාව තෝරන්න';
 
   @override
   String get connected => 'සම්බන්ධයි';
@@ -2273,10 +2282,10 @@ class AppLocalizationsSi extends AppLocalizations {
   String get callFreeEndedTitle => 'ඔබේ නොමිලේ ඇමතුම අවසන් විය';
 
   @override
-  String get callFreeEndedCta => 'දායක වී කතාබහ දිගටම කරන්න';
+  String get callFreeEndedCta => 'දායක වී කතාව දිගටම කරගෙන යන්න';
 
   @override
-  String get callKeepGoingTitle => 'දිගටම කරන්නද?';
+  String get callKeepGoingTitle => 'දිගටම කරගෙන යමුද?';
 
   @override
   String get callKeepGoingSubtitle =>
@@ -2308,7 +2317,7 @@ class AppLocalizationsSi extends AppLocalizations {
   String get reportReasonSexual => 'ලිංගික අන්තර්ගතය';
 
   @override
-  String get reportReasonHate => 'වෛරය හෝ වෙනස්කම්';
+  String get reportReasonHate => 'වෛරී හෝ වෙනස්කම් කිරීමේ ප්‍රකාශ';
 
   @override
   String get reportReasonViolence => 'ප්‍රචණ්ඩ හෝ තර්ජනාත්මක අන්තර්ගතය';
@@ -2369,7 +2378,7 @@ class AppLocalizationsSi extends AppLocalizations {
   String get hwJoinFieldLearners => 'ඉගෙනුම්ලාභීන්';
 
   @override
-  String get hwJoinFieldTerm => 'කාලය';
+  String get hwJoinFieldTerm => 'වාරය';
 
   @override
   String get hwJoinConfirmNote =>
@@ -2394,7 +2403,7 @@ class AppLocalizationsSi extends AppLocalizations {
   String get hwJoinNameHelp => 'යෙදුමේ නමට වඩා වෙනස් විය හැක';
 
   @override
-  String get hwJoinStudentNoLabel => 'ශිෂ්‍ය අංකය (අත්‍යවශ්‍ය නොවේ)';
+  String get hwJoinStudentNoLabel => 'ශිෂ්‍ය අංකය (විකල්ප)';
 
   @override
   String get hwJoinStudentNoHelp => 'ගුරුතුමා නාමලේඛනය ගැළපීමට භාවිත කරයි';
@@ -2415,7 +2424,7 @@ class AppLocalizationsSi extends AppLocalizations {
   String get hwJoinConsentShared2 => 'ඔබ ගෙදර වැඩ කළාද යන්න';
 
   @override
-  String get hwJoinConsentShared3 => 'සමත් වූ සහ මඟහැරුණු වාක්‍ය';
+  String get hwJoinConsentShared3 => 'සමත් වූ වාක්‍ය ගණන සහ මඟහැරුණු වාක්‍ය';
 
   @override
   String get hwJoinConsentShared4 => 'පැවරුම් ඇමතුමේ දිග සහ සාරාංශය';
@@ -2457,11 +2466,11 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String hwJoinDoneSubtitle(int count) {
-    return 'පැවරුම් $countක් බලා සිටී';
+    return 'ගෙදර වැඩ $countක් බලා සිටී';
   }
 
   @override
-  String get hwJoinDoneNoAssignment => 'තවම පැවරුම් නැත';
+  String get hwJoinDoneNoAssignment => 'තවම ලැබුණු ගෙදර වැඩ නැත';
 
   @override
   String get hwJoinDoneNextDue => 'ඊළඟ නියමිත දිනය';
@@ -2476,7 +2485,7 @@ class AppLocalizationsSi extends AppLocalizations {
   String get hwJoinErrorNotFound => 'එම කේතය හමු නොවීය';
 
   @override
-  String get hwJoinErrorNotFoundBody => 'කරුණාකර අංක හය නැවත පරීක්ෂා කරන්න.';
+  String get hwJoinErrorNotFoundBody => 'කරුණාකර අක්ෂර හය නැවත පරීක්ෂා කරන්න.';
 
   @override
   String get hwJoinErrorExpired => 'එම කේතය කල් ඉකුත් වී ඇත';
@@ -2705,7 +2714,7 @@ class AppLocalizationsSi extends AppLocalizations {
       'සැකසුම් තුළ දැනුම්දීම්වලට අවසර දෙන්න.';
 
   @override
-  String get callHintLockedTitle => 'ඉගෙනීම් ප්‍රකාරයේදී ඉඟි භාවිත කළ නොහැක';
+  String get callHintLockedTitle => 'ප්‍රකාශන පාඨමාලාවේදී ඉඟි භාවිත කළ නොහැක';
 
   @override
   String get wsTitle => 'දුර්වල ශබ්ද';
@@ -2782,7 +2791,7 @@ class AppLocalizationsSi extends AppLocalizations {
   String get wsNotMeasured => 'මැනුම් නැත';
 
   @override
-  String get wsStepUnderstand => 'තේරුම';
+  String get wsStepUnderstand => 'අවබෝධය';
 
   @override
   String get wsStepWords => 'වචන';
@@ -2852,7 +2861,7 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get wsMicPermissionBody =>
-      'මෙම පරීක්ෂණය ශබ්ද නගා කියවිය යුතු නිසා මයික්‍රෆෝනය අවශ්‍යයි. සැකසුම් තුළ මයික්‍රෆෝන ප්‍රවේශය සක්‍රිය කරන්න.';
+      'මෙම ඇගයීම ශබ්ද නගා කියවිය යුතු නිසා මයික්‍රෆෝනය අවශ්‍යයි. සැකසුම් තුළ මයික්‍රෆෝන ප්‍රවේශය සක්‍රිය කරන්න.';
 
   @override
   String get wsNoSound => 'කිසිවක් ඇහුණේ නැහැ. නැවත කියමුද?';

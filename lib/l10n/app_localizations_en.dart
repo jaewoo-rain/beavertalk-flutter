@@ -63,7 +63,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get callRatingPrompt => 'How was your call?';
 
   @override
-  String get callRatingBody => 'Your rating helps us talk better next time.';
+  String get callRatingBody =>
+      'Your rating helps make your next call even better.';
 
   @override
   String get callRatingSubmit => 'Submit';
@@ -381,7 +382,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get payMethodKakao => 'KakaoPay';
 
   @override
-  String get productName => 'Annoying Beaver Avatar';
+  String get productName => 'Mischievous Beaver Avatar';
 
   @override
   String get productTrait => 'Premium character · Yours forever';
@@ -505,7 +506,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String homeExpressionsLeft(int count) {
-    return '$count expressions left until conversation';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count expressions left until conversation',
+      one: '1 expression left until conversation',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -563,7 +570,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get streakMetricCallTime => 'Call time';
 
   @override
-  String get streakMetricLearned => 'Expressions';
+  String get streakMetricLearned => 'Expressions learned';
 
   @override
   String get streakMetricWords => 'Words spoken';
@@ -1178,19 +1185,34 @@ class AppLocalizationsEn extends AppLocalizations {
   String get paymentLabelFallback => 'Payment';
 
   @override
+  String get paymentLabelSubscription => 'Subscription payment';
+
+  @override
+  String get paymentLabelCharacter => 'Character purchase';
+
+  @override
+  String get paymentLabelBundle => 'Character bundle purchase';
+
+  @override
   String learningPassed(int passed, int total) {
     return '$passed of $total sentences passed';
   }
 
   @override
-  String get hardestSound => 'Hardest sound today';
+  String get hardestSound => 'Hardest sound';
 
   @override
   String get soundAccuracy => 'Accuracy by sound';
 
   @override
   String phonemeAttempts(int count) {
-    return 'Per phoneme · $count attempts';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count attempts',
+      one: '1 attempt',
+    );
+    return 'Per phoneme · $_temp0';
   }
 
   @override
@@ -1227,7 +1249,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String recentSessions(int count) {
-    return 'Last $count sessions';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Last $count sessions',
+      one: 'Last session',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -1319,7 +1347,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get analysisNoScoreReview =>
-      'Practice the sentences to get your pronunciation score';
+      'Review the sentences to get your pronunciation score';
 
   @override
   String get analysisNoScoreEmpty => 'No sentences to score';
@@ -1766,7 +1794,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get ovCharacterOfferBody =>
-      'Pick one character and keep them. A one-off purchase — no subscription, no renewal.';
+      'Pick one character and keep them forever. A one-off purchase — no subscription, no renewal.';
 
   @override
   String get rowOneCharacter => 'One character';
@@ -1873,7 +1901,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get rowMonthlyLabel => 'Monthly';
 
   @override
-  String get rowYearlyWorkedOut => 'Yearly worked out at';
+  String get rowYearlyWorkedOut => 'Yearly equivalent';
 
   @override
   String get ctaSwitchToMonthly => 'Switch to monthly';
@@ -1975,7 +2003,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get ovAlreadyBody =>
-      'This store account has an active plan. There\'s nothing to buy.';
+      'This store account has an active plan. You don\'t need to buy it again.';
 
   @override
   String get ctaSeeMySubscription => 'See my subscription';
@@ -2069,7 +2097,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get nicknameRule =>
-      '2–12 characters. Letters and numbers. English Only';
+      '2–12 characters · English letters and numbers only';
 
   @override
   String get ctaSave => 'Save';
@@ -2147,7 +2175,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'We analyze your pronunciation from what you say on calls.';
 
   @override
-  String get noCharacterNote => 'Nothing said yet';
+  String get noCharacterNote => 'No note from your character yet';
 
   @override
   String get noPhonemesYet => 'No sounds to analyze yet';
@@ -2472,7 +2500,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String hwJoinDoneSubtitle(int count) {
-    return '$count assignments are waiting';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count assignments are waiting',
+      one: '1 assignment is waiting',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -2482,7 +2516,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hwJoinDoneNextDue => 'Next due';
 
   @override
-  String get hwJoinDoneRosterName => 'Your class name';
+  String get hwJoinDoneRosterName => 'Your name in class';
 
   @override
   String get hwJoinDoneCta => 'See homework';
@@ -2575,7 +2609,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hwConversationOnce =>
-      'You can do the conversation once per homework.';
+      'You can only do the conversation once per assignment.';
 
   @override
   String get hwTaskWorkbookDesc => 'Practice by writing in the workbook';
@@ -2632,12 +2666,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String hwHomeBannerDueTomorrow(int count) {
-    return '$count assignments are due tomorrow';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count assignments are due tomorrow',
+      one: '1 assignment is due tomorrow',
+    );
+    return '$_temp0';
   }
 
   @override
   String hwHomeBannerOverdue(int count) {
-    return 'You have $count unsubmitted assignments';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'You have $count unsubmitted assignments',
+      one: 'You have 1 unsubmitted assignment',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -2725,7 +2771,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Please allow notifications in Settings.';
 
   @override
-  String get callHintLockedTitle => 'Hints aren\'t available in Study';
+  String get callHintLockedTitle => 'Hints aren\'t available in Expressions';
 
   @override
   String get wsTitle => 'Weak sounds';
@@ -3052,7 +3098,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get nationalitySearchHint => 'Search country';
 
   @override
-  String get nationalityAllCountries => 'All countries';
+  String get nationalityAllCountries => 'All countries (A–Z)';
 
   @override
   String get nationalityCurrent => 'Current';

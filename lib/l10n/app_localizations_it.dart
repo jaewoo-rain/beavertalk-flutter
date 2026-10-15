@@ -102,7 +102,7 @@ class AppLocalizationsIt extends AppLocalizations {
       'Informazioni sulla chiamata non trovate, analisi saltata.';
 
   @override
-  String get tabRecords => 'Registri';
+  String get tabRecords => 'Cronologia';
 
   @override
   String get tabArchive => 'Archivio';
@@ -111,7 +111,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get callHistory => 'Cronologia chiamate';
 
   @override
-  String get conversationRecord => 'Registrazione della conversazione';
+  String get conversationRecord => 'Cronologia della conversazione';
 
   @override
   String get noCallRecords => 'Ancora nessuna chiamata registrata';
@@ -138,7 +138,7 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String get scheduleManagement => 'Programma';
+  String get scheduleManagement => 'Gestisci programma';
 
   @override
   String get alarms => 'Sveglie';
@@ -186,7 +186,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get repeat => 'Ripeti';
 
   @override
-  String get callPartner => 'Personaggio';
+  String get callPartner => 'Interlocutore';
 
   @override
   String get alarmModeLearnSub => 'Esercita le espressioni del programma';
@@ -513,7 +513,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String homeExpressionsLeft(int count) {
-    return 'Mancano $count espressioni alla conversazione';
+    return 'Espressioni rimanenti prima della conversazione: $count';
   }
 
   @override
@@ -659,7 +659,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String myPartnersOwned(int count) {
-    return 'I miei personaggi · $count posseduti';
+    return 'I miei personaggi · Posseduti: $count';
   }
 
   @override
@@ -685,11 +685,11 @@ class AppLocalizationsIt extends AppLocalizations {
       'Ancora nessuna frase salvata.\nSalva le frasi dai tuoi registri di conversazione.';
 
   @override
-  String get noAlarms => 'Ancora nessuna sveglia';
+  String get noAlarms => 'Nessuna sveglia impostata';
 
   @override
   String get noAlarmsBody =>
-      'Aggiungi un promemoria di studio\nper costruire un\'abitudine costante.';
+      'Se aggiungi un promemoria di studio,\npuoi costruire un\'abitudine costante.';
 
   @override
   String get subscriptionManage => 'Gestisci abbonamento';
@@ -738,10 +738,10 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get challengeIntro =>
-      'Pronuncia correttamente in coreano ogni carta nella zona per superarla.\nNiente microfono? Puoi giocare anche toccando lo schermo.';
+      'Leggi ad alta voce le parole in arrivo per 30 secondi.\nNiente microfono? Puoi giocare anche toccando lo schermo.';
 
   @override
-  String get challengeStart => 'Avvia fotocamera e microfono';
+  String get challengeStart => 'Inizia';
 
   @override
   String get challengePermissionNote =>
@@ -901,7 +901,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get continueLabel => 'Continua';
 
   @override
-  String get onboardingDoneTitle => 'Beaver aspetta la tua chiamata';
+  String get onboardingDoneTitle => 'Il castoro aspetta la tua chiamata';
 
   @override
   String get onboardingDoneSubtitle => 'Avvia subito una chiamata';
@@ -1177,7 +1177,8 @@ class AppLocalizationsIt extends AppLocalizations {
   String get availableForPurchase => 'Disponibile all\'acquisto';
 
   @override
-  String get paymentsLoadError => 'Impossibile caricare lo storico pagamenti';
+  String get paymentsLoadError =>
+      'Impossibile caricare la cronologia pagamenti';
 
   @override
   String get noPayments => 'Ancora nessun pagamento';
@@ -1189,8 +1190,17 @@ class AppLocalizationsIt extends AppLocalizations {
   String get paymentLabelFallback => 'Pagamento';
 
   @override
+  String get paymentLabelSubscription => 'Pagamento dell\'abbonamento';
+
+  @override
+  String get paymentLabelCharacter => 'Acquisto del personaggio';
+
+  @override
+  String get paymentLabelBundle => 'Acquisto pacchetto personaggi';
+
+  @override
   String learningPassed(int passed, int total) {
-    return '$passed frasi su $total superate';
+    return '$passed su $total frasi superate';
   }
 
   @override
@@ -1201,7 +1211,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String phonemeAttempts(int count) {
-    return 'Per fonema · $count tentativi';
+    return 'Per fonema · Tentativi: $count';
   }
 
   @override
@@ -1279,7 +1289,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get pronunciationAnalysis => 'Analisi della pronuncia';
 
   @override
-  String get recentSessionsAverage => 'Media di 10 sessioni';
+  String get recentSessionsAverage => 'Media delle ultime 10 sessioni';
 
   @override
   String levelStage(int stage) {
@@ -1643,7 +1653,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get ctaCaptionAutoRenew =>
-      'Si rinnova automaticamente fino alla cancellazione.';
+      'Si rinnova automaticamente fino alla disdetta.';
 
   @override
   String get footerTerms => 'Termini';
@@ -1671,7 +1681,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get ctaStartAVideoCall => 'Avvia una videochiamata';
 
   @override
-  String get ctaSeeYourSubscription => 'Vedi il tuo abbonamento';
+  String get ctaSeeYourSubscription => 'Vedi il mio abbonamento';
 
   @override
   String successMaxCaption(String price) {
@@ -1824,7 +1834,7 @@ class AppLocalizationsIt extends AppLocalizations {
       'La disdetta avviene nello store. Due cose da sapere.';
 
   @override
-  String get rowPayYearlyInstead => 'Paga una volta all\'anno';
+  String get rowPayYearlyInstead => 'Se passi al pagamento annuale';
 
   @override
   String rowYearlyMonthEquiv(String price) {
@@ -2182,16 +2192,16 @@ class AppLocalizationsIt extends AppLocalizations {
   String get playAgain => 'Gioca di nuovo';
 
   @override
-  String get difficultySlow => 'Lento';
+  String get difficultySlow => 'Facile';
 
   @override
   String get difficultyNormal => 'Normale';
 
   @override
-  String get difficultyFast => 'Veloce';
+  String get difficultyFast => 'Difficile';
 
   @override
-  String get difficultyLabel => 'Difficoltà';
+  String get difficultyLabel => 'Scegli la difficoltà';
 
   @override
   String get connected => 'Connesso';
@@ -2284,7 +2294,8 @@ class AppLocalizationsIt extends AppLocalizations {
   String get callExitTitle => 'Terminare la chiamata?';
 
   @override
-  String get callExitSubtitle => 'Il tempo già parlato conta comunque per oggi';
+  String get callExitSubtitle =>
+      'Il tempo di chiamata già trascorso viene comunque conteggiato nell’utilizzo di oggi';
 
   @override
   String get callExitKeep => 'Continua a parlare';
@@ -2433,7 +2444,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get hwJoinStudentNoHelp =>
-      'L’insegnante la usa per l’elenco della classe';
+      'L’insegnante la usa per trovarti nell’elenco della classe';
 
   @override
   String get hwJoinConsentTitle => 'Cosa vede l’insegnante';
@@ -2451,7 +2462,8 @@ class AppLocalizationsIt extends AppLocalizations {
   String get hwJoinConsentShared2 => 'Se hai fatto i compiti';
 
   @override
-  String get hwJoinConsentShared3 => 'Frasi superate e sbagliate';
+  String get hwJoinConsentShared3 =>
+      'Numero di frasi superate e frasi non completate';
 
   @override
   String get hwJoinConsentShared4 =>
@@ -2753,7 +2765,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get callHintLockedTitle =>
-      'I suggerimenti non sono disponibili in Studio';
+      'I suggerimenti non sono disponibili in Espressioni';
 
   @override
   String get wsTitle => 'Suoni difficili';

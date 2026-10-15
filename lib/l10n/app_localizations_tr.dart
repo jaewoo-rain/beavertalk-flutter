@@ -134,7 +134,7 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String get scheduleManagement => 'Program';
+  String get scheduleManagement => 'Program Yönetimi';
 
   @override
   String get alarms => 'Alarmlar';
@@ -158,7 +158,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get alarmNoRepeat => 'Tekrar yok';
 
   @override
-  String get addSchedule => 'Program Ekle';
+  String get addSchedule => 'Yeni Program Ekle';
 
   @override
   String get editSchedule => 'Programı Düzenle';
@@ -179,10 +179,10 @@ class AppLocalizationsTr extends AppLocalizations {
   String get close => 'Kapat';
 
   @override
-  String get repeat => 'Tekrarla';
+  String get repeat => 'Tekrar';
 
   @override
-  String get callPartner => 'Karakter';
+  String get callPartner => 'Arama Partneri';
 
   @override
   String get alarmModeLearnSub => 'Müfredattaki ifadeleri çalış';
@@ -238,7 +238,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get conversation => 'Konuşma';
 
   @override
-  String get newExpressions => 'Yeni İfadeler';
+  String get newExpressions => 'Yeni Öğrendiğin İfadeler';
 
   @override
   String get analysisPrepNote => 'Bugünkü görüşme gözden geçiriliyor.';
@@ -259,7 +259,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get analysisPrepStepCards => 'İfade kartları hazırlama';
 
   @override
-  String get analysisPrepStateDone => 'Tamam';
+  String get analysisPrepStateDone => 'Tamamlandı';
 
   @override
   String get analysisPrepStateWorking => 'Sürüyor';
@@ -298,7 +298,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String recentScore(int score) {
-    return 'Son puan $score%';
+    return 'Son puan %$score';
   }
 
   @override
@@ -379,7 +379,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get payMethodKakao => 'KakaoPay';
 
   @override
-  String get productName => 'Sinir Bozucu Kunduz Avatarı';
+  String get productName => 'Yaramaz Kunduz Avatarı';
 
   @override
   String get productTrait => 'Premium karakter · Sonsuza dek sizin';
@@ -585,7 +585,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get streakNoCallsThatDay => 'Bu gün arama yok.';
 
   @override
-  String get homeLevelPending => 'Seviye belirsiz';
+  String get homeLevelPending => 'Seviye belirlenmedi';
 
   @override
   String get homeNoLevelTitle => 'Henüz bir seviyen yok';
@@ -670,11 +670,11 @@ class AppLocalizationsTr extends AppLocalizations {
       'Henüz kaydedilen cümle yok.\nKonuşma kayıtlarınızdan cümleleri yer imlerine ekleyin.';
 
   @override
-  String get noAlarms => 'Henüz alarm yok';
+  String get noAlarms => 'Kayıtlı alarm yok';
 
   @override
   String get noAlarmsBody =>
-      'Tutarlı bir alışkanlık oluşturmak için\nbir öğrenme hatırlatıcısı ekleyin.';
+      'Bir öğrenme hatırlatıcısı eklerseniz\ntutarlı bir alışkanlık oluşturabilirsiniz.';
 
   @override
   String get subscriptionManage => 'Aboneliği Yönet';
@@ -723,10 +723,10 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get challengeIntro =>
-      'Bölgedeki her kartı Korece doğru telaffuz ederek geçin.\nMikrofonunuz mu yok? Ekrana dokunarak da oynayabilirsiniz.';
+      '30 saniye boyunca sana doğru gelen kelimeleri sesli oku.\nMikrofonun yok mu? Ekrana dokunarak da oynayabilirsin.';
 
   @override
-  String get challengeStart => 'Kamera ve Mikrofonu Başlat';
+  String get challengeStart => 'Başla';
 
   @override
   String get challengePermissionNote =>
@@ -752,7 +752,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get reasonCareerTitle => 'İş ve kariyer';
 
   @override
-  String get reasonCareerDesc => 'İş görüşmesi konuşması';
+  String get reasonCareerDesc => 'İş konuşmaları';
 
   @override
   String get reasonExamTitle => 'Sınav hazırlığı';
@@ -841,7 +841,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get share => 'Paylaş';
 
   @override
-  String get accentSoundsLike => 'Korece aksanınız şöyle geliyor';
+  String get accentSoundsLike => 'Korece aksanınız kulağa şöyle geliyor';
 
   @override
   String accentShareText(String country) {
@@ -871,7 +871,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get onboardingNameSubtitle =>
-      'Yapay zeka eğitmenin adını hatırlayacak.';
+      'Yapay zeka eğitmenin senin adını hatırlayacak.';
 
   @override
   String get nameLabel => 'Adınız';
@@ -921,7 +921,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get tryAgain => 'Tekrar dene';
 
   @override
-  String get nativeLabel => 'Anadil';
+  String get nativeLabel => 'Anadili konuşan';
 
   @override
   String get meLabel => 'Ben';
@@ -1172,12 +1172,21 @@ class AppLocalizationsTr extends AppLocalizations {
   String get paymentLabelFallback => 'Ödeme';
 
   @override
+  String get paymentLabelSubscription => 'Abonelik ödemesi';
+
+  @override
+  String get paymentLabelCharacter => 'Karakter satın alma';
+
+  @override
+  String get paymentLabelBundle => 'Karakter paketi satın alma';
+
+  @override
   String learningPassed(int passed, int total) {
     return '$total cümleden $passed tanesi geçti';
   }
 
   @override
-  String get hardestSound => 'Bugünün en zor sesi';
+  String get hardestSound => 'En zorlandığın ses';
 
   @override
   String get soundAccuracy => 'Sese göre doğruluk';
@@ -1204,7 +1213,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String viewAllSentences(int count) {
-    return '$count tanesini gör';
+    return 'Tümünü gör ($count)';
   }
 
   @override
@@ -1266,12 +1275,12 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String levelStage(int stage) {
-    return '$stage. seviye';
+    return '$stage. aşama';
   }
 
   @override
   String topPercent(int percent) {
-    return 'İlk $percent%';
+    return 'İlk %$percent';
   }
 
   @override
@@ -1279,7 +1288,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String aheadOfLearners(int percent) {
-    return 'Öğrencilerin $percent%\'inden öndesin';
+    return 'Tüm öğrencilerin %$percent kadarından öndesin';
   }
 
   @override
@@ -1376,7 +1385,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get plansTitle => 'Planlar';
 
   @override
-  String get planFree => 'Free';
+  String get planFree => 'Ücretsiz';
 
   @override
   String get planPro => 'Pro';
@@ -1391,7 +1400,8 @@ class AppLocalizationsTr extends AppLocalizations {
   String get premiumBulletAnalysis => 'Tekrarda sınırsız telaffuz puanlaması';
 
   @override
-  String get premiumBulletWeakSounds => 'Dilin için zayıf ses alıştırmaları';
+  String get premiumBulletWeakSounds =>
+      'Ana diline göre zayıf ses alıştırmaları';
 
   @override
   String get noteCharactersSeparate =>
@@ -1495,7 +1505,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get trialExpiredTitle => 'Premium denemen sona erdi';
 
   @override
-  String get trialExpiredSub => 'Artık Free plandasın';
+  String get trialExpiredSub => 'Artık Ücretsiz plandasın';
 
   @override
   String get seePlans => 'Planları gör';
@@ -1539,7 +1549,8 @@ class AppLocalizationsTr extends AppLocalizations {
   String get limitBannerCallTitle => 'Bugünkü arama süren doldu';
 
   @override
-  String get limitBannerCallSub => 'Free günde 5 dakika arama verir';
+  String get limitBannerCallSub =>
+      'Ücretsiz planda günde 5 dakika arama yapabilirsin';
 
   @override
   String get bulletProCharactersForever =>
@@ -2152,16 +2163,16 @@ class AppLocalizationsTr extends AppLocalizations {
   String get playAgain => 'Tekrar oyna';
 
   @override
-  String get difficultySlow => 'Yavaş';
+  String get difficultySlow => 'Kolay';
 
   @override
   String get difficultyNormal => 'Normal';
 
   @override
-  String get difficultyFast => 'Hızlı';
+  String get difficultyFast => 'Zor';
 
   @override
-  String get difficultyLabel => 'Zorluk';
+  String get difficultyLabel => 'Bir zorluk seviyesi seçin';
 
   @override
   String get connected => 'Bağlandı';
@@ -2245,7 +2256,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get callModeChange => 'Modu değiştir';
 
   @override
-  String get callModeKeep => 'Şimdi değil';
+  String get callModeKeep => 'Kapat';
 
   @override
   String get callExitTitle => 'Arama sonlandırılsın mı?';
@@ -2270,7 +2281,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get callPushToTalk => 'Konuşmak için basılı tut';
 
   @override
-  String get callFreeEndedTitle => 'Ücretsiz aramanız sona erdi';
+  String get callFreeEndedTitle => 'Ücretsiz görüşmen sona erdi';
 
   @override
   String get callFreeEndedCta => 'Abone ol ve konuşmaya devam et';
@@ -2399,7 +2410,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get hwJoinStudentNoHelp =>
-      'Öğretmenin sınıf listesini eşleştirmek için kullanır';
+      'Öğretmenin bunu sınıf listesiyle eşleştirmek için kullanır';
 
   @override
   String get hwJoinConsentTitle => 'Öğretmeninin gördükleri';
@@ -2418,7 +2429,8 @@ class AppLocalizationsTr extends AppLocalizations {
   String get hwJoinConsentShared2 => 'Ödevi yapıp yapmadığın';
 
   @override
-  String get hwJoinConsentShared3 => 'Geçilen ve kaçırılan cümleler';
+  String get hwJoinConsentShared3 =>
+      'Geçilen cümle sayısı ve kaçırılan cümleler';
 
   @override
   String get hwJoinConsentShared4 => 'Ödev görüşmesinin süresi ve özeti';
@@ -2503,7 +2515,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get hwSectionUpcoming => 'Yaklaşan';
 
   @override
-  String get hwSectionDone => 'Bitti';
+  String get hwSectionDone => 'Tamamlanan';
 
   @override
   String get hwLeaveClassLink => 'Sınıftan ayrıl';
@@ -2533,7 +2545,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String hwBadgeDday(int days) {
-    return 'S-$days';
+    return 'Son $days gün';
   }
 
   @override
@@ -2711,7 +2723,7 @@ class AppLocalizationsTr extends AppLocalizations {
       'Ayarlardan bildirimlere izin verin.';
 
   @override
-  String get callHintLockedTitle => 'Çalışma modunda ipucu kullanılamaz';
+  String get callHintLockedTitle => 'İfadeler kursunda ipucu kullanılamaz';
 
   @override
   String get wsTitle => 'Zayıf sesler';
@@ -2859,7 +2871,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get wsMicPermissionBody =>
-      'Bu testte sesli okursun, bu yüzden mikrofon gerekir. Ayarlar\'dan mikrofon erişimini aç.';
+      'Bu testte sesli okursunuz, bu yüzden mikrofon gerekir. Ayarlar\'dan mikrofon erişimini açın.';
 
   @override
   String get wsNoSound => 'Hiçbir şey duymadık. Tekrar deneyelim mi?';
@@ -2889,7 +2901,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String wsBeforePoints(int score) {
-    return 'Önce $score puan';
+    return 'Çalışma öncesi $score puan';
   }
 
   @override
@@ -2943,12 +2955,12 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String wsResultTip(String desc) {
-    return '$desc. Bir aramada karşınıza çıkınca bu şekli gözünüzde canlandırın.';
+    return '$desc. Bir aramada karşına çıkınca bu şekli gözünde canlandır.';
   }
 
   @override
   String wsNationalSubtitle(String country) {
-    return '$country – konuşanların sık yanlış söylediği sesler';
+    return '$country kökenli konuşanların sık yanlış söylediği sesler';
   }
 
   @override
@@ -2983,7 +2995,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String wsRetryListSubWithCall(String title) {
-    return '“$title” görüşmesinde 2 veya daha fazla kez hata yaptığın sesler';
+    return '“$title” aramasında 2 veya daha fazla kez hata yaptığın sesler';
   }
 
   @override
@@ -3071,7 +3083,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String hwWorkbookTitle(String chapter) {
-    return 'Chapter $chapter çalışma kitabı';
+    return 'Bölüm $chapter çalışma kitabı';
   }
 
   @override

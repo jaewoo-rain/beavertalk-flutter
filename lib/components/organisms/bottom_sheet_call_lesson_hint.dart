@@ -536,6 +536,11 @@ class _LessonRow extends StatelessWidget {
   final CurLessonRow row;
   final bool current;
 
+  static String? _translation(CurLessonRow row) {
+    final t = row.situationTranslation;
+    return (t == null || t == row.situation) ? null : t;
+  }
+
   @override
   Widget build(BuildContext context) {
     final c = context.c;
@@ -570,11 +575,27 @@ class _LessonRow extends StatelessWidget {
             ),
             const SizedBox(width: AppSpacing.s12),
             Expanded(
-              child: Text(
-                row.situation ?? '',
-                style: (current ? AppType.body2.b : AppType.body2.r).copyWith(
-                  color: current ? c.labelStrong : c.labelNeutral,
-                ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    row.situation ?? '',
+                    style: (current ? AppType.body2.b : AppType.body2.r)
+                        .copyWith(
+                      color: current ? c.labelStrong : c.labelNeutral,
+                    ),
+                  ),
+                  // 서버 R2(2026-10-16 PM-DEC-674) — 회원 모국어 번역. 없거나 원문과 같으면(ko 회원) 줄을 숨긴다.
+                  if (_translation(row) case final t?) ...[
+                    const SizedBox(height: AppSpacing.s2),
+                    Text(
+                      t,
+                      style:
+                          AppType.caption1.r.copyWith(color: c.labelAlternative),
+                    ),
+                  ],
+                ],
               ),
             ),
             if (current) ...[

@@ -106,7 +106,7 @@ void main() {
     expect(conv.outlined, isTrue);
     expect(conv.ctaLabel, 'Completed');
     expect(conv.ctaDisabled, isTrue);
-    expect(conv.description, 'You can do the conversation once per homework.');
+    expect(conv.description, 'You can only do the conversation once per assignment.');
     final btn = tester.widget<Button>(
       find.byWidgetPredicate((w) => w is Button && w.text == 'Completed'),
     );

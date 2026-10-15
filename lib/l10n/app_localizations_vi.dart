@@ -184,7 +184,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get repeat => 'Lặp lại';
 
   @override
-  String get callPartner => 'Nhân vật';
+  String get callPartner => 'Đối tác gọi';
 
   @override
   String get alarmModeLearnSub => 'Luyện mẫu câu trong giáo trình';
@@ -205,7 +205,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get presetEvening => 'Khép lại buổi tối';
 
   @override
-  String get presetEveningSub => 'Mỗi ngày 21:00';
+  String get presetEveningSub => 'Hằng ngày 21:00';
 
   @override
   String get presetCustom => 'Tùy chỉnh';
@@ -251,7 +251,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get analysisPrepTitle =>
-      'Hải ly đang biến các cách nói hôm nay thành thẻ';
+      'Hải ly đang biến các cách diễn đạt hôm nay thành thẻ';
 
   @override
   String get analysisPrepSub => 'Xong là hiện ngay tại đây.';
@@ -260,7 +260,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get analysisPrepStepSave => 'Lưu cuộc trò chuyện';
 
   @override
-  String get analysisPrepStepCards => 'Tạo thẻ cách nói';
+  String get analysisPrepStepCards => 'Tạo thẻ cách diễn đạt';
 
   @override
   String get analysisPrepStateDone => 'Xong';
@@ -362,7 +362,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get connectionFailedBody =>
-      'Kiểm tra kết nối mạng của bạn\nvà thử lại.';
+      'Vui lòng kiểm tra kết nối mạng của bạn\nvà thử lại.';
 
   @override
   String get checkout => 'Thanh toán';
@@ -383,7 +383,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get payMethodKakao => 'KakaoPay';
 
   @override
-  String get productName => 'Avatar Beaver phiền phức';
+  String get productName => 'Avatar Hải ly nghịch ngợm';
 
   @override
   String get productTrait => 'Nhân vật cao cấp · Của bạn mãi mãi';
@@ -681,10 +681,10 @@ class AppLocalizationsVi extends AppLocalizations {
       'Thêm lời nhắc học tập\nđể xây dựng thói quen đều đặn.';
 
   @override
-  String get subscriptionManage => 'Quản lý đăng ký';
+  String get subscriptionManage => 'Quản lý gói đăng ký';
 
   @override
-  String get cancelSubscription => 'Hủy đăng ký';
+  String get cancelSubscription => 'Hủy gói đăng ký';
 
   @override
   String get benefitsInUse => 'Quyền lợi của bạn';
@@ -726,10 +726,10 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get challengeIntro =>
-      'Phát âm đúng từng thẻ trong khu vực bằng tiếng Hàn để vượt qua.\nKhông có micrô? Bạn cũng có thể chơi bằng cách chạm vào màn hình.';
+      'Đọc to từng từ đang tiến đến trong 30 giây.\nKhông có micrô? Bạn cũng có thể chơi bằng cách chạm vào màn hình.';
 
   @override
-  String get challengeStart => 'Bật camera & micrô';
+  String get challengeStart => 'Bắt đầu';
 
   @override
   String get challengePermissionNote =>
@@ -1174,6 +1174,15 @@ class AppLocalizationsVi extends AppLocalizations {
   String get paymentLabelFallback => 'Thanh toán';
 
   @override
+  String get paymentLabelSubscription => 'Thanh toán đăng ký';
+
+  @override
+  String get paymentLabelCharacter => 'Mua nhân vật';
+
+  @override
+  String get paymentLabelBundle => 'Mua gói nhân vật';
+
+  @override
   String learningPassed(int passed, int total) {
     return 'Đạt $passed trên $total câu';
   }
@@ -1216,7 +1225,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get colPronunciation => 'Ph.âm';
 
   @override
-  String get colFluency => 'Trôi';
+  String get colFluency => 'Lưu loát';
 
   @override
   String get colRhythm => 'Nhịp';
@@ -1285,7 +1294,7 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
-  String get retakeLevelTest => 'Làm lại bài kiểm tra cấp độ';
+  String get retakeLevelTest => 'Làm lại bài kiểm tra trình độ';
 
   @override
   String get levelTestOncePerDay =>
@@ -1445,7 +1454,8 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
-  String get bannerMaxUpsellTitle => 'Trò chuyện trực tiếp với Premium';
+  String get bannerMaxUpsellTitle =>
+      'Với Premium, bạn được trò chuyện mặt đối mặt';
 
   @override
   String bannerMaxUpsellSub(String price) {
@@ -1483,7 +1493,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get noteGrace =>
-      'Quyền lợi vẫn hoạt động trong thời gian gia hạn. Ứng dụng không bao giờ cản trở việc hủy.';
+      'Quyền lợi vẫn hoạt động trong thời gian ân hạn. Ứng dụng không bao giờ cản trở việc hủy.';
 
   @override
   String get noteHold =>
@@ -1801,7 +1811,7 @@ class AppLocalizationsVi extends AppLocalizations {
       'Việc hủy diễn ra trong cửa hàng. Có hai điều đáng biết.';
 
   @override
-  String get rowPayYearlyInstead => 'Trả theo năm thay vì';
+  String get rowPayYearlyInstead => 'Nếu chuyển sang trả theo năm';
 
   @override
   String rowYearlyMonthEquiv(String price) {
@@ -1996,7 +2006,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get subPaymentBody =>
-      'Chúng tôi không thể thu tiền. Premium vẫn hoạt động trong thời gian gia hạn.';
+      'Chúng tôi không thể thu tiền. Premium vẫn hoạt động trong thời gian ân hạn.';
 
   @override
   String get subHowToFix => 'Cách khắc phục';
@@ -2109,7 +2119,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get ctaGetHalfOff => 'Nhận giảm 50%';
 
   @override
-  String get iapCharacterSuccessTitle => 'Một người bạn mới đã tham gia!';
+  String get iapCharacterSuccessTitle => 'Một người bạn mới đã đến với bạn!';
 
   @override
   String get iapCharacterSuccessBody =>
@@ -2154,16 +2164,16 @@ class AppLocalizationsVi extends AppLocalizations {
   String get playAgain => 'Chơi lại';
 
   @override
-  String get difficultySlow => 'Chậm';
+  String get difficultySlow => 'Dễ';
 
   @override
   String get difficultyNormal => 'Bình thường';
 
   @override
-  String get difficultyFast => 'Nhanh';
+  String get difficultyFast => 'Khó';
 
   @override
-  String get difficultyLabel => 'Độ khó';
+  String get difficultyLabel => 'Chọn độ khó';
 
   @override
   String get connected => 'Đã kết nối';
@@ -2420,7 +2430,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get hwJoinConsentShared2 => 'Bạn đã làm bài tập hay chưa';
 
   @override
-  String get hwJoinConsentShared3 => 'Câu đã đạt và câu chưa đạt';
+  String get hwJoinConsentShared3 => 'Số câu đã đạt và các câu chưa đạt';
 
   @override
   String get hwJoinConsentShared4 => 'Thời lượng và tóm tắt cuộc gọi bài tập';
@@ -2447,7 +2457,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get hwJoinConsentNotShared4 => 'Cuộc gọi và việc học ngoài lớp';
 
   @override
-  String get hwJoinConsentNotShared5 => 'Thông tin đăng ký và thanh toán';
+  String get hwJoinConsentNotShared5 => 'Thông tin gói đăng ký và thanh toán';
 
   @override
   String get hwJoinConsentAgree => 'Tôi đồng ý với những điều trên';
@@ -2481,13 +2491,15 @@ class AppLocalizationsVi extends AppLocalizations {
   String get hwJoinErrorNotFound => 'Không tìm thấy mã đó';
 
   @override
-  String get hwJoinErrorNotFoundBody => 'Vui lòng kiểm tra lại sáu chữ số.';
+  String get hwJoinErrorNotFoundBody =>
+      'Vui lòng kiểm tra lại mã gồm sáu ký tự.';
 
   @override
   String get hwJoinErrorExpired => 'Mã đó đã hết hạn';
 
   @override
-  String get hwJoinErrorExpiredBody => 'Hãy xin giáo viên một mã mới.';
+  String get hwJoinErrorExpiredBody =>
+      'Vui lòng xin giáo viên của bạn một mã mới.';
 
   @override
   String get hwJoinErrorFull => 'Lớp đã đầy';
@@ -2558,7 +2570,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get hwTaskSpeakingDesc =>
-      'Hãy luyện các biểu hiện đã học bằng cách tự nói thành tiếng.';
+      'Hãy luyện các mẫu câu đã học bằng cách tự nói thành tiếng.';
 
   @override
   String get hwTaskConversationDesc =>
@@ -2587,7 +2599,8 @@ class AppLocalizationsVi extends AppLocalizations {
   String get hwWorkbookUnavailable => 'Tệp sách bài tập chưa có sẵn.';
 
   @override
-  String get hwDetailClosed => 'Bài tập này đã đóng. Bạn không thể nộp thêm.';
+  String get hwDetailClosed =>
+      'Bài tập này đã đóng. Bạn không thể nộp bài nữa.';
 
   @override
   String get hwLeaveTitle => 'Rời khỏi lớp?';
@@ -2893,7 +2906,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String wsBeforePoints(int score) {
-    return 'Trước $score điểm';
+    return 'Trước khi học: $score điểm';
   }
 
   @override

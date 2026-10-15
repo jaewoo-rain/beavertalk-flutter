@@ -46,7 +46,7 @@ void main() {
 
   testWidgets('배운 문장 있음 · 복습 전 — 「복습하면」 안내 · 학습 카드 둘 다 켜짐', (tester) async {
     await pump(tester, result(sentences: true));
-    expect(find.text('Practice the sentences to get your pronunciation score'), findsOneWidget);
+    expect(find.text('Review the sentences to get your pronunciation score'), findsOneWidget);
     expect(card(tester, 'Practice pronunciation').onTap, isNotNull);
     expect(card(tester, 'Pronunciation Challenge').onTap, isNotNull);
   });
@@ -55,7 +55,7 @@ void main() {
       (tester) async {
     await pump(tester, result(sentences: false));
     expect(find.text('No sentences to score'), findsOneWidget);
-    expect(find.text('Practice the sentences to get your pronunciation score'), findsNothing);
+    expect(find.text('Review the sentences to get your pronunciation score'), findsNothing);
     expect(card(tester, 'Practice pronunciation').onTap, isNull, reason: '숨기지 않고 비활성');
     expect(card(tester, 'Pronunciation Challenge').onTap, isNull,
         reason: '기본 단어 진입 경로 제거');
@@ -63,7 +63,7 @@ void main() {
 
   testWidgets('점수가 있으면 안내 없음', (tester) async {
     await pump(tester, result(sentences: true, score: 81));
-    expect(find.text('Practice the sentences to get your pronunciation score'), findsNothing);
+    expect(find.text('Review the sentences to get your pronunciation score'), findsNothing);
     expect(find.text('No sentences to score'), findsNothing);
   });
 }

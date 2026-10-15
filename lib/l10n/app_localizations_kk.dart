@@ -136,16 +136,16 @@ class AppLocalizationsKk extends AppLocalizations {
   }
 
   @override
-  String get scheduleManagement => 'Кесте';
+  String get scheduleManagement => 'Кестені басқару';
 
   @override
   String get alarms => 'Дабылдар';
 
   @override
-  String get alarmAdd => 'Оятқыш қосу';
+  String get alarmAdd => 'Дабыл қосу';
 
   @override
-  String get alarmEdit => 'Оятқышты өзгерту';
+  String get alarmEdit => 'Дабылды өзгерту';
 
   @override
   String get alarmEveryDay => 'Күн сайын';
@@ -160,7 +160,7 @@ class AppLocalizationsKk extends AppLocalizations {
   String get alarmNoRepeat => 'Қайталанбайды';
 
   @override
-  String get addSchedule => 'Кесте қосу';
+  String get addSchedule => 'Жаңа кесте қосу';
 
   @override
   String get editSchedule => 'Кестені өзгерту';
@@ -184,7 +184,7 @@ class AppLocalizationsKk extends AppLocalizations {
   String get repeat => 'Қайталау';
 
   @override
-  String get callPartner => 'Кейіпкер';
+  String get callPartner => 'Әңгімелесуші';
 
   @override
   String get alarmModeLearnSub => 'Бағдарлама тіркестерін жаттығу';
@@ -211,7 +211,7 @@ class AppLocalizationsKk extends AppLocalizations {
   String get presetCustom => 'Өз таңдауым';
 
   @override
-  String get presetCustomSub => 'Қалауыңша';
+  String get presetCustomSub => 'Қалауыңызша';
 
   @override
   String alarmSummary(int count, int monthly) {
@@ -231,7 +231,7 @@ class AppLocalizationsKk extends AppLocalizations {
   String get am => 'Таңғы';
 
   @override
-  String get pm => 'Түскі';
+  String get pm => 'Түстен кейін';
 
   @override
   String get save => 'Сақтау';
@@ -240,7 +240,7 @@ class AppLocalizationsKk extends AppLocalizations {
   String get conversation => 'Әңгіме';
 
   @override
-  String get newExpressions => 'Жаңа сөз тіркестері';
+  String get newExpressions => 'Жаңадан үйренген сөз тіркестері';
 
   @override
   String get analysisPrepNote => 'Бүгінгі қоңырау қаралып жатыр.';
@@ -321,7 +321,7 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String newExpressionsCount(int count) {
-    return 'Жаңа тіркестер $count';
+    return 'Жаңадан үйренген сөз тіркестері $count';
   }
 
   @override
@@ -496,14 +496,14 @@ class AppLocalizationsKk extends AppLocalizations {
   String get navCall => 'Қоңырау';
 
   @override
-  String get homeCourseExpression => 'Өрнектер';
+  String get homeCourseExpression => 'Сөз тіркестері';
 
   @override
   String get homeCourseFreetalk => 'Әңгіме';
 
   @override
   String homeExpressionsLeft(int count) {
-    return 'Әңгімеге $count өрнек қалды';
+    return 'Әңгімеге $count сөз тіркесі қалды';
   }
 
   @override
@@ -671,11 +671,11 @@ class AppLocalizationsKk extends AppLocalizations {
       'Әзірге сақталған сөйлемдер жоқ.\nӘңгіме жазбаларыңыздан сөйлемдерді бетбелгі етіп қойыңыз.';
 
   @override
-  String get noAlarms => 'Әзірге дабылдар жоқ';
+  String get noAlarms => 'Қосылған оятқыштар жоқ';
 
   @override
   String get noAlarmsBody =>
-      'Тұрақты әдет қалыптастыру үшін\nоқу еске салғышын қосыңыз.';
+      'Оқу еске салғышын қоссаңыз,\nтұрақты әдет қалыптастыра аласыз.';
 
   @override
   String get subscriptionManage => 'Жазылымды басқару';
@@ -690,7 +690,7 @@ class AppLocalizationsKk extends AppLocalizations {
   String get paymentInfo => 'Төлем ақпараты';
 
   @override
-  String get nextBillingDate => 'Келесі есептеу күні';
+  String get nextBillingDate => 'Келесі төлем күні';
 
   @override
   String get lostBenefitsTitle => 'Бас тартсаңыз жоғалтатын артықшылықтар';
@@ -723,10 +723,10 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get challengeIntro =>
-      'Аймақтағы әр картаны корей тілінде дұрыс айтып, тазартыңыз.\nМикрофон жоқ па? Экранды түртіп те ойнай аласыз.';
+      '30 секунд ішінде келе жатқан сөздерді дауыстап оқыңыз.\nМикрофон жоқ па? Экранды түртіп те ойнай аласыз.';
 
   @override
-  String get challengeStart => 'Камера мен микрофонды қосу';
+  String get challengeStart => 'Бастау';
 
   @override
   String get challengePermissionNote =>
@@ -845,7 +845,7 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String accentShareText(String country) {
-    return 'BeaverTalk-пен корей тілін үйреніп жүрмін — корей тіліндегі екпінім осындай естіледі: $country! 🦫 Өз екпініңді анықта да, менімен бірге үйрен: https://beavertalk.im';
+    return 'BeaverTalk-пен корей тілін үйреніп жүрмін — корей тіліндегі айтылымым $country акцентімен естіледі екен! 🦫 Өз акцентіңді анықта да, менімен бірге үйрен: https://beavertalk.im';
   }
 
   @override
@@ -886,7 +886,7 @@ class AppLocalizationsKk extends AppLocalizations {
   String get continueLabel => 'Жалғастыру';
 
   @override
-  String get onboardingDoneTitle => 'Бобыр қоңырауыңызды күтуде';
+  String get onboardingDoneTitle => 'Құндыз қоңырауыңызды күтуде';
 
   @override
   String get onboardingDoneSubtitle => 'Дәл қазір қоңырау бастаңыз';
@@ -901,7 +901,7 @@ class AppLocalizationsKk extends AppLocalizations {
   String get pronunciation => 'Айтылым';
 
   @override
-  String get fluency => 'Еркіндік';
+  String get fluency => 'Еркін сөйлеу';
 
   @override
   String get rhythm => 'Ырғақ';
@@ -919,7 +919,7 @@ class AppLocalizationsKk extends AppLocalizations {
   String get tryAgain => 'Қайта көру';
 
   @override
-  String get nativeLabel => 'Ана тілі';
+  String get nativeLabel => 'Ана тілінде сөйлеуші';
 
   @override
   String get meLabel => 'Мен';
@@ -987,7 +987,7 @@ class AppLocalizationsKk extends AppLocalizations {
   String get loginTermsNoticeAnd => ' және ';
 
   @override
-  String get loginTermsNoticeSuffix => ' шарттарымен келісім бересіз.';
+  String get loginTermsNoticeSuffix => ' шарттарымен келісесіз.';
 
   @override
   String get loginLogIn => 'Кіру';
@@ -1171,8 +1171,17 @@ class AppLocalizationsKk extends AppLocalizations {
   String get paymentLabelFallback => 'Төлем';
 
   @override
+  String get paymentLabelSubscription => 'Жазылым төлемі';
+
+  @override
+  String get paymentLabelCharacter => 'Кейіпкерді сатып алу';
+
+  @override
+  String get paymentLabelBundle => 'Кейіпкерлер топтамасын сатып алу';
+
+  @override
   String learningPassed(int passed, int total) {
-    return '$total сөйлемнің $passed өтті';
+    return '$total сөйлемнен $passed сөйлем өтті';
   }
 
   @override
@@ -1203,7 +1212,7 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String viewAllSentences(int count) {
-    return '$count барлығын көру';
+    return 'Барлық $count сөйлемді көру';
   }
 
   @override
@@ -1261,7 +1270,7 @@ class AppLocalizationsKk extends AppLocalizations {
   String get pronunciationAnalysis => 'Айтылым талдауы';
 
   @override
-  String get recentSessionsAverage => 'Соңғы 10 сессия орташасы';
+  String get recentSessionsAverage => 'Соңғы 10 сеанс орташасы';
 
   @override
   String levelStage(int stage) {
@@ -1278,7 +1287,7 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String aheadOfLearners(int percent) {
-    return 'Сіз оқушылардың $percent%-нан оздыңыз';
+    return 'Сіз барлық оқушылардың $percent%-ынан оздыңыз';
   }
 
   @override
@@ -1528,7 +1537,7 @@ class AppLocalizationsKk extends AppLocalizations {
   String get paywallProTitle1 => 'Түнгі 3-те де ояу жүретін';
 
   @override
-  String get paywallProTitle2 => 'кәріс досыңыз';
+  String get paywallProTitle2 => 'корей досыңыз';
 
   @override
   String get paywallLimitHeadline => 'Premium күніне 15 минут қоңырау береді.';
@@ -1659,7 +1668,7 @@ class AppLocalizationsKk extends AppLocalizations {
   String get plansErrorSub => 'Дүкен жауап бермеді.';
 
   @override
-  String get ctaTryAgain => 'Қайта көру';
+  String get ctaTryAgain => 'Қайталап көру';
 
   @override
   String get plansErrorCaption => 'Ештеңе алынған жоқ.';
@@ -1674,7 +1683,8 @@ class AppLocalizationsKk extends AppLocalizations {
   String get winbackTitle => 'Premium жоспарыңыз аяқталды';
 
   @override
-  String get winbackSub => 'Сіз қазір Тегіндесіз — күніне 5 минут қоңырау.';
+  String get winbackSub =>
+      'Сіз қазір Тегін жоспардасыз — күніне 5 минут қоңырау.';
 
   @override
   String get winbackQuestion => 'Неге кеткеніңізді айта аласыз ба?';
@@ -1757,7 +1767,7 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get ovCharacterOfferBody =>
-      'Бір кейіпкер таңдап, өзіңізге қалдырыңыз. Бір реттік сатып алу — жазылымсыз, жаңартусыз.';
+      'Бір кейіпкер таңдап, мәңгі өзіңізде қалдырыңыз. Бір реттік сатып алу — жазылымсыз, жаңартусыз.';
 
   @override
   String get rowOneCharacter => 'Бір кейіпкер';
@@ -2085,7 +2095,7 @@ class AppLocalizationsKk extends AppLocalizations {
   String get iapFailTitle => 'Төлем өтпеді';
 
   @override
-  String get iapFailBody => 'Қайта көріп көруге болады';
+  String get iapFailBody => 'Қайталап көруге болады';
 
   @override
   String get paywallGuardTitle => 'Тегін қолдана беруге болады';
@@ -2153,19 +2163,19 @@ class AppLocalizationsKk extends AppLocalizations {
   String get playAgain => 'Қайта ойнау';
 
   @override
-  String get difficultySlow => 'Баяу';
+  String get difficultySlow => 'Оңай';
 
   @override
   String get difficultyNormal => 'Қалыпты';
 
   @override
-  String get difficultyFast => 'Жылдам';
+  String get difficultyFast => 'Қиын';
 
   @override
-  String get difficultyLabel => 'Күрделілік';
+  String get difficultyLabel => 'Қиындық деңгейін таңдаңыз';
 
   @override
-  String get connected => 'Байланысты';
+  String get connected => 'Қосылды';
 
   @override
   String get unlockedWithMax => 'Жоспарыңызға кіреді';
@@ -2250,7 +2260,7 @@ class AppLocalizationsKk extends AppLocalizations {
   String get callModeKeep => 'Қазір емес';
 
   @override
-  String get callExitTitle => 'Қоңырауды аяқтау керек пе?';
+  String get callExitTitle => 'Қоңырауды аяқтайсыз ба?';
 
   @override
   String get callExitSubtitle =>
@@ -2419,7 +2429,8 @@ class AppLocalizationsKk extends AppLocalizations {
   String get hwJoinConsentShared2 => 'Үй тапсырмасын орындағаныңыз';
 
   @override
-  String get hwJoinConsentShared3 => 'Өткен және өтпеген сөйлемдер';
+  String get hwJoinConsentShared3 =>
+      'Өткен сөйлемдер саны және өтпеген сөйлемдер';
 
   @override
   String get hwJoinConsentShared4 => 'Тапсырма қоңырауының ұзақтығы мен түйіні';
@@ -2565,7 +2576,8 @@ class AppLocalizationsKk extends AppLocalizations {
       'Үйренгеніңізді нақты әңгімеде қолданыңыз';
 
   @override
-  String get hwConversationOnce => 'Әңгіме әр тапсырма бойынша бір рет қана.';
+  String get hwConversationOnce =>
+      'Әңгімені әр тапсырмада бір рет қана өткізуге болады.';
 
   @override
   String get hwTaskWorkbookDesc => 'Жұмыс дәптеріне жазып жаттығыңыз';
@@ -2639,7 +2651,7 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String hwSpeakingProgress(int passed, int total) {
-    return '$total сөйлемнің $passed өтті';
+    return '$total сөйлемнен $passed сөйлем өтті';
   }
 
   @override
@@ -2715,7 +2727,8 @@ class AppLocalizationsKk extends AppLocalizations {
       'Параметрлерде хабарландыруға рұқсат беріңіз.';
 
   @override
-  String get callHintLockedTitle => 'Оқу режимінде кеңестер қолжетімсіз';
+  String get callHintLockedTitle =>
+      'Сөз тіркестері курсында кеңестер қолжетімсіз';
 
   @override
   String get wsTitle => 'Қиын дыбыстар';
@@ -2813,10 +2826,10 @@ class AppLocalizationsKk extends AppLocalizations {
   String get wsHowToSound => 'Дыбысты қалай айту керек';
 
   @override
-  String get wsPracticeWords => 'Сөздерді жаттығу';
+  String get wsPracticeWords => 'Сөздермен жаттығу';
 
   @override
-  String get wsPracticeSentence => 'Сөйлемді жаттығу';
+  String get wsPracticeSentence => 'Сөйлеммен жаттығу';
 
   @override
   String get wsPracticeAgain => 'Тағы бір рет';
@@ -2925,7 +2938,7 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String wsStartRecommendedWith(String label) {
-    return 'Бастау · $label';
+    return 'Ұсынылған дыбыстан бастау · $label';
   }
 
   @override
@@ -3074,7 +3087,7 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String hwWorkbookTitle(String chapter) {
-    return 'Chapter $chapter жұмыс дәптері';
+    return '$chapter-тарау жұмыс дәптері';
   }
 
   @override

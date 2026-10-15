@@ -233,7 +233,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get conversation => '对话';
 
   @override
-  String get newExpressions => '新表达';
+  String get newExpressions => '新学到的表达';
 
   @override
   String get analysisPrepNote => '正在回顾今天的通话。';
@@ -371,7 +371,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get payMethodKakao => 'KakaoPay';
 
   @override
-  String get productName => 'Annoying Beaver 头像';
+  String get productName => '捣蛋鬼海狸头像';
 
   @override
   String get productTrait => '高级角色 · 永久拥有';
@@ -389,7 +389,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get paymentCompleteTitle => '支付完成';
 
   @override
-  String get paymentCompleteBody => '头像已添加到你的收藏。';
+  String get paymentCompleteBody => '形象已添加到你的收藏。';
 
   @override
   String get viewCollection => '查看收藏';
@@ -707,10 +707,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get challengeTitle => '发音挑战';
 
   @override
-  String get challengeIntro => '用韩语正确读出区域内的每张卡片即可过关。\n没有麦克风？你也可以点击屏幕来玩。';
+  String get challengeIntro => '在 30 秒内大声读出迎面而来的单词。\n没有麦克风？你也可以点击屏幕来玩。';
 
   @override
-  String get challengeStart => '开启相机和麦克风';
+  String get challengeStart => '开始';
 
   @override
   String get challengePermissionNote => '需要前置相机和麦克风权限（可选）。';
@@ -719,7 +719,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get challengeLoadingTitle => '加载中…';
 
   @override
-  String get challengeLoadingNote => '正在准备摄像头和麦克风。';
+  String get challengeLoadingNote => '正在准备相机和麦克风。';
 
   @override
   String get challengeSttFallback => '语音识别不可用，因此你使用了点击输入来游玩。';
@@ -773,7 +773,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get paymentSection => '支付';
 
   @override
-  String get supportSection => '支持';
+  String get supportSection => '客户支持';
 
   @override
   String get userLanguage => '显示语言';
@@ -883,7 +883,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get fluency => '流利度';
 
   @override
-  String get rhythm => '语调节奏';
+  String get rhythm => '节奏';
 
   @override
   String get analysisFailed => '我们无法分析这次对话。请重试。';
@@ -1141,6 +1141,15 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get paymentLabelFallback => '支付';
+
+  @override
+  String get paymentLabelSubscription => '订阅付款';
+
+  @override
+  String get paymentLabelCharacter => '角色购买';
+
+  @override
+  String get paymentLabelBundle => '角色合集购买';
 
   @override
   String learningPassed(int passed, int total) {
@@ -1577,7 +1586,7 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get ctaCaptionAutoRenew => '在您取消前将自动续订。';
+  String get ctaCaptionAutoRenew => '在你取消前将自动续订。';
 
   @override
   String get footerTerms => '条款';
@@ -1846,7 +1855,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get ctaCancelInStore => '在商店中取消';
 
   @override
-  String get ovTrialStartTitle => '免费体验 Premium 7 天';
+  String get ovTrialStartTitle => '免费试用 Premium 7 天';
 
   @override
   String ovTrialStartBody(String price, String date) {
@@ -2044,14 +2053,14 @@ class AppLocalizationsZh extends AppLocalizations {
   String get ctaGetHalfOff => '领取 5 折';
 
   @override
-  String get iapCharacterSuccessTitle => '新伙伴加入了!';
+  String get iapCharacterSuccessTitle => '新伙伴加入了！';
 
   @override
   String get iapCharacterSuccessBody =>
-      '这个角色永远属于你——即使套餐变更也会保留,并可通过恢复购买在任何设备找回。';
+      '这个角色永远属于你——即使套餐变更也会保留，并可通过“恢复购买”在任何设备上找回。';
 
   @override
-  String get iapCharacterFailedBody => '购买未完成。没有产生任何扣款,请重试。';
+  String get iapCharacterFailedBody => '购买未完成。没有产生任何扣款，请重试。';
 
   @override
   String get noAccentDataTitle => '还没有语调数据';
@@ -2087,16 +2096,16 @@ class AppLocalizationsZh extends AppLocalizations {
   String get playAgain => '再玩一次';
 
   @override
-  String get difficultySlow => '慢速';
+  String get difficultySlow => '简单';
 
   @override
   String get difficultyNormal => '正常';
 
   @override
-  String get difficultyFast => '快速';
+  String get difficultyFast => '困难';
 
   @override
-  String get difficultyLabel => '难度';
+  String get difficultyLabel => '选择难度';
 
   @override
   String get connected => '已连接';
@@ -2135,7 +2144,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get fcEndedTitle => '免费通话已结束';
 
   @override
-  String get fcEndedBody => '今天的5分钟免费通话已用完\n订阅后可继续畅聊';
+  String get fcEndedBody => '今天的5分钟免费通话已用完\n订阅后可以聊得更久';
 
   @override
   String get ctaSubscribeKeepTalking => '订阅并继续通话';
@@ -2294,7 +2303,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get hwJoinFieldTeacher => '老师';
 
   @override
-  String get hwJoinFieldLearners => '学习者';
+  String get hwJoinFieldLearners => '人数';
 
   @override
   String get hwJoinFieldTerm => '学期';
@@ -2342,7 +2351,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get hwJoinConsentShared2 => '是否完成了作业';
 
   @override
-  String get hwJoinConsentShared3 => '通过和未通过的句子';
+  String get hwJoinConsentShared3 => '通过的句子数和未通过的句子';
 
   @override
   String get hwJoinConsentShared4 => '作业通话时长和摘要';
@@ -2499,7 +2508,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get hwCtaDownload => '下载';
 
   @override
-  String get hwSpeakingNoScore => '你还没做口语作业';
+  String get hwSpeakingNoScore => '你还没做发音作业';
 
   @override
   String get hwWorkbookUnavailable => '练习册文件尚未提供。';

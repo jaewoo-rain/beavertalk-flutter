@@ -109,7 +109,7 @@ class AppLocalizationsMn extends AppLocalizations {
   String get callHistory => 'Дуудлагын түүх';
 
   @override
-  String get conversationRecord => 'Ярианы бичлэг';
+  String get conversationRecord => 'Ярианы түүх';
 
   @override
   String get noCallRecords => 'Дуудлагын түүх алга байна';
@@ -136,7 +136,7 @@ class AppLocalizationsMn extends AppLocalizations {
   }
 
   @override
-  String get scheduleManagement => 'Хуваарь';
+  String get scheduleManagement => 'Хуваарь удирдах';
 
   @override
   String get alarms => 'Сэрүүлэг';
@@ -160,7 +160,7 @@ class AppLocalizationsMn extends AppLocalizations {
   String get alarmNoRepeat => 'Давтахгүй';
 
   @override
-  String get addSchedule => 'Хуваарь нэмэх';
+  String get addSchedule => 'Шинэ хуваарь нэмэх';
 
   @override
   String get editSchedule => 'Хуваарь засах';
@@ -184,7 +184,7 @@ class AppLocalizationsMn extends AppLocalizations {
   String get repeat => 'Давтах';
 
   @override
-  String get callPartner => 'Дүр';
+  String get callPartner => 'Ярилцагч';
 
   @override
   String get alarmModeLearnSub => 'Хөтөлбөрийн хэллэг дадлагажуулах';
@@ -228,10 +228,10 @@ class AppLocalizationsMn extends AppLocalizations {
   String get partnerOwned => 'Эзэмшсэн';
 
   @override
-  String get am => 'ӨӨ';
+  String get am => 'ҮӨ';
 
   @override
-  String get pm => 'ӨХ';
+  String get pm => 'ҮХ';
 
   @override
   String get save => 'Хадгалах';
@@ -240,13 +240,13 @@ class AppLocalizationsMn extends AppLocalizations {
   String get conversation => 'Яриа';
 
   @override
-  String get newExpressions => 'Шинэ хэллэгүүд';
+  String get newExpressions => 'Шинээр сурсан хэллэгүүд';
 
   @override
   String get analysisPrepNote => 'Өнөөдрийн дуудлагыг эргэн харж байна.';
 
   @override
-  String get analysisPrepNoteHint => 'Удахгүй энд захидал гарч ирнэ';
+  String get analysisPrepNoteHint => 'Удахгүй энд хэдэн үг гарч ирнэ';
 
   @override
   String get analysisPrepTitle => 'Минж өнөөдрийн хэллэгүүдээр карт хийж байна';
@@ -293,7 +293,7 @@ class AppLocalizationsMn extends AppLocalizations {
   String get noNewExpressions => 'Энэ ярианаас шинэ хэллэг олдсонгүй.';
 
   @override
-  String get practice => 'Дадлага';
+  String get practice => 'Дадлагажих';
 
   @override
   String get analysisNativeLabel => 'Уугуул хэлтэн';
@@ -305,7 +305,7 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String callSequence(int count) {
-    return '$count дэх дуудлага';
+    return '$count-р дуудлага';
   }
 
   @override
@@ -382,10 +382,10 @@ class AppLocalizationsMn extends AppLocalizations {
   String get payMethodKakao => 'KakaoPay';
 
   @override
-  String get productName => 'Ааштай бобрын аватар';
+  String get productName => 'Дэггүй минжийн аватар';
 
   @override
-  String get productTrait => 'Премиум дүр · Мөнхөд чинийх';
+  String get productTrait => 'Премиум дүр · Мөнхөд таных';
 
   @override
   String get amountItemPrice => 'Барааны үнэ';
@@ -432,7 +432,7 @@ class AppLocalizationsMn extends AppLocalizations {
       'Бобртой илүү удаан ярихын тулд захиалга хийнэ үү.';
 
   @override
-  String get subscribe => 'Захиалга авах';
+  String get subscribe => 'Захиалах';
 
   @override
   String get endCall => 'Дуудлага дуусгах';
@@ -509,7 +509,7 @@ class AppLocalizationsMn extends AppLocalizations {
   }
 
   @override
-  String get homeFreetalkNote => 'Сурсанаа ашиглан чөлөөтэй ярилцаарай';
+  String get homeFreetalkNote => 'Сурснаа ашиглан чөлөөтэй ярилцаарай';
 
   @override
   String get homeTalkTitle => 'Өнөөдөр юу болсон бэ?';
@@ -557,7 +557,7 @@ class AppLocalizationsMn extends AppLocalizations {
   }
 
   @override
-  String get streakMetricCallTime => 'Ярианы хугацаа';
+  String get streakMetricCallTime => 'Дуудлагын хугацаа';
 
   @override
   String get streakMetricLearned => 'Сурсан хэллэг';
@@ -677,7 +677,7 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get noAlarmsBody =>
-      'Тогтмол дадал үүсгэхийн тулд\nсургалтын сануулга нэмнэ үү.';
+      'Суралцах сануулга нэмбэл\nтогтмол дадал бий болгох боломжтой.';
 
   @override
   String get subscriptionManage => 'Захиалга удирдах';
@@ -726,10 +726,10 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get challengeIntro =>
-      'Бүсэд байгаа карт бүрийг Солонгос хэлээр зөв дуудаж түрж арилга.\nМикрофон байхгүй бол дэлгэц дарж тоглож болно.';
+      '30 секундийн турш ойртож ирэх үг бүрийг чангаар уншаарай.\nМикрофон байхгүй бол товшиж тоглож болно.';
 
   @override
-  String get challengeStart => 'Камер, микрофон эхлүүлэх';
+  String get challengeStart => 'Эхлэх';
 
   @override
   String get challengePermissionNote =>
@@ -844,7 +844,7 @@ class AppLocalizationsMn extends AppLocalizations {
   String get share => 'Хуваалцах';
 
   @override
-  String get accentSoundsLike => 'Таны Солонгос аялга ийм сонсогдож байна';
+  String get accentSoundsLike => 'Таны солонгос аялга ийм сонсогдож байна';
 
   @override
   String accentShareText(String country) {
@@ -888,10 +888,10 @@ class AppLocalizationsMn extends AppLocalizations {
   String get continueLabel => 'Үргэлжлүүлэх';
 
   @override
-  String get onboardingDoneTitle => 'Бобр таны дуудлагыг хүлээж байна';
+  String get onboardingDoneTitle => 'Минж тантай ярихыг хүлээж байна';
 
   @override
-  String get onboardingDoneSubtitle => 'Одоо дуудлага эхлүүл';
+  String get onboardingDoneSubtitle => 'Одоо дуудлага хийж үзээрэй';
 
   @override
   String get home => 'Нүүр';
@@ -1172,6 +1172,15 @@ class AppLocalizationsMn extends AppLocalizations {
   String get paymentLabelFallback => 'Төлбөр';
 
   @override
+  String get paymentLabelSubscription => 'Эрхийн төлбөр';
+
+  @override
+  String get paymentLabelCharacter => 'Дүр худалдан авалт';
+
+  @override
+  String get paymentLabelBundle => 'Дүрийн багц худалдан авалт';
+
+  @override
   String learningPassed(int passed, int total) {
     return '$total өгүүлбэрээс $passed нь тэнцлээ';
   }
@@ -1262,7 +1271,7 @@ class AppLocalizationsMn extends AppLocalizations {
   String get pronunciationAnalysis => 'Дуудлагын шинжилгээ';
 
   @override
-  String get recentSessionsAverage => 'Сүүлийн 10 хичээлийн дундаж';
+  String get recentSessionsAverage => 'Сүүлийн 10 хуралдааны дундаж';
 
   @override
   String levelStage(int stage) {
@@ -1290,7 +1299,7 @@ class AppLocalizationsMn extends AppLocalizations {
       'Түвшин тогтоох шалгалтыг өдөрт нэг удаа өгч болно. Маргааш дахин оролдоно уу.';
 
   @override
-  String get levelRetakeTitle => 'Түвшний шалгалтыг дахин өгөх үү?';
+  String get levelRetakeTitle => 'Түвшин тогтоох шалгалтыг дахин өгөх үү?';
 
   @override
   String get levelRetakeBody =>
@@ -1303,7 +1312,7 @@ class AppLocalizationsMn extends AppLocalizations {
   String get levelRetakeConfirm => 'Дахин шалгуулах';
 
   @override
-  String get practicePronunciation => 'Дуудлага дасгалжуулах';
+  String get practicePronunciation => 'Дуудлага дадлагажих';
 
   @override
   String get learnResultView => 'Суралцсан үр дүнг харах';
@@ -1457,7 +1466,7 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get bannerPaymentFailedSub =>
-      'Premium-г хадгалахын тулд дэлгүүрт төлбөрөө шинэчилнэ үү';
+      'Premium-ыг хадгалахын тулд дэлгүүрт төлбөрөө шинэчилнэ үү';
 
   @override
   String get bannerPausedTitle => 'Таны багц түр зогссон';
@@ -1865,7 +1874,7 @@ class AppLocalizationsMn extends AppLocalizations {
   String get rowMonthlyLabel => 'Сарын';
 
   @override
-  String get rowYearlyWorkedOut => 'Жилийнх тооцоход';
+  String get rowYearlyWorkedOut => 'Жилээр тооцсон дүн';
 
   @override
   String get ctaSwitchToMonthly => 'Сарын багцад шилжих';
@@ -1962,7 +1971,7 @@ class AppLocalizationsMn extends AppLocalizations {
       'Дэлгүүр энэ төлбөрийг баталгаажуулаагүй тул юу ч идэвхжээгүй. Төлбөр гарсан бол бидэнтэй холбогдоно уу.';
 
   @override
-  String get ovAlreadyTitle => 'Та аль хэдийн Premium байна';
+  String get ovAlreadyTitle => 'Та аль хэдийн Premium ашиглаж байна';
 
   @override
   String get ovAlreadyBody =>
@@ -2041,7 +2050,7 @@ class AppLocalizationsMn extends AppLocalizations {
   String get ctaMaybeTomorrow => 'Магадгүй маргааш';
 
   @override
-  String get accountSection => 'Данс';
+  String get accountSection => 'Бүртгэл';
 
   @override
   String get nicknameLabel => 'Хоч нэр';
@@ -2152,16 +2161,16 @@ class AppLocalizationsMn extends AppLocalizations {
   String get playAgain => 'Дахин тоглох';
 
   @override
-  String get difficultySlow => 'Удаан';
+  String get difficultySlow => 'Хялбар';
 
   @override
   String get difficultyNormal => 'Хэвийн';
 
   @override
-  String get difficultyFast => 'Хурдан';
+  String get difficultyFast => 'Хэцүү';
 
   @override
-  String get difficultyLabel => 'Хүндрэл';
+  String get difficultyLabel => 'Хүндрэлийн түвшнээ сонгоно уу';
 
   @override
   String get connected => 'Холбогдсон';
@@ -2241,7 +2250,7 @@ class AppLocalizationsMn extends AppLocalizations {
   String get callModeFreeTalk => 'Чөлөөт яриа';
 
   @override
-  String get callModeFreeTalkDesc => 'Засваргүйгээр чөлөөтэй ярь';
+  String get callModeFreeTalkDesc => 'Засваргүйгээр чөлөөтэй яриарай';
 
   @override
   String get callModeChange => 'Горим солих';
@@ -2297,7 +2306,7 @@ class AppLocalizationsMn extends AppLocalizations {
   String get reportEntry => 'Мэдэгдэх';
 
   @override
-  String get reportTitle => 'Мэдэгдэл';
+  String get reportTitle => 'Гомдол мэдүүлэх';
 
   @override
   String get reportPrompt => 'Ямар асуудал гарсан бэ?';
@@ -2347,7 +2356,7 @@ class AppLocalizationsMn extends AppLocalizations {
   String get hwJoinCodeTitle => 'Ангийнхаа кодыг оруулна уу';
 
   @override
-  String get hwJoinCodeSubtitle => 'Энэ бол багшаас өгсөн 6 тэмдэгттэй код';
+  String get hwJoinCodeSubtitle => 'Энэ бол багшийн өгсөн 6 тэмдэгттэй код';
 
   @override
   String get hwJoinCodeLabel => 'Ангийн код';
@@ -2371,7 +2380,7 @@ class AppLocalizationsMn extends AppLocalizations {
   String get hwJoinFieldLearners => 'Суралцагчид';
 
   @override
-  String get hwJoinFieldTerm => 'Хугацаа';
+  String get hwJoinFieldTerm => 'Улирал';
 
   @override
   String get hwJoinConfirmNote =>
@@ -2418,7 +2427,8 @@ class AppLocalizationsMn extends AppLocalizations {
   String get hwJoinConsentShared2 => 'Даалгавраа хийсэн эсэх';
 
   @override
-  String get hwJoinConsentShared3 => 'Давсан ба алдсан өгүүлбэрүүд';
+  String get hwJoinConsentShared3 =>
+      'Давсан өгүүлбэрийн тоо ба алдсан өгүүлбэрүүд';
 
   @override
   String get hwJoinConsentShared4 =>
@@ -2563,7 +2573,8 @@ class AppLocalizationsMn extends AppLocalizations {
   String get hwTaskConversationDesc => 'Сурсанаа жинхэнэ ярианд хэрэглээрэй';
 
   @override
-  String get hwConversationOnce => 'Ярианы даалгаврыг нэг удаа хийж болно.';
+  String get hwConversationOnce =>
+      'Яриаг даалгавар бүрт зөвхөн нэг удаа хийх боломжтой.';
 
   @override
   String get hwTaskWorkbookDesc => 'Дасгалын дэвтэрт бичиж дасгал хийгээрэй';
@@ -2638,7 +2649,7 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String hwSpeakingProgress(int passed, int total) {
-    return '$total-аас $passed өгүүлбэр давсан';
+    return 'Нийт $total өгүүлбэрээс $passed нь давсан';
   }
 
   @override
@@ -2714,7 +2725,8 @@ class AppLocalizationsMn extends AppLocalizations {
       'Тохиргоо хэсэгт мэдэгдлийг зөвшөөрнө үү.';
 
   @override
-  String get callHintLockedTitle => 'Суралцах горимд зөвлөмж ашиглах боломжгүй';
+  String get callHintLockedTitle =>
+      'Хэллэг сургалтад зөвлөмж ашиглах боломжгүй';
 
   @override
   String get wsTitle => 'Хүндрэлтэй авиа';
@@ -2785,7 +2797,7 @@ class AppLocalizationsMn extends AppLocalizations {
   String get wsRule => 'Дүрэм';
 
   @override
-  String get wsRecommended => 'Зөвлөмж';
+  String get wsRecommended => 'Санал болгосон';
 
   @override
   String get wsNotMeasured => 'Хэмжээгүй';
@@ -2924,7 +2936,7 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String wsStartRecommendedWith(String label) {
-    return 'Эхлэх · $label';
+    return 'Зөвлөсөн авианаас эхлэх · $label';
   }
 
   @override
@@ -2950,7 +2962,7 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String wsNationalSubtitle(String country) {
-    return '$country – хүмүүсийн түгээмэл алддаг авиа';
+    return '$country улсын хүмүүсийн түгээмэл алддаг авиа';
   }
 
   @override
@@ -3099,7 +3111,7 @@ class AppLocalizationsMn extends AppLocalizations {
   String get hwTabTodoEmptyTitle => 'Бүх гэрийн даалгавраа дуусгалаа';
 
   @override
-  String get hwTabDoneEmptyTitle => 'Дууссан гэрийн даалгавар алга';
+  String get hwTabDoneEmptyTitle => 'Одоогоор дууссан гэрийн даалгавар алга';
 
   @override
   String get hwDetailOverdueNote =>
@@ -3138,5 +3150,5 @@ class AppLocalizationsMn extends AppLocalizations {
   }
 
   @override
-  String get hwPolicyNoticeOk => 'OK';
+  String get hwPolicyNoticeOk => 'Ойлголоо';
 }

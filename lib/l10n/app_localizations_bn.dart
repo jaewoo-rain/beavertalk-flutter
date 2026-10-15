@@ -63,7 +63,7 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get callRatingBody =>
-      'আপনার রেটিং পরের বার আরও ভালোভাবে কথা বলতে সাহায্য করে।';
+      'আপনার রেটিং পরের কলকে আরও ভালো করতে সাহায্য করবে।';
 
   @override
   String get callRatingSubmit => 'জমা দিন';
@@ -135,7 +135,7 @@ class AppLocalizationsBn extends AppLocalizations {
   }
 
   @override
-  String get scheduleManagement => 'সময়সূচি';
+  String get scheduleManagement => 'সময়সূচি পরিচালনা';
 
   @override
   String get alarms => 'অ্যালার্ম';
@@ -159,7 +159,7 @@ class AppLocalizationsBn extends AppLocalizations {
   String get alarmNoRepeat => 'পুনরাবৃত্তি নেই';
 
   @override
-  String get addSchedule => 'সময়সূচি যোগ করুন';
+  String get addSchedule => 'নতুন সময়সূচি যোগ করুন';
 
   @override
   String get editSchedule => 'সময়সূচি সম্পাদনা করুন';
@@ -183,7 +183,7 @@ class AppLocalizationsBn extends AppLocalizations {
   String get repeat => 'পুনরাবৃত্তি';
 
   @override
-  String get callPartner => 'ক্যারেক্টার';
+  String get callPartner => 'কল পার্টনার';
 
   @override
   String get alarmModeLearnSub => 'পাঠ্যক্রমের অভিব্যক্তি অনুশীলন';
@@ -239,7 +239,7 @@ class AppLocalizationsBn extends AppLocalizations {
   String get conversation => 'কথোপকথন';
 
   @override
-  String get newExpressions => 'নতুন অভিব্যক্তি';
+  String get newExpressions => 'নতুন শেখা অভিব্যক্তি';
 
   @override
   String get analysisPrepNote => 'আজকের কলটি দেখা হচ্ছে।';
@@ -270,7 +270,7 @@ class AppLocalizationsBn extends AppLocalizations {
   String get analysisPrepStateWaiting => 'অপেক্ষায়';
 
   @override
-  String get usedExpressions => 'আপনি যে প্রকাশভঙ্গি ব্যবহার করেছেন';
+  String get usedExpressions => 'এই কলে আপনি যে অভিব্যক্তিগুলো ব্যবহার করেছেন';
 
   @override
   String quizExpressionsCount(int count) {
@@ -293,7 +293,7 @@ class AppLocalizationsBn extends AppLocalizations {
   String get noNewExpressions => 'এই কথোপকথনে কোনো নতুন অভিব্যক্তি নেই।';
 
   @override
-  String get practice => 'অনুশীলন';
+  String get practice => 'অনুশীলন করুন';
 
   @override
   String get analysisNativeLabel => 'স্থানীয়রা বলে';
@@ -310,7 +310,7 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String characterNoteTitle(String name) {
-    return '$name এর কিছু কথা';
+    return '$name-এর কিছু কথা';
   }
 
   @override
@@ -382,7 +382,7 @@ class AppLocalizationsBn extends AppLocalizations {
   String get payMethodKakao => 'KakaoPay';
 
   @override
-  String get productName => 'বিরক্তিকর বিভার অ্যাভাটার';
+  String get productName => 'দুষ্টু বিভার অ্যাভাটার';
 
   @override
   String get productTrait => 'প্রিমিয়াম ক্যারেক্টার · চিরদিনের জন্য আপনার';
@@ -674,11 +674,11 @@ class AppLocalizationsBn extends AppLocalizations {
       'এখনও কোনো সংরক্ষিত বাক্য নেই।\nআপনার কথোপকথনের রেকর্ড থেকে বাক্য বুকমার্ক করুন।';
 
   @override
-  String get noAlarms => 'এখনও কোনো অ্যালার্ম নেই';
+  String get noAlarms => 'কোনো অ্যালার্ম যোগ করা নেই';
 
   @override
   String get noAlarmsBody =>
-      'নিয়মিত অভ্যাস গড়ে তুলতে\nএকটি শেখার রিমাইন্ডার যোগ করুন।';
+      'শেখার রিমাইন্ডার যোগ করলে\nনিয়মিত অভ্যাস গড়ে তুলতে পারবেন।';
 
   @override
   String get subscriptionManage => 'সাবস্ক্রিপশন পরিচালনা করুন';
@@ -726,10 +726,10 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get challengeIntro =>
-      'জোনের প্রতিটি কার্ড ক্লিয়ার করতে কোরিয়ান ভাষায় সঠিকভাবে উচ্চারণ করুন।\nমাইক নেই? স্ক্রিনে ট্যাপ করেও খেলতে পারেন।';
+      '৩০ সেকেন্ড ধরে এগিয়ে আসা প্রতিটি শব্দ জোরে পড়ুন।\nমাইক নেই? ট্যাপ করেও খেলতে পারেন।';
 
   @override
-  String get challengeStart => 'ক্যামেরা ও মাইক শুরু করুন';
+  String get challengeStart => 'শুরু করুন';
 
   @override
   String get challengePermissionNote =>
@@ -849,7 +849,7 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String accentShareText(String country) {
-    return 'আমি BeaverTalk-এ কোরিয়ান শিখছি — আমার কোরিয়ান উচ্চারণ শোনায়: $country! 🦫 তোমার উচ্চারণ খুঁজে দেখো আর আমার সঙ্গে শেখো: https://beavertalk.im';
+    return 'আমি BeaverTalk-এ কোরিয়ান শিখছি — আমার কোরিয়ান উচ্চারণ নাকি $country-এর টানের মতো শোনায়! 🦫 তোমার উচ্চারণ খুঁজে দেখো আর আমার সঙ্গে শেখো: https://beavertalk.im';
   }
 
   @override
@@ -1174,6 +1174,15 @@ class AppLocalizationsBn extends AppLocalizations {
   String get paymentLabelFallback => 'পেমেন্ট';
 
   @override
+  String get paymentLabelSubscription => 'সাবস্ক্রিপশন পেমেন্ট';
+
+  @override
+  String get paymentLabelCharacter => 'চরিত্র কেনা';
+
+  @override
+  String get paymentLabelBundle => 'ক্যারেক্টার প্যাক কেনা';
+
+  @override
   String learningPassed(int passed, int total) {
     return '$total টির মধ্যে $passed টি বাক্য উত্তীর্ণ';
   }
@@ -1281,7 +1290,7 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String aheadOfLearners(int percent) {
-    return 'আপনি $percent% শিক্ষার্থীর চেয়ে এগিয়ে';
+    return 'আপনি সব শিক্ষার্থীর $percent%-এর চেয়ে এগিয়ে';
   }
 
   @override
@@ -1329,7 +1338,7 @@ class AppLocalizationsBn extends AppLocalizations {
   String get billingCompareAllPlans => 'প্ল্যান তুলনা করুন';
 
   @override
-  String get billingBuyACharacter => 'ক্যারেক্টার কিনুন';
+  String get billingBuyACharacter => 'চরিত্র কিনুন';
 
   @override
   String get billingRestorePurchases => 'কেনাকাটা পুনরুদ্ধার';
@@ -1530,7 +1539,7 @@ class AppLocalizationsBn extends AppLocalizations {
   String get paywallProTitle1 => 'আপনার কোরিয়ান বন্ধু';
 
   @override
-  String get paywallProTitle2 => 'রাত ৩টায়ও জেগে থাকে';
+  String get paywallProTitle2 => 'আমার কোরিয়ান বন্ধু';
 
   @override
   String get paywallLimitHeadline => 'Premium-এ দিনে 15 মিনিট কল করা যায়।';
@@ -2025,7 +2034,8 @@ class AppLocalizationsBn extends AppLocalizations {
   String get flTodayTitle => 'আজকের কলের সময় শেষ';
 
   @override
-  String get flTodayBody => 'যেখানে থেমেছিলেন, সেখান থেকে — এখনই।';
+  String get flTodayBody =>
+      'যেখানে থেমেছিলেন, সেখান থেকে এখনই কথা চালিয়ে যান।';
 
   @override
   String flCaption(String price) {
@@ -2152,16 +2162,16 @@ class AppLocalizationsBn extends AppLocalizations {
   String get playAgain => 'আবার খেলুন';
 
   @override
-  String get difficultySlow => 'ধীরে';
+  String get difficultySlow => 'সহজ';
 
   @override
   String get difficultyNormal => 'স্বাভাবিক';
 
   @override
-  String get difficultyFast => 'দ্রুত';
+  String get difficultyFast => 'কঠিন';
 
   @override
-  String get difficultyLabel => 'কঠিনতা';
+  String get difficultyLabel => 'কঠিনতা বেছে নিন';
 
   @override
   String get connected => 'সংযুক্ত';
@@ -2368,7 +2378,7 @@ class AppLocalizationsBn extends AppLocalizations {
   String get hwJoinFieldLearners => 'শিক্ষার্থী';
 
   @override
-  String get hwJoinFieldTerm => 'মেয়াদ';
+  String get hwJoinFieldTerm => 'সেমিস্টার';
 
   @override
   String get hwJoinConfirmNote =>
@@ -2414,7 +2424,7 @@ class AppLocalizationsBn extends AppLocalizations {
   String get hwJoinConsentShared2 => 'আপনি হোমওয়ার্ক করেছেন কি না';
 
   @override
-  String get hwJoinConsentShared3 => 'উত্তীর্ণ ও বাদ পড়া বাক্য';
+  String get hwJoinConsentShared3 => 'উত্তীর্ণ বাক্যের সংখ্যা ও বাদ পড়া বাক্য';
 
   @override
   String get hwJoinConsentShared4 => 'অ্যাসাইনমেন্ট কলের দৈর্ঘ্য ও সারসংক্ষেপ';
@@ -2433,7 +2443,8 @@ class AppLocalizationsBn extends AppLocalizations {
   String get hwJoinConsentNotShared1 => 'ইমেইল ও ফোন নম্বর';
 
   @override
-  String get hwJoinConsentNotShared2 => 'অ্যাপে ব্যবহৃত নাম, প্রোফাইল ও চরিত্র';
+  String get hwJoinConsentNotShared2 =>
+      'অ্যাপে ব্যবহৃত নাম, প্রোফাইল ও ক্যারেক্টার';
 
   @override
   String get hwJoinConsentNotShared3 => 'জাতীয়তা';
@@ -2457,11 +2468,11 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String hwJoinDoneSubtitle(int count) {
-    return '$countটি অ্যাসাইনমেন্ট অপেক্ষা করছে';
+    return '$countটি হোমওয়ার্ক অপেক্ষা করছে';
   }
 
   @override
-  String get hwJoinDoneNoAssignment => 'এখনও কোনো অ্যাসাইনমেন্ট নেই';
+  String get hwJoinDoneNoAssignment => 'এখনও কোনো হোমওয়ার্ক পাননি';
 
   @override
   String get hwJoinDoneNextDue => 'পরবর্তী সময়সীমা';
@@ -2476,7 +2487,7 @@ class AppLocalizationsBn extends AppLocalizations {
   String get hwJoinErrorNotFound => 'সেই কোড পাওয়া যায়নি';
 
   @override
-  String get hwJoinErrorNotFoundBody => 'অনুগ্রহ করে ছয়টি সংখ্যা আবার দেখুন।';
+  String get hwJoinErrorNotFoundBody => 'অনুগ্রহ করে ছয়টি অক্ষর আবার দেখুন।';
 
   @override
   String get hwJoinErrorExpired => 'সেই কোডের মেয়াদ শেষ';
@@ -2575,7 +2586,7 @@ class AppLocalizationsBn extends AppLocalizations {
   String get hwCtaDownload => 'ডাউনলোড';
 
   @override
-  String get hwSpeakingNoScore => 'আপনি এখনও কথা বলার কাজটি করেননি';
+  String get hwSpeakingNoScore => 'আপনি এখনও উচ্চারণের কাজটি করেননি';
 
   @override
   String get hwWorkbookUnavailable =>
@@ -2710,7 +2721,8 @@ class AppLocalizationsBn extends AppLocalizations {
   String get callNotifPermissionRequired => 'সেটিংসে নোটিফিকেশন চালু করুন।';
 
   @override
-  String get callHintLockedTitle => 'অনুশীলন মোডে ইঙ্গিত ব্যবহার করা যায় না';
+  String get callHintLockedTitle =>
+      'অভিব্যক্তি কোর্সে ইঙ্গিত ব্যবহার করা যায় না';
 
   @override
   String get wsTitle => 'কঠিন ধ্বনি';
@@ -2755,7 +2767,7 @@ class AppLocalizationsBn extends AppLocalizations {
   String get wsNationalPending => 'উচ্চারণভঙ্গি বিশ্লেষণ হলে এটি পূরণ হবে';
 
   @override
-  String get wsNationalPicked => 'আপনার উচ্চারণ বিশ্লেষণ থেকে বেছে নেওয়া';
+  String get wsNationalPicked => 'আপনার উচ্চারণভঙ্গি বিশ্লেষণ থেকে বেছে নেওয়া';
 
   @override
   String get wsNationalEmptyBody =>
@@ -3119,7 +3131,7 @@ class AppLocalizationsBn extends AppLocalizations {
   String get hwLangConsentAgree => 'সম্মতি দিন';
 
   @override
-  String get hwLangConsentDecline => 'সম্মতি নেই';
+  String get hwLangConsentDecline => 'সম্মতি দেব না';
 
   @override
   String get hwLangConsentFailed => 'সংরক্ষণ করা যায়নি। পরে আবার চেষ্টা করুন।';

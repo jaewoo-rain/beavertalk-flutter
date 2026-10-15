@@ -87,7 +87,12 @@ class HomeCourse {
       // `topic` 은 `cur_topic.name`, `situation` 은 상황 한 줄이다. 정본 2행이
       // 「처음 만난 반 친구와…」처럼 상황문에 가깝지만, 주제가 있으면 그쪽이
       // 차시를 더 정확히 가리킨다.
-      topic: lesson.topic ?? lesson.situation,
+      // 2026-10-16 PM-DEC-674 — 서버 R1 topic_translation(회원 모국어 · 없으면 서버가 원문)을 먼저 본다.
+      // 구서버(키 없음)·주제 없는 차시는 종전대로 원문 주제 → 상황 번역 → 상황 원문.
+      topic: lesson.topicTranslation ??
+          lesson.topic ??
+          lesson.situationTranslation ??
+          lesson.situation,
       expressionsLeft: me.itemsLeft,
       kind: me.nextCourse == CallCourse.freetalk
           ? HomeCourseKind.freetalk

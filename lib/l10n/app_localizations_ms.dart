@@ -137,7 +137,7 @@ class AppLocalizationsMs extends AppLocalizations {
   }
 
   @override
-  String get scheduleManagement => 'Jadual';
+  String get scheduleManagement => 'Urus Jadual';
 
   @override
   String get alarms => 'Penggera';
@@ -185,7 +185,7 @@ class AppLocalizationsMs extends AppLocalizations {
   String get repeat => 'Ulang';
 
   @override
-  String get callPartner => 'Watak';
+  String get callPartner => 'Rakan panggilan';
 
   @override
   String get alarmModeLearnSub => 'Latih ungkapan kurikulum';
@@ -251,7 +251,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get analysisPrepTitle =>
-      'Memerang sedang menjadikan ungkapan hari ini kad';
+      'Memerang sedang menukar ungkapan yang dipelajari hari ini kepada kad';
 
   @override
   String get analysisPrepSub => 'Akan muncul di sini sebaik sahaja siap.';
@@ -296,7 +296,7 @@ class AppLocalizationsMs extends AppLocalizations {
       'Tiada ungkapan baharu daripada perbualan ini.';
 
   @override
-  String get practice => 'Latihan';
+  String get practice => 'Berlatih';
 
   @override
   String get analysisNativeLabel => 'Penutur asli';
@@ -384,7 +384,7 @@ class AppLocalizationsMs extends AppLocalizations {
   String get payMethodKakao => 'KakaoPay';
 
   @override
-  String get productName => 'Avatar Beaver yang Menjengkelkan';
+  String get productName => 'Avatar Beaver Nakal';
 
   @override
   String get productTrait => 'Watak premium · Milik anda selamanya';
@@ -589,10 +589,10 @@ class AppLocalizationsMs extends AppLocalizations {
   }
 
   @override
-  String get streakNoCallsThatDay => 'Tiada panggilan pada hari ini.';
+  String get streakNoCallsThatDay => 'Tiada panggilan pada hari tersebut.';
 
   @override
-  String get homeLevelPending => 'Tahap belum ada';
+  String get homeLevelPending => 'Tahap belum ditentukan';
 
   @override
   String get homeNoLevelTitle => 'Anda belum ada tahap';
@@ -643,7 +643,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String avatarPromoLeftDays(int days, String time) {
-    return 'Tinggal $days hr $time';
+    return 'Tinggal $days hari $time';
   }
 
   @override
@@ -704,7 +704,7 @@ class AppLocalizationsMs extends AppLocalizations {
       'Faedah yang akan hilang jika anda membatalkan';
 
   @override
-  String get viewBillingHistory => 'Lihat Sejarah Bil';
+  String get viewBillingHistory => 'Lihat Sejarah Pembayaran';
 
   @override
   String pricePerMonth(String price) {
@@ -732,10 +732,10 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get challengeIntro =>
-      'Sebut setiap kad dalam zon dengan betul dalam bahasa Korea untuk melepasinya.\nTiada mikrofon? Anda juga boleh bermain dengan mengetik skrin.';
+      'Sebut dengan kuat setiap perkataan yang datang ke arah anda selama 30 saat.\nTiada mikrofon? Anda juga boleh bermain dengan mengetik skrin.';
 
   @override
-  String get challengeStart => 'Mulakan Kamera & Mikrofon';
+  String get challengeStart => 'Mulakan';
 
   @override
   String get challengePermissionNote =>
@@ -897,7 +897,7 @@ class AppLocalizationsMs extends AppLocalizations {
   String get continueLabel => 'Teruskan';
 
   @override
-  String get onboardingDoneTitle => 'Beaver sedang menunggu panggilan anda';
+  String get onboardingDoneTitle => 'Memerang sedang menunggu panggilan anda';
 
   @override
   String get onboardingDoneSubtitle => 'Mulakan panggilan sekarang';
@@ -1185,6 +1185,15 @@ class AppLocalizationsMs extends AppLocalizations {
   String get paymentLabelFallback => 'Pembayaran';
 
   @override
+  String get paymentLabelSubscription => 'Bayaran langganan';
+
+  @override
+  String get paymentLabelCharacter => 'Pembelian watak';
+
+  @override
+  String get paymentLabelBundle => 'Pembelian pakej watak';
+
+  @override
   String learningPassed(int passed, int total) {
     return '$passed daripada $total ayat lulus';
   }
@@ -1204,13 +1213,13 @@ class AppLocalizationsMs extends AppLocalizations {
   String get colSound => 'Bunyi';
 
   @override
-  String get colAttempts => 'Cuba';
+  String get colAttempts => 'Cubaan';
 
   @override
   String get colCorrect => 'Betul';
 
   @override
-  String get colAccuracy => 'Tepat';
+  String get colAccuracy => 'Ketepatan';
 
   @override
   String get sentenceResults => 'Keputusan mengikut ayat';
@@ -1255,7 +1264,7 @@ class AppLocalizationsMs extends AppLocalizations {
   String get colScore => 'Skor';
 
   @override
-  String get colChange => 'Ubah';
+  String get colChange => 'Perubahan';
 
   @override
   String dateToday(String date) {
@@ -1275,7 +1284,7 @@ class AppLocalizationsMs extends AppLocalizations {
   String get pronunciationAnalysis => 'Analisis sebutan';
 
   @override
-  String get recentSessionsAverage => 'Purata 10 sesi';
+  String get recentSessionsAverage => 'Purata 10 sesi terakhir';
 
   @override
   String levelStage(int stage) {
@@ -1284,7 +1293,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String topPercent(int percent) {
-    return 'Top $percent%';
+    return '$percent% teratas';
   }
 
   @override
@@ -1371,7 +1380,7 @@ class AppLocalizationsMs extends AppLocalizations {
   String get badgeTrial => 'Percubaan';
 
   @override
-  String get badgeRenewing => 'Diperbaharui';
+  String get badgeRenewing => 'Akan diperbaharui';
 
   @override
   String get badgePastDue => 'Tertunggak';
@@ -1380,7 +1389,7 @@ class AppLocalizationsMs extends AppLocalizations {
   String get badgePaused => 'Dijeda';
 
   @override
-  String get badgeCanceling => 'Dibatalkan';
+  String get badgeCanceling => 'Akan dibatalkan';
 
   @override
   String get subscriptionTitle => 'Langganan';
@@ -1477,7 +1486,7 @@ class AppLocalizationsMs extends AppLocalizations {
   String get bannerPausedTitle => 'Pelan anda dijeda';
 
   @override
-  String get bannerPausedSub => 'Pembayaran tidak pernah berjaya';
+  String get bannerPausedSub => 'Pembayaran belum selesai';
 
   @override
   String get noteRestoreHint =>
@@ -1554,7 +1563,8 @@ class AppLocalizationsMs extends AppLocalizations {
   String get limitBannerCallTitle => 'Masa panggilan hari ini sudah habis';
 
   @override
-  String get limitBannerCallSub => 'Percuma memberi 5 minit panggilan sehari';
+  String get limitBannerCallSub =>
+      'Pelan Percuma memberi anda 5 minit panggilan sehari';
 
   @override
   String get bulletProCharactersForever =>
@@ -1814,7 +1824,7 @@ class AppLocalizationsMs extends AppLocalizations {
       'Pembatalan dibuat di kedai. Dua perkara yang patut anda tahu.';
 
   @override
-  String get rowPayYearlyInstead => 'Bayar tahunan sahaja';
+  String get rowPayYearlyInstead => 'Jika bertukar kepada bayaran tahunan';
 
   @override
   String rowYearlyMonthEquiv(String price) {
@@ -2072,7 +2082,7 @@ class AppLocalizationsMs extends AppLocalizations {
   String get loginMethodLabel => 'Kaedah log masuk';
 
   @override
-  String get joinedLabel => 'Menyertai';
+  String get joinedLabel => 'Tarikh menyertai';
 
   @override
   String get editNicknameTitle => 'Ubah Nama Panggilan';
@@ -2126,7 +2136,7 @@ class AppLocalizationsMs extends AppLocalizations {
   String get ctaGetHalfOff => 'Dapatkan diskaun 50%';
 
   @override
-  String get iapCharacterSuccessTitle => 'Rakan baharu menyertai!';
+  String get iapCharacterSuccessTitle => 'Rakan baharu menyertai anda!';
 
   @override
   String get iapCharacterSuccessBody =>
@@ -2173,16 +2183,16 @@ class AppLocalizationsMs extends AppLocalizations {
   String get playAgain => 'Main semula';
 
   @override
-  String get difficultySlow => 'Perlahan';
+  String get difficultySlow => 'Mudah';
 
   @override
   String get difficultyNormal => 'Biasa';
 
   @override
-  String get difficultyFast => 'Laju';
+  String get difficultyFast => 'Sukar';
 
   @override
-  String get difficultyLabel => 'Tahap kesukaran';
+  String get difficultyLabel => 'Pilih tahap kesukaran';
 
   @override
   String get connected => 'Disambungkan';
@@ -2276,7 +2286,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get callExitSubtitle =>
-      'Masa yang sudah anda bercakap tetap dikira untuk hari ini';
+      'Masa panggilan setakat ini tetap dikira dalam penggunaan hari ini';
 
   @override
   String get callExitKeep => 'Teruskan bercakap';
@@ -2442,7 +2452,8 @@ class AppLocalizationsMs extends AppLocalizations {
   String get hwJoinConsentShared2 => 'Sama ada anda buat kerja rumah';
 
   @override
-  String get hwJoinConsentShared3 => 'Ayat yang lulus dan gagal';
+  String get hwJoinConsentShared3 =>
+      'Bilangan ayat yang lulus dan ayat yang gagal';
 
   @override
   String get hwJoinConsentShared4 => 'Tempoh dan ringkasan panggilan tugasan';
@@ -2485,11 +2496,11 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String hwJoinDoneSubtitle(int count) {
-    return '$count tugasan sedang menunggu';
+    return '$count kerja rumah sedang menunggu';
   }
 
   @override
-  String get hwJoinDoneNoAssignment => 'Belum ada tugasan';
+  String get hwJoinDoneNoAssignment => 'Belum ada kerja rumah';
 
   @override
   String get hwJoinDoneNextDue => 'Tarikh akhir seterusnya';
@@ -2739,7 +2750,8 @@ class AppLocalizationsMs extends AppLocalizations {
       'Benarkan pemberitahuan dalam Tetapan.';
 
   @override
-  String get callHintLockedTitle => 'Petunjuk tidak tersedia dalam mod Belajar';
+  String get callHintLockedTitle =>
+      'Petunjuk tidak tersedia dalam kursus Ungkapan';
 
   @override
   String get wsTitle => 'Bunyi sukar';
@@ -2951,7 +2963,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String wsStartRecommendedWith(String label) {
-    return 'Mula dengan $label';
+    return 'Mula dengan bunyi disyorkan · $label';
   }
 
   @override

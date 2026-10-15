@@ -76,7 +76,7 @@ class AppLocalizationsUz extends AppLocalizations {
   String get ratingBad => 'Yaxshi emas';
 
   @override
-  String get ratingOkay => 'Yaxshi';
+  String get ratingOkay => 'Yomon emas';
 
   @override
   String get ratingGood => 'Zoʻr';
@@ -132,17 +132,17 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String durationMinSec(int minutes, int seconds) {
-    return '$minutes daq $seconds son';
+    return '$minutes daq. $seconds son.';
   }
 
   @override
-  String get scheduleManagement => 'Jadval';
+  String get scheduleManagement => 'Jadvalni boshqarish';
 
   @override
-  String get alarms => 'Signalar';
+  String get alarms => 'Budilniklar';
 
   @override
-  String get alarmAdd => 'Budilnik qo‘shish';
+  String get alarmAdd => 'Budilnik qoʻshish';
 
   @override
   String get alarmEdit => 'Budilnikni tahrirlash';
@@ -160,7 +160,7 @@ class AppLocalizationsUz extends AppLocalizations {
   String get alarmNoRepeat => 'Takrorlanmaydi';
 
   @override
-  String get addSchedule => 'Jadval qoʻshish';
+  String get addSchedule => 'Yangi jadval qoʻshish';
 
   @override
   String get editSchedule => 'Jadvalni tahrirlash';
@@ -184,7 +184,7 @@ class AppLocalizationsUz extends AppLocalizations {
   String get repeat => 'Takrorlash';
 
   @override
-  String get callPartner => 'Personaj';
+  String get callPartner => 'Suhbat sherigi';
 
   @override
   String get alarmModeLearnSub => 'Dastur iboralarini mashq qilish';
@@ -240,7 +240,7 @@ class AppLocalizationsUz extends AppLocalizations {
   String get conversation => 'Suhbat';
 
   @override
-  String get newExpressions => 'Yangi iboralar';
+  String get newExpressions => 'Yangi oʻrganilgan iboralar';
 
   @override
   String get analysisPrepNote => 'Bugungi qo‘ng‘iroq ko‘rib chiqilmoqda.';
@@ -426,7 +426,7 @@ class AppLocalizationsUz extends AppLocalizations {
       'Toʻlovingizni amalga oshirib boʻlmadi.\nIltimos, qayta urinib koʻring.';
 
   @override
-  String get freeCallEndingTitle => 'Bepul qoʻngʻirog\'ingiz tugamoqda';
+  String get freeCallEndingTitle => 'Bepul qoʻngʻirogʻingiz tugamoqda';
 
   @override
   String get freeCallEndingBody =>
@@ -678,11 +678,11 @@ class AppLocalizationsUz extends AppLocalizations {
       'Hali saqlangan gap yoʻq.\nSuhbat yozuvlaringizdagi gaplarni belgilab qoʻying.';
 
   @override
-  String get noAlarms => 'Hali signal yoʻq';
+  String get noAlarms => 'Qoʻshilgan budilnik yoʻq';
 
   @override
   String get noAlarmsBody =>
-      'Barqaror odat shakllantirish uchun\noʻqish eslatmasini qoʻshing.';
+      'Oʻqish eslatmasini qoʻshsangiz,\nbarqaror odat shakllantira olasiz.';
 
   @override
   String get subscriptionManage => 'Obunani boshqarish';
@@ -731,10 +731,10 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get challengeIntro =>
-      'Zonadagi har bir kartani koreys tilida toʻgʻri talaffuz qilib, uni yeching.\nMikrofon yoʻqmi? Ekranga bosib ham oʻynashingiz mumkin.';
+      '30 soniya davomida sizga yaqinlashib kelayotgan soʻzlarni ovoz chiqarib oʻqing.\nMikrofon yoʻqmi? Ekranga bosib ham oʻynashingiz mumkin.';
 
   @override
-  String get challengeStart => 'Kamera va mikrofonni yoqish';
+  String get challengeStart => 'Boshlash';
 
   @override
   String get challengePermissionNote =>
@@ -854,7 +854,7 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String accentShareText(String country) {
-    return 'BeaverTalk bilan koreys tilini oʻrganyapman — koreyscha talaffuzim shunday eshitiladi: $country! 🦫 Oʻz talaffuzingni aniqla va men bilan birga oʻrgan: https://beavertalk.im';
+    return 'BeaverTalk bilan koreys tilini oʻrganyapman — koreyscha talaffuzim $country aksentiga oʻxshab eshitilarkan! 🦫 Oʻz aksentingni aniqla va men bilan birga oʻrgan: https://beavertalk.im';
   }
 
   @override
@@ -930,7 +930,7 @@ class AppLocalizationsUz extends AppLocalizations {
   String get tryAgain => 'Qayta urinish';
 
   @override
-  String get nativeLabel => 'Ona tili';
+  String get nativeLabel => 'Ona tilida soʻzlovchi';
 
   @override
   String get meLabel => 'Men';
@@ -998,7 +998,7 @@ class AppLocalizationsUz extends AppLocalizations {
   String get loginTermsNoticeAnd => ' va ';
 
   @override
-  String get loginTermsNoticeSuffix => ' ga rozilik bildirasiz.';
+  String get loginTermsNoticeSuffix => 'ga rozilik bildirasiz.';
 
   @override
   String get loginLogIn => 'Kirish';
@@ -1183,6 +1183,15 @@ class AppLocalizationsUz extends AppLocalizations {
   String get paymentLabelFallback => 'To\'lov';
 
   @override
+  String get paymentLabelSubscription => 'Obuna to‘lovi';
+
+  @override
+  String get paymentLabelCharacter => 'Belgi xaridi';
+
+  @override
+  String get paymentLabelBundle => 'Personajlar to\'plamini sotib olish';
+
+  @override
   String learningPassed(int passed, int total) {
     return '$total gapdan $passed tasi o\'tdi';
   }
@@ -1261,7 +1270,7 @@ class AppLocalizationsUz extends AppLocalizations {
   }
 
   @override
-  String get accentAnalysis => 'Talaffuz uslubi tahlili';
+  String get accentAnalysis => 'Aksent tahlili';
 
   @override
   String get overallLevel => 'Umumiy daraja';
@@ -1290,7 +1299,7 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String aheadOfLearners(int percent) {
-    return 'Siz oʻquvchilarning $percent% dan oldindasiz';
+    return 'Siz barcha oʻquvchilarning $percent% qismidan oldindasiz';
   }
 
   @override
@@ -1305,10 +1314,10 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get levelRetakeBody =>
-      'Qayta topshirsangiz, natijangiz o‘sha darajaning birinchi darsiga qaytadi — daraja bir xil chiqsa ham. O‘rganilgan iboralar va qo‘ng‘iroqlar tarixi saqlanadi.';
+      'Qayta topshirsangiz, oʻquv jarayoningiz oʻsha darajaning birinchi darsiga qaytadi — daraja bir xil chiqsa ham. Oʻrganilgan iboralar va qoʻngʻiroqlar tarixi saqlanadi.';
 
   @override
-  String get levelRetakeKeep => 'Natijani saqlash';
+  String get levelRetakeKeep => 'Oʻquv jarayonini saqlab qolish';
 
   @override
   String get levelRetakeConfirm => 'Qayta topshirish';
@@ -1395,7 +1404,7 @@ class AppLocalizationsUz extends AppLocalizations {
   String get planMax => 'Premium';
 
   @override
-  String get premiumBulletVideo => 'Kuniga 15 daqiqa video qo‘ng‘iroq';
+  String get premiumBulletVideo => 'Kuniga 15 daqiqa videoqoʻngʻiroq';
 
   @override
   String get premiumBulletAnalysis =>
@@ -1406,7 +1415,7 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get noteCharactersSeparate =>
-      'Personajlar alohida sotiladi. Sotib olganlaringiz sizniki bo‘lib qoladi.';
+      'Personajlar alohida sotiladi. Sotib olganlaringiz sizniki boʻlib qoladi.';
 
   @override
   String get ctaGetPremium => 'Premium olish';
@@ -1457,7 +1466,7 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String bannerMaxUpsellSub(String price) {
-    return 'Video qo‘ng‘iroqlar · kuniga 15 daqiqa · oyiga $price';
+    return 'Videoqoʻngʻiroqlar · kuniga 15 daqiqa · oyiga $price';
   }
 
   @override
@@ -1534,7 +1543,7 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get noteCallLength =>
-      'Premium: kuniga 15 daqiqa — shu vaqt ichida xohlagancha qo‘ng‘iroq qilishingiz mumkin.';
+      'Premium: kuniga 15 daqiqa — shu vaqt ichida xohlagancha qoʻngʻiroq qilishingiz mumkin.';
 
   @override
   String get paywallProTitle1 => 'Tungi soat 3da ham uygʻoq';
@@ -1544,7 +1553,7 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get paywallLimitHeadline =>
-      'Premium kuniga 15 daqiqa qo‘ng‘iroq beradi.';
+      'Premium kuniga 15 daqiqa qoʻngʻiroq beradi.';
 
   @override
   String get limitBannerCallTitle => 'Bugungi qoʻngʻiroq vaqti tugadi';
@@ -1561,7 +1570,7 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String paywallTutorCompare(String price) {
-    return 'Repetitor bilan bir soat \$25 turadi. Premium bir oyi $price turadi.';
+    return 'Repetitor bilan bir soat \$25 turadi. Premiumning bir oyi $price turadi.';
   }
 
   @override
@@ -1837,7 +1846,7 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get ovAnnualSwitchBody =>
-      'Yillik tarif har oy to‘lagandan arzonroq tushadi.';
+      'Yillik tarif har oy toʻlagandan arzonroq tushadi.';
 
   @override
   String get rowYouSave => 'Tejaysiz';
@@ -1928,7 +1937,7 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get ovOtoBody =>
-      'Yaxshi tanlov. Yillik to‘lasangiz, o‘sha Premium arzonroq.';
+      'Yaxshi tanlov. Yillik toʻlasangiz, oʻsha Premium arzonroq.';
 
   @override
   String get ovFailedDeclinedTitle => 'Kartangiz rad etildi';
@@ -2132,7 +2141,7 @@ class AppLocalizationsUz extends AppLocalizations {
       'Xarid amalga oshmadi. Pul yechilmadi — qayta urinib koʻring.';
 
   @override
-  String get noAccentDataTitle => 'Hozircha ohang ma\'lumotlari yo\'q';
+  String get noAccentDataTitle => 'Hozircha aksent maʼlumotlari yoʻq';
 
   @override
   String get noAccentDataBody =>
@@ -2168,16 +2177,16 @@ class AppLocalizationsUz extends AppLocalizations {
   String get playAgain => 'Qayta o\'ynash';
 
   @override
-  String get difficultySlow => 'Sekin';
+  String get difficultySlow => 'Oson';
 
   @override
   String get difficultyNormal => 'Oddiy';
 
   @override
-  String get difficultyFast => 'Tez';
+  String get difficultyFast => 'Qiyin';
 
   @override
-  String get difficultyLabel => 'Murakkablik';
+  String get difficultyLabel => 'Qiyinlik darajasini tanlang';
 
   @override
   String get connected => 'Ulandi';
@@ -2187,7 +2196,7 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get homeworkCallTimeLimit =>
-      'Uyga vazifa qo\'ng\'irog\'i faqat 5 daqiqa.';
+      'Uy vazifasi uchun faqat 5 daqiqa qoʻngʻiroq qilish mumkin.';
 
   @override
   String get homeworkCallClosed => 'Bu uy vazifasi yopilgan.';
@@ -2269,7 +2278,7 @@ class AppLocalizationsUz extends AppLocalizations {
   String get callModeKeep => 'Hozir emas';
 
   @override
-  String get callExitTitle => 'Qo‘ng‘iroq tugatilsinmi?';
+  String get callExitTitle => 'Qoʻngʻiroq tugatilsinmi?';
 
   @override
   String get callExitSubtitle =>
@@ -2304,7 +2313,7 @@ class AppLocalizationsUz extends AppLocalizations {
       'Qo‘ng‘iroqlar 5 daqiqalik qismlarda davom etadi. Har safar qayta so‘raymiz.';
 
   @override
-  String get articulationSelectedWord => 'Tanlangan so\'z';
+  String get articulationSelectedWord => 'Tanlangan soʻz';
 
   @override
   String get articulationYouSaid => 'Talaffuzingiz';
@@ -2332,7 +2341,7 @@ class AppLocalizationsUz extends AppLocalizations {
   String get reportReasonHate => 'Nafrat yoki kamsitish';
 
   @override
-  String get reportReasonViolence => 'Zo\'ravonlik yoki tahdid';
+  String get reportReasonViolence => 'Zoʻravonlik yoki tahdid';
 
   @override
   String get reportReasonSelfHarm => 'O\'ziga zarar yetkazishga undaydi';
@@ -2391,7 +2400,7 @@ class AppLocalizationsUz extends AppLocalizations {
   String get hwJoinFieldLearners => 'Oʻquvchilar';
 
   @override
-  String get hwJoinFieldTerm => 'Davr';
+  String get hwJoinFieldTerm => 'Semestr';
 
   @override
   String get hwJoinConfirmNote =>
@@ -2436,10 +2445,10 @@ class AppLocalizationsUz extends AppLocalizations {
   String get hwJoinConsentShared1 => 'Sinfdagi ism va talaba raqami';
 
   @override
-  String get hwJoinConsentShared2 => 'Uyga vazifani bajarganingiz';
+  String get hwJoinConsentShared2 => 'Uyga vazifani bajargan-bajarmaganingiz';
 
   @override
-  String get hwJoinConsentShared3 => 'Oʻtgan va oʻtmagan gaplar';
+  String get hwJoinConsentShared3 => 'Oʻtgan gaplar soni va oʻtmagan gaplar';
 
   @override
   String get hwJoinConsentShared4 =>
@@ -2458,7 +2467,7 @@ class AppLocalizationsUz extends AppLocalizations {
   String get hwJoinConsentNotShared1 => 'E-pochta va telefon raqami';
 
   @override
-  String get hwJoinConsentNotShared2 => 'Ilovadagi ism, profil va qahramon';
+  String get hwJoinConsentNotShared2 => 'Ilovadagi ism, profil va personaj';
 
   @override
   String get hwJoinConsentNotShared3 => 'Fuqarolik';
@@ -2660,7 +2669,7 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String hwSpeakingProgress(int passed, int total) {
-    return '$total tadan $passed ta gap oʻtdi';
+    return '$total ta gapdan $passed tasi oʻtdi';
   }
 
   @override
@@ -2717,7 +2726,7 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get callMissedChannelDescription =>
-      'Beaver dan javobsiz qoʻngʻiroq boʻlsa xabar beradi.';
+      'Beaverdan javobsiz qoʻngʻiroq boʻlsa xabar beradi.';
 
   @override
   String callMissedBody(String name) {
@@ -2736,8 +2745,7 @@ class AppLocalizationsUz extends AppLocalizations {
       'Sozlamalarda bildirishnomalarga ruxsat bering.';
 
   @override
-  String get callHintLockedTitle =>
-      'O‘rganish rejimida maslahatlar mavjud emas';
+  String get callHintLockedTitle => 'Iboralar kursida maslahatlar mavjud emas';
 
   @override
   String get wsTitle => 'Qiyin tovushlar';
@@ -3025,7 +3033,7 @@ class AppLocalizationsUz extends AppLocalizations {
   String get callHintTabConversation => 'Bu suhbat';
 
   @override
-  String get callHintTabLessons => 'Darslar ro\'yxati';
+  String get callHintTabLessons => 'Darslar roʻyxati';
 
   @override
   String get callHintSituation => 'Vaziyat';
@@ -3040,7 +3048,7 @@ class AppLocalizationsUz extends AppLocalizations {
   String get callHintLevelSurvival => 'Omon qolish uchun koreys tili';
 
   @override
-  String get callHintLessonsLoadError => 'Darslarni yuklab bo\'lmadi';
+  String get callHintLessonsLoadError => 'Darslarni yuklab boʻlmadi';
 
   @override
   String get callLockReleaseHint => 'Qulfni ochish uchun bosib turing';
@@ -3055,11 +3063,11 @@ class AppLocalizationsUz extends AppLocalizations {
   String get nationalityTitle => 'Fuqaroligingizni tanlang';
 
   @override
-  String get nationalitySubtitle => 'Ona tilingizdan farq qilsa ham bo\'ladi';
+  String get nationalitySubtitle => 'Ona tilingizdan farq qilsa ham boʻladi';
 
   @override
   String get nationalityUsageNotice =>
-      'Tarjimalar va o\'quv muhitini yaxshilash uchun ishlatiladi';
+      'Tarjimalar va oʻquv muhitini yaxshilash uchun ishlatiladi';
 
   @override
   String get nationalitySearchHint => 'Davlatni qidirish';
@@ -3080,7 +3088,7 @@ class AppLocalizationsUz extends AppLocalizations {
   String get nativeLanguageLabel => 'Ona tili';
 
   @override
-  String get nationalitySearchEmpty => 'Natija yo\'q';
+  String get nationalitySearchEmpty => 'Natija yoʻq';
 
   @override
   String get hwTabTodo => 'Bajarilmagan';
@@ -3163,7 +3171,7 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String hwPolicyNoticeBody(String date) {
-    return '$date dan kuchga kiradi. Sinfga qoʻshilganingizda ona tilingiz ham oʻqituvchiga koʻrsatiladi.';
+    return '$date sanasidan kuchga kiradi. Sinfga qoʻshilganingizda ona tilingiz ham oʻqituvchiga koʻrsatiladi.';
   }
 
   @override

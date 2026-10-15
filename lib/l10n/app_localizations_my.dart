@@ -138,7 +138,7 @@ class AppLocalizationsMy extends AppLocalizations {
   }
 
   @override
-  String get scheduleManagement => 'အချိန်ဇယား';
+  String get scheduleManagement => 'အချိန်ဇယား စီမံရန်';
 
   @override
   String get alarms => 'နှိုးစက်များ';
@@ -153,7 +153,7 @@ class AppLocalizationsMy extends AppLocalizations {
   String get alarmEveryDay => 'နေ့တိုင်း';
 
   @override
-  String get alarmWeekdays => 'ကြားရက်များ';
+  String get alarmWeekdays => 'အလုပ်ရက်များ';
 
   @override
   String get alarmWeekend => 'စနေ၊ တနင်္ဂနွေ';
@@ -162,7 +162,7 @@ class AppLocalizationsMy extends AppLocalizations {
   String get alarmNoRepeat => 'ထပ်မလုပ်ပါ';
 
   @override
-  String get addSchedule => 'အချိန်ဇယား ထည့်ရန်';
+  String get addSchedule => 'အချိန်ဇယားအသစ် ထည့်ရန်';
 
   @override
   String get editSchedule => 'အချိန်ဇယား တည်းဖြတ်ရန်';
@@ -183,10 +183,10 @@ class AppLocalizationsMy extends AppLocalizations {
   String get close => 'ပိတ်ရန်';
 
   @override
-  String get repeat => 'ထပ်ခါထပ်ခါ';
+  String get repeat => 'ထပ်ကျော့ရန်';
 
   @override
-  String get callPartner => 'ဇာတ်ကောင်';
+  String get callPartner => 'ခေါ်ဆိုမှု ဘက်ပါတနာ';
 
   @override
   String get alarmModeLearnSub => 'သင်ရိုးပါ စကားစုများ လေ့ကျင့်ရန်';
@@ -242,7 +242,7 @@ class AppLocalizationsMy extends AppLocalizations {
   String get conversation => 'စကားဝိုင်း';
 
   @override
-  String get newExpressions => 'အသုံးအနှုန်းအသစ်များ';
+  String get newExpressions => 'သင်ယူခဲ့သော အသုံးအနှုန်းအသစ်များ';
 
   @override
   String get analysisPrepNote => 'ဒီနေ့ ဖုန်းခေါ်ဆိုမှုကို ပြန်ကြည့်နေပါတယ်။';
@@ -252,7 +252,7 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get analysisPrepTitle =>
-      'ဘီဗာက ဒီနေ့ စကားစုတွေကို ကတ်အဖြစ် လုပ်နေပါတယ်';
+      'ဘီဗာက ဒီနေ့ သင်ယူခဲ့တဲ့ အသုံးအနှုန်းတွေကို ကတ်အဖြစ် လုပ်နေပါတယ်';
 
   @override
   String get analysisPrepSub => 'ပြီးတာနဲ့ ဒီနေရာမှာ ချက်ချင်း ပေါ်လာပါမယ်။';
@@ -261,7 +261,7 @@ class AppLocalizationsMy extends AppLocalizations {
   String get analysisPrepStepSave => 'စကားပြောမှု သိမ်းဆည်းခြင်း';
 
   @override
-  String get analysisPrepStepCards => 'စကားစုကတ် ပြုလုပ်ခြင်း';
+  String get analysisPrepStepCards => 'အသုံးအနှုန်းကတ် ပြုလုပ်ခြင်း';
 
   @override
   String get analysisPrepStateDone => 'ပြီးပြီ';
@@ -318,7 +318,7 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String characterNoteFooter(String name) {
-    return 'ခေါ်ဆိုပြီးသည်နှင့် $name ချန်ထားခဲ့သည်';
+    return 'ခေါ်ဆိုပြီးသည်နှင့် $name က ချန်ထားခဲ့သည်';
   }
 
   @override
@@ -384,7 +384,7 @@ class AppLocalizationsMy extends AppLocalizations {
   String get payMethodKakao => 'KakaoPay';
 
   @override
-  String get productName => 'စိတ်တိုစေသော ဘီဗာ အာဗတား';
+  String get productName => 'ဆော့သော ဘီဗာ အာဗတား';
 
   @override
   String get productTrait => 'ပရီမီယံ ဇာတ်ကောင် · အမြဲပိုင်ဆိုင်ရသည်';
@@ -565,7 +565,7 @@ class AppLocalizationsMy extends AppLocalizations {
   String get streakMetricCallTime => 'ခေါ်ဆိုချိန်';
 
   @override
-  String get streakMetricLearned => 'သင်ယူခဲ့သော စကားစု';
+  String get streakMetricLearned => 'သင်ယူခဲ့သော အသုံးအနှုန်း';
 
   @override
   String get streakMetricWords => 'ပြောခဲ့သော စကားလုံး';
@@ -678,11 +678,11 @@ class AppLocalizationsMy extends AppLocalizations {
       'သိမ်းထားသော စာကြောင်း မရှိသေးပါ။\nသင့်စကားဝိုင်း မှတ်တမ်းများမှ စာကြောင်းများကို မှတ်သားထားပါ။';
 
   @override
-  String get noAlarms => 'နှိုးစက် မရှိသေးပါ';
+  String get noAlarms => 'သတ်မှတ်ထားသော နှိုးစက် မရှိပါ';
 
   @override
   String get noAlarmsBody =>
-      'ဆက်တိုက် အလေ့အကျင့်ရရန်\nလေ့လာမှု သတိပေးချက် ထည့်ပါ။';
+      'လေ့လာမှု သတိပေးချက် ထည့်ထားလျှင်\nပုံမှန် အလေ့အကျင့်ကို တည်ဆောက်နိုင်ပါသည်။';
 
   @override
   String get subscriptionManage => 'စာရင်းသွင်းမှု စီမံရန်';
@@ -732,10 +732,10 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get challengeIntro =>
-      'ဇုန်ထဲက ကတ်တစ်ခုစီကို ကိုရီးယားလို မှန်ကန်စွာ အသံထွက်ပြီး ရှင်းလင်းပါ။\nမိုက်ခရိုဖုန်း မရှိလား။ ဖန်သားပြင်ကို တို့ပြီးလည်း ကစားနိုင်ပါသည်။';
+      'စက္ကန့် ၃၀ အတွင်း ရောက်လာသော စကားလုံးများကို အသံထွက် ဖတ်ပါ။\nမိုက်ခရိုဖုန်း မရှိလား။ တို့ပြီးလည်း ကစားနိုင်ပါသည်။';
 
   @override
-  String get challengeStart => 'ကင်မရာနှင့် မိုက်ခရိုဖုန်း ဖွင့်ရန်';
+  String get challengeStart => 'စတင်ရန်';
 
   @override
   String get challengePermissionNote =>
@@ -896,7 +896,7 @@ class AppLocalizationsMy extends AppLocalizations {
   String get continueLabel => 'ဆက်လုပ်ရန်';
 
   @override
-  String get onboardingDoneTitle => 'Beaver က သင့်ခေါ်ဆိုမှုကို စောင့်နေပါသည်';
+  String get onboardingDoneTitle => 'ဘီဗာက သင့်ခေါ်ဆိုမှုကို စောင့်နေပါသည်';
 
   @override
   String get onboardingDoneSubtitle => 'ယခုပဲ ခေါ်ဆိုမှု စတင်ပါ';
@@ -1183,6 +1183,15 @@ class AppLocalizationsMy extends AppLocalizations {
   String get paymentLabelFallback => 'ငွေပေးချေမှု';
 
   @override
+  String get paymentLabelSubscription => 'စာရင်းသွင်းငွေပေးချေမှု';
+
+  @override
+  String get paymentLabelCharacter => 'ဇာတ်ကောင် ဝယ်ယူမှု';
+
+  @override
+  String get paymentLabelBundle => 'ဇာတ်ကောင်ပက်ကေ့ဂျ် ဝယ်ယူမှု';
+
+  @override
   String learningPassed(int passed, int total) {
     return 'ဝါကျ $total ခုအနက် $passed ခု အောင်မြင်';
   }
@@ -1215,7 +1224,7 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String viewAllSentences(int count) {
-    return 'အားလုံး $count ကြည့်ရန်';
+    return '$count ခုလုံး ကြည့်ရန်';
   }
 
   @override
@@ -1273,7 +1282,7 @@ class AppLocalizationsMy extends AppLocalizations {
   String get pronunciationAnalysis => 'အသံထွက် ခွဲခြမ်းစိတ်ဖြာချက်';
 
   @override
-  String get recentSessionsAverage => 'နောက်ဆုံး ၁၀ ကြိမ် ပျမ်းမျှ';
+  String get recentSessionsAverage => 'နောက်ဆုံး 10 ကြိမ် ပျမ်းမျှ';
 
   @override
   String levelStage(int stage) {
@@ -1301,7 +1310,7 @@ class AppLocalizationsMy extends AppLocalizations {
       'အဆင့်စစ်ဆေးမှုကို တစ်ရက်လျှင် တစ်ကြိမ်သာ ဖြေဆိုနိုင်ပါသည်။ မနက်ဖြန် ထပ်ကြိုးစားပါ။';
 
   @override
-  String get levelRetakeTitle => 'အဆင့်စစ်ဆေးမှုကို ပြန်ဖြေမလား?';
+  String get levelRetakeTitle => 'အဆင့်စစ်ဆေးမှုကို ပြန်ဖြေမလား။';
 
   @override
   String get levelRetakeBody =>
@@ -1433,7 +1442,7 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String callsUsedOfLimit(int used, int limit) {
-    return '$limit မိနစ်တွင် $used မိနစ် သုံးပြီး';
+    return '$limit မိနစ်အနက် $used မိနစ် သုံးပြီး';
   }
 
   @override
@@ -1443,7 +1452,7 @@ class AppLocalizationsMy extends AppLocalizations {
   String get nextPaymentLabel => 'နောက်ထပ် ငွေပေးချေမှု';
 
   @override
-  String get retryingUntilLabel => 'ထပ်ကြိုးစားနေမည့်ရက်';
+  String get retryingUntilLabel => 'ထပ်ကြိုးစားမည့် နောက်ဆုံးရက်';
 
   @override
   String get pausedSinceLabel => 'ရပ်ထားသည့်ရက်';
@@ -1529,7 +1538,7 @@ class AppLocalizationsMy extends AppLocalizations {
   String get bulletFreeCall => 'တစ်နေ့ 5 မိနစ် အသံခေါ်ဆိုမှု';
 
   @override
-  String get bulletFreeCharacter => 'စတင်ရန် ဇာတ်ကောင် 2 ခု';
+  String get bulletFreeCharacter => 'စတင်ရန် ဇာတ်ကောင် 2 ကောင်';
 
   @override
   String get ctaTurnOnVideo => 'ဗီဒီယို ဖွင့်ရန်';
@@ -1661,7 +1670,7 @@ class AppLocalizationsMy extends AppLocalizations {
   String get ctaStartAVideoCall => 'ဗီဒီယိုခေါ်ဆိုမှု စတင်ရန်';
 
   @override
-  String get ctaSeeYourSubscription => 'သင့်စာရင်းသွင်းမှု ကြည့်ရန်';
+  String get ctaSeeYourSubscription => 'ကျွန်ုပ်၏ စာရင်းသွင်းမှု ကြည့်ရန်';
 
   @override
   String successMaxCaption(String price) {
@@ -1690,7 +1699,8 @@ class AppLocalizationsMy extends AppLocalizations {
   String get winbackTitle => 'သင့် Premium အစီအစဉ် ကုန်ဆုံးပြီ';
 
   @override
-  String get winbackSub => 'ယခု Free တွင် — တစ်နေ့ 5 မိနစ်။';
+  String get winbackSub =>
+      'ယခု Free တွင် ရှိနေသည် — တစ်နေ့ 5 မိနစ် ခေါ်ဆိုနိုင်သည်။';
 
   @override
   String get winbackQuestion => 'ဘာကြောင့် ရပ်လိုက်သလဲ ပြောပြပေးမလား။';
@@ -1752,7 +1762,7 @@ class AppLocalizationsMy extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: 'သင့်ဇာတ်ကောင်များ ပြန်ရောက်လာပါပြီ',
+      other: 'သင့်ဇာတ်ကောင် ပြန်ရောက်လာပါပြီ',
     );
     return '$_temp0';
   }
@@ -1768,7 +1778,7 @@ class AppLocalizationsMy extends AppLocalizations {
   String get ctaGetHelp => 'အကူအညီ ရယူရန်';
 
   @override
-  String get ovCharacterOfferTitle => 'Premium အတွက် မသင့်သေးဘူးလား။';
+  String get ovCharacterOfferTitle => 'Premium ကို စဉ်းစားနေဆဲလား။';
 
   @override
   String get ovCharacterOfferBody =>
@@ -1918,7 +1928,7 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String ovTrialStartBody(String price, String date) {
-    return '$date အထိ အခမဲ့။ ထို့နောက် တစ်လ $price၊ စတိုးတွင် မပယ်ဖျက်ပါက။';
+    return '$date အထိ အခမဲ့ဖြစ်သည်။ ထို့နောက် စတိုးတွင် မပယ်ဖျက်ပါက တစ်လ $price ကောက်ခံမည်။';
   }
 
   @override
@@ -1973,7 +1983,7 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get ovRejectedBody =>
-      'စတိုးက ဤငွေပေးချေမှုကို အတည်မပြုသဖြင့် ဘာမှ မဖွင့်ပေးရသေးပါ။ ငွေကောက်ခံခံရပါက ကျွန်ုပ်တို့ထံ ဆက်သွယ်ပါ။';
+      'စတိုးက ဤငွေပေးချေမှုကို အတည်မပြုသဖြင့် ဘာမှ မဖွင့်ပေးခဲ့ပါ။ ငွေကောက်ခံခံရပါက ကျွန်ုပ်တို့ထံ ဆက်သွယ်ပါ။';
 
   @override
   String get ovAlreadyTitle => 'Premium ကို သုံးနေပြီးသား ဖြစ်သည်';
@@ -2079,7 +2089,7 @@ class AppLocalizationsMy extends AppLocalizations {
   String get ctaSave => 'သိမ်းရန်';
 
   @override
-  String get subscriptionRow => 'အသင်းဝင်မှု';
+  String get subscriptionRow => 'စာရင်းသွင်းမှု';
 
   @override
   String get iapSuccessTitle => 'ဝယ်ယူမှု ပြီးဆုံးပါပြီ';
@@ -2166,16 +2176,16 @@ class AppLocalizationsMy extends AppLocalizations {
   String get playAgain => 'ထပ်ကစားရန်';
 
   @override
-  String get difficultySlow => 'နှေး';
+  String get difficultySlow => 'လွယ်';
 
   @override
   String get difficultyNormal => 'ပုံမှန်';
 
   @override
-  String get difficultyFast => 'မြန်';
+  String get difficultyFast => 'ခက်';
 
   @override
-  String get difficultyLabel => 'အခက်အခဲအဆင့်';
+  String get difficultyLabel => 'အခက်အခဲအဆင့် ရွေးချယ်ပါ';
 
   @override
   String get connected => 'ချိတ်ဆက်ပြီး';
@@ -2308,7 +2318,7 @@ class AppLocalizationsMy extends AppLocalizations {
   String get articulationTargetSound => 'ပန်းတိုင်';
 
   @override
-  String get reportEntry => 'သတင်းပို့ရန်';
+  String get reportEntry => 'တိုင်ကြားရန်';
 
   @override
   String get reportTitle => 'တိုင်ကြားချက်';
@@ -2433,7 +2443,8 @@ class AppLocalizationsMy extends AppLocalizations {
   String get hwJoinConsentShared2 => 'အိမ်စာ လုပ်ခဲ့ခြင်း ရှိ၊ မရှိ';
 
   @override
-  String get hwJoinConsentShared3 => 'အောင်မြင်သော နှင့် လွဲချော်သော ဝါကျများ';
+  String get hwJoinConsentShared3 =>
+      'အောင်မြင်သော ဝါကျအရေအတွက်နှင့် လွဲချော်သော ဝါကျများ';
 
   @override
   String get hwJoinConsentShared4 =>
@@ -2464,7 +2475,7 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get hwJoinConsentNotShared5 =>
-      'အသင်းဝင်မှုနှင့် ငွေပေးချေမှု အချက်အလက်';
+      'စာရင်းသွင်းမှုနှင့် ငွေပေးချေမှု အချက်အလက်';
 
   @override
   String get hwJoinConsentAgree => 'အထက်ပါတို့ကို သဘောတူပါသည်';
@@ -2519,7 +2530,7 @@ class AppLocalizationsMy extends AppLocalizations {
   String get hwSectionInProgress => 'လုပ်ဆောင်နေဆဲ';
 
   @override
-  String get hwSectionUpcoming => 'လာမည့်';
+  String get hwSectionUpcoming => 'လာမည့် အိမ်စာ';
 
   @override
   String get hwSectionDone => 'ပြီးဆုံး';
@@ -2597,7 +2608,7 @@ class AppLocalizationsMy extends AppLocalizations {
   String get hwCtaDownload => 'ဒေါင်းလုဒ်';
 
   @override
-  String get hwSpeakingNoScore => 'စကားပြော လုပ်ငန်းကို မလုပ်ရသေးပါ';
+  String get hwSpeakingNoScore => 'အသံထွက် လုပ်ငန်းကို မလုပ်ရသေးပါ';
 
   @override
   String get hwWorkbookUnavailable => 'လေ့ကျင့်ခန်းစာအုပ် ဖိုင် မရနိုင်သေးပါ။';
@@ -2634,7 +2645,7 @@ class AppLocalizationsMy extends AppLocalizations {
   String get hwClassEmptyCta => 'အတန်းကုဒ် ထည့်ရန်';
 
   @override
-  String get hwClassContinueCta => 'ဆက်လက်';
+  String get hwClassContinueCta => 'ဆက်လုပ်ရန်';
 
   @override
   String hwHomeBannerDueTomorrow(int count) {
@@ -2668,7 +2679,7 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get challengePausedNote =>
-      'အချိန်တိုင်းနှင့် အသံဖမ်းခြင်း အတူရပ်သွားပါပြီ။';
+      'တိုင်မာနှင့် ဗီဒီယိုရိုက်ကူးခြင်း နှစ်ခုလုံး ရပ်သွားပါပြီ။';
 
   @override
   String get challengeTimeLeft => 'ကျန်ချိန်';
@@ -2732,7 +2743,7 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get callHintLockedTitle =>
-      'လေ့လာခြင်းတွင် အကြံပြုချက်ကို အသုံးမပြုနိုင်ပါ';
+      'အသုံးအနှုန်း လေ့လာခြင်းတွင် အကြံပြုချက်ကို အသုံးမပြုနိုင်ပါ';
 
   @override
   String get wsTitle => 'အခက်အခဲ အသံများ';
@@ -2880,7 +2891,7 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get wsMicPermissionBody =>
-      'ဤစာမေးပွဲတွင် အသံထွက်ဖတ်ရသဖြင့် မိုက်ခရိုဖုန်း လိုအပ်သည်။ ဆက်တင်တွင် မိုက်ခရိုဖုန်း အသုံးပြုခွင့်ကို ဖွင့်ပါ။';
+      'ဤစစ်ဆေးမှုတွင် အသံထွက်ဖတ်ရသဖြင့် မိုက်ခရိုဖုန်း လိုအပ်သည်။ ဆက်တင်တွင် မိုက်ခရိုဖုန်း အသုံးပြုခွင့်ကို ဖွင့်ပါ။';
 
   @override
   String get wsNoSound => 'အသံ မကြားရပါ။ ထပ်ဆိုကြည့်မလား?';
@@ -2943,7 +2954,7 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String wsStartRecommendedWith(String label) {
-    return 'စတင်ရန် · $label';
+    return 'အကြံပြု အသံမှ စတင်ရန် · $label';
   }
 
   @override
@@ -3140,7 +3151,7 @@ class AppLocalizationsMy extends AppLocalizations {
   }
 
   @override
-  String get hwLangConsentAgree => 'သဘောတူသည်';
+  String get hwLangConsentAgree => 'သဘောတူပါသည်';
 
   @override
   String get hwLangConsentDecline => 'သဘောမတူပါ';

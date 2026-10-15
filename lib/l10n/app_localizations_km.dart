@@ -136,7 +136,7 @@ class AppLocalizationsKm extends AppLocalizations {
   }
 
   @override
-  String get scheduleManagement => 'កាលវិភាគ';
+  String get scheduleManagement => 'គ្រប់គ្រងកាលវិភាគ';
 
   @override
   String get alarms => 'ម៉ោងរោទ៍';
@@ -184,7 +184,7 @@ class AppLocalizationsKm extends AppLocalizations {
   String get repeat => 'ធ្វើម្ដងទៀត';
 
   @override
-  String get callPartner => 'តួអង្គ';
+  String get callPartner => 'ដៃគូការហៅ';
 
   @override
   String get alarmModeLearnSub => 'អនុវត្តឃ្លាក្នុងកម្មវិធីសិក្សា';
@@ -215,7 +215,7 @@ class AppLocalizationsKm extends AppLocalizations {
 
   @override
   String alarmSummary(int count, int monthly) {
-    return '$countដង/សប្តាហ៍ · $monthlyការហៅ/ខែ';
+    return '$countដង/សប្តាហ៍ · ការហៅ $monthlyដង/ខែ';
   }
 
   @override
@@ -240,7 +240,7 @@ class AppLocalizationsKm extends AppLocalizations {
   String get conversation => 'ការសន្ទនា';
 
   @override
-  String get newExpressions => 'ឃ្លាថ្មី';
+  String get newExpressions => 'ឃ្លាថ្មីដែលបានរៀន';
 
   @override
   String get analysisPrepNote => 'កំពុងពិនិត្យការហៅថ្ងៃនេះ។';
@@ -315,7 +315,7 @@ class AppLocalizationsKm extends AppLocalizations {
 
   @override
   String characterNoteFooter(String name) {
-    return '$name បានទុកភ្លាមក្រោយការហៅ';
+    return '$name បានទុកសារនេះភ្លាមក្រោយការហៅ';
   }
 
   @override
@@ -380,7 +380,7 @@ class AppLocalizationsKm extends AppLocalizations {
   String get payMethodKakao => 'KakaoPay';
 
   @override
-  String get productName => 'រូបតំណាង Beaver គួរឱ្យធុញ';
+  String get productName => 'រូបតំណាង Beaver រពិស';
 
   @override
   String get productTrait => 'តួអង្គពិសេស · ជារបស់អ្នកជារៀងរហូត';
@@ -515,7 +515,7 @@ class AppLocalizationsKm extends AppLocalizations {
   String get homeTalkTitle => 'ថ្ងៃនេះមានរឿងអ្វីខ្លះ?';
 
   @override
-  String get homeTalkNote => 'និយាយដោយសេរី ហើយរៀនតាមផ្លូវ។';
+  String get homeTalkNote => 'និយាយដោយសេរី ហើយរៀនតាមរយៈការសន្ទនា។';
 
   @override
   String get homeModeLearn => 'រៀន';
@@ -585,7 +585,7 @@ class AppLocalizationsKm extends AppLocalizations {
   }
 
   @override
-  String get streakNoCallsThatDay => 'ថ្ងៃនេះគ្មានការហៅទេ។';
+  String get streakNoCallsThatDay => 'ថ្ងៃនោះគ្មានការហៅទេ។';
 
   @override
   String get homeLevelPending => 'មិនទាន់មានកម្រិត';
@@ -672,11 +672,11 @@ class AppLocalizationsKm extends AppLocalizations {
       'មិនទាន់មានប្រយោគដែលបានរក្សាទុកទេ។\nសូមចំណាំប្រយោគពីកំណត់ត្រាការសន្ទនារបស់អ្នក។';
 
   @override
-  String get noAlarms => 'មិនទាន់មានម៉ោងរោទ៍ទេ';
+  String get noAlarms => 'មិនមានម៉ោងរោទ៍ដែលបានកំណត់ទេ';
 
   @override
   String get noAlarmsBody =>
-      'បន្ថែមការរំលឹកការសិក្សា\nដើម្បីបង្កើតទម្លាប់ជាប់លាប់។';
+      'បើអ្នកបន្ថែមការរំលឹកការសិក្សា\nអ្នកអាចបង្កើតទម្លាប់ជាប់លាប់បាន។';
 
   @override
   String get subscriptionManage => 'គ្រប់គ្រងសមាជិកភាព';
@@ -725,10 +725,10 @@ class AppLocalizationsKm extends AppLocalizations {
 
   @override
   String get challengeIntro =>
-      'បញ្ចេញសំឡេងកាតនីមួយៗក្នុងតំបន់ឱ្យបានត្រឹមត្រូវជាភាសាកូរ៉េ ដើម្បីកម្ចាត់វា។\nគ្មានមីក្រូហ្វូនមែនទេ? អ្នកអាចលេងដោយចុចលើអេក្រង់ក៏បាន។';
+      'អានពាក្យដែលកំពុងមកដល់ឱ្យឮៗរយៈពេល ៣០ វិនាទី។\nគ្មានមីក្រូហ្វូនមែនទេ? អ្នកអាចលេងដោយចុចលើអេក្រង់ក៏បាន។';
 
   @override
-  String get challengeStart => 'ចាប់ផ្ដើមកាមេរ៉ា និងមីក្រូហ្វូន';
+  String get challengeStart => 'ចាប់ផ្ដើម';
 
   @override
   String get challengePermissionNote =>
@@ -781,7 +781,7 @@ class AppLocalizationsKm extends AppLocalizations {
   String get reasonBrainDesc => 'បង្កើនការចងចាំ និងការផ្តោតអារម្មណ៍';
 
   @override
-  String get challengeRecordToggle => 'ថតលេងលើកនេះ';
+  String get challengeRecordToggle => 'ថតវីដេអូការលេងលើកនេះ';
 
   @override
   String get challengeRecordHint =>
@@ -847,7 +847,7 @@ class AppLocalizationsKm extends AppLocalizations {
 
   @override
   String accentShareText(String country) {
-    return 'ខ្ញុំកំពុងរៀនភាសាកូរ៉េជាមួយ BeaverTalk — សំឡេងកូរ៉េរបស់ខ្ញុំស្តាប់ទៅដូចជា $country! 🦫 មករកសំឡេងរបស់អ្នក ហើយរៀនជាមួយខ្ញុំ៖ https://beavertalk.im';
+    return 'ខ្ញុំកំពុងរៀនភាសាកូរ៉េជាមួយ BeaverTalk — សំនៀងកូរ៉េរបស់ខ្ញុំស្តាប់ទៅដូចជាសំនៀង $country! 🦫 មករកសំនៀងរបស់អ្នក ហើយរៀនជាមួយខ្ញុំ៖ https://beavertalk.im';
   }
 
   @override
@@ -1174,6 +1174,15 @@ class AppLocalizationsKm extends AppLocalizations {
   String get paymentLabelFallback => 'ការទូទាត់';
 
   @override
+  String get paymentLabelSubscription => 'ការទូទាត់ការជាវ';
+
+  @override
+  String get paymentLabelCharacter => 'ការទិញតួអង្គ';
+
+  @override
+  String get paymentLabelBundle => 'ការទិញកញ្ចប់តួអង្គ';
+
+  @override
   String learningPassed(int passed, int total) {
     return 'ជាប់ $passed ក្នុងចំណោម $total ប្រយោគ';
   }
@@ -1186,7 +1195,7 @@ class AppLocalizationsKm extends AppLocalizations {
 
   @override
   String phonemeAttempts(int count) {
-    return 'ក្នុងមួយសូរ · $count ដងសាកល្បង';
+    return 'តាមសូរនីមួយៗ · សាកល្បង $count ដង';
   }
 
   @override
@@ -1199,7 +1208,7 @@ class AppLocalizationsKm extends AppLocalizations {
   String get colCorrect => 'ត្រូវ';
 
   @override
-  String get colAccuracy => 'ត្រឹមត្រូវ';
+  String get colAccuracy => 'ភាពត្រឹមត្រូវ';
 
   @override
   String get sentenceResults => 'លទ្ធផលតាមប្រយោគ';
@@ -1213,7 +1222,7 @@ class AppLocalizationsKm extends AppLocalizations {
   String get colSentence => 'ប្រយោគ';
 
   @override
-  String get colPronunciation => 'សំឡេង';
+  String get colPronunciation => 'បញ្ចេញសំឡេង';
 
   @override
   String get colFluency => 'រលូន';
@@ -1244,7 +1253,7 @@ class AppLocalizationsKm extends AppLocalizations {
   String get colScore => 'ពិន្ទុ';
 
   @override
-  String get colChange => 'ប្តូរ';
+  String get colChange => 'ការប្រែប្រួល';
 
   @override
   String dateToday(String date) {
@@ -1281,7 +1290,7 @@ class AppLocalizationsKm extends AppLocalizations {
 
   @override
   String aheadOfLearners(int percent) {
-    return 'អ្នកនាំមុខ $percent% នៃអ្នកសិក្សា';
+    return 'អ្នកនាំមុខ $percent% នៃអ្នកសិក្សាទាំងអស់';
   }
 
   @override
@@ -1378,7 +1387,7 @@ class AppLocalizationsKm extends AppLocalizations {
   String get plansTitle => 'គម្រោង';
 
   @override
-  String get planFree => 'Free';
+  String get planFree => 'ឥតគិតថ្លៃ';
 
   @override
   String get planPro => 'Pro';
@@ -1492,14 +1501,14 @@ class AppLocalizationsKm extends AppLocalizations {
 
   @override
   String noteEnding(String date) {
-    return 'គម្រោងរបស់អ្នកនឹងបញ្ចប់។ អត្ថប្រយោជន៍ដំណើរការរហូតដល់ $date បន្ទាប់មកអ្នកនឹងទៅ Free។ អាចជាវឡើងវិញបានគ្រប់ពេល។';
+    return 'គម្រោងរបស់អ្នកនឹងបញ្ចប់។ អត្ថប្រយោជន៍ដំណើរការរហូតដល់ $date បន្ទាប់មកអ្នកនឹងប្ដូរទៅគម្រោងឥតគិតថ្លៃ។ អាចជាវឡើងវិញបានគ្រប់ពេល។';
   }
 
   @override
   String get trialExpiredTitle => 'ការសាកល្បង Premium របស់អ្នកបានបញ្ចប់';
 
   @override
-  String get trialExpiredSub => 'ឥឡូវអ្នកនៅលើ Free';
+  String get trialExpiredSub => 'ឥឡូវអ្នកនៅលើគម្រោងឥតគិតថ្លៃ';
 
   @override
   String get seePlans => 'មើលគម្រោង';
@@ -1542,7 +1551,8 @@ class AppLocalizationsKm extends AppLocalizations {
   String get limitBannerCallTitle => 'ពេលហៅថ្ងៃនេះអស់ហើយ';
 
   @override
-  String get limitBannerCallSub => 'Free ផ្ដល់ការហៅ 5 នាទីក្នុងមួយថ្ងៃ';
+  String get limitBannerCallSub =>
+      'គម្រោងឥតគិតថ្លៃផ្ដល់ការហៅ 5 នាទីក្នុងមួយថ្ងៃ';
 
   @override
   String get bulletProCharactersForever =>
@@ -1621,7 +1631,7 @@ class AppLocalizationsKm extends AppLocalizations {
   }
 
   @override
-  String get ctaCaptionAutoRenew => 'បន្តដោយស្វ័យប្រវត្តិរហូតដល់បោះបង់។';
+  String get ctaCaptionAutoRenew => 'បន្តដោយស្វ័យប្រវត្តិរហូតដល់អ្នកបញ្ឈប់។';
 
   @override
   String get footerTerms => 'លក្ខខណ្ឌ';
@@ -1678,7 +1688,8 @@ class AppLocalizationsKm extends AppLocalizations {
   String get winbackTitle => 'គម្រោង Premium របស់អ្នកបានបញ្ចប់';
 
   @override
-  String get winbackSub => 'ឥឡូវអ្នកនៅលើ Free — ហៅបាន 5 នាទីក្នុងមួយថ្ងៃ។';
+  String get winbackSub =>
+      'ឥឡូវអ្នកនៅលើគម្រោងឥតគិតថ្លៃ — ហៅបាន 5 នាទីក្នុងមួយថ្ងៃ។';
 
   @override
   String get winbackQuestion => 'អាចប្រាប់យើងបានទេ ថាហេតុអ្វីអ្នកចាកចេញ?';
@@ -1715,7 +1726,7 @@ class AppLocalizationsKm extends AppLocalizations {
   String get ctaClose => 'បិទ';
 
   @override
-  String get ovRestoreSuccessTitle => 'Premium ត្រលប់មកវិញហើយ';
+  String get ovRestoreSuccessTitle => 'Premium ត្រឡប់មកវិញហើយ';
 
   @override
   String get ovRestoreSuccessBody =>
@@ -1759,14 +1770,14 @@ class AppLocalizationsKm extends AppLocalizations {
 
   @override
   String get ovCharacterOfferBody =>
-      'ជ្រើសតួអង្គមួយ ហើយរក្សាទុក។ ការទិញម្ដង — គ្មានការជាវ គ្មានការបន្ត។';
+      'ជ្រើសតួអង្គមួយ ហើយរក្សាទុកជារៀងរហូត។ ការទិញម្ដង — គ្មានការជាវ គ្មានការបន្ត។';
 
   @override
   String get rowOneCharacter => 'តួអង្គមួយ';
 
   @override
   String rowFromPrice(String price) {
-    return '$price ក្នុងមួយ';
+    return '$price ក្នុងមួយតួ';
   }
 
   @override
@@ -1922,7 +1933,8 @@ class AppLocalizationsKm extends AppLocalizations {
   String get ovFailedDeclinedTitle => 'កាតរបស់អ្នកត្រូវបានបដិសេធ';
 
   @override
-  String get ovFailedDeclinedBody => 'ហាងមិនអាចទូទាត់បានទេ។ មិនបានគិតថ្លៃទេ។';
+  String get ovFailedDeclinedBody =>
+      'ហាងមិនអាចទទួលការទូទាត់បានទេ។ មិនបានគិតថ្លៃទេ។';
 
   @override
   String get ctaUpdatePaymentMethod => 'ធ្វើបច្ចុប្បន្នភាពវិធីទូទាត់';
@@ -2000,7 +2012,7 @@ class AppLocalizationsKm extends AppLocalizations {
   String get fixStep1 => 'បើកហាង ហើយធ្វើបច្ចុប្បន្នភាពវិធីទូទាត់';
 
   @override
-  String get fixStep2 => 'ត្រលប់មកវិញ — គម្រោងរបស់អ្នកបន្តដោយស្វ័យប្រវត្តិ';
+  String get fixStep2 => 'ត្រឡប់មកវិញ — គម្រោងរបស់អ្នកបន្តដោយស្វ័យប្រវត្តិ';
 
   @override
   String get fixStep3 => 'គ្មានអ្វីត្រូវគិតថ្លៃពីរដងទេ';
@@ -2136,7 +2148,7 @@ class AppLocalizationsKm extends AppLocalizations {
       'យើងវិភាគការបញ្ចេញសំឡេងពីប្រយោគដែលអ្នកនិយាយពេលហៅ។';
 
   @override
-  String get noCharacterNote => 'មិនទាន់មានសាររក្សាទុកទេ';
+  String get noCharacterNote => 'មិនទាន់មានសារដែលតួអង្គបានទុកទេ';
 
   @override
   String get noPhonemesYet => 'មិនទាន់មានសំឡេងសម្រាប់វិភាគទេ';
@@ -2151,16 +2163,16 @@ class AppLocalizationsKm extends AppLocalizations {
   String get playAgain => 'លេងម្តងទៀត';
 
   @override
-  String get difficultySlow => 'យឺត';
+  String get difficultySlow => 'ងាយស្រួល';
 
   @override
   String get difficultyNormal => 'ធម្មតា';
 
   @override
-  String get difficultyFast => 'លឿន';
+  String get difficultyFast => 'ពិបាក';
 
   @override
-  String get difficultyLabel => 'កម្រិតលំបាក';
+  String get difficultyLabel => 'ជ្រើសរើសកម្រិតលំបាក';
 
   @override
   String get connected => 'បានភ្ជាប់';
@@ -2198,7 +2210,7 @@ class AppLocalizationsKm extends AppLocalizations {
   String get callRoleplayInfoA11y => 'មើលស្ថានភាព និងតួនាទី';
 
   @override
-  String get fcEndedTitle => 'ការហៅទូរស័ព្ទឥតគិតថ្លៃរបស់អ្នកបានបញ្ចប់';
+  String get fcEndedTitle => 'ការហៅឥតគិតថ្លៃរបស់អ្នកបានបញ្ចប់';
 
   @override
   String get fcEndedBody =>
@@ -2369,7 +2381,7 @@ class AppLocalizationsKm extends AppLocalizations {
   String get hwJoinFieldLearners => 'អ្នកសិក្សា';
 
   @override
-  String get hwJoinFieldTerm => 'វគ្គ';
+  String get hwJoinFieldTerm => 'ឆមាស';
 
   @override
   String get hwJoinConfirmNote =>
@@ -2466,7 +2478,7 @@ class AppLocalizationsKm extends AppLocalizations {
   String get hwJoinDoneNoAssignment => 'មិនទាន់មានកិច្ចការទេ';
 
   @override
-  String get hwJoinDoneNextDue => 'កាលបរិច្ឆេទបន្ទាប់';
+  String get hwJoinDoneNextDue => 'ថ្ងៃផុតកំណត់ជិតបំផុត';
 
   @override
   String get hwJoinDoneRosterName => 'ឈ្មោះរបស់អ្នកក្នុងថ្នាក់';
@@ -2709,7 +2721,7 @@ class AppLocalizationsKm extends AppLocalizations {
       'សូមអនុញ្ញាតការជូនដំណឹងក្នុងការកំណត់។';
 
   @override
-  String get callHintLockedTitle => 'មិនអាចប្រើជំនួយក្នុងការសិក្សាបានទេ';
+  String get callHintLockedTitle => 'មិនអាចប្រើជំនួយក្នុងវគ្គកន្សោមបានទេ';
 
   @override
   String get wsTitle => 'សំឡេងពិបាក';
@@ -2767,7 +2779,8 @@ class AppLocalizationsKm extends AppLocalizations {
   String get wsMineSubtitle => 'សំឡេងដែលបានវាស់ក្នុងការហៅថ្មីៗរបស់អ្នក';
 
   @override
-  String get wsMineEmptyBody => 'ហៅ និងរំលឹក សំឡេងពិបាករបស់អ្នកនឹងកើនឡើង។';
+  String get wsMineEmptyBody =>
+      'ហៅ និងរំលឹក នោះសំឡេងពិបាករបស់អ្នកនឹងត្រូវបានកត់ត្រាទុក។';
 
   @override
   String get wsNoDataYet => 'មិនទាន់មានទិន្នន័យទេ';
@@ -2918,7 +2931,7 @@ class AppLocalizationsKm extends AppLocalizations {
 
   @override
   String wsStartRecommendedWith(String label) {
-    return 'ចាប់ផ្ដើម · $label';
+    return 'ចាប់ផ្ដើមពីសំឡេងដែលបានណែនាំ · $label';
   }
 
   @override

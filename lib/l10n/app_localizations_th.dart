@@ -138,10 +138,10 @@ class AppLocalizationsTh extends AppLocalizations {
   String get alarms => 'การเตือน';
 
   @override
-  String get alarmAdd => 'เพิ่มนาฬิกาปลุก';
+  String get alarmAdd => 'เพิ่มการเตือน';
 
   @override
-  String get alarmEdit => 'แก้ไขนาฬิกาปลุก';
+  String get alarmEdit => 'แก้ไขการเตือน';
 
   @override
   String get alarmEveryDay => 'ทุกวัน';
@@ -180,7 +180,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get repeat => 'ทำซ้ำ';
 
   @override
-  String get callPartner => 'ตัวละคร';
+  String get callPartner => 'คู่สนทนา';
 
   @override
   String get alarmModeLearnSub => 'ฝึกสำนวนในหลักสูตร';
@@ -361,7 +361,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get checkout => 'ชำระเงิน';
 
   @override
-  String get pay => 'จ่ายเงิน';
+  String get pay => 'ชำระเงิน';
 
   @override
   String get orderSummary => 'สรุปคำสั่งซื้อ';
@@ -376,7 +376,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get payMethodKakao => 'KakaoPay';
 
   @override
-  String get productName => 'อวาตาร์ Annoying Beaver';
+  String get productName => 'อวาตาร์บีเวอร์จอมซน';
 
   @override
   String get productTrait => 'ตัวละครพรีเมียม · เป็นของคุณตลอดไป';
@@ -508,7 +508,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get homeTalkTitle => 'วันนี้มีอะไรเกิดขึ้นบ้าง?';
 
   @override
-  String get homeTalkNote => 'คุยได้อย่างอิสระ แล้วเรียนไปพร้อมกัน';
+  String get homeTalkNote => 'คุยได้อย่างอิสระ แล้วเรียนรู้ไปด้วย';
 
   @override
   String get homeModeLearn => 'เรียน';
@@ -578,7 +578,7 @@ class AppLocalizationsTh extends AppLocalizations {
   }
 
   @override
-  String get streakNoCallsThatDay => 'วันนี้ไม่มีการโทร';
+  String get streakNoCallsThatDay => 'วันนั้นไม่มีการโทร';
 
   @override
   String get homeLevelPending => 'ยังไม่มีระดับ';
@@ -718,10 +718,10 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get challengeIntro =>
-      'ออกเสียงการ์ดแต่ละใบในโซนเป็นภาษาเกาหลีให้ถูกต้องเพื่อผ่านด่าน\nไม่มีไมค์? คุณเล่นได้ด้วยการแตะหน้าจอเช่นกัน';
+      'อ่านออกเสียงคำที่เคลื่อนเข้ามาหาคุณเป็นเวลา 30 วินาที\nไม่มีไมค์? คุณเล่นได้ด้วยการแตะหน้าจอเช่นกัน';
 
   @override
-  String get challengeStart => 'เริ่มกล้องและไมค์';
+  String get challengeStart => 'เริ่ม';
 
   @override
   String get challengePermissionNote =>
@@ -1133,7 +1133,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get filterAll => 'ทั้งหมด';
 
   @override
-  String get filterSubscription => 'สมาชิก';
+  String get filterSubscription => 'การสมัครสมาชิก';
 
   @override
   String get filterCharacter => 'ตัวละคร';
@@ -1164,6 +1164,15 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get paymentLabelFallback => 'การชำระเงิน';
+
+  @override
+  String get paymentLabelSubscription => 'การชำระค่าสมาชิก';
+
+  @override
+  String get paymentLabelCharacter => 'การซื้อตัวละคร';
+
+  @override
+  String get paymentLabelBundle => 'ซื้อชุดตัวละคร';
 
   @override
   String learningPassed(int passed, int total) {
@@ -1236,7 +1245,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get colScore => 'คะแนน';
 
   @override
-  String get colChange => 'เปลี่ยน';
+  String get colChange => 'การเปลี่ยนแปลง';
 
   @override
   String dateToday(String date) {
@@ -1273,7 +1282,7 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String aheadOfLearners(int percent) {
-    return 'คุณนำหน้าผู้เรียน $percent%';
+    return 'คุณนำหน้า $percent% ของผู้เรียนทั้งหมด';
   }
 
   @override
@@ -1309,7 +1318,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get analysisNoScoreReview => 'ฝึกประโยคแล้วจะได้คะแนนการออกเสียง';
 
   @override
-  String get analysisNoScoreEmpty => 'ไม่มีประโยคให้ให้คะแนน';
+  String get analysisNoScoreEmpty => 'ไม่มีประโยคที่จะให้คะแนน';
 
   @override
   String get billingGroupPlanPurchases => 'แพ็กเกจและการซื้อ';
@@ -1389,7 +1398,7 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get noteCharactersSeparate =>
-      'ตัวละครขายแยกต่างหาก ตัวที่ซื้อแล้วเป็นของคุณ';
+      'ตัวละครขายแยกต่างหาก ตัวที่ซื้อแล้วจะเป็นของคุณตลอดไป';
 
   @override
   String get ctaGetPremium => 'รับ Premium';
@@ -1504,7 +1513,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get planTaglineFree => 'โทรวันละ 5 นาที ฟรีไม่มีค่าใช้จ่าย';
 
   @override
-  String get bulletProCorrections => 'แก้ไขให้ตรงกับภาษาแม่ของคุณ';
+  String get bulletProCorrections => 'การแก้ไขที่ปรับให้เหมาะกับภาษาแม่ของคุณ';
 
   @override
   String get bulletFreeCall => 'โทรด้วยเสียงวันละ 5 นาที';
@@ -1676,7 +1685,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get winbackReasonExpensive => 'แพงเกินไป';
 
   @override
-  String get winbackReasonUnused => 'ใช้ไม่คุ้ม';
+  String get winbackReasonUnused => 'ใช้งานไม่บ่อยพอ';
 
   @override
   String get winbackReasonMissing => 'ขาดฟีเจอร์ที่ต้องการ';
@@ -1958,7 +1967,7 @@ class AppLocalizationsTh extends AppLocalizations {
       'บัญชีสโตร์นี้มีแพ็กเกจที่ใช้งานอยู่แล้ว ไม่มีอะไรต้องซื้อเพิ่ม';
 
   @override
-  String get ctaSeeMySubscription => 'ดูการสมัครของฉัน';
+  String get ctaSeeMySubscription => 'ดูการสมัครสมาชิกของฉัน';
 
   @override
   String get subCancelTitle => 'ยกเลิกการสมัครสมาชิก';
@@ -2107,10 +2116,10 @@ class AppLocalizationsTh extends AppLocalizations {
       'การซื้อไม่สำเร็จ ไม่มีการเรียกเก็บเงิน โปรดลองอีกครั้ง';
 
   @override
-  String get noAccentDataTitle => 'ยังไม่มีข้อมูลน้ำเสียง';
+  String get noAccentDataTitle => 'ยังไม่มีข้อมูลสำเนียง';
 
   @override
-  String get noAccentDataBody => 'คุยต่อไปแล้วลักษณะน้ำเสียงจะค่อยๆ สะสม';
+  String get noAccentDataBody => 'คุยต่อไปแล้วลักษณะสำเนียงจะค่อยๆ สะสม';
 
   @override
   String get noLevelYetTitle => 'ยังไม่มีระดับ';
@@ -2141,16 +2150,16 @@ class AppLocalizationsTh extends AppLocalizations {
   String get playAgain => 'เล่นอีกครั้ง';
 
   @override
-  String get difficultySlow => 'ช้า';
+  String get difficultySlow => 'ง่าย';
 
   @override
   String get difficultyNormal => 'ปกติ';
 
   @override
-  String get difficultyFast => 'เร็ว';
+  String get difficultyFast => 'ยาก';
 
   @override
-  String get difficultyLabel => 'ระดับความยาก';
+  String get difficultyLabel => 'เลือกระดับความยาก';
 
   @override
   String get connected => 'เชื่อมต่อแล้ว';
@@ -2241,7 +2250,7 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get callExitSubtitle =>
-      'วางสายตอนนี้ เวลาที่คุยไปแล้วก็ยังนับรวมในวันนี้';
+      'แม้วางสายตอนนี้ เวลาที่คุยไปแล้วก็ยังนับรวมในปริมาณการใช้งานของวันนี้';
 
   @override
   String get callExitKeep => 'คุยต่อ';
@@ -2259,7 +2268,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get callPushToTalk => 'กดค้างเพื่อพูด';
 
   @override
-  String get callFreeEndedTitle => 'สายฟรีของคุณหมดแล้ว';
+  String get callFreeEndedTitle => 'การโทรฟรีของคุณสิ้นสุดแล้ว';
 
   @override
   String get callFreeEndedCta => 'สมัครสมาชิกและคุยต่อ';
@@ -2404,7 +2413,8 @@ class AppLocalizationsTh extends AppLocalizations {
   String get hwJoinConsentShared2 => 'คุณทำการบ้านหรือไม่';
 
   @override
-  String get hwJoinConsentShared3 => 'ประโยคที่ผ่านและไม่ผ่าน';
+  String get hwJoinConsentShared3 =>
+      'จำนวนประโยคที่ผ่าน และประโยคที่ยังทำไม่ได้';
 
   @override
   String get hwJoinConsentShared4 => 'ความยาวและสรุปการโทรของการบ้าน';
@@ -2465,13 +2475,13 @@ class AppLocalizationsTh extends AppLocalizations {
   String get hwJoinErrorNotFound => 'ไม่พบรหัสนั้น';
 
   @override
-  String get hwJoinErrorNotFoundBody => 'กรุณาตรวจสอบตัวเลขหกหลักอีกครั้ง';
+  String get hwJoinErrorNotFoundBody => 'กรุณาตรวจสอบรหัสหกตัวอักษรอีกครั้ง';
 
   @override
   String get hwJoinErrorExpired => 'รหัสนั้นหมดอายุแล้ว';
 
   @override
-  String get hwJoinErrorExpiredBody => 'ขอรหัสใหม่จากครูของคุณ';
+  String get hwJoinErrorExpiredBody => 'กรุณาขอรหัสใหม่จากครูของคุณ';
 
   @override
   String get hwJoinErrorFull => 'ชั้นเรียนเต็มแล้ว';
@@ -2480,7 +2490,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get hwJoinErrorFullBody => 'กรุณาแจ้งครูของคุณ';
 
   @override
-  String get hwJoinFailed => 'เข้าร่วมไม่สำเร็จ กรุณาลองใหม่อีกครั้ง';
+  String get hwJoinFailed => 'เข้าร่วมไม่สำเร็จ กรุณาลองใหม่ในอีกสักครู่';
 
   @override
   String get hwSectionInProgress => 'กำลังทำ';
@@ -2561,7 +2571,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get hwCtaDownload => 'ดาวน์โหลด';
 
   @override
-  String get hwSpeakingNoScore => 'คุณยังไม่ได้ทำแบบฝึกการพูด';
+  String get hwSpeakingNoScore => 'คุณยังไม่ได้ทำแบบฝึกการออกเสียง';
 
   @override
   String get hwWorkbookUnavailable => 'ยังไม่มีไฟล์แบบฝึกหัด';
@@ -2692,7 +2702,7 @@ class AppLocalizationsTh extends AppLocalizations {
       'โปรดอนุญาตการแจ้งเตือนในการตั้งค่า';
 
   @override
-  String get callHintLockedTitle => 'ไม่สามารถใช้คำใบ้ในโหมดเรียนรู้ได้';
+  String get callHintLockedTitle => 'ไม่สามารถใช้คำใบ้ในคอร์สสำนวนได้';
 
   @override
   String get wsTitle => 'เสียงที่ยังไม่แม่น';

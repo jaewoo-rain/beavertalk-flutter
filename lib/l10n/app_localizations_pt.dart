@@ -20,13 +20,13 @@ class AppLocalizationsPt extends AppLocalizations {
       'É necessário acesso ao microfone. Permita o microfone para ligar.';
 
   @override
-  String get callErrorGeneric => 'Ocorreu um erro durante a chamada.';
+  String get callErrorGeneric => 'Ocorreu um erro durante a ligação.';
 
   @override
   String get callDailyLimit => 'Acabou o tempo de ligação de hoje.';
 
   @override
-  String get callAlreadyInCall => 'Você já está em uma chamada.';
+  String get callAlreadyInCall => 'Você já está em uma ligação.';
 
   @override
   String get callNetworkError => 'Ocorreu um erro de rede.';
@@ -57,7 +57,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String callEndedDuration(String duration) {
-    return 'Ligação encerrada em $duration';
+    return 'Ligação encerrada · $duration';
   }
 
   @override
@@ -137,7 +137,7 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
-  String get scheduleManagement => 'Agenda';
+  String get scheduleManagement => 'Gerenciar horários';
 
   @override
   String get alarms => 'Alarmes';
@@ -161,7 +161,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get alarmNoRepeat => 'Nunca';
 
   @override
-  String get addSchedule => 'Adicionar horário';
+  String get addSchedule => 'Adicionar novo horário';
 
   @override
   String get editSchedule => 'Editar horário';
@@ -185,7 +185,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get repeat => 'Repetir';
 
   @override
-  String get callPartner => 'Personagem';
+  String get callPartner => 'Parceiro de ligação';
 
   @override
   String get alarmModeLearnSub => 'Pratique expressões do currículo';
@@ -216,7 +216,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String alarmSummary(int count, int monthly) {
-    return '$count× por semana · $monthly chamadas por mês';
+    return '$count× por semana · $monthly ligações por mês';
   }
 
   @override
@@ -241,10 +241,10 @@ class AppLocalizationsPt extends AppLocalizations {
   String get conversation => 'Conversa';
 
   @override
-  String get newExpressions => 'Novas expressões';
+  String get newExpressions => 'Novas expressões aprendidas';
 
   @override
-  String get analysisPrepNote => 'Revendo a chamada de hoje.';
+  String get analysisPrepNote => 'Revendo a ligação de hoje.';
 
   @override
   String get analysisPrepNoteHint => 'Em breve uma mensagem vai aparecer aqui';
@@ -307,7 +307,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String callSequence(int count) {
-    return 'Chamada n.º $count';
+    return 'Ligação nº $count';
   }
 
   @override
@@ -317,7 +317,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String characterNoteFooter(String name) {
-    return 'Deixado por $name logo após a chamada';
+    return 'Deixado por $name logo após a ligação';
   }
 
   @override
@@ -385,7 +385,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get payMethodKakao => 'KakaoPay';
 
   @override
-  String get productName => 'Avatar Castor Irritante';
+  String get productName => 'Avatar Castor Travesso';
 
   @override
   String get productTrait => 'Personagem premium · Seu para sempre';
@@ -510,7 +510,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String homeExpressionsLeft(int count) {
-    return 'Faltam $count expressões para a conversa';
+    return 'Expressões restantes até a conversa: $count';
   }
 
   @override
@@ -565,7 +565,7 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
-  String get streakMetricCallTime => 'Tempo de chamada';
+  String get streakMetricCallTime => 'Tempo de ligação';
 
   @override
   String get streakMetricLearned => 'Expressões';
@@ -593,7 +593,7 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
-  String get streakNoCallsThatDay => 'Nenhuma chamada neste dia.';
+  String get streakNoCallsThatDay => 'Nenhuma ligação neste dia.';
 
   @override
   String get homeLevelPending => 'Nível pendente';
@@ -602,7 +602,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get homeNoLevelTitle => 'Você ainda não tem um nível';
 
   @override
-  String get homeNoLevelNote => 'Conclua sua primeira chamada para receber um';
+  String get homeNoLevelNote => 'Conclua sua primeira ligação para receber um';
 
   @override
   String get homeCurriculumPendingBadge => 'Em breve';
@@ -614,7 +614,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get homeCurriculumPendingNote =>
-      'Nas chamadas, você vai praticar expressões gerais';
+      'Nas ligações, você vai praticar expressões gerais';
 
   @override
   String get myPage => 'Minha página';
@@ -655,7 +655,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String myPartnersOwned(int count) {
-    return 'Meus parceiros · $count adquiridos';
+    return 'Meus parceiros · Adquiridos: $count';
   }
 
   @override
@@ -681,7 +681,7 @@ class AppLocalizationsPt extends AppLocalizations {
       'Nenhuma frase salva ainda.\nSalve frases a partir dos registros de suas conversas.';
 
   @override
-  String get noAlarms => 'Nenhum alarme ainda';
+  String get noAlarms => 'Nenhum alarme cadastrado';
 
   @override
   String get noAlarmsBody =>
@@ -734,10 +734,10 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get challengeIntro =>
-      'Pronuncie corretamente em coreano cada carta na zona para eliminá-la.\nSem microfone? Você também pode jogar tocando na tela.';
+      'Leia em voz alta cada palavra que se aproxima, durante 30 segundos.\nSem microfone? Você também pode jogar tocando na tela.';
 
   @override
-  String get challengeStart => 'Ativar câmera e microfone';
+  String get challengeStart => 'Começar';
 
   @override
   String get challengePermissionNote =>
@@ -963,7 +963,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get loginGoogleSignInFailed => 'Falha no login com o Google.';
 
   @override
-  String get loginAppleSignInFailed => 'Falha no login com o Apple.';
+  String get loginAppleSignInFailed => 'Falha no login com a Apple.';
 
   @override
   String get loginFacebookSignInFailed => 'Falha no login com o Facebook.';
@@ -1187,6 +1187,15 @@ class AppLocalizationsPt extends AppLocalizations {
   String get paymentLabelFallback => 'Pagamento';
 
   @override
+  String get paymentLabelSubscription => 'Pagamento da assinatura';
+
+  @override
+  String get paymentLabelCharacter => 'Compra de personagem';
+
+  @override
+  String get paymentLabelBundle => 'Compra de pacote de personagens';
+
+  @override
   String learningPassed(int passed, int total) {
     return '$passed de $total frases aprovadas';
   }
@@ -1277,7 +1286,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get pronunciationAnalysis => 'Análise de pronúncia';
 
   @override
-  String get recentSessionsAverage => 'Média das 10 sessões';
+  String get recentSessionsAverage => 'Média das últimas 10 sessões';
 
   @override
   String levelStage(int stage) {
@@ -1412,7 +1421,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get noteCharactersSeparate =>
-      'Os personagens são vendidos à parte. Os que você compra são seus.';
+      'Os personagens são vendidos à parte. Os que você compra continuam sendo seus.';
 
   @override
   String get ctaGetPremium => 'Assinar Premium';
@@ -1553,7 +1562,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get paywallLimitHeadline =>
-      'O Premium dá 15 minutos de chamadas por dia.';
+      'O Premium dá 15 minutos de ligação por dia.';
 
   @override
   String get limitBannerCallTitle => 'Acabou o tempo de ligação de hoje';
@@ -1887,7 +1896,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get rowMonthlyLabel => 'Mensal';
 
   @override
-  String get rowYearlyWorkedOut => 'O anual saía por';
+  String get rowYearlyWorkedOut => 'O anual sai por';
 
   @override
   String get ctaSwitchToMonthly => 'Mudar para o mensal';
@@ -2076,14 +2085,13 @@ class AppLocalizationsPt extends AppLocalizations {
   String get loginMethodLabel => 'Método de login';
 
   @override
-  String get joinedLabel => 'Cadastro';
+  String get joinedLabel => 'Data de cadastro';
 
   @override
   String get editNicknameTitle => 'Editar apelido';
 
   @override
-  String get nicknameRule =>
-      '2–12 caracteres. Letras e números. Somente inglês';
+  String get nicknameRule => '2–12 caracteres · apenas letras (A–Z) e números';
 
   @override
   String get ctaSave => 'Salvar';
@@ -2116,7 +2124,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get paywallGuardBody =>
-      'Você continua com 5 minutos de chamadas por dia.';
+      'Você continua com 5 minutos de ligação por dia.';
 
   @override
   String get ctaMaybeLater => 'Talvez depois';
@@ -2178,16 +2186,16 @@ class AppLocalizationsPt extends AppLocalizations {
   String get playAgain => 'Jogar de novo';
 
   @override
-  String get difficultySlow => 'Lento';
+  String get difficultySlow => 'Fácil';
 
   @override
   String get difficultyNormal => 'Normal';
 
   @override
-  String get difficultyFast => 'Rápido';
+  String get difficultyFast => 'Difícil';
 
   @override
-  String get difficultyLabel => 'Dificuldade';
+  String get difficultyLabel => 'Escolha a dificuldade';
 
   @override
   String get connected => 'Conectado';
@@ -2225,14 +2233,14 @@ class AppLocalizationsPt extends AppLocalizations {
   String get callRoleplayInfoA11y => 'Ver a situação e os papéis';
 
   @override
-  String get fcEndedTitle => 'A sua chamada gratuita terminou';
+  String get fcEndedTitle => 'Sua ligação grátis terminou';
 
   @override
   String get fcEndedBody =>
       'Você já usou os 5 minutos de ligação grátis de hoje\nAssine para continuar a conversar por mais tempo';
 
   @override
-  String get ctaSubscribeKeepTalking => 'Assinar e continuar a conversar';
+  String get ctaSubscribeKeepTalking => 'Assinar e continuar conversando';
 
   @override
   String get kgTitle => 'Continuar?';
@@ -2255,7 +2263,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get pcEndedBody => 'Revise o que conversamos e me ligue de novo!';
 
   @override
-  String get ctaKeepTalking => 'Continuar a conversar';
+  String get ctaKeepTalking => 'Continuar conversando';
 
   @override
   String get callModeSheetTitle => 'Como você quer conversar?';
@@ -2448,7 +2456,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get hwJoinConsentShared2 => 'Se você fez a tarefa';
 
   @override
-  String get hwJoinConsentShared3 => 'Frases aprovadas e erradas';
+  String get hwJoinConsentShared3 =>
+      'Número de frases aprovadas e frases não concluídas';
 
   @override
   String get hwJoinConsentShared4 => 'Duração e resumo da chamada da tarefa';
@@ -2490,7 +2499,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String hwJoinDoneSubtitle(int count) {
-    return '$count tarefas estão esperando';
+    return 'Tarefas esperando por você: $count';
   }
 
   @override
@@ -2544,7 +2553,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get hwListEmptyBody =>
-      'Vão aparecer aqui quando seu professor passar.';
+      'As tarefas vão aparecer aqui quando seu professor passá-las.';
 
   @override
   String get hwListFailed => 'Não foi possível carregar suas tarefas.';
@@ -2652,12 +2661,12 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String hwHomeBannerDueTomorrow(int count) {
-    return '$count tarefas vencem amanhã';
+    return 'Tarefas que vencem amanhã: $count';
   }
 
   @override
   String hwHomeBannerOverdue(int count) {
-    return 'Você tem $count tarefas não entregues';
+    return 'Tarefas não entregues: $count';
   }
 
   @override
@@ -2746,7 +2755,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get callHintLockedTitle =>
-      'As dicas não estão disponíveis no modo Estudo';
+      'As dicas não estão disponíveis no curso Expressões';
 
   @override
   String get wsTitle => 'Sons difíceis';
@@ -2941,7 +2950,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String wsAccentOf(String country) {
-    return 'Sotaque $country';
+    return 'Sotaque: $country';
   }
 
   @override
@@ -3022,7 +3031,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String wsRetryListSubWithCall(String title) {
-    return 'Sons que você errou 2 vezes ou mais na chamada “$title”';
+    return 'Sons que você errou 2 vezes ou mais na ligação “$title”';
   }
 
   @override

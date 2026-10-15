@@ -113,7 +113,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get conversationRecord => 'Keskustelutallenne';
 
   @override
-  String get noCallRecords => 'Ei vielä puhelutallenteita';
+  String get noCallRecords => 'Ei vielä puheluhistoriaa';
 
   @override
   String get noCallRecordsBody =>
@@ -137,10 +137,10 @@ class AppLocalizationsFi extends AppLocalizations {
   }
 
   @override
-  String get scheduleManagement => 'Aikataulu';
+  String get scheduleManagement => 'Hallinnoi aikatauluja';
 
   @override
-  String get alarms => 'Hälytykset';
+  String get alarms => 'Herätykset';
 
   @override
   String get alarmAdd => 'Lisää herätys';
@@ -161,7 +161,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get alarmNoRepeat => 'Ei koskaan';
 
   @override
-  String get addSchedule => 'Lisää aikataulu';
+  String get addSchedule => 'Lisää uusi aikataulu';
 
   @override
   String get editSchedule => 'Muokkaa aikataulua';
@@ -170,7 +170,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get somethingWentWrong => 'Jotain meni pieleen';
 
   @override
-  String get alarmsLoadError => 'Hälytyksiä ei voitu ladata';
+  String get alarmsLoadError => 'Herätyksiä ei voitu ladata';
 
   @override
   String get charactersLoadError => 'Hahmoja ei voitu ladata';
@@ -185,7 +185,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get repeat => 'Toista';
 
   @override
-  String get callPartner => 'Hahmo';
+  String get callPartner => 'Puhekumppani';
 
   @override
   String get alarmModeLearnSub => 'Harjoittele opetussuunnitelman ilmauksia';
@@ -241,7 +241,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get conversation => 'Keskustelu';
 
   @override
-  String get newExpressions => 'Uudet ilmaisut';
+  String get newExpressions => 'Uudet ilmaukset';
 
   @override
   String get analysisPrepNote => 'Tämän päivän puhelua käydään läpi.';
@@ -276,7 +276,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String quizExpressionsCount(int count) {
-    return 'Oppimasi ilmaisut $count';
+    return 'Oppimasi ilmaukset: $count';
   }
 
   @override
@@ -293,7 +293,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get noNewExpressions =>
-      'Tästä keskustelusta ei tullut uusia ilmaisuja.';
+      'Tästä keskustelusta ei tullut uusia ilmauksia.';
 
   @override
   String get practice => 'Harjoittele';
@@ -313,7 +313,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String characterNoteTitle(String name) {
-    return 'Sananen ${name}lta';
+    return 'Sananen – $name';
   }
 
   @override
@@ -385,7 +385,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get payMethodKakao => 'KakaoPay';
 
   @override
-  String get productName => 'Ärsyttävä majava-avatar';
+  String get productName => 'Veijarimajava-avatar';
 
   @override
   String get productTrait => 'Premium-hahmo · Ikuisesti sinun';
@@ -594,7 +594,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get streakNoCallsThatDay => 'Tänä päivänä ei ollut puheluita.';
 
   @override
-  String get homeLevelPending => 'Taso avoinna';
+  String get homeLevelPending => 'Taso määrittämättä';
 
   @override
   String get homeNoLevelTitle => 'Sinulla ei ole vielä tasoa';
@@ -676,14 +676,14 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get noSavedSentences =>
-      'Ei vielä tallennettuja lauseita.\nMerkitse lauseita kirjanmerkeiksi keskustelutallenteistasi.';
+      'Ei vielä tallennettuja lauseita.\nMerkitse lauseita kirjanmerkeiksi keskusteluhistoriastasi.';
 
   @override
-  String get noAlarms => 'Ei vielä hälytyksiä';
+  String get noAlarms => 'Ei lisättyjä herätyksiä';
 
   @override
   String get noAlarmsBody =>
-      'Lisää oppimismuistutus\nrakentaaksesi tasaisen tavan.';
+      'Kun lisäät oppimismuistutuksen,\nvoit rakentaa säännöllisen tavan.';
 
   @override
   String get subscriptionManage => 'Hallinnoi tilausta';
@@ -732,10 +732,10 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get challengeIntro =>
-      'Ääntä jokainen alueen kortti oikein koreaksi selvittääksesi sen.\nEi mikrofonia? Voit pelata myös napauttamalla ruutua.';
+      'Lue lähestyvät sanat ääneen 30 sekunnin ajan.\nEi mikrofonia? Voit pelata myös napauttamalla.';
 
   @override
-  String get challengeStart => 'Käynnistä kamera ja mikrofoni';
+  String get challengeStart => 'Aloita';
 
   @override
   String get challengePermissionNote =>
@@ -1152,7 +1152,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get filterCharacter => 'Hahmo';
 
   @override
-  String get statusCompleted => 'Valmis';
+  String get statusCompleted => 'Suoritettu';
 
   @override
   String get lastPayment => 'Viimeisin maksu';
@@ -1179,6 +1179,15 @@ class AppLocalizationsFi extends AppLocalizations {
   String get paymentLabelFallback => 'Maksu';
 
   @override
+  String get paymentLabelSubscription => 'Tilausmaksu';
+
+  @override
+  String get paymentLabelCharacter => 'Hahmon osto';
+
+  @override
+  String get paymentLabelBundle => 'Hahmopaketin osto';
+
+  @override
   String learningPassed(int passed, int total) {
     return '$passed/$total lausetta läpäisty';
   }
@@ -1191,7 +1200,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String phonemeAttempts(int count) {
-    return 'Foneemeittain · $count yritystä';
+    return 'Foneemeittain · yrityksiä: $count';
   }
 
   @override
@@ -1228,7 +1237,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String recentSessions(int count) {
-    return '$count viime kertaa';
+    return 'Viimeiset $count istuntoa';
   }
 
   @override
@@ -1269,7 +1278,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get pronunciationAnalysis => 'Ääntämisanalyysi';
 
   @override
-  String get recentSessionsAverage => '10 istunnon keskiarvo';
+  String get recentSessionsAverage => 'Viimeisten 10 istunnon keskiarvo';
 
   @override
   String levelStage(int stage) {
@@ -1278,7 +1287,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String topPercent(int percent) {
-    return 'Top $percent%';
+    return 'Parhaat $percent %';
   }
 
   @override
@@ -1286,7 +1295,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String aheadOfLearners(int percent) {
-    return 'Olet $percent% oppijaa edellä';
+    return 'Olet edellä $percent% kaikista oppijoista';
   }
 
   @override
@@ -1739,7 +1748,7 @@ class AppLocalizationsFi extends AppLocalizations {
       'Tähän kauppatiliin ei ole liitetty aktiivista tilausta.';
 
   @override
-  String get ovRestoreOtherTitle => 'Tämä tilaus kuuluu toiselle tilille';
+  String get ovRestoreOtherTitle => 'Tämä paketti kuuluu toiselle tilille';
 
   @override
   String get ovRestoreOtherBody =>
@@ -1879,7 +1888,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get rowMonthlyLabel => 'Kuukausittain';
 
   @override
-  String get rowYearlyWorkedOut => 'Vuositilauksen hinta oli';
+  String get rowYearlyWorkedOut => 'Vuositasolla';
 
   @override
   String get ctaSwitchToMonthly => 'Vaihda kuukausitilaukseen';
@@ -1980,7 +1989,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get ovAlreadyBody =>
-      'Tällä kauppatilillä on aktiivinen tilaus. Ei mitään ostettavaa.';
+      'Tällä kauppatilillä on aktiivinen paketti. Sinun ei tarvitse ostaa uutta.';
 
   @override
   String get ctaSeeMySubscription => 'Katso tilaukseni';
@@ -2154,7 +2163,7 @@ class AppLocalizationsFi extends AppLocalizations {
       'Analysoimme ääntämistäsi puheluissa sanomistasi lauseista.';
 
   @override
-  String get noCharacterNote => 'Ei vielä sanottua';
+  String get noCharacterNote => 'Ei vielä kommenttia';
 
   @override
   String get noPhonemesYet => 'Ei vielä analysoitavia äänteitä';
@@ -2169,16 +2178,16 @@ class AppLocalizationsFi extends AppLocalizations {
   String get playAgain => 'Pelaa uudelleen';
 
   @override
-  String get difficultySlow => 'Hidas';
+  String get difficultySlow => 'Helppo';
 
   @override
   String get difficultyNormal => 'Normaali';
 
   @override
-  String get difficultyFast => 'Nopea';
+  String get difficultyFast => 'Vaikea';
 
   @override
-  String get difficultyLabel => 'Vaikeustaso';
+  String get difficultyLabel => 'Valitse vaikeustaso';
 
   @override
   String get connected => 'Yhdistetty';
@@ -2418,7 +2427,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get hwJoinStudentNoHelp =>
-      'Opettajasi käyttää sitä luokkalistan kanssa';
+      'Opettajasi käyttää sitä luokkalistaan vertaamiseen';
 
   @override
   String get hwJoinConsentTitle => 'Mitä opettajasi näkee';
@@ -2480,11 +2489,11 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String hwJoinDoneSubtitle(int count) {
-    return '$count tehtävää odottaa';
+    return 'Kotitehtäviä odottamassa: $count';
   }
 
   @override
-  String get hwJoinDoneNoAssignment => 'Ei vielä tehtäviä';
+  String get hwJoinDoneNoAssignment => 'Ei vielä kotitehtäviä';
 
   @override
   String get hwJoinDoneNextDue => 'Seuraava määräaika';
@@ -2499,7 +2508,8 @@ class AppLocalizationsFi extends AppLocalizations {
   String get hwJoinErrorNotFound => 'Koodia ei löytynyt';
 
   @override
-  String get hwJoinErrorNotFoundBody => 'Tarkista kuusi numeroa uudelleen.';
+  String get hwJoinErrorNotFoundBody =>
+      'Tarkista kuusimerkkinen koodi uudelleen.';
 
   @override
   String get hwJoinErrorExpired => 'Koodi on vanhentunut';
@@ -2645,7 +2655,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String hwHomeBannerOverdue(int count) {
-    return 'Sinulla on $count palauttamatonta tehtävää';
+    return 'Palauttamattomia tehtäviä: $count';
   }
 
   @override
@@ -2707,14 +2717,14 @@ class AppLocalizationsFi extends AppLocalizations {
   String get callIncomingCallerFallback => 'Beaver-ohjaaja';
 
   @override
-  String get callIncomingHandle => 'Korean kielen puhelu';
+  String get callIncomingHandle => 'Koreankielinen puhelu';
 
   @override
   String get callMissedTitle => 'Vastaamaton puhelu';
 
   @override
   String get callMissedChannelDescription =>
-      'Kertoo, kun et ehdi vastata Beaver:n puheluun.';
+      'Kertoo, kun et ehdi vastata Beaverin puheluun.';
 
   @override
   String callMissedBody(String name) {
@@ -2733,7 +2743,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get callHintLockedTitle =>
-      'Vihjeet eivät ole käytettävissä Opiskelu-tilassa';
+      'Vihjeet eivät ole käytettävissä Ilmaukset-kurssilla';
 
   @override
   String get wsTitle => 'Vaikeat äänteet';
@@ -2971,7 +2981,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String wsNationalSubtitle(String country) {
-    return '$country – äänteet, joissa puhujat usein erehtyvät';
+    return 'Äänteet, joissa puhujat maasta $country usein erehtyvät';
   }
 
   @override
@@ -3141,10 +3151,10 @@ class AppLocalizationsFi extends AppLocalizations {
       'Määräaika on mennyt, mutta voit vielä palauttaa sen.';
 
   @override
-  String get hwClassPickerTitle => 'Valitse ryhmä';
+  String get hwClassPickerTitle => 'Valitse luokka';
 
   @override
-  String get hwA11yClassPicker => 'Vaihda ryhmää';
+  String get hwA11yClassPicker => 'Vaihda luokkaa';
 
   @override
   String get hwLangConsentTitle => 'Jaetaanko äidinkielesi opettajalle?';

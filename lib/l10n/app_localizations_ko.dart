@@ -1147,6 +1147,15 @@ class AppLocalizationsKo extends AppLocalizations {
   String get paymentLabelFallback => '결제';
 
   @override
+  String get paymentLabelSubscription => '구독 결제';
+
+  @override
+  String get paymentLabelCharacter => '캐릭터 구매';
+
+  @override
+  String get paymentLabelBundle => '캐릭터 묶음 구매';
+
+  @override
   String learningPassed(int passed, int total) {
     return '$total문장 중 $passed개 통과';
   }

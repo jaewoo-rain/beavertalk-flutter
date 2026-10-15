@@ -253,7 +253,7 @@ abstract class AppLocalizations {
   /// Body of the call-rating bottom sheet shown on the call-finished screen, under callRatingPrompt.
   ///
   /// In en, this message translates to:
-  /// **'Your rating helps us talk better next time.'**
+  /// **'Your rating helps make your next call even better.'**
   String get callRatingBody;
 
   /// Primary button of the call-rating sheet: sends the chosen rating.
@@ -841,7 +841,7 @@ abstract class AppLocalizations {
   /// No description provided for @productName.
   ///
   /// In en, this message translates to:
-  /// **'Annoying Beaver Avatar'**
+  /// **'Mischievous Beaver Avatar'**
   String get productName;
 
   /// No description provided for @productTrait.
@@ -1081,7 +1081,7 @@ abstract class AppLocalizations {
   /// Home learning-status block, third line: how many expressions remain before free talk unlocks.
   ///
   /// In en, this message translates to:
-  /// **'{count} expressions left until conversation'**
+  /// **'{count, plural, =1{1 expression left until conversation} other{{count} expressions left until conversation}}'**
   String homeExpressionsLeft(int count);
 
   /// Home learning-status block, third line in free-talk mode. Replaces the countdown once free talk is unlocked.
@@ -1147,7 +1147,7 @@ abstract class AppLocalizations {
   /// Metric tile label: expressions learned this month (server sentences).
   ///
   /// In en, this message translates to:
-  /// **'Expressions'**
+  /// **'Expressions learned'**
   String get streakMetricLearned;
 
   /// Metric tile label: words the learner spoke this month (approximate, server words).
@@ -2278,6 +2278,24 @@ abstract class AppLocalizations {
   /// **'Payment'**
   String get paymentLabelFallback;
 
+  /// No description provided for @paymentLabelSubscription.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscription payment'**
+  String get paymentLabelSubscription;
+
+  /// No description provided for @paymentLabelCharacter.
+  ///
+  /// In en, this message translates to:
+  /// **'Character purchase'**
+  String get paymentLabelCharacter;
+
+  /// No description provided for @paymentLabelBundle.
+  ///
+  /// In en, this message translates to:
+  /// **'Character bundle purchase'**
+  String get paymentLabelBundle;
+
   /// Headline of the learning summary screen.
   ///
   /// In en, this message translates to:
@@ -2287,7 +2305,7 @@ abstract class AppLocalizations {
   /// No description provided for @hardestSound.
   ///
   /// In en, this message translates to:
-  /// **'Hardest sound today'**
+  /// **'Hardest sound'**
   String get hardestSound;
 
   /// No description provided for @soundAccuracy.
@@ -2299,7 +2317,7 @@ abstract class AppLocalizations {
   /// No description provided for @phonemeAttempts.
   ///
   /// In en, this message translates to:
-  /// **'Per phoneme · {count} attempts'**
+  /// **'Per phoneme · {count, plural, =1{1 attempt} other{{count} attempts}}'**
   String phonemeAttempts(int count);
 
   /// No description provided for @colSound.
@@ -2365,7 +2383,7 @@ abstract class AppLocalizations {
   /// No description provided for @recentSessions.
   ///
   /// In en, this message translates to:
-  /// **'Last {count} sessions'**
+  /// **'{count, plural, =1{Last session} other{Last {count} sessions}}'**
   String recentSessions(int count);
 
   /// No description provided for @trendAverage.
@@ -2521,7 +2539,7 @@ abstract class AppLocalizations {
   /// One line under the inactive score gauge when the call has learned sentences but none practiced yet (Figma screen/analysis__no_score 4867:7359). Scores come only from practicing sentences.
   ///
   /// In en, this message translates to:
-  /// **'Practice the sentences to get your pronunciation score'**
+  /// **'Review the sentences to get your pronunciation score'**
   String get analysisNoScoreReview;
 
   /// One line under the inactive score gauge when the call produced no learned sentences at all (Figma screen/analysis__no_expressions 4849:8823).
@@ -3283,7 +3301,7 @@ abstract class AppLocalizations {
   /// No description provided for @ovCharacterOfferBody.
   ///
   /// In en, this message translates to:
-  /// **'Pick one character and keep them. A one-off purchase — no subscription, no renewal.'**
+  /// **'Pick one character and keep them forever. A one-off purchase — no subscription, no renewal.'**
   String get ovCharacterOfferBody;
 
   /// No description provided for @rowOneCharacter.
@@ -3463,7 +3481,7 @@ abstract class AppLocalizations {
   /// No description provided for @rowYearlyWorkedOut.
   ///
   /// In en, this message translates to:
-  /// **'Yearly worked out at'**
+  /// **'Yearly equivalent'**
   String get rowYearlyWorkedOut;
 
   /// No description provided for @ctaSwitchToMonthly.
@@ -3643,7 +3661,7 @@ abstract class AppLocalizations {
   /// No description provided for @ovAlreadyBody.
   ///
   /// In en, this message translates to:
-  /// **'This store account has an active plan. There\'s nothing to buy.'**
+  /// **'This store account has an active plan. You don\'t need to buy it again.'**
   String get ovAlreadyBody;
 
   /// No description provided for @ctaSeeMySubscription.
@@ -3811,7 +3829,7 @@ abstract class AppLocalizations {
   /// No description provided for @nicknameRule.
   ///
   /// In en, this message translates to:
-  /// **'2–12 characters. Letters and numbers. English Only'**
+  /// **'2–12 characters · English letters and numbers only'**
   String get nicknameRule;
 
   /// No description provided for @ctaSave.
@@ -3955,7 +3973,7 @@ abstract class AppLocalizations {
   /// Analysis - the character left no remark for this call.
   ///
   /// In en, this message translates to:
-  /// **'Nothing said yet'**
+  /// **'No note from your character yet'**
   String get noCharacterNote;
 
   /// Learning report - the per-sound table has no rows yet.
@@ -4573,7 +4591,7 @@ abstract class AppLocalizations {
   /// Homework (class join / assignments) copy
   ///
   /// In en, this message translates to:
-  /// **'{count} assignments are waiting'**
+  /// **'{count, plural, =1{1 assignment is waiting} other{{count} assignments are waiting}}'**
   String hwJoinDoneSubtitle(int count);
 
   /// Homework (class join / assignments) copy
@@ -4591,7 +4609,7 @@ abstract class AppLocalizations {
   /// Homework (class join / assignments) copy
   ///
   /// In en, this message translates to:
-  /// **'Your class name'**
+  /// **'Your name in class'**
   String get hwJoinDoneRosterName;
 
   /// Homework (class join / assignments) copy
@@ -4759,7 +4777,7 @@ abstract class AppLocalizations {
   /// Homework detail, conversation card. Shown once the conversation is done — it can only be done once per assignment, so the button is disabled and this line says why.
   ///
   /// In en, this message translates to:
-  /// **'You can do the conversation once per homework.'**
+  /// **'You can only do the conversation once per assignment.'**
   String get hwConversationOnce;
 
   /// Homework (class join / assignments) copy
@@ -4867,13 +4885,13 @@ abstract class AppLocalizations {
   /// Homework (class join / assignments) copy
   ///
   /// In en, this message translates to:
-  /// **'{count} assignments are due tomorrow'**
+  /// **'{count, plural, =1{1 assignment is due tomorrow} other{{count} assignments are due tomorrow}}'**
   String hwHomeBannerDueTomorrow(int count);
 
   /// Homework (class join / assignments) copy
   ///
   /// In en, this message translates to:
-  /// **'You have {count} unsubmitted assignments'**
+  /// **'{count, plural, =1{You have 1 unsubmitted assignment} other{You have {count} unsubmitted assignments}}'**
   String hwHomeBannerOverdue(int count);
 
   /// Homework (class join / assignments) copy
@@ -5029,7 +5047,7 @@ abstract class AppLocalizations {
   /// Call screen - speech bubble above the hint button, shown when the learner taps it during an Expressions-course call. The server sends no hints in that course, so the button stays visible but explains why it does nothing. Name the course with the same word as homeCourseExpression (the home course label) - not a word for 'study'.
   ///
   /// In en, this message translates to:
-  /// **'Hints aren\'t available in Study'**
+  /// **'Hints aren\'t available in Expressions'**
   String get callHintLockedTitle;
 
   /// No description provided for @wsTitle.
@@ -5599,7 +5617,7 @@ abstract class AppLocalizations {
   /// Label above the full country list (country names are always English, A-Z).
   ///
   /// In en, this message translates to:
-  /// **'All countries'**
+  /// **'All countries (A–Z)'**
   String get nationalityAllCountries;
 
   /// My Page nationality screen: label above the currently saved country.

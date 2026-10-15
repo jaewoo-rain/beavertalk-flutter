@@ -56,7 +56,7 @@ class AppLocalizationsNe extends AppLocalizations {
 
   @override
   String callEndedDuration(String duration) {
-    return 'कल $duration मा समाप्त भयो';
+    return 'कल समाप्त · $duration';
   }
 
   @override
@@ -135,7 +135,7 @@ class AppLocalizationsNe extends AppLocalizations {
   }
 
   @override
-  String get scheduleManagement => 'तालिका';
+  String get scheduleManagement => 'तालिका व्यवस्थापन';
 
   @override
   String get alarms => 'अलार्महरू';
@@ -159,7 +159,7 @@ class AppLocalizationsNe extends AppLocalizations {
   String get alarmNoRepeat => 'दोहोरिँदैन';
 
   @override
-  String get addSchedule => 'तालिका थप्नुहोस्';
+  String get addSchedule => 'नयाँ तालिका थप्नुहोस्';
 
   @override
   String get editSchedule => 'तालिका सम्पादन गर्नुहोस्';
@@ -183,7 +183,7 @@ class AppLocalizationsNe extends AppLocalizations {
   String get repeat => 'दोहोर्याउनुहोस्';
 
   @override
-  String get callPartner => 'क्यारेक्टर';
+  String get callPartner => 'कल साथी';
 
   @override
   String get alarmModeLearnSub => 'पाठ्यक्रमका अभिव्यक्ति अभ्यास';
@@ -198,7 +198,7 @@ class AppLocalizationsNe extends AppLocalizations {
   String get presetMorning => 'बिहानको दिनचर्या';
 
   @override
-  String get presetMorningSub => 'कामका दिन 8:00';
+  String get presetMorningSub => 'हप्ताका कार्यदिन 8:00';
 
   @override
   String get presetEvening => 'साँझको समापन';
@@ -239,7 +239,7 @@ class AppLocalizationsNe extends AppLocalizations {
   String get conversation => 'कुराकानी';
 
   @override
-  String get newExpressions => 'नयाँ अभिव्यक्तिहरू';
+  String get newExpressions => 'नयाँ सिकेका अभिव्यक्तिहरू';
 
   @override
   String get analysisPrepNote => 'आजको कल हेर्दैछौं।';
@@ -382,7 +382,7 @@ class AppLocalizationsNe extends AppLocalizations {
   String get productName => 'अटेरी Beaver अवतार';
 
   @override
-  String get productTrait => 'प्रिमियम क्यारेक्टर · सधैंभरिको तपाईंको';
+  String get productTrait => 'प्रिमियम क्यारेक्टर · सधैंका लागि तपाईंको';
 
   @override
   String get amountItemPrice => 'वस्तु मूल्य';
@@ -469,7 +469,7 @@ class AppLocalizationsNe extends AppLocalizations {
   String get unsaveSentence => 'सेभ गरिएको वाक्य हटाउनुहोस्';
 
   @override
-  String get scoringPronunciation => 'तपाईंको उच्चारण स्कोर गर्दैछ…';
+  String get scoringPronunciation => 'तपाईंको उच्चारण स्कोर गरिँदैछ…';
 
   @override
   String get analyzingByWord => 'तपाईंको उच्चारण शब्द–शब्द जाँचिँदै छ';
@@ -672,10 +672,11 @@ class AppLocalizationsNe extends AppLocalizations {
       'अहिलेसम्म कुनै सेभ गरिएको वाक्य छैन।\nतपाईंको कुराकानी रेकर्डबाट वाक्यहरू बुकमार्क गर्नुहोस्।';
 
   @override
-  String get noAlarms => 'अहिलेसम्म कुनै अलार्म छैन';
+  String get noAlarms => 'सेट गरिएको कुनै अलार्म छैन';
 
   @override
-  String get noAlarmsBody => 'निरन्तर बानी बनाउन\nसिकाइ सम्झना थप्नुहोस्।';
+  String get noAlarmsBody =>
+      'सिकाइ सम्झना थप्नुभयो भने\nनिरन्तर बानी बनाउन सक्नुहुन्छ।';
 
   @override
   String get subscriptionManage => 'सदस्यता व्यवस्थापन गर्नुहोस्';
@@ -723,10 +724,10 @@ class AppLocalizationsNe extends AppLocalizations {
 
   @override
   String get challengeIntro =>
-      'जोनमा भएका प्रत्येक कार्ड कोरियनमा सही उच्चारण गरेर पास गर्नुहोस्।\nमाइक छैन? तपाईं स्क्रिन ट्याप गरेर पनि खेल्न सक्नुहुन्छ।';
+      '३० सेकेन्डसम्म आफूतिर आउने प्रत्येक शब्द ठूलो स्वरमा पढ्नुहोस्।\nमाइक छैन? तपाईं ट्याप गरेर पनि खेल्न सक्नुहुन्छ।';
 
   @override
-  String get challengeStart => 'क्यामेरा र माइक सुरु गर्नुहोस्';
+  String get challengeStart => 'सुरु गर्नुहोस्';
 
   @override
   String get challengePermissionNote =>
@@ -846,7 +847,7 @@ class AppLocalizationsNe extends AppLocalizations {
 
   @override
   String accentShareText(String country) {
-    return 'म BeaverTalk मा कोरियाली सिक्दैछु — मेरो कोरियाली उच्चारण यस्तो सुनिन्छ: $country! 🦫 आफ्नो उच्चारण पत्ता लगाऊ र मसँगै सिक: https://beavertalk.im';
+    return 'म BeaverTalk मा कोरियन सिक्दैछु — मेरो कोरियन उच्चारण यस्तो सुनिन्छ: $country! 🦫 आफ्नो उच्चारण पत्ता लगाऊ र मसँगै सिक: https://beavertalk.im';
   }
 
   @override
@@ -888,7 +889,7 @@ class AppLocalizationsNe extends AppLocalizations {
   String get continueLabel => 'जारी राख्नुहोस्';
 
   @override
-  String get onboardingDoneTitle => 'Beaver तपाईंको कलको प्रतीक्षा गर्दैछ';
+  String get onboardingDoneTitle => 'बिभर तपाईंको कलको प्रतीक्षा गर्दैछ';
 
   @override
   String get onboardingDoneSubtitle => 'अहिले नै कल सुरु गर्नुहोस्';
@@ -1173,6 +1174,15 @@ class AppLocalizationsNe extends AppLocalizations {
   String get paymentLabelFallback => 'भुक्तानी';
 
   @override
+  String get paymentLabelSubscription => 'सदस्यता भुक्तानी';
+
+  @override
+  String get paymentLabelCharacter => 'पात्र खरिद';
+
+  @override
+  String get paymentLabelBundle => 'क्यारेक्टर प्याक किनेको';
+
+  @override
   String learningPassed(int passed, int total) {
     return '$total मध्ये $passed वाक्य उत्तीर्ण';
   }
@@ -1263,7 +1273,7 @@ class AppLocalizationsNe extends AppLocalizations {
   String get pronunciationAnalysis => 'उच्चारण विश्लेषण';
 
   @override
-  String get recentSessionsAverage => 'पछिल्लो १० सत्रको औसत';
+  String get recentSessionsAverage => 'पछिल्ला 10 सत्रको औसत';
 
   @override
   String levelStage(int stage) {
@@ -1291,17 +1301,17 @@ class AppLocalizationsNe extends AppLocalizations {
       'स्तर परीक्षा दिनमा एक पटक मात्र दिन सकिन्छ। भोलि फेरि प्रयास गर्नुहोस्।';
 
   @override
-  String get levelRetakeTitle => 'लेभल टेस्ट फेरि दिने?';
+  String get levelRetakeTitle => 'स्तर परीक्षा फेरि दिने?';
 
   @override
   String get levelRetakeBody =>
-      'फेरि दिँदा तपाईंको प्रगति त्यो लेभलको पहिलो पाठमा फर्किन्छ — उही लेभल आए पनि। सिकेका अभिव्यक्ति र कल इतिहास रहिरहन्छ।';
+      'फेरि दिँदा तपाईंको प्रगति त्यो स्तरको पहिलो पाठमा फर्किन्छ — उही स्तर आए पनि। सिकेका अभिव्यक्ति र कल इतिहास रहिरहन्छ।';
 
   @override
   String get levelRetakeKeep => 'प्रगति राख्नुहोस्';
 
   @override
-  String get levelRetakeConfirm => 'फेरि टेस्ट दिनुहोस्';
+  String get levelRetakeConfirm => 'फेरि परीक्षा दिनुहोस्';
 
   @override
   String get practicePronunciation => 'उच्चारण अभ्यास गर्नुहोस्';
@@ -1432,7 +1442,7 @@ class AppLocalizationsNe extends AppLocalizations {
   String get nextPaymentLabel => 'अर्को भुक्तानी';
 
   @override
-  String get retryingUntilLabel => 'पुनःप्रयास हुनेसम्म';
+  String get retryingUntilLabel => 'पुनःप्रयासको अन्तिम मिति';
 
   @override
   String get pausedSinceLabel => 'रोकिएको मिति';
@@ -1527,10 +1537,10 @@ class AppLocalizationsNe extends AppLocalizations {
       'Premium: दिनमा 15 मिनेट — त्यसभित्र जति पटक पनि कल गर्न सकिन्छ।';
 
   @override
-  String get paywallProTitle1 => 'तपाईंको कोरियन साथी';
+  String get paywallProTitle1 => 'राति 3 बजे पनि जागा रहने';
 
   @override
-  String get paywallProTitle2 => 'राति ३ बजे पनि जागै';
+  String get paywallProTitle2 => 'तपाईंको कोरियन साथी';
 
   @override
   String get paywallLimitHeadline => 'Premium मा दिनमा 15 मिनेट कल।';
@@ -1595,12 +1605,12 @@ class AppLocalizationsNe extends AppLocalizations {
 
   @override
   String ctaCaptionMaxTrial(String price) {
-    return '७ दिन नि:शुल्क, त्यसपछि प्रति महिना $price · स्टोरमा जुनसुकै बेला रद्द';
+    return '7 दिन निःशुल्क, त्यसपछि प्रति महिना $price · स्टोरमा जुनसुकै बेला रद्द';
   }
 
   @override
   String ctaCaptionMaxYearlyTrial(String price) {
-    return '७ दिन नि:शुल्क, त्यसपछि प्रति वर्ष $price · स्टोरमा जुनसुकै बेला रद्द';
+    return '7 दिन निःशुल्क, त्यसपछि प्रति वर्ष $price · स्टोरमा जुनसुकै बेला रद्द';
   }
 
   @override
@@ -1736,15 +1746,15 @@ class AppLocalizationsNe extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: 'तपाईंका पात्रहरू फर्किए',
-      one: 'तपाईंको पात्र फर्कियो',
+      other: 'तपाईंका क्यारेक्टरहरू फर्किए',
+      one: 'तपाईंको क्यारेक्टर फर्कियो',
     );
     return '$_temp0';
   }
 
   @override
   String get ovRestoreCharacterOtherTitle =>
-      'यो पात्र अर्को खाताबाट किनिएको हो';
+      'यो क्यारेक्टर अर्को खाताबाट किनिएको हो';
 
   @override
   String get ctaSignInThatAccount => 'त्यो खातामा साइन इन गर्नुहोस्';
@@ -1823,7 +1833,7 @@ class AppLocalizationsNe extends AppLocalizations {
 
   @override
   String get ovAnnualSwitchBody =>
-      'मासिक भुक्तानीभन्दा वार्षिक प्लान सस्तो पर्छ।';
+      'मासिक भुक्तानीभन्दा वार्षिक योजना सस्तो पर्छ।';
 
   @override
   String get rowYouSave => 'तपाईंको बचत';
@@ -2151,22 +2161,22 @@ class AppLocalizationsNe extends AppLocalizations {
   String get playAgain => 'फेरि खेल्नुहोस्';
 
   @override
-  String get difficultySlow => 'बिस्तारै';
+  String get difficultySlow => 'सजिलो';
 
   @override
   String get difficultyNormal => 'सामान्य';
 
   @override
-  String get difficultyFast => 'छिटो';
+  String get difficultyFast => 'कठिन';
 
   @override
-  String get difficultyLabel => 'कठिनाइ';
+  String get difficultyLabel => 'कठिनाइ छान्नुहोस्';
 
   @override
   String get connected => 'जडान भयो';
 
   @override
-  String get unlockedWithMax => 'तपाईंको प्लानमा समावेश';
+  String get unlockedWithMax => 'तपाईंको योजनामा समावेश';
 
   @override
   String get homeworkCallTimeLimit => 'गृहकार्यको कल ५ मिनेट मात्र हुन्छ।';
@@ -2197,11 +2207,11 @@ class AppLocalizationsNe extends AppLocalizations {
   String get callRoleplayInfoA11y => 'स्थिति र भूमिका हेर्नुहोस्';
 
   @override
-  String get fcEndedTitle => 'तपाईंको नि:शुल्क कल सकियो';
+  String get fcEndedTitle => 'तपाईंको निःशुल्क कल सकियो';
 
   @override
   String get fcEndedBody =>
-      'आजको ५ मिनेटको नि:शुल्क कल सकियो\nलामो कुराकानीका लागि सदस्यता लिनुहोस्';
+      'आजको ५ मिनेटको निःशुल्क कल सकियो\nलामो कुराकानीका लागि सदस्यता लिनुहोस्';
 
   @override
   String get ctaSubscribeKeepTalking => 'सदस्यता लिई कुराकानी जारी राख्नुहोस्';
@@ -2274,7 +2284,7 @@ class AppLocalizationsNe extends AppLocalizations {
   String get callFreeEndedTitle => 'तपाईंको निःशुल्क कल सकियो';
 
   @override
-  String get callFreeEndedCta => 'सदस्यता लिनुहोस् र कुरा जारी राख्नुहोस्';
+  String get callFreeEndedCta => 'सदस्यता लिई कुराकानी जारी राख्नुहोस्';
 
   @override
   String get callKeepGoingTitle => 'जारी राख्ने?';
@@ -2371,7 +2381,7 @@ class AppLocalizationsNe extends AppLocalizations {
   String get hwJoinFieldLearners => 'सिकारुहरू';
 
   @override
-  String get hwJoinFieldTerm => 'अवधि';
+  String get hwJoinFieldTerm => 'सत्र';
 
   @override
   String get hwJoinConfirmNote =>
@@ -2419,7 +2429,8 @@ class AppLocalizationsNe extends AppLocalizations {
   String get hwJoinConsentShared2 => 'तपाईंले गृहकार्य गर्नुभयो कि भएन';
 
   @override
-  String get hwJoinConsentShared3 => 'पास भएका र छुटेका वाक्यहरू';
+  String get hwJoinConsentShared3 =>
+      'पास भएका वाक्यको संख्या र छुटेका वाक्यहरू';
 
   @override
   String get hwJoinConsentShared4 => 'गृहकार्य कलको अवधि र सारांश';
@@ -2439,7 +2450,7 @@ class AppLocalizationsNe extends AppLocalizations {
 
   @override
   String get hwJoinConsentNotShared2 =>
-      'एपमा प्रयोग गर्ने नाम, प्रोफाइल र पात्र';
+      'एपमा प्रयोग गर्ने नाम, प्रोफाइल र क्यारेक्टर';
 
   @override
   String get hwJoinConsentNotShared3 => 'राष्ट्रियता';
@@ -2463,7 +2474,7 @@ class AppLocalizationsNe extends AppLocalizations {
 
   @override
   String hwJoinDoneSubtitle(int count) {
-    return '$count वटा गृहकार्य पर्खिरहेका छन्';
+    return '$count वटा गृहकार्य पर्खिरहेको छ';
   }
 
   @override
@@ -2601,7 +2612,7 @@ class AppLocalizationsNe extends AppLocalizations {
   String get hwLeaveConfirm => 'छोड्नुहोस्';
 
   @override
-  String get hwLeaveCancel => 'बस्नुहोस्';
+  String get hwLeaveCancel => 'कक्षामै रहनुहोस्';
 
   @override
   String get hwLeaveFailed => 'कक्षा छोड्न सकिएन।';
@@ -2715,7 +2726,7 @@ class AppLocalizationsNe extends AppLocalizations {
   String get callNotifPermissionRequired => 'सेटिङमा सूचनालाई अनुमति दिनुहोस्।';
 
   @override
-  String get callHintLockedTitle => 'अभ्यास मोडमा सङ्केत उपलब्ध छैन';
+  String get callHintLockedTitle => 'अभिव्यक्ति सिकाइमा सङ्केत उपलब्ध छैन';
 
   @override
   String get wsTitle => 'कठिन ध्वनिहरू';
@@ -3057,7 +3068,7 @@ class AppLocalizationsNe extends AppLocalizations {
   String get nationalitySearchEmpty => 'कुनै नतिजा छैन';
 
   @override
-  String get hwTabTodo => 'अपूरो';
+  String get hwTabTodo => 'अपुरो';
 
   @override
   String hwTeacherName(String name) {
@@ -3094,7 +3105,7 @@ class AppLocalizationsNe extends AppLocalizations {
 
   @override
   String hwA11yActivityTodo(String activity) {
-    return '$activity अपूरो';
+    return '$activity अपुरो';
   }
 
   @override
