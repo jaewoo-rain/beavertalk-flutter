@@ -21,6 +21,7 @@ import '../../core/format/dates.dart';
 import '../../core/i18n/locale_controller.dart';
 import '../../features/auth/domain/entities/member.dart';
 import '../../features/legal/legal_urls.dart';
+import '../../features/normalcall/presentation/normalcall_providers.dart';
 import '../../features/auth/presentation/providers/auth_controller.dart';
 import '../../features/auth/presentation/providers/auth_providers.dart';
 import '../../features/auth/presentation/providers/my_profile_provider.dart';
@@ -144,6 +145,8 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
       await ref
           .read(authControllerProvider.notifier)
           .updateLanguage(_langHead(picked));
+      // 서버가 새 모국어로 번역해 내리는 홈 주제·상황·차시 목록을 다시 받는다(QA S3).
+      invalidateMemberLanguageData(ref.invalidate);
     } catch (e) {
       // 서버 저장이 실패하면 화면 언어도 되돌린다(QA F013) — 두면 UI 는 새 언어인데 서버
       // member.language 는 옛 언어라, 서버가 번역하는 취약 발음 설명이 옛 언어로 남고 같은 언어를

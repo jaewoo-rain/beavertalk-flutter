@@ -130,6 +130,14 @@ final curMeProvider = FutureProvider.autoDispose<CurMe>((ref) async {
   return ref.watch(normalcallRepositoryProvider).getCurMe();
 });
 
+/// 모국어(member.language)를 바꾼 뒤 서버가 그 언어로 번역해 주는 커리큘럼 조회를 다시 받게 한다
+/// (QA S3 · 2026-10-16 — 홈 주제·상황 줄이 앱을 다시 켜기 전까지 이전 언어로 남았다).
+/// [invalidate] 는 `ref.invalidate` · `container.invalidate` 를 그대로 넘긴다.
+void invalidateMemberLanguageData(void Function(ProviderOrFamily) invalidate) {
+  invalidate(curMeProvider);
+  invalidate(curLessonsProvider);
+}
+
 /// 그 레벨 차시 목록 — 회화학습 힌트 시트 「차시 목록」 탭(2026-10-10 PM-DEC-485).
 final curLessonsProvider =
     FutureProvider.autoDispose.family<List<CurLessonRow>, int>((ref, level) {
