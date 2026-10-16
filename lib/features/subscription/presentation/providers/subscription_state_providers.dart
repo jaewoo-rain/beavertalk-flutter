@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../data/store_iap_service.dart';
+import '../../../../core/config/store_flags.dart';
 import '../../domain/entities/subscription.dart';
 import '../../domain/entities/subscription_state.dart';
 import '../../domain/iap_service.dart';
@@ -32,6 +33,8 @@ final subscriptionStatusResolverProvider =
 /// has to already be listening, and it must not be torn down between screens —
 /// disposing it mid-flight would drop a paid receipt on the floor.
 final iapServiceProvider = Provider<IapService>((ref) {
+  // 심사 빌드(PAYMENTS_ENABLED=false) — 스토어 SDK 없이(T-20261016-07).
+  if (!paymentsEnabled) return MockIapService();
   if (kIsWeb ||
       (defaultTargetPlatform != TargetPlatform.iOS &&
           defaultTargetPlatform != TargetPlatform.android)) {

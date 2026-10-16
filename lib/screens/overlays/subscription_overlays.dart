@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../app/routes.dart';
+import '../../core/config/store_flags.dart';
 import '../../features/character/presentation/providers/character_providers.dart';
 import '../../features/legal/legal_urls.dart' show contactMailUri;
 import '../../features/subscription/domain/iap_service.dart';
@@ -225,6 +226,7 @@ Future<void> showSubscriptionOverlay(
 /// outcome, not an error — a member who never bought anything deserves a clear
 /// "there was nothing here", not a failure.
 Future<void> runRestoreFlow(BuildContext context) async {
+  if (!paymentsEnabled) return; // 심사 빌드 — 스토어 복원 없음(T-20261016-07)
   // Two taps in flight would double-count and race the sheets.
   if (_restoring) return;
   _restoring = true;

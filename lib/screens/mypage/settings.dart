@@ -387,6 +387,8 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
                   ]),
                   const SizedBox(height: AppSpacing.s24),
 
+                  // 심사 빌드(PAYMENTS_ENABLED=false)는 「결제」 구획을 통째로 숨긴다(T-20261016-07).
+                  if (paymentsEnabled) ...[
                   _section(l10n.paymentSection),
                   const SizedBox(height: AppSpacing.s16),
                   _group([
@@ -421,6 +423,7 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
                     ),
                   ]),
                   const SizedBox(height: AppSpacing.s24),
+                  ],
 
                   _section(l10n.supportSection),
                   const SizedBox(height: AppSpacing.s16),

@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
+import '../../core/config/store_flags.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
 import '../../components/atoms/call_toggle_button.dart';
@@ -586,7 +587,10 @@ class _CallScreenState extends ConsumerState<CallScreen> {
         context,
         s.paidCallTime
             ? SubscriptionOverlay.keepGoing
-            : SubscriptionOverlay.freeCallEnded,
+            // 심사 빌드 — 구독 유도 없는 마무리 시트(End Call 하나 · T-20261016-07).
+            : (paymentsEnabled
+                ? SubscriptionOverlay.freeCallEnded
+                : SubscriptionOverlay.premiumCallEnded),
         characterName: characterName,
         avatar: avatarImage == null
             ? null
