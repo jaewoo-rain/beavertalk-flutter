@@ -12,7 +12,9 @@ import '../../components/organisms/gnb.dart';
 import '../../core/error/app_exception.dart';
 import '../../features/auth/presentation/providers/auth_controller.dart';
 import '../../features/auth/presentation/providers/my_profile_provider.dart';
+import '../../app/routes.dart';
 import '../../l10n/app_localizations.dart';
+import 'terms_notice.dart';
 import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
@@ -178,7 +180,13 @@ class _SignupScreenState extends ConsumerState<SignupScreen>
                       disabled: _submitting || !_canSubmit,
                       onPressed: _signup,
                     ),
-                    const SizedBox(height: AppSpacing.s48),
+                    // 가입 직후 온보딩 동의 화면을 지난다 — 여기엔 체크를 두지 않고 안내만(명세 §4-6).
+                    const SizedBox(height: AppSpacing.s16),
+                    TermsNotice(
+                      onTerms: () => Navigator.pushNamed(context, Routes.terms),
+                      onPrivacy: () => Navigator.pushNamed(context, Routes.privacy),
+                    ),
+                    const SizedBox(height: AppSpacing.s32),
                     // ── Social sign-up row (Kakao / Google / Apple) ─────────
                     _SocialButtonRow(
                       onKakao: kakaoSignIn,

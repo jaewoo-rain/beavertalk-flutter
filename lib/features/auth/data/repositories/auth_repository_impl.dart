@@ -36,6 +36,26 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<Member> submitConsents({
+    required Map<String, String> versions,
+    String? appVersion,
+    String? platform,
+    String? locale,
+  }) async {
+    try {
+      final dto = await _remote.submitConsents(
+        versions: versions,
+        appVersion: appVersion,
+        platform: platform,
+        locale: locale,
+      );
+      return dto.toEntity();
+    } on DioException catch (e) {
+      throw mapDioException(e);
+    }
+  }
+
+  @override
   Future<Member> getMe() async {
     try {
       final dto = await _remote.getMe();

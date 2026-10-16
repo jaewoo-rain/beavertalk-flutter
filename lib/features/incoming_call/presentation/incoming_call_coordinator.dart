@@ -11,6 +11,7 @@ import 'package:uuid/uuid.dart';
 import '../../../app/navigation.dart';
 import '../../../app/routes.dart';
 import '../../../core/i18n/standalone_l10n.dart';
+import '../../auth/presentation/providers/my_profile_provider.dart';
 import '../../normalcall/presentation/normalcall_controller.dart';
 import '../data/models/incoming_call_payload_dto.dart';
 import '../domain/entities/incoming_call_payload.dart';
@@ -227,6 +228,14 @@ class IncomingCallCoordinator with WidgetsBindingObserver {
       return;
     }
 
+    // 가입 동의 전에는 통화(녹음·국외 이전)를 시작하지 않는다(PM-DEC-735 · 명세 §8-7).
+    // 이 경로는 AuthGate 를 거치지 않으므로 여기서 막는다. 앱을 열면 AuthGate 가 동의 화면을 띄운다.
+    if (await _consentPending()) {
+      _log('accept 보류: 가입 동의 전');
+      if (uuid != null) await callkit.endCall(uuid);
+      return;
+    }
+
     _log('accept 수락 → 세션 시작(characterId=${payload.characterId}, uuid=$uuid)');
 
     final notifier = ref.read(normalCallControllerProvider.notifier);
@@ -280,6 +289,21 @@ class IncomingCallCoordinator with WidgetsBindingObserver {
     // 주의: _handledUuids에서는 **지우지 않는다**. 종료 직후 activeCalls()가 이 콜을
     // 아직 accepted로 들고 있으면 재조정 루프가 통화를 되살려 버린다. 콜 uuid는 통화마다
     // 새로 발급되므로 남겨 둬도 다음 전화를 막지 않는다(200개 상한 있음).
+  }
+
+  /// 가입 동의가 남았나(`members/me.consentRequired`). 콜드스타트면 프로필을 기다린다(최대 8초).
+  /// 프로필을 못 읽으면 **막지 않는다** — 통화도 같은 서버를 쓰니 그때는 통화도 열리지 않고,
+  /// 일시 장애로 동의를 마친 회원의 전화를 끊지 않기 위해서다.
+  Future<bool> _consentPending() async {
+    try {
+      final me = await ref
+          .read(myProfileProvider.future)
+          .timeout(const Duration(seconds: 8));
+      return me.consentRequired;
+    } catch (e) {
+      _log('동의 상태 확인 실패($e) — 통화를 막지 않음');
+      return false;
+    }
   }
 
   /// 1분 미응답 처리: 부재중 배너 + dedup 정리.

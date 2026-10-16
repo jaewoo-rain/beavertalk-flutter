@@ -1915,7 +1915,7 @@ abstract class AppLocalizations {
   /// No description provided for @loginTermsNoticePrefix.
   ///
   /// In en, this message translates to:
-  /// **'By continuing, you agree to our '**
+  /// **'If you continue, we\'ll ask you to agree to the '**
   String get loginTermsNoticePrefix;
 
   /// No description provided for @loginTermsNoticeAnd.
@@ -1927,7 +1927,7 @@ abstract class AppLocalizations {
   /// No description provided for @loginTermsNoticeSuffix.
   ///
   /// In en, this message translates to:
-  /// **'.'**
+  /// **' on the next screen.'**
   String get loginTermsNoticeSuffix;
 
   /// No description provided for @loginLogIn.
@@ -5781,6 +5781,312 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'OK'**
   String get hwPolicyNoticeOk;
+
+  /// Sign-up consent screen title.
+  ///
+  /// In en, this message translates to:
+  /// **'Please agree to start using BeaverTalk'**
+  String get consentTitle;
+
+  /// Sign-up consent screen subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'You need to agree to all required items to use BeaverTalk.'**
+  String get consentSubtitle;
+
+  /// Master checkbox that toggles every item.
+  ///
+  /// In en, this message translates to:
+  /// **'Agree to all'**
+  String get consentAgreeAll;
+
+  /// Required item 1. Keep the [Required] tag.
+  ///
+  /// In en, this message translates to:
+  /// **'[Required] I am 14 years of age or older'**
+  String get consentAge14;
+
+  /// Required item 2. Keep the [Required] tag.
+  ///
+  /// In en, this message translates to:
+  /// **'[Required] Terms of Service'**
+  String get consentTerms;
+
+  /// Required item 3. Keep the [Required] tag.
+  ///
+  /// In en, this message translates to:
+  /// **'[Required] Collection and use of personal information (including voice recordings)'**
+  String get consentPrivacyCollect;
+
+  /// Required item 4. Keep the [Required] tag.
+  ///
+  /// In en, this message translates to:
+  /// **'[Required] Transfer of personal information abroad'**
+  String get consentOverseasTransfer;
+
+  /// Opens the item's document or summary sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'View'**
+  String get consentView;
+
+  /// Primary button; enabled only when every required item is on.
+  ///
+  /// In en, this message translates to:
+  /// **'Agree and start'**
+  String get consentCta;
+
+  /// Item 3 summary sheet title.
+  ///
+  /// In en, this message translates to:
+  /// **'Collection and use of personal information'**
+  String get consentCollectSheetTitle;
+
+  /// Item 3 sheet: collected items.
+  ///
+  /// In en, this message translates to:
+  /// **'What we collect: email, social account ID, voice recordings from calls and pronunciation practice, speech-to-text transcripts, learning history, device information'**
+  String get consentCollectItems;
+
+  /// Item 3 sheet: purpose.
+  ///
+  /// In en, this message translates to:
+  /// **'Why: AI voice conversations, pronunciation and accent analysis, learning history, account management'**
+  String get consentCollectPurpose;
+
+  /// Item 3 sheet: retention.
+  ///
+  /// In en, this message translates to:
+  /// **'How long: until you delete your account, or longer where the law requires'**
+  String get consentCollectRetention;
+
+  /// Item 3 sheet: right to refuse.
+  ///
+  /// In en, this message translates to:
+  /// **'You may refuse. If you refuse, you cannot sign up or use the service.'**
+  String get consentCollectRefuse;
+
+  /// Item 4 summary sheet title.
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer of personal information abroad'**
+  String get consentTransferSheetTitle;
+
+  /// Item 4 sheet footer. Keep the email address as is.
+  ///
+  /// In en, this message translates to:
+  /// **'You may refuse this transfer. If you do, AI voice calls and the pronunciation challenge are unavailable, so sign-up cannot continue. To delete data already transferred, contact admin@beavertalk.im.'**
+  String get consentTransferRefuse;
+
+  /// Transfer row label.
+  ///
+  /// In en, this message translates to:
+  /// **'Recipient'**
+  String get consentTransferColRecipient;
+
+  /// Transfer row label.
+  ///
+  /// In en, this message translates to:
+  /// **'Country'**
+  String get consentTransferColCountry;
+
+  /// Transfer row label.
+  ///
+  /// In en, this message translates to:
+  /// **'Items'**
+  String get consentTransferColItems;
+
+  /// Transfer row label.
+  ///
+  /// In en, this message translates to:
+  /// **'Purpose'**
+  String get consentTransferColPurpose;
+
+  /// Transfer row label.
+  ///
+  /// In en, this message translates to:
+  /// **'When and how'**
+  String get consentTransferColWhen;
+
+  /// Transfer row label.
+  ///
+  /// In en, this message translates to:
+  /// **'Retention'**
+  String get consentTransferColRetention;
+
+  /// Back-button sheet title.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ll be logged out if you don\'t agree'**
+  String get consentLeaveTitle;
+
+  /// Back-button sheet: log out.
+  ///
+  /// In en, this message translates to:
+  /// **'Log out'**
+  String get consentLeaveLogout;
+
+  /// Back-button sheet: stay on the consent screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep going'**
+  String get consentLeaveStay;
+
+  /// Snackbar when saving consent fails.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t save your consent. Please try again.'**
+  String get consentSubmitFailed;
+
+  /// Transfer table row 1: country.
+  ///
+  /// In en, this message translates to:
+  /// **'United States and others'**
+  String get consentTransferRow1Country;
+
+  /// Transfer table row 1: items.
+  ///
+  /// In en, this message translates to:
+  /// **'Call voice recordings, speech-to-text transcripts, homework call summaries'**
+  String get consentTransferRow1Items;
+
+  /// Transfer table row 1: purpose.
+  ///
+  /// In en, this message translates to:
+  /// **'AI voice conversations, call summaries and translation'**
+  String get consentTransferRow1Purpose;
+
+  /// Transfer table row 1: when.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent over the network when you use the feature'**
+  String get consentTransferRow1When;
+
+  /// Transfer table row 1: retention.
+  ///
+  /// In en, this message translates to:
+  /// **'Deleted as soon as the purpose is achieved'**
+  String get consentTransferRow1Retention;
+
+  /// Transfer table row 2: country.
+  ///
+  /// In en, this message translates to:
+  /// **'United States and others'**
+  String get consentTransferRow2Country;
+
+  /// Transfer table row 2: items.
+  ///
+  /// In en, this message translates to:
+  /// **'Pronunciation challenge voice'**
+  String get consentTransferRow2Items;
+
+  /// Transfer table row 2: purpose.
+  ///
+  /// In en, this message translates to:
+  /// **'Speech recognition (STT)'**
+  String get consentTransferRow2Purpose;
+
+  /// Transfer table row 2: when.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent over the network when you use the feature'**
+  String get consentTransferRow2When;
+
+  /// Transfer table row 2: retention.
+  ///
+  /// In en, this message translates to:
+  /// **'Deleted as soon as the purpose is achieved'**
+  String get consentTransferRow2Retention;
+
+  /// Transfer table row 3: country.
+  ///
+  /// In en, this message translates to:
+  /// **'United States'**
+  String get consentTransferRow3Country;
+
+  /// Transfer table row 3: items.
+  ///
+  /// In en, this message translates to:
+  /// **'Usage logs, app instance ID, member ID, device information'**
+  String get consentTransferRow3Items;
+
+  /// Transfer table row 3: purpose.
+  ///
+  /// In en, this message translates to:
+  /// **'Usage analytics'**
+  String get consentTransferRow3Purpose;
+
+  /// Transfer table row 3: when.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent over the network when you use the feature'**
+  String get consentTransferRow3When;
+
+  /// Transfer table row 3: retention.
+  ///
+  /// In en, this message translates to:
+  /// **'14 months after collection'**
+  String get consentTransferRow3Retention;
+
+  /// Transfer table row 4: country.
+  ///
+  /// In en, this message translates to:
+  /// **'United States'**
+  String get consentTransferRow4Country;
+
+  /// Transfer table row 4: items.
+  ///
+  /// In en, this message translates to:
+  /// **'Push notification token, notification content'**
+  String get consentTransferRow4Items;
+
+  /// Transfer table row 4: purpose.
+  ///
+  /// In en, this message translates to:
+  /// **'App push notifications'**
+  String get consentTransferRow4Purpose;
+
+  /// Transfer table row 4: when.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent over the network when a notification is sent'**
+  String get consentTransferRow4When;
+
+  /// Transfer table row 4: retention.
+  ///
+  /// In en, this message translates to:
+  /// **'Deleted as soon as the purpose is achieved'**
+  String get consentTransferRow4Retention;
+
+  /// Transfer table row 5: country.
+  ///
+  /// In en, this message translates to:
+  /// **'United States'**
+  String get consentTransferRow5Country;
+
+  /// Transfer table row 5: items.
+  ///
+  /// In en, this message translates to:
+  /// **'iOS push notification token, notification content'**
+  String get consentTransferRow5Items;
+
+  /// Transfer table row 5: purpose.
+  ///
+  /// In en, this message translates to:
+  /// **'iOS push notifications'**
+  String get consentTransferRow5Purpose;
+
+  /// Transfer table row 5: when.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent over the network when a notification is sent'**
+  String get consentTransferRow5When;
+
+  /// Transfer table row 5: retention.
+  ///
+  /// In en, this message translates to:
+  /// **'Deleted as soon as the purpose is achieved'**
+  String get consentTransferRow5Retention;
 }
 
 class _AppLocalizationsDelegate

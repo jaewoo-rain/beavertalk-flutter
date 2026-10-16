@@ -8,6 +8,9 @@ abstract final class ApiEndpoints {
   static const membersMeProfile = '/members/me/profile';
   static const onboarding = '/members/me/onboarding';
 
+  /// 가입 동의 기록(PM-DEC-735·736). 필수 4항목 · 항목별 버전 · 누락 422 · 옛 버전 409.
+  static const membersMeConsents = '/members/me/consents';
+
   /// 레벨테스트 다시 받기. 레벨 배정만 지우고 **체크판(학습 기록)은 보존**한다.
   /// 성공하면 다음 통화가 자동으로 레벨테스트로 라우팅된다.
   static const membersMeLevelTestRetake = '/members/me/level-test/retake';
