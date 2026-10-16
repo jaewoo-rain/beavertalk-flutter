@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../components/atoms/badge.dart';
+import '../../core/config/store_flags.dart';
 import '../../components/organisms/bottom_sheet.dart' show SheetAction;
 import '../../components/organisms/bottom_sheet_content.dart';
 import '../../features/character/domain/entities/character.dart';
@@ -61,7 +62,7 @@ class CharacterBundleOffer {
 ///   not answer hides the offer rather than quoting a made-up price.
 final characterBundleOfferProvider =
     FutureProvider.autoDispose<CharacterBundleOffer?>((ref) async {
-  if (!kCharacterBundleEnabled) return null;
+  if (!kCharacterBundleEnabled || !paymentsEnabled) return null;
   final characters = await ref.watch(charactersProvider.future);
   return buildCharacterBundleOffer(
     characters: characters,

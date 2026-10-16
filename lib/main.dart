@@ -8,6 +8,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'app/auth_gate.dart';
 import 'app/navigation.dart';
+import 'core/config/store_flags.dart';
 import 'app/push_bootstrap.dart';
 import 'app/routes.dart';
 import 'core/analytics/app_analytics.dart';
@@ -85,7 +86,8 @@ Future<void> main() async {
   // 결제 시트 도중 앱이 내려간 구매, 기기 밖에서 갱신된 구독, 검증에 실패해 살려 둔
   // 영수증이 전부 여기로 온다. 구독 화면을 처음 열 때 레일을 만들면 그 사이에 흘러간
   // 이벤트를 통째로 놓치고, 돈은 빠졌는데 권한이 없는 회원이 남는다.
-  container.read(iapServiceProvider);
+  // 심사 빌드(PAYMENTS_ENABLED=false)는 스토어 SDK 를 아예 만들지 않는다(T-20261016-07).
+  if (paymentsEnabled) container.read(iapServiceProvider);
   // 인바운드 콜(비버가 거는 전화) 로컬 트리거 초기화. 앱 시작을 막지 않도록
   // fire-and-forget(+ 내부 try/catch, kInboundCallEnabled/!kIsWeb 가드).
   unawaited(initIncomingCallLocal(container));

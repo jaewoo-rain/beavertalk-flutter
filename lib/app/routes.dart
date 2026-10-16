@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
+import '../core/config/store_flags.dart';
 import '../preview/cancel_rig_screen.dart';
 import '../preview/echo_rig_screen.dart';
 import '../preview/gallery_screen.dart';
@@ -280,24 +281,24 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
         const LearningCallMainLoadingScreen(),
     Routes.pronunciationChallenge: (_) =>
         const PronunciationChallengeScreen(),
-    Routes.paymentHistory: (_) => const PaymentHistoryScreen(),
+    if (kPaymentsEnabled) Routes.paymentHistory: (_) => const PaymentHistoryScreen(),
     Routes.permissionMicDenied: (_) => const MicDeniedScreen(),
     Routes.networkError: (_) => const NetworkErrorScreen(),
     Routes.mypage: (_) => const MyPageScreen(),
     Routes.mypageSettings: (_) => const MyPageSettingsScreen(),
     Routes.editNickname: (_) => const EditNicknameScreen(),
     Routes.mypageNationality: (_) => const MyPageNationalityScreen(),
-    Routes.subscription: (_) => const SubscriptionManageScreen(),
-    Routes.plansCompare: (_) => const PlansCompareScreen(),
-    Routes.paywallProLimit: (_) =>
+    if (kPaymentsEnabled) Routes.subscription: (_) => const SubscriptionManageScreen(),
+    if (kPaymentsEnabled) Routes.plansCompare: (_) => const PlansCompareScreen(),
+    if (kPaymentsEnabled) Routes.paywallProLimit: (_) =>
         const PaywallScreen(variant: PaywallVariant.proLimit),
-    Routes.paywallMax: (_) =>
+    if (kPaymentsEnabled) Routes.paywallMax: (_) =>
         const PaywallScreen(variant: PaywallVariant.max),
-    Routes.purchaseProcessing: (_) => const PurchaseProcessingScreen(),
-    Routes.purchaseSuccessMax: (_) =>
+    if (kPaymentsEnabled) Routes.purchaseProcessing: (_) => const PurchaseProcessingScreen(),
+    if (kPaymentsEnabled) Routes.purchaseSuccessMax: (_) =>
         const PurchaseSuccessScreen(tier: SubscriptionTier.max),
-    Routes.plansError: (_) => const PlansErrorScreen(),
-    Routes.winbackSurvey: (_) => const WinbackSurveyScreen(),
+    if (kPaymentsEnabled) Routes.plansError: (_) => const PlansErrorScreen(),
+    if (kPaymentsEnabled) Routes.winbackSurvey: (_) => const WinbackSurveyScreen(),
     Routes.avatar: (_) => const AvatarScreen(),
     Routes.alarms: (_) => const AlarmListScreen(),
     Routes.alarmAdd: (_) => const AlarmAddScreen(),

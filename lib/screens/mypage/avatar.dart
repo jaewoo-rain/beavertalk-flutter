@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
+import '../../core/config/store_flags.dart';
 import '../../components/atoms/skeleton.dart';
 import '../../components/atoms/button.dart';
 import '../../components/chrome/bottom_cta_bar.dart';
@@ -128,7 +129,12 @@ class _AvatarScreenState extends ConsumerState<AvatarScreen> {
           ],
         ),
       ),
-      data: (characters) {
+      data: (all) {
+        // 심사 빌드(PAYMENTS_ENABLED=false · U3 숨김) — 무료 캐릭터와 이미 산 캐릭터만 보인다.
+        //   구독으로 열린 유료 캐릭터도 뺀다(배지가 요금제 이름을 말한다). 권한은 서버 그대로(T-20261016-07).
+        final characters = paymentsEnabled
+            ? all
+            : all.where((c) => _isFree(c) || c.isOwned).toList();
         if (characters.isEmpty) {
           return AppScaffold(
             background: context.c.backgroundNormalNormal,
@@ -358,7 +364,7 @@ class _AvatarScreenState extends ConsumerState<AvatarScreen> {
   /// 스토어가 준 현지가. 아직 안 물었으면 묻고 null(답이 오면 다시 그린다).
   String? _storePriceOf(Character c) {
     final id = _productIdOf(c);
-    if (id == null || _isFree(c)) return null;
+    if (id == null || _isFree(c) || !paymentsEnabled) return null;
     if (!_storePrices.containsKey(id) && !_storePending.contains(id)) {
       _storePending.add(id);
       // 빌드 중에 불린다 — 조회가 동기로 실패해도 setState 가 빌드 안에서 돌지 않게 미룬다.
@@ -900,7 +906,7 @@ class _Stage extends StatelessWidget {
   /// ⛔ 구독으로 열린 캐릭터에 「Owned」 를 쓰지 않는다 — 해지하면 닫힌다.
   Widget _badge(BuildContext context, AppLocalizations l10n) {
     final c = context.c;
-    final subscription = character.isSubscriptionUnlocked;
+    final subscription = paymentsEnabled && character.isSubscriptionUnlocked;
     final (Color bg, Color fg, String text) = usable && !subscription
         ? (c.accentBackgroundLightBlue10, c.accentForegroundLightBlue,
             inUse ? l10n.inUse : l10n.owned)

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/analytics/app_analytics.dart';
+import '../../core/config/store_flags.dart';
 import '../../features/normalcall/domain/entities/call_allowance.dart';
 import '../overlays/subscription_overlays.dart';
 
@@ -44,7 +45,8 @@ void leaveAfterCallRejection(
     return;
   }
   navigator.popUntil((r) => r.isFirst);
-  if (code == 'DAILY_LIMIT' && !paidAccess) {
+  // 심사 빌드(PAYMENTS_ENABLED=false)는 구독 시트 없이 아래 기본 안내로(T-20261016-07).
+  if (code == 'DAILY_LIMIT' && !paidAccess && paymentsEnabled) {
     AppAnalytics.instance.log(AppEvent.freeLimitHit, {'kind': 'daily'});
     final seconds = CallAllowance.limitFor(paidAccess: false).inSeconds;
     final limit =
