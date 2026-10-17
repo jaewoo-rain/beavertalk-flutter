@@ -991,14 +991,13 @@ class AppLocalizationsMy extends AppLocalizations {
   String get signUp => 'အကောင့်ဖွင့်ရန်';
 
   @override
-  String get loginTermsNoticePrefix =>
-      'If you continue, we\'ll ask you to agree to the ';
+  String get loginTermsNoticePrefix => 'ဆက်လုပ်ပါက နောက်မျက်နှာပြင်တွင် ';
 
   @override
-  String get loginTermsNoticeAnd => ' and ';
+  String get loginTermsNoticeAnd => ' နှင့် ';
 
   @override
-  String get loginTermsNoticeSuffix => ' on the next screen.';
+  String get loginTermsNoticeSuffix => ' အတွက် သဘောတူညီချက် တောင်းခံပါမည်။';
 
   @override
   String get loginLogIn => 'လော့ဂ်အင်ဝင်ရန်';
@@ -3171,180 +3170,183 @@ class AppLocalizationsMy extends AppLocalizations {
   String get hwPolicyNoticeOk => 'အိုကေ';
 
   @override
-  String get consentTitle => 'Please agree to start using BeaverTalk';
+  String get consentTitle => 'ဝန်ဆောင်မှုကို အသုံးပြုရန် သဘောတူပေးပါ';
 
   @override
   String get consentSubtitle =>
-      'You need to agree to all required items to use BeaverTalk.';
+      'BeaverTalk ကို အသုံးပြုရန် မဖြစ်မနေ အချက်အားလုံးကို သဘောတူရပါမည်။';
 
   @override
-  String get consentAgreeAll => 'Agree to all';
+  String get consentAgreeAll => 'အားလုံး သဘောတူသည်';
 
   @override
-  String get consentAge14 => '[Required] I am 14 years of age or older';
+  String get consentAge14 =>
+      '[မဖြစ်မနေ] ကျွန်ုပ်သည် အသက် ၁၄ နှစ်နှင့်အထက် ဖြစ်ပါသည်';
 
   @override
-  String get consentTerms => '[Required] Terms of Service';
+  String get consentTerms =>
+      '[မဖြစ်မနေ] ဝန်ဆောင်မှု စည်းမျဉ်းများကို သဘောတူခြင်း';
 
   @override
   String get consentPrivacyCollect =>
-      '[Required] Collection and use of personal information (including voice recordings)';
+      '[မဖြစ်မနေ] ကိုယ်ရေးအချက်အလက် စုဆောင်းခြင်းနှင့် အသုံးပြုခြင်းကို သဘောတူခြင်း (အသံဖမ်းချက်များ အပါအဝင်)';
 
   @override
   String get consentOverseasTransfer =>
-      '[Required] Transfer of personal information abroad';
+      '[မဖြစ်မနေ] ကိုယ်ရေးအချက်အလက်ကို နိုင်ငံပြင်သို့ လွှဲပြောင်းခြင်းကို သဘောတူခြင်း';
 
   @override
-  String get consentView => 'View';
+  String get consentView => 'ကြည့်ရန်';
 
   @override
-  String get consentCta => 'Agree and start';
+  String get consentCta => 'သဘောတူ၍ စတင်ရန်';
 
   @override
   String get consentCollectSheetTitle =>
-      'Collection and use of personal information';
+      'ကိုယ်ရေးအချက်အလက် စုဆောင်းခြင်းနှင့် အသုံးပြုခြင်း';
 
   @override
   String get consentCollectItems =>
-      'What we collect: email, social account ID, voice recordings from calls and pronunciation practice, speech-to-text transcripts, learning history, device information';
+      'စုဆောင်းသည့်အချက်များ- အီးမေးလ်၊ ဆိုရှယ်အကောင့် သတ်မှတ်တန်ဖိုး၊ ခေါ်ဆိုမှုနှင့် အသံထွက်လေ့ကျင့်မှု အသံဖမ်းချက်များ၊ အသံသိရှိမှုဖြင့် ရရှိသော စာသား၊ သင်ယူမှုမှတ်တမ်း၊ စက်ပစ္စည်း အချက်အလက်';
 
   @override
   String get consentCollectPurpose =>
-      'Why: AI voice conversations, pronunciation and accent analysis, learning history, account management';
+      'အသုံးပြုရည်ရွယ်ချက်- AI အသံစကားပြောခြင်း၊ အသံထွက်နှင့် လေယူလေသိမ်း ခွဲခြမ်းစိတ်ဖြာခြင်း၊ သင်ယူမှုမှတ်တမ်း ပံ့ပိုးပေးခြင်း၊ အဖွဲ့ဝင် စီမံခန့်ခွဲခြင်း';
 
   @override
   String get consentCollectRetention =>
-      'How long: until you delete your account, or longer where the law requires';
+      'သိမ်းဆည်းမည့်ကာလ- အကောင့် ဖျက်သည်အထိ၊ ဥပဒေက သတ်မှတ်ထားသော မှတ်တမ်းများကို ထိုကာလအထိ';
 
   @override
   String get consentCollectRefuse =>
-      'You may refuse. If you refuse, you cannot sign up or use the service.';
+      'သဘောတူညီမှုကို ငြင်းဆိုနိုင်ပါသည်။ ငြင်းဆိုပါက အကောင့်ဖွင့်ခြင်းနှင့် ဝန်ဆောင်မှု အသုံးပြုခြင်း မပြုလုပ်နိုင်ပါ။';
 
   @override
   String get consentTransferSheetTitle =>
-      'Transfer of personal information abroad';
+      'ကိုယ်ရေးအချက်အလက် နိုင်ငံပြင်သို့ လွှဲပြောင်းခြင်း';
 
   @override
   String get consentTransferRefuse =>
-      'You may refuse this transfer. If you do, AI voice calls and the pronunciation challenge are unavailable, so sign-up cannot continue. To delete data already transferred, contact contact@beavertalk.im.';
+      'နိုင်ငံပြင်သို့ လွှဲပြောင်းခြင်းကို ငြင်းဆိုနိုင်ပါသည်။ ငြင်းဆိုပါက AI အသံစကားပြောခြင်းနှင့် အသံထွက် စိန်ခေါ်မှုကို အသုံးမပြုနိုင်သဖြင့် အကောင့်ဖွင့်ခြင်းကို ဆက်လက်လုပ်ဆောင်၍ မရပါ။ လွှဲပြောင်းပြီးသော အချက်အလက်များကို ဖျက်ရန် contact@beavertalk.im သို့ တောင်းဆိုနိုင်ပါသည်။';
 
   @override
-  String get consentTransferColRecipient => 'Recipient';
+  String get consentTransferColRecipient => 'လက်ခံသူ';
 
   @override
-  String get consentTransferColCountry => 'Country';
+  String get consentTransferColCountry => 'နိုင်ငံ';
 
   @override
-  String get consentTransferColItems => 'Items';
+  String get consentTransferColItems => 'အချက်များ';
 
   @override
-  String get consentTransferColPurpose => 'Purpose';
+  String get consentTransferColPurpose => 'ရည်ရွယ်ချက်';
 
   @override
-  String get consentTransferColWhen => 'When and how';
+  String get consentTransferColWhen => 'အချိန်နှင့် နည်းလမ်း';
 
   @override
-  String get consentTransferColRetention => 'Retention';
+  String get consentTransferColRetention => 'သိမ်းဆည်းမည့်ကာလ';
 
   @override
-  String get consentLeaveTitle => 'You\'ll be logged out if you don\'t agree';
+  String get consentLeaveTitle => 'သဘောမတူပါက အကောင့်မှ ထွက်သွားပါမည်';
 
   @override
-  String get consentLeaveLogout => 'Log out';
+  String get consentLeaveLogout => 'ထွက်ရန်';
 
   @override
-  String get consentLeaveStay => 'Keep going';
+  String get consentLeaveStay => 'ဆက်လက် သဘောတူရန်';
 
   @override
   String get consentSubmitFailed =>
-      'We couldn\'t save your consent. Please try again.';
+      'သဘောတူညီချက်ကို သိမ်းဆည်း၍မရပါ။ ထပ်ကြိုးစားပါ။';
 
   @override
-  String get consentTransferRow1Country => 'United States and others';
+  String get consentTransferRow1Country => 'အမေရိကန်ပြည်ထောင်စု စသည်';
 
   @override
   String get consentTransferRow1Items =>
-      'Call voice recordings, speech-to-text transcripts, homework call summaries';
+      'ခေါ်ဆိုမှု အသံဖမ်းချက်များ၊ အသံမှ ပြောင်းထားသော စာသား၊ အိမ်စာ ခေါ်ဆိုမှု အနှစ်ချုပ်များ';
 
   @override
   String get consentTransferRow1Purpose =>
-      'AI voice conversations, call summaries and translation';
+      'AI အသံစကားပြောခြင်း၊ ခေါ်ဆိုမှု အနှစ်ချုပ်နှင့် ဘာသာပြန်ခြင်း';
 
   @override
   String get consentTransferRow1When =>
-      'Sent over the network when you use the feature';
+      'အသုံးပြုချိန်တွင် ကွန်ရက်မှတစ်ဆင့် ပို့သည်';
 
   @override
   String get consentTransferRow1Retention =>
-      'Deleted as soon as the purpose is achieved';
+      'လုပ်ဆောင်ရသည့် ရည်ရွယ်ချက် ပြည့်မီသည်နှင့် ချက်ချင်း ဖျက်သည်';
 
   @override
-  String get consentTransferRow2Country => 'United States and others';
+  String get consentTransferRow2Country => 'အမေရိကန်ပြည်ထောင်စု စသည်';
 
   @override
-  String get consentTransferRow2Items => 'Pronunciation challenge voice';
+  String get consentTransferRow2Items => 'အသံထွက် စိန်ခေါ်မှု အသံ';
 
   @override
-  String get consentTransferRow2Purpose => 'Speech recognition (STT)';
+  String get consentTransferRow2Purpose => 'အသံသိရှိမှု (STT)';
 
   @override
   String get consentTransferRow2When =>
-      'Sent over the network when you use the feature';
+      'အသုံးပြုချိန်တွင် ကွန်ရက်မှတစ်ဆင့် ပို့သည်';
 
   @override
   String get consentTransferRow2Retention =>
-      'Deleted as soon as the purpose is achieved';
+      'လုပ်ဆောင်ရသည့် ရည်ရွယ်ချက် ပြည့်မီသည်နှင့် ချက်ချင်း ဖျက်သည်';
 
   @override
-  String get consentTransferRow3Country => 'United States';
+  String get consentTransferRow3Country => 'အမေရိကန်ပြည်ထောင်စု';
 
   @override
   String get consentTransferRow3Items =>
-      'Usage logs, app instance ID, member ID, device information';
+      'အသုံးပြုမှုမှတ်တမ်း၊ အက်ပ် အင်စတန့် ID၊ အဖွဲ့ဝင် သတ်မှတ်နံပါတ်၊ စက်ပစ္စည်း အချက်အလက်';
 
   @override
-  String get consentTransferRow3Purpose => 'Usage analytics';
+  String get consentTransferRow3Purpose =>
+      'အသုံးပြုမှု စာရင်းအင်း ခွဲခြမ်းစိတ်ဖြာခြင်း';
 
   @override
   String get consentTransferRow3When =>
-      'Sent over the network when you use the feature';
+      'အသုံးပြုချိန်တွင် ကွန်ရက်မှတစ်ဆင့် ပို့သည်';
 
   @override
-  String get consentTransferRow3Retention => '14 months after collection';
+  String get consentTransferRow3Retention => 'စုဆောင်းပြီး ၁၄ လ';
 
   @override
-  String get consentTransferRow4Country => 'United States';
+  String get consentTransferRow4Country => 'အမေရိကန်ပြည်ထောင်စု';
 
   @override
   String get consentTransferRow4Items =>
-      'Push notification token, notification content';
+      'Push အကြောင်းကြားချက် တိုကင်၊ အကြောင်းကြားချက် အကြောင်းအရာ';
 
   @override
-  String get consentTransferRow4Purpose => 'App push notifications';
+  String get consentTransferRow4Purpose => 'အက်ပ် Push အကြောင်းကြားချက်';
 
   @override
   String get consentTransferRow4When =>
-      'Sent over the network when a notification is sent';
+      'အကြောင်းကြားချက် ပို့ချိန်တွင် ကွန်ရက်မှတစ်ဆင့် ပို့သည်';
 
   @override
   String get consentTransferRow4Retention =>
-      'Deleted as soon as the purpose is achieved';
+      'လုပ်ဆောင်ရသည့် ရည်ရွယ်ချက် ပြည့်မီသည်နှင့် ချက်ချင်း ဖျက်သည်';
 
   @override
-  String get consentTransferRow5Country => 'United States';
+  String get consentTransferRow5Country => 'အမေရိကန်ပြည်ထောင်စု';
 
   @override
   String get consentTransferRow5Items =>
-      'iOS push notification token, notification content';
+      'iOS Push အကြောင်းကြားချက် တိုကင်၊ အကြောင်းကြားချက် အကြောင်းအရာ';
 
   @override
-  String get consentTransferRow5Purpose => 'iOS push notifications';
+  String get consentTransferRow5Purpose => 'iOS Push အကြောင်းကြားချက်';
 
   @override
   String get consentTransferRow5When =>
-      'Sent over the network when a notification is sent';
+      'အကြောင်းကြားချက် ပို့ချိန်တွင် ကွန်ရက်မှတစ်ဆင့် ပို့သည်';
 
   @override
   String get consentTransferRow5Retention =>
-      'Deleted as soon as the purpose is achieved';
+      'လုပ်ဆောင်ရသည့် ရည်ရွယ်ချက် ပြည့်မီသည်နှင့် ချက်ချင်း ဖျက်သည်';
 }

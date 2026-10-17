@@ -1005,13 +1005,13 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get loginTermsNoticePrefix =>
-      'If you continue, we\'ll ask you to agree to the ';
+      'Si vous continuez, nous vous demanderons d\'accepter les ';
 
   @override
-  String get loginTermsNoticeAnd => ' and ';
+  String get loginTermsNoticeAnd => ' et la ';
 
   @override
-  String get loginTermsNoticeSuffix => ' on the next screen.';
+  String get loginTermsNoticeSuffix => ' à l\'écran suivant.';
 
   @override
   String get loginLogIn => 'Se connecter';
@@ -3257,180 +3257,186 @@ class AppLocalizationsFr extends AppLocalizations {
   String get hwPolicyNoticeOk => 'OK';
 
   @override
-  String get consentTitle => 'Please agree to start using BeaverTalk';
+  String get consentTitle =>
+      'Veuillez donner votre accord pour utiliser le service';
 
   @override
   String get consentSubtitle =>
-      'You need to agree to all required items to use BeaverTalk.';
+      'Vous devez accepter tous les éléments obligatoires pour utiliser BeaverTalk.';
 
   @override
-  String get consentAgreeAll => 'Agree to all';
+  String get consentAgreeAll => 'Tout accepter';
 
   @override
-  String get consentAge14 => '[Required] I am 14 years of age or older';
+  String get consentAge14 => '[Obligatoire] J\'ai 14 ans ou plus';
 
   @override
-  String get consentTerms => '[Required] Terms of Service';
+  String get consentTerms =>
+      '[Obligatoire] Acceptation des Conditions d\'utilisation';
 
   @override
   String get consentPrivacyCollect =>
-      '[Required] Collection and use of personal information (including voice recordings)';
+      '[Obligatoire] Consentement à la collecte et à l\'utilisation des données personnelles (y compris les enregistrements vocaux)';
 
   @override
   String get consentOverseasTransfer =>
-      '[Required] Transfer of personal information abroad';
+      '[Obligatoire] Consentement au transfert des données personnelles à l\'étranger';
 
   @override
-  String get consentView => 'View';
+  String get consentView => 'Voir';
 
   @override
-  String get consentCta => 'Agree and start';
+  String get consentCta => 'Accepter et commencer';
 
   @override
   String get consentCollectSheetTitle =>
-      'Collection and use of personal information';
+      'Collecte et utilisation des données personnelles';
 
   @override
   String get consentCollectItems =>
-      'What we collect: email, social account ID, voice recordings from calls and pronunciation practice, speech-to-text transcripts, learning history, device information';
+      'Données collectées : e-mail, identifiant du compte de réseau social, enregistrements vocaux des appels et des exercices de prononciation, texte issu de la reconnaissance vocale, historique d\'apprentissage, informations sur l\'appareil';
 
   @override
   String get consentCollectPurpose =>
-      'Why: AI voice conversations, pronunciation and accent analysis, learning history, account management';
+      'Finalités : conversations vocales avec l\'IA, analyse de la prononciation et de l\'accent, mise à disposition de l\'historique d\'apprentissage, gestion des membres';
 
   @override
   String get consentCollectRetention =>
-      'How long: until you delete your account, or longer where the law requires';
+      'Durée de conservation : jusqu\'à la suppression du compte ; pour les données dont la conservation est imposée par la loi, jusqu\'au terme de la durée légale';
 
   @override
   String get consentCollectRefuse =>
-      'You may refuse. If you refuse, you cannot sign up or use the service.';
+      'Vous pouvez refuser votre consentement. En cas de refus, l\'inscription et l\'utilisation du service sont impossibles.';
 
   @override
   String get consentTransferSheetTitle =>
-      'Transfer of personal information abroad';
+      'Transfert des données personnelles à l\'étranger';
 
   @override
   String get consentTransferRefuse =>
-      'You may refuse this transfer. If you do, AI voice calls and the pronunciation challenge are unavailable, so sign-up cannot continue. To delete data already transferred, contact contact@beavertalk.im.';
+      'Vous pouvez refuser le transfert à l\'étranger. En cas de refus, les conversations vocales avec l\'IA et le Défi de prononciation ne sont pas disponibles, et l\'inscription ne peut donc pas se poursuivre. Vous pouvez demander la suppression des données déjà transférées à contact@beavertalk.im.';
 
   @override
-  String get consentTransferColRecipient => 'Recipient';
+  String get consentTransferColRecipient => 'Destinataire';
 
   @override
-  String get consentTransferColCountry => 'Country';
+  String get consentTransferColCountry => 'Pays';
 
   @override
-  String get consentTransferColItems => 'Items';
+  String get consentTransferColItems => 'Données';
 
   @override
-  String get consentTransferColPurpose => 'Purpose';
+  String get consentTransferColPurpose => 'Finalité';
 
   @override
-  String get consentTransferColWhen => 'When and how';
+  String get consentTransferColWhen => 'Moment et mode';
 
   @override
-  String get consentTransferColRetention => 'Retention';
+  String get consentTransferColRetention => 'Durée de conservation';
 
   @override
-  String get consentLeaveTitle => 'You\'ll be logged out if you don\'t agree';
+  String get consentLeaveTitle =>
+      'Si vous n\'acceptez pas, vous serez déconnecté';
 
   @override
-  String get consentLeaveLogout => 'Log out';
+  String get consentLeaveLogout => 'Se déconnecter';
 
   @override
-  String get consentLeaveStay => 'Keep going';
+  String get consentLeaveStay => 'Rester et accepter';
 
   @override
   String get consentSubmitFailed =>
-      'We couldn\'t save your consent. Please try again.';
+      'Impossible d\'enregistrer votre consentement. Veuillez réessayer.';
 
   @override
-  String get consentTransferRow1Country => 'United States and others';
+  String get consentTransferRow1Country => 'États-Unis et autres pays';
 
   @override
   String get consentTransferRow1Items =>
-      'Call voice recordings, speech-to-text transcripts, homework call summaries';
+      'Enregistrements vocaux des appels, transcriptions vocales, résumés des appels de devoirs';
 
   @override
   String get consentTransferRow1Purpose =>
-      'AI voice conversations, call summaries and translation';
+      'Conversations vocales avec l\'IA, résumé et traduction des appels';
 
   @override
   String get consentTransferRow1When =>
-      'Sent over the network when you use the feature';
+      'Transmission par le réseau au moment de l\'utilisation';
 
   @override
   String get consentTransferRow1Retention =>
-      'Deleted as soon as the purpose is achieved';
+      'Suppression dès que la finalité du traitement est atteinte';
 
   @override
-  String get consentTransferRow2Country => 'United States and others';
+  String get consentTransferRow2Country => 'États-Unis et autres pays';
 
   @override
-  String get consentTransferRow2Items => 'Pronunciation challenge voice';
+  String get consentTransferRow2Items =>
+      'Données vocales du Défi de prononciation';
 
   @override
-  String get consentTransferRow2Purpose => 'Speech recognition (STT)';
+  String get consentTransferRow2Purpose => 'Reconnaissance vocale (STT)';
 
   @override
   String get consentTransferRow2When =>
-      'Sent over the network when you use the feature';
+      'Transmission par le réseau au moment de l\'utilisation';
 
   @override
   String get consentTransferRow2Retention =>
-      'Deleted as soon as the purpose is achieved';
+      'Suppression dès que la finalité du traitement est atteinte';
 
   @override
-  String get consentTransferRow3Country => 'United States';
+  String get consentTransferRow3Country => 'États-Unis';
 
   @override
   String get consentTransferRow3Items =>
-      'Usage logs, app instance ID, member ID, device information';
+      'Journaux d\'utilisation, ID d\'instance de l\'application, numéro d\'identification du membre, informations sur l\'appareil';
 
   @override
-  String get consentTransferRow3Purpose => 'Usage analytics';
+  String get consentTransferRow3Purpose =>
+      'Analyse des statistiques d\'utilisation';
 
   @override
   String get consentTransferRow3When =>
-      'Sent over the network when you use the feature';
+      'Transmission par le réseau au moment de l\'utilisation';
 
   @override
-  String get consentTransferRow3Retention => '14 months after collection';
+  String get consentTransferRow3Retention => '14 mois après la collecte';
 
   @override
-  String get consentTransferRow4Country => 'United States';
+  String get consentTransferRow4Country => 'États-Unis';
 
   @override
   String get consentTransferRow4Items =>
-      'Push notification token, notification content';
+      'Jeton de notification push, contenu des notifications';
 
   @override
-  String get consentTransferRow4Purpose => 'App push notifications';
+  String get consentTransferRow4Purpose =>
+      'Notifications push de l\'application';
 
   @override
   String get consentTransferRow4When =>
-      'Sent over the network when a notification is sent';
+      'Transmission par le réseau au moment de l\'envoi de la notification';
 
   @override
   String get consentTransferRow4Retention =>
-      'Deleted as soon as the purpose is achieved';
+      'Suppression dès que la finalité du traitement est atteinte';
 
   @override
-  String get consentTransferRow5Country => 'United States';
+  String get consentTransferRow5Country => 'États-Unis';
 
   @override
   String get consentTransferRow5Items =>
-      'iOS push notification token, notification content';
+      'Jeton de notification push iOS, contenu des notifications';
 
   @override
-  String get consentTransferRow5Purpose => 'iOS push notifications';
+  String get consentTransferRow5Purpose => 'Notifications push iOS';
 
   @override
   String get consentTransferRow5When =>
-      'Sent over the network when a notification is sent';
+      'Transmission par le réseau au moment de l\'envoi de la notification';
 
   @override
   String get consentTransferRow5Retention =>
-      'Deleted as soon as the purpose is achieved';
+      'Suppression dès que la finalité du traitement est atteinte';
 }

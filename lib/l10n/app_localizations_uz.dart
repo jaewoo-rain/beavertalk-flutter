@@ -992,14 +992,13 @@ class AppLocalizationsUz extends AppLocalizations {
   String get signUp => 'Roʻyxatdan oʻtish';
 
   @override
-  String get loginTermsNoticePrefix =>
-      'If you continue, we\'ll ask you to agree to the ';
+  String get loginTermsNoticePrefix => 'Davom etsangiz, keyingi ekranda ';
 
   @override
-  String get loginTermsNoticeAnd => ' and ';
+  String get loginTermsNoticeAnd => ' va ';
 
   @override
-  String get loginTermsNoticeSuffix => ' on the next screen.';
+  String get loginTermsNoticeSuffix => 'ga roziligingizni soʻraymiz.';
 
   @override
   String get loginLogIn => 'Kirish';
@@ -3179,180 +3178,180 @@ class AppLocalizationsUz extends AppLocalizations {
   String get hwPolicyNoticeOk => 'OK';
 
   @override
-  String get consentTitle => 'Please agree to start using BeaverTalk';
+  String get consentTitle => 'Xizmatdan foydalanish uchun rozilik bering';
 
   @override
   String get consentSubtitle =>
-      'You need to agree to all required items to use BeaverTalk.';
+      'BeaverTalk ilovasidan foydalanish uchun barcha majburiy bandlarga rozilik bildirishingiz kerak.';
 
   @override
-  String get consentAgreeAll => 'Agree to all';
+  String get consentAgreeAll => 'Barchasiga roziman';
 
   @override
-  String get consentAge14 => '[Required] I am 14 years of age or older';
+  String get consentAge14 => '[Majburiy] Men 14 yosh yoki undan kattaman';
 
   @override
-  String get consentTerms => '[Required] Terms of Service';
+  String get consentTerms => '[Majburiy] Foydalanish shartlariga rozilik';
 
   @override
   String get consentPrivacyCollect =>
-      '[Required] Collection and use of personal information (including voice recordings)';
+      '[Majburiy] Shaxsiy maʼlumotlarni yigʻish va foydalanishga rozilik (ovoz yozuvlari bilan birga)';
 
   @override
   String get consentOverseasTransfer =>
-      '[Required] Transfer of personal information abroad';
+      '[Majburiy] Shaxsiy maʼlumotlarni xorijga uzatishga rozilik';
 
   @override
-  String get consentView => 'View';
+  String get consentView => 'Koʻrish';
 
   @override
-  String get consentCta => 'Agree and start';
+  String get consentCta => 'Rozi boʻlib boshlash';
 
   @override
   String get consentCollectSheetTitle =>
-      'Collection and use of personal information';
+      'Shaxsiy maʼlumotlarni yigʻish va foydalanish';
 
   @override
   String get consentCollectItems =>
-      'What we collect: email, social account ID, voice recordings from calls and pronunciation practice, speech-to-text transcripts, learning history, device information';
+      'Yigʻiladigan maʼlumotlar: email, ijtimoiy tarmoq hisobi identifikatori, qoʻngʻiroqlar va talaffuz mashqlari ovoz yozuvlari, nutqni aniqlash matni, oʻquv tarixi, qurilma maʼlumotlari';
 
   @override
   String get consentCollectPurpose =>
-      'Why: AI voice conversations, pronunciation and accent analysis, learning history, account management';
+      'Foydalanish maqsadi: AI bilan ovozli suhbat, talaffuz va aksent tahlili, oʻquv tarixini taqdim etish, aʼzolarni boshqarish';
 
   @override
   String get consentCollectRetention =>
-      'How long: until you delete your account, or longer where the law requires';
+      'Saqlash muddati: hisobingizni oʻchirguningizcha; qonunda belgilangan yozuvlar shu muddat tugaguncha';
 
   @override
   String get consentCollectRefuse =>
-      'You may refuse. If you refuse, you cannot sign up or use the service.';
+      'Rozilik berishdan bosh tortishingiz mumkin. Bosh tortsangiz, roʻyxatdan oʻtish va xizmatdan foydalanish imkonsiz boʻladi.';
 
   @override
   String get consentTransferSheetTitle =>
-      'Transfer of personal information abroad';
+      'Shaxsiy maʼlumotlarni xorijga uzatish';
 
   @override
   String get consentTransferRefuse =>
-      'You may refuse this transfer. If you do, AI voice calls and the pronunciation challenge are unavailable, so sign-up cannot continue. To delete data already transferred, contact contact@beavertalk.im.';
+      'Xorijga uzatishdan bosh tortishingiz mumkin. Bosh tortsangiz, AI bilan ovozli suhbat va Talaffuz sinovidan foydalana olmaysiz, shu sababli roʻyxatdan oʻtish davom etmaydi. Allaqachon uzatilgan maʼlumotlarni oʻchirishni contact@beavertalk.im orqali soʻrashingiz mumkin.';
 
   @override
-  String get consentTransferColRecipient => 'Recipient';
+  String get consentTransferColRecipient => 'Qabul qiluvchi';
 
   @override
-  String get consentTransferColCountry => 'Country';
+  String get consentTransferColCountry => 'Davlat';
 
   @override
-  String get consentTransferColItems => 'Items';
+  String get consentTransferColItems => 'Maʼlumotlar';
 
   @override
-  String get consentTransferColPurpose => 'Purpose';
+  String get consentTransferColPurpose => 'Maqsad';
 
   @override
-  String get consentTransferColWhen => 'When and how';
+  String get consentTransferColWhen => 'Vaqti va usuli';
 
   @override
-  String get consentTransferColRetention => 'Retention';
+  String get consentTransferColRetention => 'Saqlash muddati';
 
   @override
-  String get consentLeaveTitle => 'You\'ll be logged out if you don\'t agree';
+  String get consentLeaveTitle => 'Rozi boʻlmasangiz, hisobdan chiqasiz';
 
   @override
-  String get consentLeaveLogout => 'Log out';
+  String get consentLeaveLogout => 'Chiqish';
 
   @override
-  String get consentLeaveStay => 'Keep going';
+  String get consentLeaveStay => 'Rozilikni davom ettirish';
 
   @override
   String get consentSubmitFailed =>
-      'We couldn\'t save your consent. Please try again.';
+      'Roziligingizni saqlab boʻlmadi. Iltimos, qayta urinib koʻring.';
 
   @override
-  String get consentTransferRow1Country => 'United States and others';
+  String get consentTransferRow1Country => 'AQSH va boshqalar';
 
   @override
   String get consentTransferRow1Items =>
-      'Call voice recordings, speech-to-text transcripts, homework call summaries';
+      'Qoʻngʻiroq ovoz yozuvlari, nutqdan oʻgirilgan matn, uy vazifasi qoʻngʻiroqlari xulosasi';
 
   @override
   String get consentTransferRow1Purpose =>
-      'AI voice conversations, call summaries and translation';
+      'AI bilan ovozli suhbat, qoʻngʻiroq xulosasi va tarjima';
 
   @override
   String get consentTransferRow1When =>
-      'Sent over the network when you use the feature';
+      'Foydalanish vaqtida tarmoq orqali uzatiladi';
 
   @override
   String get consentTransferRow1Retention =>
-      'Deleted as soon as the purpose is achieved';
+      'Ishlov berish maqsadiga erishilgach darhol oʻchiriladi';
 
   @override
-  String get consentTransferRow2Country => 'United States and others';
+  String get consentTransferRow2Country => 'AQSH va boshqalar';
 
   @override
-  String get consentTransferRow2Items => 'Pronunciation challenge voice';
+  String get consentTransferRow2Items => 'Talaffuz sinovi ovozi';
 
   @override
-  String get consentTransferRow2Purpose => 'Speech recognition (STT)';
+  String get consentTransferRow2Purpose => 'Nutqni aniqlash (STT)';
 
   @override
   String get consentTransferRow2When =>
-      'Sent over the network when you use the feature';
+      'Foydalanish vaqtida tarmoq orqali uzatiladi';
 
   @override
   String get consentTransferRow2Retention =>
-      'Deleted as soon as the purpose is achieved';
+      'Ishlov berish maqsadiga erishilgach darhol oʻchiriladi';
 
   @override
-  String get consentTransferRow3Country => 'United States';
+  String get consentTransferRow3Country => 'AQSH';
 
   @override
   String get consentTransferRow3Items =>
-      'Usage logs, app instance ID, member ID, device information';
+      'Foydalanish tarixi, ilova nusxasi ID, aʼzo identifikatsiya raqami, qurilma maʼlumotlari';
 
   @override
-  String get consentTransferRow3Purpose => 'Usage analytics';
+  String get consentTransferRow3Purpose => 'Foydalanish statistikasi tahlili';
 
   @override
   String get consentTransferRow3When =>
-      'Sent over the network when you use the feature';
+      'Foydalanish vaqtida tarmoq orqali uzatiladi';
 
   @override
-  String get consentTransferRow3Retention => '14 months after collection';
+  String get consentTransferRow3Retention => 'Yigʻilgandan keyin 14 oy';
 
   @override
-  String get consentTransferRow4Country => 'United States';
+  String get consentTransferRow4Country => 'AQSH';
 
   @override
   String get consentTransferRow4Items =>
-      'Push notification token, notification content';
+      'Push-bildirishnoma tokeni, bildirishnoma mazmuni';
 
   @override
-  String get consentTransferRow4Purpose => 'App push notifications';
+  String get consentTransferRow4Purpose => 'Ilova push-bildirishnomalari';
 
   @override
   String get consentTransferRow4When =>
-      'Sent over the network when a notification is sent';
+      'Yuborish vaqtida tarmoq orqali uzatiladi';
 
   @override
   String get consentTransferRow4Retention =>
-      'Deleted as soon as the purpose is achieved';
+      'Ishlov berish maqsadiga erishilgach darhol oʻchiriladi';
 
   @override
-  String get consentTransferRow5Country => 'United States';
+  String get consentTransferRow5Country => 'AQSH';
 
   @override
   String get consentTransferRow5Items =>
-      'iOS push notification token, notification content';
+      'iOS push-bildirishnoma tokeni, bildirishnoma mazmuni';
 
   @override
-  String get consentTransferRow5Purpose => 'iOS push notifications';
+  String get consentTransferRow5Purpose => 'iOS push-bildirishnomalari';
 
   @override
   String get consentTransferRow5When =>
-      'Sent over the network when a notification is sent';
+      'Yuborish vaqtida tarmoq orqali uzatiladi';
 
   @override
   String get consentTransferRow5Retention =>
-      'Deleted as soon as the purpose is achieved';
+      'Ishlov berish maqsadiga erishilgach darhol oʻchiriladi';
 }

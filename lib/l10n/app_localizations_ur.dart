@@ -988,13 +988,13 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get loginTermsNoticePrefix =>
-      'If you continue, we\'ll ask you to agree to the ';
+      'اگر آپ جاری رکھیں تو اگلی اسکرین پر ہم آپ سے ';
 
   @override
-  String get loginTermsNoticeAnd => ' and ';
+  String get loginTermsNoticeAnd => ' اور ';
 
   @override
-  String get loginTermsNoticeSuffix => ' on the next screen.';
+  String get loginTermsNoticeSuffix => ' پر رضامندی طلب کریں گے۔';
 
   @override
   String get loginLogIn => 'لاگ ان';
@@ -3188,180 +3188,175 @@ class AppLocalizationsUr extends AppLocalizations {
   String get hwPolicyNoticeOk => 'ٹھیک ہے';
 
   @override
-  String get consentTitle => 'Please agree to start using BeaverTalk';
+  String get consentTitle => 'سروس استعمال کرنے کے لیے براہ کرم رضامندی دیں';
 
   @override
   String get consentSubtitle =>
-      'You need to agree to all required items to use BeaverTalk.';
+      'BeaverTalk استعمال کرنے کے لیے آپ کو تمام لازمی نکات پر رضامندی دینا ہوگی۔';
 
   @override
-  String get consentAgreeAll => 'Agree to all';
+  String get consentAgreeAll => 'سب سے متفق ہوں';
 
   @override
-  String get consentAge14 => '[Required] I am 14 years of age or older';
+  String get consentAge14 => '[لازمی] میری عمر 14 سال یا اس سے زیادہ ہے';
 
   @override
-  String get consentTerms => '[Required] Terms of Service';
+  String get consentTerms => '[لازمی] سروس کی شرائط پر رضامندی';
 
   @override
   String get consentPrivacyCollect =>
-      '[Required] Collection and use of personal information (including voice recordings)';
+      '[لازمی] ذاتی معلومات جمع کرنے اور استعمال کرنے پر رضامندی (آواز کی ریکارڈنگ سمیت)';
 
   @override
   String get consentOverseasTransfer =>
-      '[Required] Transfer of personal information abroad';
+      '[لازمی] ذاتی معلومات کی بیرونِ ملک منتقلی پر رضامندی';
 
   @override
-  String get consentView => 'View';
+  String get consentView => 'دیکھیں';
 
   @override
-  String get consentCta => 'Agree and start';
+  String get consentCta => 'متفق ہو کر شروع کریں';
 
   @override
-  String get consentCollectSheetTitle =>
-      'Collection and use of personal information';
+  String get consentCollectSheetTitle => 'ذاتی معلومات جمع کرنا اور استعمال';
 
   @override
   String get consentCollectItems =>
-      'What we collect: email, social account ID, voice recordings from calls and pronunciation practice, speech-to-text transcripts, learning history, device information';
+      'جمع کی جانے والی معلومات: ای میل، سوشل اکاؤنٹ کی شناختی قدر، کالز اور تلفظ کی مشق کی آواز کی ریکارڈنگ، آواز سے پہچانا گیا متن، سیکھنے کا ریکارڈ، ڈیوائس کی معلومات';
 
   @override
   String get consentCollectPurpose =>
-      'Why: AI voice conversations, pronunciation and accent analysis, learning history, account management';
+      'استعمال کا مقصد: AI کے ساتھ صوتی گفتگو، تلفظ اور لب و لہجے کا تجزیہ، سیکھنے کا ریکارڈ فراہم کرنا، رکنیت کا انتظام';
 
   @override
   String get consentCollectRetention =>
-      'How long: until you delete your account, or longer where the law requires';
+      'رکھنے کی مدت: اکاؤنٹ حذف کرنے تک؛ جن ریکارڈز کی مدت قانون نے مقرر کی ہے، وہ اس مدت تک';
 
   @override
   String get consentCollectRefuse =>
-      'You may refuse. If you refuse, you cannot sign up or use the service.';
+      'آپ رضامندی سے انکار کر سکتے ہیں۔ انکار کرنے پر آپ سائن اپ اور سروس کا استعمال نہیں کر سکیں گے۔';
 
   @override
-  String get consentTransferSheetTitle =>
-      'Transfer of personal information abroad';
+  String get consentTransferSheetTitle => 'ذاتی معلومات کی بیرونِ ملک منتقلی';
 
   @override
   String get consentTransferRefuse =>
-      'You may refuse this transfer. If you do, AI voice calls and the pronunciation challenge are unavailable, so sign-up cannot continue. To delete data already transferred, contact contact@beavertalk.im.';
+      'آپ بیرونِ ملک منتقلی سے انکار کر سکتے ہیں۔ انکار کرنے پر AI کے ساتھ صوتی گفتگو اور تلفظ چیلنج استعمال نہیں ہو سکیں گے، اس لیے سائن اپ آگے نہیں بڑھ سکے گا۔ پہلے سے منتقل شدہ معلومات حذف کرنے کی درخواست contact@beavertalk.im پر کی جا سکتی ہے۔';
 
   @override
-  String get consentTransferColRecipient => 'Recipient';
+  String get consentTransferColRecipient => 'وصول کنندہ';
 
   @override
-  String get consentTransferColCountry => 'Country';
+  String get consentTransferColCountry => 'ملک';
 
   @override
-  String get consentTransferColItems => 'Items';
+  String get consentTransferColItems => 'معلومات';
 
   @override
-  String get consentTransferColPurpose => 'Purpose';
+  String get consentTransferColPurpose => 'مقصد';
 
   @override
-  String get consentTransferColWhen => 'When and how';
+  String get consentTransferColWhen => 'وقت اور طریقہ';
 
   @override
-  String get consentTransferColRetention => 'Retention';
+  String get consentTransferColRetention => 'رکھنے کی مدت';
 
   @override
-  String get consentLeaveTitle => 'You\'ll be logged out if you don\'t agree';
+  String get consentLeaveTitle => 'متفق نہ ہونے پر آپ لاگ آؤٹ ہو جائیں گے';
 
   @override
-  String get consentLeaveLogout => 'Log out';
+  String get consentLeaveLogout => 'لاگ آؤٹ';
 
   @override
-  String get consentLeaveStay => 'Keep going';
+  String get consentLeaveStay => 'رضامندی جاری رکھیں';
 
   @override
   String get consentSubmitFailed =>
-      'We couldn\'t save your consent. Please try again.';
+      'آپ کی رضامندی محفوظ نہیں ہو سکی۔ براہ کرم دوبارہ کوشش کریں۔';
 
   @override
-  String get consentTransferRow1Country => 'United States and others';
+  String get consentTransferRow1Country => 'امریکہ وغیرہ';
 
   @override
   String get consentTransferRow1Items =>
-      'Call voice recordings, speech-to-text transcripts, homework call summaries';
+      'کال کی آواز کی ریکارڈنگ، آواز سے تبدیل شدہ متن، ہوم ورک کال کا خلاصہ';
 
   @override
   String get consentTransferRow1Purpose =>
-      'AI voice conversations, call summaries and translation';
+      'AI کے ساتھ صوتی گفتگو، کال کا خلاصہ اور ترجمہ';
 
   @override
   String get consentTransferRow1When =>
-      'Sent over the network when you use the feature';
+      'استعمال کے وقت نیٹ ورک کے ذریعے منتقلی';
 
   @override
   String get consentTransferRow1Retention =>
-      'Deleted as soon as the purpose is achieved';
+      'پراسیسنگ کا مقصد پورا ہوتے ہی فوراً حذف';
 
   @override
-  String get consentTransferRow2Country => 'United States and others';
+  String get consentTransferRow2Country => 'امریکہ وغیرہ';
 
   @override
-  String get consentTransferRow2Items => 'Pronunciation challenge voice';
+  String get consentTransferRow2Items => 'تلفظ چیلنج کی آواز';
 
   @override
-  String get consentTransferRow2Purpose => 'Speech recognition (STT)';
+  String get consentTransferRow2Purpose => 'آواز کی شناخت (STT)';
 
   @override
   String get consentTransferRow2When =>
-      'Sent over the network when you use the feature';
+      'استعمال کے وقت نیٹ ورک کے ذریعے منتقلی';
 
   @override
   String get consentTransferRow2Retention =>
-      'Deleted as soon as the purpose is achieved';
+      'پراسیسنگ کا مقصد پورا ہوتے ہی فوراً حذف';
 
   @override
-  String get consentTransferRow3Country => 'United States';
+  String get consentTransferRow3Country => 'امریکہ';
 
   @override
   String get consentTransferRow3Items =>
-      'Usage logs, app instance ID, member ID, device information';
+      'استعمال کا ریکارڈ، ایپ انسٹینس ID، رکن کا شناختی نمبر، ڈیوائس کی معلومات';
 
   @override
-  String get consentTransferRow3Purpose => 'Usage analytics';
+  String get consentTransferRow3Purpose => 'استعمال کے اعداد و شمار کا تجزیہ';
 
   @override
   String get consentTransferRow3When =>
-      'Sent over the network when you use the feature';
+      'استعمال کے وقت نیٹ ورک کے ذریعے منتقلی';
 
   @override
-  String get consentTransferRow3Retention => '14 months after collection';
+  String get consentTransferRow3Retention => 'جمع کرنے کے بعد 14 ماہ';
 
   @override
-  String get consentTransferRow4Country => 'United States';
+  String get consentTransferRow4Country => 'امریکہ';
 
   @override
-  String get consentTransferRow4Items =>
-      'Push notification token, notification content';
+  String get consentTransferRow4Items => 'پش اطلاعات کا ٹوکن، اطلاع کا مواد';
 
   @override
-  String get consentTransferRow4Purpose => 'App push notifications';
+  String get consentTransferRow4Purpose => 'ایپ کی پش اطلاعات';
 
   @override
-  String get consentTransferRow4When =>
-      'Sent over the network when a notification is sent';
+  String get consentTransferRow4When => 'بھیجنے کے وقت نیٹ ورک کے ذریعے منتقلی';
 
   @override
   String get consentTransferRow4Retention =>
-      'Deleted as soon as the purpose is achieved';
+      'پراسیسنگ کا مقصد پورا ہوتے ہی فوراً حذف';
 
   @override
-  String get consentTransferRow5Country => 'United States';
+  String get consentTransferRow5Country => 'امریکہ';
 
   @override
   String get consentTransferRow5Items =>
-      'iOS push notification token, notification content';
+      'iOS پش اطلاعات کا ٹوکن، اطلاع کا مواد';
 
   @override
-  String get consentTransferRow5Purpose => 'iOS push notifications';
+  String get consentTransferRow5Purpose => 'iOS پش اطلاعات';
 
   @override
-  String get consentTransferRow5When =>
-      'Sent over the network when a notification is sent';
+  String get consentTransferRow5When => 'بھیجنے کے وقت نیٹ ورک کے ذریعے منتقلی';
 
   @override
   String get consentTransferRow5Retention =>
-      'Deleted as soon as the purpose is achieved';
+      'پراسیسنگ کا مقصد پورا ہوتے ہی فوراً حذف';
 }
