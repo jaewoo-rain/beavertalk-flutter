@@ -3297,7 +3297,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get consentLeaveLogout => 'Log out';
 
   @override
-  String get consentLeaveStay => 'Keep going';
+  String get consentLeaveStay => 'Go back and agree';
 
   @override
   String get consentSubmitFailed =>
@@ -3308,11 +3308,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get consentTransferRow1Items =>
-      'Call voice recordings, speech-to-text transcripts, homework call summaries';
+      'Call voice recordings, speech-to-text transcripts, homework call summaries, lesson text, pronunciation results';
 
   @override
   String get consentTransferRow1Purpose =>
-      'AI voice conversations, call summaries and translation';
+      'AI voice conversations, call summaries and translation, lesson text translation, call card titles, pronunciation coaching tips';
 
   @override
   String get consentTransferRow1When =>

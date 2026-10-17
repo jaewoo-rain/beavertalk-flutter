@@ -5929,7 +5929,7 @@ abstract class AppLocalizations {
   /// Back-button sheet: stay on the consent screen.
   ///
   /// In en, this message translates to:
-  /// **'Keep going'**
+  /// **'Go back and agree'**
   String get consentLeaveStay;
 
   /// Snackbar when saving consent fails.
@@ -5947,13 +5947,13 @@ abstract class AppLocalizations {
   /// Transfer table row 1: items.
   ///
   /// In en, this message translates to:
-  /// **'Call voice recordings, speech-to-text transcripts, homework call summaries'**
+  /// **'Call voice recordings, speech-to-text transcripts, homework call summaries, lesson text, pronunciation results'**
   String get consentTransferRow1Items;
 
   /// Transfer table row 1: purpose.
   ///
   /// In en, this message translates to:
-  /// **'AI voice conversations, call summaries and translation'**
+  /// **'AI voice conversations, call summaries and translation, lesson text translation, call card titles, pronunciation coaching tips'**
   String get consentTransferRow1Purpose;
 
   /// Transfer table row 1: when.

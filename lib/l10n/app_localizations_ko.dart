@@ -3140,7 +3140,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get consentLeaveLogout => '로그아웃';
 
   @override
-  String get consentLeaveStay => '계속 동의하기';
+  String get consentLeaveStay => '돌아가서 동의하기';
 
   @override
   String get consentSubmitFailed => '동의를 저장하지 못했어요. 다시 시도해 주세요.';
@@ -3149,10 +3149,12 @@ class AppLocalizationsKo extends AppLocalizations {
   String get consentTransferRow1Country => '미국 등';
 
   @override
-  String get consentTransferRow1Items => '통화 음성 녹음, 음성 변환 텍스트, 과제 통화 요약';
+  String get consentTransferRow1Items =>
+      '통화 음성 녹음, 음성 변환 텍스트, 과제 통화 요약, 차시 문구, 발음 결과';
 
   @override
-  String get consentTransferRow1Purpose => 'AI 음성 대화, 통화 요약과 번역';
+  String get consentTransferRow1Purpose =>
+      'AI 음성 대화, 통화 요약과 번역, 차시 문구 번역, 통화 카드 제목, 발음 코칭 팁';
 
   @override
   String get consentTransferRow1When => '이용 시점 네트워크 전송';

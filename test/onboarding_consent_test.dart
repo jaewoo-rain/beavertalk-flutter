@@ -232,7 +232,7 @@ void main() {
       await tester.tap(find.byWidgetPredicate((w) => w.runtimeType.toString() == '_BackButton'));
       await _frames(tester);
       expect(find.text('동의하지 않으면 로그아웃돼요'), findsOneWidget);
-      await tester.tap(find.text('계속 동의하기'));
+      await tester.tap(find.text('돌아가서 동의하기'));
       await _frames(tester);
       expect(find.text('동의하지 않으면 로그아웃돼요'), findsNothing);
       expect(controller.logouts, 0);
