@@ -3187,7 +3187,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get hwPolicyNoticeOk => 'OK';
 
   @override
-  String get consentTitle => 'Anna suostumuksesi palvelun käyttöä varten';
+  String get consentTitle => 'Anna suostumuksesi, jotta voit käyttää palvelua';
 
   @override
   String get consentSubtitle =>
@@ -3221,15 +3221,15 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get consentCollectItems =>
-      'Kerättävät tiedot: sähköposti, sosiaalisen median tilin tunniste, puheluiden ja ääntämisharjoitusten äänitallenteet, puheentunnistuksella tuotettu teksti, oppimishistoria, laitetiedot';
+      'Kerättävät tiedot: sähköposti, sosiaalisen kirjautumistilin tunniste, puheluiden ja ääntämisharjoitusten äänitallenteet, puheentunnistuksen tekstit, oppimishistoria, laitetiedot';
 
   @override
   String get consentCollectPurpose =>
-      'Käyttötarkoitus: tekoälyn kanssa käytävät äänikeskustelut, ääntämisen ja aksentin analysointi, oppimishistorian tarjoaminen, jäsenten hallinta';
+      'Käyttötarkoitus: äänikeskustelut tekoälyn kanssa, ääntämisen ja aksentin analyysi, oppimishistorian tarjoaminen, jäsenhallinta';
 
   @override
   String get consentCollectRetention =>
-      'Säilytysaika: tilin poistamiseen asti; tiedot, joiden säilyttämisestä laki säätää, lain edellyttämän ajan';
+      'Säilytysaika: tilin poistamiseen asti; tiedot, joiden säilyttämistä laki edellyttää, lakisääteisen ajan loppuun';
 
   @override
   String get consentCollectRefuse =>
@@ -3240,7 +3240,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get consentTransferRefuse =>
-      'Voit kieltäytyä siirrosta ulkomaille. Jos kieltäydyt, et voi käyttää tekoälyn kanssa käytäviä äänikeskusteluja etkä Ääntämishaastetta, joten rekisteröitymistä ei voi jatkaa. Jo siirrettyjen tietojen poistamista voit pyytää osoitteesta contact@beavertalk.im.';
+      'Voit kieltäytyä siirrosta ulkomaille. Jos kieltäydyt, et voi käyttää äänikeskusteluja tekoälyn kanssa etkä Ääntämishaastetta, joten rekisteröityminen ei voi jatkua. Jo siirrettyjen tietojen poistamista voit pyytää osoitteesta contact@beavertalk.im.';
 
   @override
   String get consentTransferColRecipient => 'Vastaanottaja';
@@ -3267,47 +3267,47 @@ class AppLocalizationsFi extends AppLocalizations {
   String get consentLeaveLogout => 'Kirjaudu ulos';
 
   @override
-  String get consentLeaveStay => 'Jatka hyväksymistä';
+  String get consentLeaveStay => 'Palaa ja hyväksy';
 
   @override
   String get consentSubmitFailed =>
-      'Suostumusta ei voitu tallentaa. Yritä uudelleen.';
+      'Suostumustasi ei voitu tallentaa. Yritä uudelleen.';
 
   @override
-  String get consentTransferRow1Country => 'Yhdysvallat ja muut maat';
+  String get consentTransferRow1Country => 'Yhdysvallat ja muut';
 
   @override
   String get consentTransferRow1Items =>
-      'Puheluiden äänitallenteet, puheentunnistuksella tuotettu teksti, tehtäväpuheluiden yhteenvedot';
+      'Puheluiden äänitallenteet, puheesta muunnetut tekstit, tehtäväpuheluiden tiivistelmät, oppituntien tekstit, ääntämistulokset';
 
   @override
   String get consentTransferRow1Purpose =>
-      'Tekoälyn kanssa käytävät äänikeskustelut, puheluiden yhteenvedot ja käännökset';
+      'Äänikeskustelut tekoälyn kanssa, puheluiden tiivistelmät ja käännökset, oppituntien tekstien käännökset, puheluhistorian korttien otsikot, ääntämisvalmennuksen vinkit';
 
   @override
   String get consentTransferRow1When =>
-      'Siirretään verkon kautta käytön yhteydessä';
+      'Siirto verkon kautta käytön yhteydessä';
 
   @override
   String get consentTransferRow1Retention =>
-      'Poistetaan heti, kun käsittelyn tarkoitus on saavutettu';
+      'Poisto heti, kun käsittelyn tarkoitus on täyttynyt';
 
   @override
-  String get consentTransferRow2Country => 'Yhdysvallat ja muut maat';
+  String get consentTransferRow2Country => 'Yhdysvallat ja muut';
 
   @override
-  String get consentTransferRow2Items => 'Ääntämishaasteen puheääni';
+  String get consentTransferRow2Items => 'Ääntämishaasteen ääni';
 
   @override
   String get consentTransferRow2Purpose => 'Puheentunnistus (STT)';
 
   @override
   String get consentTransferRow2When =>
-      'Siirretään verkon kautta käytön yhteydessä';
+      'Siirto verkon kautta käytön yhteydessä';
 
   @override
   String get consentTransferRow2Retention =>
-      'Poistetaan heti, kun käsittelyn tarkoitus on saavutettu';
+      'Poisto heti, kun käsittelyn tarkoitus on täyttynyt';
 
   @override
   String get consentTransferRow3Country => 'Yhdysvallat';
@@ -3321,7 +3321,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get consentTransferRow3When =>
-      'Siirretään verkon kautta käytön yhteydessä';
+      'Siirto verkon kautta käytön yhteydessä';
 
   @override
   String get consentTransferRow3Retention => '14 kuukautta keräämisestä';
@@ -3331,34 +3331,34 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get consentTransferRow4Items =>
-      'Push-ilmoitusten tunnus (token), ilmoitusten sisältö';
+      'Push-ilmoitusten tunniste, ilmoitusten sisältö';
 
   @override
   String get consentTransferRow4Purpose => 'Sovelluksen push-ilmoitukset';
 
   @override
   String get consentTransferRow4When =>
-      'Siirretään verkon kautta ilmoituksen lähetyshetkellä';
+      'Siirto verkon kautta ilmoitusta lähetettäessä';
 
   @override
   String get consentTransferRow4Retention =>
-      'Poistetaan heti, kun käsittelyn tarkoitus on saavutettu';
+      'Poisto heti, kun käsittelyn tarkoitus on täyttynyt';
 
   @override
   String get consentTransferRow5Country => 'Yhdysvallat';
 
   @override
   String get consentTransferRow5Items =>
-      'iOS-push-ilmoitusten tunnus (token), ilmoitusten sisältö';
+      'iOS-push-ilmoitusten tunniste, ilmoitusten sisältö';
 
   @override
   String get consentTransferRow5Purpose => 'iOS-push-ilmoitukset';
 
   @override
   String get consentTransferRow5When =>
-      'Siirretään verkon kautta ilmoituksen lähetyshetkellä';
+      'Siirto verkon kautta ilmoitusta lähetettäessä';
 
   @override
   String get consentTransferRow5Retention =>
-      'Poistetaan heti, kun käsittelyn tarkoitus on saavutettu';
+      'Poisto heti, kun käsittelyn tarkoitus on täyttynyt';
 }

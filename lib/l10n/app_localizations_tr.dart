@@ -982,14 +982,13 @@ class AppLocalizationsTr extends AppLocalizations {
   String get signUp => 'Kaydol';
 
   @override
-  String get loginTermsNoticePrefix => 'Devam ederseniz ';
+  String get loginTermsNoticePrefix => 'Devam ederseniz bir sonraki ekranda ';
 
   @override
   String get loginTermsNoticeAnd => ' ve ';
 
   @override
-  String get loginTermsNoticeSuffix =>
-      ' için bir sonraki ekranda onayınız istenecektir.';
+  String get loginTermsNoticeSuffix => ' için onayınız istenecek.';
 
   @override
   String get loginLogIn => 'Giriş yap';
@@ -3158,10 +3157,10 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get consentSubtitle =>
-      'BeaverTalk\'u kullanabilmek için tüm zorunlu maddeleri kabul etmeniz gerekir.';
+      'BeaverTalk\'u kullanmak için tüm zorunlu maddeleri onaylamanız gerekir.';
 
   @override
-  String get consentAgreeAll => 'Tümünü kabul et';
+  String get consentAgreeAll => 'Tümünü onayla';
 
   @override
   String get consentAge14 => '[Zorunlu] 14 yaşında veya daha büyüğüm';
@@ -3171,7 +3170,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get consentPrivacyCollect =>
-      '[Zorunlu] Kişisel verilerin toplanmasına ve kullanılmasına onay (ses kayıtları dahil)';
+      '[Zorunlu] Kişisel verilerin toplanması ve kullanılmasına onay (ses kayıtları dahil)';
 
   @override
   String get consentOverseasTransfer =>
@@ -3181,7 +3180,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get consentView => 'Görüntüle';
 
   @override
-  String get consentCta => 'Kabul et ve başla';
+  String get consentCta => 'Onayla ve başla';
 
   @override
   String get consentCollectSheetTitle =>
@@ -3189,7 +3188,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get consentCollectItems =>
-      'Toplanan veriler: e-posta, sosyal hesap tanımlayıcısı, arama ve telaffuz alıştırması ses kayıtları, ses tanıma metinleri, öğrenme geçmişi, cihaz bilgileri';
+      'Toplanan veriler: e-posta, sosyal hesap tanımlayıcısı, görüşme ve telaffuz pratiği ses kayıtları, konuşma tanıma metinleri, öğrenme geçmişi, cihaz bilgileri';
 
   @override
   String get consentCollectPurpose =>
@@ -3197,7 +3196,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get consentCollectRetention =>
-      'Saklama süresi: hesabınızı silene kadar; mevzuatın saklama süresi belirlediği kayıtlar ise bu süre sonuna kadar';
+      'Saklama süresi: hesabınızı silene kadar; mevzuatın saklanmasını öngördüğü kayıtlar ise o süre dolana kadar';
 
   @override
   String get consentCollectRefuse =>
@@ -3209,7 +3208,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get consentTransferRefuse =>
-      'Yurt dışına aktarımı reddedebilirsiniz. Reddederseniz yapay zeka ile sesli sohbet ve Telaffuz Mücadelesi kullanılamayacağından kayıt işlemi devam edemez. Önceden aktarılmış verilerin silinmesini contact@beavertalk.im adresinden talep edebilirsiniz.';
+      'Yurt dışına aktarımı reddedebilirsiniz. Reddederseniz yapay zeka ile sesli sohbet ve Telaffuz Mücadelesi kullanılamaz, bu nedenle kayıt işlemi devam edemez. Daha önce aktarılmış verilerin silinmesini contact@beavertalk.im adresinden talep edebilirsiniz.';
 
   @override
   String get consentTransferColRecipient => 'Alıcı';
@@ -3230,13 +3229,13 @@ class AppLocalizationsTr extends AppLocalizations {
   String get consentTransferColRetention => 'Saklama süresi';
 
   @override
-  String get consentLeaveTitle => 'Kabul etmezseniz oturumunuz kapatılır';
+  String get consentLeaveTitle => 'Onay vermezseniz oturumunuz kapatılır';
 
   @override
   String get consentLeaveLogout => 'Çıkış yap';
 
   @override
-  String get consentLeaveStay => 'Onaylamaya devam et';
+  String get consentLeaveStay => 'Geri dön ve onayla';
 
   @override
   String get consentSubmitFailed =>
@@ -3247,18 +3246,19 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get consentTransferRow1Items =>
-      'Arama ses kayıtları, sesten metne dönüştürülmüş metinler, ödev görüşmesi özetleri';
+      'Görüşme ses kayıtları, konuşmadan dönüştürülen metinler, ödev görüşmesi özetleri, ders metinleri, telaffuz sonuçları';
 
   @override
   String get consentTransferRow1Purpose =>
-      'Yapay zeka ile sesli sohbet, arama özeti ve çevirisi';
+      'Yapay zeka ile sesli sohbet, arama özetleri ve çevirisi, ders metni çevirisi, görüşme kartı başlıkları, telaffuz koçluğu ipuçları';
 
   @override
-  String get consentTransferRow1When => 'Kullanım anında ağ üzerinden aktarım';
+  String get consentTransferRow1When =>
+      'Özellik kullanıldığında ağ üzerinden aktarılır';
 
   @override
   String get consentTransferRow1Retention =>
-      'İşleme amacına ulaşıldığında derhal silinir';
+      'İşleme amacına ulaşıldığında hemen silinir';
 
   @override
   String get consentTransferRow2Country => 'ABD ve diğer ülkeler';
@@ -3267,14 +3267,15 @@ class AppLocalizationsTr extends AppLocalizations {
   String get consentTransferRow2Items => 'Telaffuz Mücadelesi ses kayıtları';
 
   @override
-  String get consentTransferRow2Purpose => 'Ses tanıma (STT)';
+  String get consentTransferRow2Purpose => 'Konuşma tanıma (STT)';
 
   @override
-  String get consentTransferRow2When => 'Kullanım anında ağ üzerinden aktarım';
+  String get consentTransferRow2When =>
+      'Özellik kullanıldığında ağ üzerinden aktarılır';
 
   @override
   String get consentTransferRow2Retention =>
-      'İşleme amacına ulaşıldığında derhal silinir';
+      'İşleme amacına ulaşıldığında hemen silinir';
 
   @override
   String get consentTransferRow3Country => 'ABD';
@@ -3287,7 +3288,8 @@ class AppLocalizationsTr extends AppLocalizations {
   String get consentTransferRow3Purpose => 'Kullanım istatistikleri analizi';
 
   @override
-  String get consentTransferRow3When => 'Kullanım anında ağ üzerinden aktarım';
+  String get consentTransferRow3When =>
+      'Özellik kullanıldığında ağ üzerinden aktarılır';
 
   @override
   String get consentTransferRow3Retention => 'Toplandıktan sonra 14 ay';
@@ -3297,32 +3299,34 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get consentTransferRow4Items =>
-      'Anlık bildirim token\'ı, bildirim içeriği';
+      'Anlık bildirim belirteci, bildirim içeriği';
 
   @override
   String get consentTransferRow4Purpose => 'Uygulama anlık bildirimleri';
 
   @override
-  String get consentTransferRow4When => 'Gönderim anında ağ üzerinden aktarım';
+  String get consentTransferRow4When =>
+      'Bildirim gönderildiğinde ağ üzerinden aktarılır';
 
   @override
   String get consentTransferRow4Retention =>
-      'İşleme amacına ulaşıldığında derhal silinir';
+      'İşleme amacına ulaşıldığında hemen silinir';
 
   @override
   String get consentTransferRow5Country => 'ABD';
 
   @override
   String get consentTransferRow5Items =>
-      'iOS anlık bildirim token\'ı, bildirim içeriği';
+      'iOS anlık bildirim belirteci, bildirim içeriği';
 
   @override
   String get consentTransferRow5Purpose => 'iOS anlık bildirimleri';
 
   @override
-  String get consentTransferRow5When => 'Gönderim anında ağ üzerinden aktarım';
+  String get consentTransferRow5When =>
+      'Bildirim gönderildiğinde ağ üzerinden aktarılır';
 
   @override
   String get consentTransferRow5Retention =>
-      'İşleme amacına ulaşıldığında derhal silinir';
+      'İşleme amacına ulaşıldığında hemen silinir';
 }

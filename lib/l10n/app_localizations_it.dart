@@ -3212,7 +3212,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get hwPolicyNoticeOk => 'OK';
 
   @override
-  String get consentTitle => 'Per usare il servizio, dai il tuo consenso';
+  String get consentTitle => 'Dai il tuo consenso per usare il servizio';
 
   @override
   String get consentSubtitle =>
@@ -3251,11 +3251,11 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get consentCollectPurpose =>
-      'Finalità: conversazioni vocali con l\'IA, analisi di pronuncia e accento, fornitura della cronologia di apprendimento, gestione degli iscritti';
+      'Finalità: conversazioni vocali con l\'IA, analisi della pronuncia e dell\'accento, fornitura della cronologia di apprendimento, gestione degli iscritti';
 
   @override
   String get consentCollectRetention =>
-      'Periodo di conservazione: fino alla cancellazione dell\'account; i dati la cui conservazione è prevista dalla legge, fino al termine stabilito dalla legge';
+      'Conservazione: fino all\'eliminazione dell\'account; i dati di cui la legge impone la conservazione, per il periodo da essa stabilito';
 
   @override
   String get consentCollectRefuse =>
@@ -3267,7 +3267,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get consentTransferRefuse =>
-      'Puoi rifiutare il trasferimento all\'estero. Se rifiuti, non potrai usare le conversazioni vocali con l\'IA e la Sfida di pronuncia, quindi la registrazione non potrà proseguire. Per la cancellazione dei dati già trasferiti puoi inviare una richiesta a contact@beavertalk.im.';
+      'Puoi rifiutare il trasferimento all\'estero. Se rifiuti, non potrai usare le conversazioni vocali con l\'IA e la Sfida di pronuncia, quindi la registrazione non potrà proseguire. Puoi chiedere la cancellazione dei dati già trasferiti scrivendo a contact@beavertalk.im.';
 
   @override
   String get consentTransferColRecipient => 'Destinatario';
@@ -3294,47 +3294,47 @@ class AppLocalizationsIt extends AppLocalizations {
   String get consentLeaveLogout => 'Esci';
 
   @override
-  String get consentLeaveStay => 'Continua con il consenso';
+  String get consentLeaveStay => 'Torna e accetta';
 
   @override
-  String get consentSubmitFailed => 'Impossibile salvare il consenso. Riprova.';
+  String get consentSubmitFailed =>
+      'Non è stato possibile salvare il consenso. Riprova.';
 
   @override
-  String get consentTransferRow1Country => 'Stati Uniti e altri paesi';
+  String get consentTransferRow1Country => 'Stati Uniti e altri';
 
   @override
   String get consentTransferRow1Items =>
-      'Registrazioni vocali delle chiamate, testo trascritto dalla voce, riepiloghi delle chiamate per i compiti';
+      'Registrazioni vocali delle chiamate, testo del riconoscimento vocale, riepiloghi delle chiamate del compito, testi delle lezioni, risultati di pronuncia';
 
   @override
   String get consentTransferRow1Purpose =>
-      'Conversazioni vocali con l\'IA, riepiloghi e traduzione delle chiamate';
+      'Conversazioni vocali con l\'IA, riepilogo e traduzione delle chiamate, traduzione dei testi delle lezioni, titoli delle schede delle chiamate passate, consigli per migliorare la pronuncia';
 
   @override
   String get consentTransferRow1When =>
-      'Trasmissione in rete al momento dell\'uso';
+      'Inviati in rete al momento dell\'uso della funzione';
 
   @override
   String get consentTransferRow1Retention =>
-      'Cancellazione immediata al raggiungimento della finalità del trattamento';
+      'Eliminati non appena raggiunta la finalità del trattamento';
 
   @override
-  String get consentTransferRow2Country => 'Stati Uniti e altri paesi';
+  String get consentTransferRow2Country => 'Stati Uniti e altri';
 
   @override
-  String get consentTransferRow2Items =>
-      'Voce registrata nella Sfida di pronuncia';
+  String get consentTransferRow2Items => 'Voce della Sfida di pronuncia';
 
   @override
   String get consentTransferRow2Purpose => 'Riconoscimento vocale (STT)';
 
   @override
   String get consentTransferRow2When =>
-      'Trasmissione in rete al momento dell\'uso';
+      'Inviati in rete al momento dell\'uso della funzione';
 
   @override
   String get consentTransferRow2Retention =>
-      'Cancellazione immediata al raggiungimento della finalità del trattamento';
+      'Eliminati non appena raggiunta la finalità del trattamento';
 
   @override
   String get consentTransferRow3Country => 'Stati Uniti';
@@ -3344,11 +3344,11 @@ class AppLocalizationsIt extends AppLocalizations {
       'Registri di utilizzo, ID istanza dell\'app, numero identificativo dell\'iscritto, informazioni sul dispositivo';
 
   @override
-  String get consentTransferRow3Purpose => 'Analisi statistiche di utilizzo';
+  String get consentTransferRow3Purpose => 'Analisi statistica dell\'utilizzo';
 
   @override
   String get consentTransferRow3When =>
-      'Trasmissione in rete al momento dell\'uso';
+      'Inviati in rete al momento dell\'uso della funzione';
 
   @override
   String get consentTransferRow3Retention => '14 mesi dalla raccolta';
@@ -3365,11 +3365,11 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get consentTransferRow4When =>
-      'Trasmissione in rete al momento dell\'invio';
+      'Inviati in rete al momento dell\'invio della notifica';
 
   @override
   String get consentTransferRow4Retention =>
-      'Cancellazione immediata al raggiungimento della finalità del trattamento';
+      'Eliminati non appena raggiunta la finalità del trattamento';
 
   @override
   String get consentTransferRow5Country => 'Stati Uniti';
@@ -3383,9 +3383,9 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get consentTransferRow5When =>
-      'Trasmissione in rete al momento dell\'invio';
+      'Inviati in rete al momento dell\'invio della notifica';
 
   @override
   String get consentTransferRow5Retention =>
-      'Cancellazione immediata al raggiungimento della finalità del trattamento';
+      'Eliminati non appena raggiunta la finalità del trattamento';
 }

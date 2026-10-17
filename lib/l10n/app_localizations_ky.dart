@@ -3166,7 +3166,7 @@ class AppLocalizationsKy extends AppLocalizations {
 
   @override
   String get consentSubtitle =>
-      'BeaverTalk колдонмосун колдонуу үчүн бардык милдеттүү пункттарга макул болушуңуз керек.';
+      'BeaverTalk кызматын колдонуу үчүн бардык милдеттүү пункттарга макул болушуңуз керек.';
 
   @override
   String get consentAgreeAll => 'Баарына макулмун';
@@ -3179,7 +3179,7 @@ class AppLocalizationsKy extends AppLocalizations {
 
   @override
   String get consentPrivacyCollect =>
-      '[Милдеттүү] Жеке маалыматтарды чогултууга жана колдонууга макулдук (үн жазууларын кошкондо)';
+      '[Милдеттүү] Жеке маалыматтарды чогултууга жана колдонууга макулдук (үн жазууларын кошо алганда)';
 
   @override
   String get consentOverseasTransfer =>
@@ -3197,19 +3197,19 @@ class AppLocalizationsKy extends AppLocalizations {
 
   @override
   String get consentCollectItems =>
-      'Чогултулуучу маалыматтар: электрондук почта, социалдык тармак аккаунтунун идентификатору, чалуулардын жана айтылыш машыгууларынын үн жазуулары, үндү таануудан алынган текст, окуу тарыхы, түзмөк маалыматы';
+      'Чогултулуучу маалыматтар: электрондук почта, социалдык аккаунттун идентификатору, чалуулардын жана айтылыш машыгуусунун үн жазуулары, үн таануу тексти, окуу тарыхы, түзмөк тууралуу маалымат';
 
   @override
   String get consentCollectPurpose =>
-      'Колдонуу максаты: AI менен үн аркылуу сүйлөшүү, айтылышты жана акцентти талдоо, окуу тарыхын берүү, мүчөлүктү башкаруу';
+      'Колдонуу максаты: AI менен үн аркылуу сүйлөшүү, айтылыш жана акцент талдоосу, окуу тарыхын берүү, мүчөлөрдү башкаруу';
 
   @override
   String get consentCollectRetention =>
-      'Сактоо мөөнөтү: аккаунтту өчүргөнгө чейин; мыйзам сактоону белгилеген жазуулар — ошол мөөнөт бүткөнгө чейин';
+      'Сактоо мөөнөтү: аккаунт өчүрүлгөнгө чейин; мыйзам менен сактоо мөөнөтү белгиленген жазуулар ошол мөөнөт бүткөнгө чейин';
 
   @override
   String get consentCollectRefuse =>
-      'Макулдук берүүдөн баш тарта аласыз. Баш тартсаңыз, катталуу жана кызматты колдонуу мүмкүн эмес.';
+      'Макулдук берүүдөн баш тарта аласыз. Баш тартсаңыз, катталуу жана кызматты колдонуу мүмкүн болбойт.';
 
   @override
   String get consentTransferSheetTitle =>
@@ -3217,7 +3217,7 @@ class AppLocalizationsKy extends AppLocalizations {
 
   @override
   String get consentTransferRefuse =>
-      'Чет өлкөгө өткөрүүдөн баш тарта аласыз. Баш тартсаңыз, AI менен үн аркылуу сүйлөшүүнү жана Айтылыш чакырыгын колдоно албайсыз, ошондуктан катталуу уланбайт. Мурда өткөрүлгөн маалыматтарды өчүрүүнү contact@beavertalk.im дареги аркылуу сурай аласыз.';
+      'Чет өлкөгө өткөрүүдөн баш тарта аласыз. Баш тартсаңыз, AI менен үн аркылуу сүйлөшүүнү жана Айтылыш чакырыгын колдоно албайсыз, ошондуктан катталуу улантылбайт. Мурда өткөрүлгөн маалыматтарды өчүрүүнү contact@beavertalk.im дареги аркылуу сурай аласыз.';
 
   @override
   String get consentTransferColRecipient => 'Алуучу';
@@ -3229,7 +3229,7 @@ class AppLocalizationsKy extends AppLocalizations {
   String get consentTransferColItems => 'Маалыматтар';
 
   @override
-  String get consentTransferColPurpose => 'Максаты';
+  String get consentTransferColPurpose => 'Максат';
 
   @override
   String get consentTransferColWhen => 'Убактысы жана ыкмасы';
@@ -3244,22 +3244,22 @@ class AppLocalizationsKy extends AppLocalizations {
   String get consentLeaveLogout => 'Чыгуу';
 
   @override
-  String get consentLeaveStay => 'Макулдукту улантуу';
+  String get consentLeaveStay => 'Кайтып макул болуу';
 
   @override
   String get consentSubmitFailed =>
-      'Макулдукту сактоо мүмкүн болбоду. Кайра аракет кылыңыз.';
+      'Макулдугуңузду сактай алган жокпуз. Кайра аракет кылыңыз.';
 
   @override
   String get consentTransferRow1Country => 'АКШ жана башка өлкөлөр';
 
   @override
   String get consentTransferRow1Items =>
-      'Чалуунун үн жазуулары, үндөн текстке айландырылган текст, үй тапшырма чалууларынын кыскача мазмуну';
+      'Чалуулардын үн жазуулары, үн таануу тексти, тапшырма чалууларынын корутундусу, сабак тексттери, айтылыш жыйынтыктары';
 
   @override
   String get consentTransferRow1Purpose =>
-      'AI менен үн аркылуу сүйлөшүү, чалуунун кыскача мазмуну жана котормо';
+      'AI менен үн аркылуу сүйлөшүү, чалуулардын корутундусу жана котормосу, сабак тексттеринин котормосу, мурунку чалуулар карталарынын аталыштары, айтылыш боюнча машыктыруу кеңештери';
 
   @override
   String get consentTransferRow1When =>
@@ -3276,7 +3276,7 @@ class AppLocalizationsKy extends AppLocalizations {
   String get consentTransferRow2Items => 'Айтылыш чакырыгындагы үн';
 
   @override
-  String get consentTransferRow2Purpose => 'Үндү таануу (STT)';
+  String get consentTransferRow2Purpose => 'Үн таануу (STT)';
 
   @override
   String get consentTransferRow2When =>
@@ -3291,7 +3291,7 @@ class AppLocalizationsKy extends AppLocalizations {
 
   @override
   String get consentTransferRow3Items =>
-      'Колдонуу журналы, колдонмо нускасынын ID, мүчөнүн идентификациялык номери, түзмөк маалыматы';
+      'Колдонуу жазуулары, колдонмо нускасынын ID, мүчөнүн идентификациялык номери, түзмөк тууралуу маалымат';
 
   @override
   String get consentTransferRow3Purpose => 'Колдонуу статистикасын талдоо';

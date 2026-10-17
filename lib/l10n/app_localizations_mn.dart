@@ -989,7 +989,7 @@ class AppLocalizationsMn extends AppLocalizations {
   String get loginTermsNoticeAnd => ' болон ';
 
   @override
-  String get loginTermsNoticeSuffix => '-г зөвшөөрөхийг танаас хүснэ.';
+  String get loginTermsNoticeSuffix => '-д зөвшөөрөл өгөхийг танаас хүснэ.';
 
   @override
   String get loginLogIn => 'Нэвтрэх';
@@ -3153,11 +3153,11 @@ class AppLocalizationsMn extends AppLocalizations {
   String get hwPolicyNoticeOk => 'Ойлголоо';
 
   @override
-  String get consentTitle => 'Үйлчилгээг ашиглахын тулд зөвшөөрнө үү';
+  String get consentTitle => 'Үйлчилгээг ашиглахын тулд зөвшөөрөл өгнө үү';
 
   @override
   String get consentSubtitle =>
-      'BeaverTalk ашиглахын тулд заавал шаардлагатай бүх зүйлийг зөвшөөрөх ёстой.';
+      'BeaverTalk-ийг ашиглахын тулд заавал шаардлагатай бүх зүйлийг зөвшөөрөх ёстой.';
 
   @override
   String get consentAgreeAll => 'Бүгдийг зөвшөөрөх';
@@ -3174,7 +3174,7 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get consentOverseasTransfer =>
-      '[Заавал] Хувийн мэдээллийг гадаадад шилжүүлэхийг зөвшөөрөх';
+      '[Заавал] Хувийн мэдээллийг гадаад улс руу шилжүүлэхийг зөвшөөрөх';
 
   @override
   String get consentView => 'Харах';
@@ -3187,27 +3187,27 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get consentCollectItems =>
-      'Цуглуулах мэдээлэл: имэйл, сошиал бүртгэлийн танигч, дуут дуудлага болон дуудлагын дасгалын дуу хоолойн бичлэг, яриа танилтын текст, суралцсан түүх, төхөөрөмжийн мэдээлэл';
+      'Цуглуулах мэдээлэл: имэйл, сошиал бүртгэлийн танигч, дуут дуудлага болон дуудлага зөв гаргах дасгалын дуу хоолойн бичлэг, дуу хоолойг таньсан текст, суралцсан түүх, төхөөрөмжийн мэдээлэл';
 
   @override
   String get consentCollectPurpose =>
-      'Ашиглах зорилго: AI-тай дуут харилцан яриа, дуудлага ба аялгын шинжилгээ, суралцсан түүхийг харуулах, гишүүнчлэлийн удирдлага';
+      'Ашиглах зорилго: AI-тай дуут яриа, авиа дуудлага ба аялгууны шинжилгээ, суралцсан түүхийг хүргэх, гишүүдийн бүртгэлийг удирдах';
 
   @override
   String get consentCollectRetention =>
-      'Хадгалах хугацаа: бүртгэлээ устгах хүртэл; хуулиар хадгалах хугацаа тогтоосон мэдээллийг тухайн хугацаа дуустал';
+      'Хадгалах хугацаа: бүртгэлээ устгах хүртэл; хуульд хадгалах хугацаа заасан бичлэгийг тухайн хугацаа дуустал';
 
   @override
   String get consentCollectRefuse =>
-      'Та зөвшөөрөхөөс татгалзаж болно. Татгалзвал бүртгүүлэх болон үйлчилгээ ашиглах боломжгүй.';
+      'Та зөвшөөрөхөөс татгалзаж болно. Татгалзвал бүртгүүлэх болон үйлчилгээг ашиглах боломжгүй.';
 
   @override
   String get consentTransferSheetTitle =>
-      'Хувийн мэдээллийг гадаадад шилжүүлэх';
+      'Хувийн мэдээллийг гадаад улс руу шилжүүлэх';
 
   @override
   String get consentTransferRefuse =>
-      'Та гадаадад шилжүүлэхээс татгалзаж болно. Татгалзвал AI-тай дуут харилцан яриа болон Дуудлагын сорилтыг ашиглах боломжгүй тул бүртгэл үргэлжлэхгүй. Аль хэдийн шилжүүлсэн мэдээллийг устгахыг contact@beavertalk.im хаягаар хүсэж болно.';
+      'Та гадаад улс руу шилжүүлэхээс татгалзаж болно. Татгалзвал AI-тай дуут харилцан яриа болон Дуудлагын сорилтыг ашиглах боломжгүй тул бүртгэл үргэлжлэхгүй. Аль хэдийн шилжүүлсэн мэдээллийг устгуулах хүсэлтээ contact@beavertalk.im хаягаар илгээж болно.';
 
   @override
   String get consentTransferColRecipient => 'Хүлээн авагч';
@@ -3234,7 +3234,7 @@ class AppLocalizationsMn extends AppLocalizations {
   String get consentLeaveLogout => 'Гарах';
 
   @override
-  String get consentLeaveStay => 'Зөвшөөрлөө үргэлжлүүлэх';
+  String get consentLeaveStay => 'Буцаж зөвшөөрөх';
 
   @override
   String get consentSubmitFailed =>
@@ -3245,18 +3245,18 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get consentTransferRow1Items =>
-      'Дуудлагын дуу хоолойн бичлэг, яриаг хөрвүүлсэн текст, даалгаврын дуудлагын хураангуй';
+      'Дуут дуудлагын бичлэг, дуу хоолойг хөрвүүлсэн текст, даалгаврын дуудлагын хураангуй, хичээлийн текст, дуудлага зөв гаргалтын үр дүн';
 
   @override
   String get consentTransferRow1Purpose =>
-      'AI-тай дуут харилцан яриа, дуудлагын хураангуй ба орчуулга';
+      'AI-тай дуут харилцан яриа, дуут дуудлагын хураангуй ба орчуулга, хичээлийн текстийн орчуулга, дуут дуудлагын картын гарчиг, дуудлага зөв гаргах зөвлөгөө';
 
   @override
   String get consentTransferRow1When => 'Ашиглах үед сүлжээгээр дамжуулна';
 
   @override
   String get consentTransferRow1Retention =>
-      'Боловсруулах зорилго биелмэгц нэн даруй устгана';
+      'Боловсруулах зорилго биелмэгц шууд устгана';
 
   @override
   String get consentTransferRow2Country => 'АНУ болон бусад';
@@ -3265,14 +3265,14 @@ class AppLocalizationsMn extends AppLocalizations {
   String get consentTransferRow2Items => 'Дуудлагын сорилтын дуу хоолой';
 
   @override
-  String get consentTransferRow2Purpose => 'Яриа таних (STT)';
+  String get consentTransferRow2Purpose => 'Дуу хоолой таних (STT)';
 
   @override
   String get consentTransferRow2When => 'Ашиглах үед сүлжээгээр дамжуулна';
 
   @override
   String get consentTransferRow2Retention =>
-      'Боловсруулах зорилго биелмэгц нэн даруй устгана';
+      'Боловсруулах зорилго биелмэгц шууд устгана';
 
   @override
   String get consentTransferRow3Country => 'АНУ';
@@ -3306,7 +3306,7 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get consentTransferRow4Retention =>
-      'Боловсруулах зорилго биелмэгц нэн даруй устгана';
+      'Боловсруулах зорилго биелмэгц шууд устгана';
 
   @override
   String get consentTransferRow5Country => 'АНУ';
@@ -3324,5 +3324,5 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get consentTransferRow5Retention =>
-      'Боловсруулах зорилго биелмэгц нэн даруй устгана';
+      'Боловсруулах зорилго биелмэгц шууд устгана';
 }

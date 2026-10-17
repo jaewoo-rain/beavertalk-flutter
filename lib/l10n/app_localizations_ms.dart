@@ -3183,11 +3183,11 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get consentTitle =>
-      'Sila berikan persetujuan untuk menggunakan perkhidmatan';
+      'Sila beri persetujuan untuk menggunakan perkhidmatan';
 
   @override
   String get consentSubtitle =>
-      'Anda perlu bersetuju dengan semua item wajib untuk menggunakan BeaverTalk.';
+      'Anda perlu bersetuju dengan semua perkara wajib untuk menggunakan BeaverTalk.';
 
   @override
   String get consentAgreeAll => 'Setuju semua';
@@ -3196,15 +3196,15 @@ class AppLocalizationsMs extends AppLocalizations {
   String get consentAge14 => '[Wajib] Saya berumur 14 tahun ke atas';
 
   @override
-  String get consentTerms => '[Wajib] Bersetuju dengan Terma perkhidmatan';
+  String get consentTerms => '[Wajib] Persetujuan Terma perkhidmatan';
 
   @override
   String get consentPrivacyCollect =>
-      '[Wajib] Bersetuju dengan pengumpulan dan penggunaan data peribadi (termasuk rakaman suara)';
+      '[Wajib] Persetujuan pengumpulan dan penggunaan maklumat peribadi (termasuk rakaman suara)';
 
   @override
   String get consentOverseasTransfer =>
-      '[Wajib] Bersetuju dengan pemindahan data peribadi ke luar negara';
+      '[Wajib] Persetujuan pemindahan maklumat peribadi ke luar negara';
 
   @override
   String get consentView => 'Lihat';
@@ -3214,11 +3214,11 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get consentCollectSheetTitle =>
-      'Pengumpulan dan penggunaan data peribadi';
+      'Pengumpulan dan penggunaan maklumat peribadi';
 
   @override
   String get consentCollectItems =>
-      'Item yang dikumpul: e-mel, pengecam akaun sosial, rakaman suara panggilan dan latihan sebutan, teks pengecaman suara, rekod pembelajaran, maklumat peranti';
+      'Perkara yang dikumpul: e-mel, pengecam akaun sosial, rakaman suara panggilan dan latihan sebutan, teks pengecaman suara, rekod pembelajaran, maklumat peranti';
 
   @override
   String get consentCollectPurpose =>
@@ -3226,7 +3226,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get consentCollectRetention =>
-      'Tempoh simpanan: sehingga akaun dipadamkan; rekod yang ditetapkan oleh undang-undang disimpan sehingga tempoh tersebut';
+      'Tempoh simpanan: sehingga akaun dipadam; rekod yang tempoh simpanannya ditetapkan oleh undang-undang disimpan sehingga tamat tempoh tersebut';
 
   @override
   String get consentCollectRefuse =>
@@ -3234,7 +3234,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get consentTransferSheetTitle =>
-      'Pemindahan data peribadi ke luar negara';
+      'Pemindahan maklumat peribadi ke luar negara';
 
   @override
   String get consentTransferRefuse =>
@@ -3247,13 +3247,13 @@ class AppLocalizationsMs extends AppLocalizations {
   String get consentTransferColCountry => 'Negara';
 
   @override
-  String get consentTransferColItems => 'Item';
+  String get consentTransferColItems => 'Perkara';
 
   @override
   String get consentTransferColPurpose => 'Tujuan';
 
   @override
-  String get consentTransferColWhen => 'Masa dan kaedah';
+  String get consentTransferColWhen => 'Masa dan cara';
 
   @override
   String get consentTransferColRetention => 'Tempoh simpanan';
@@ -3265,7 +3265,7 @@ class AppLocalizationsMs extends AppLocalizations {
   String get consentLeaveLogout => 'Log keluar';
 
   @override
-  String get consentLeaveStay => 'Teruskan persetujuan';
+  String get consentLeaveStay => 'Kembali dan setuju';
 
   @override
   String get consentSubmitFailed =>
@@ -3276,11 +3276,11 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get consentTransferRow1Items =>
-      'Rakaman suara panggilan, teks transkripsi suara, ringkasan panggilan kerja rumah';
+      'Rakaman suara panggilan, teks pengecaman suara, ringkasan panggilan tugasan, teks pelajaran, keputusan sebutan';
 
   @override
   String get consentTransferRow1Purpose =>
-      'Perbualan suara AI, ringkasan dan terjemahan panggilan';
+      'Perbualan suara AI, ringkasan dan terjemahan panggilan, terjemahan teks pelajaran, tajuk kad rekod panggilan, tip bimbingan sebutan';
 
   @override
   String get consentTransferRow1When =>
@@ -3312,7 +3312,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get consentTransferRow3Items =>
-      'Log penggunaan, ID instans aplikasi, nombor pengenalan ahli, maklumat peranti';
+      'Rekod penggunaan, ID tika apl, nombor pengenalan ahli, maklumat peranti';
 
   @override
   String get consentTransferRow3Purpose => 'Analisis statistik penggunaan';
@@ -3332,7 +3332,7 @@ class AppLocalizationsMs extends AppLocalizations {
       'Token pemberitahuan push, kandungan pemberitahuan';
 
   @override
-  String get consentTransferRow4Purpose => 'Pemberitahuan push aplikasi';
+  String get consentTransferRow4Purpose => 'Pemberitahuan push apl';
 
   @override
   String get consentTransferRow4When =>

@@ -983,7 +983,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get loginTermsNoticeAnd => ' และ ';
 
   @override
-  String get loginTermsNoticeSuffix => ' ในหน้าถัดไป';
+  String get loginTermsNoticeSuffix => ' ในหน้าจอถัดไป';
 
   @override
   String get loginLogIn => 'เข้าสู่ระบบ';
@@ -3141,11 +3141,11 @@ class AppLocalizationsTh extends AppLocalizations {
   String get consentAge14 => '[จำเป็น] ฉันมีอายุ 14 ปีบริบูรณ์ขึ้นไป';
 
   @override
-  String get consentTerms => '[จำเป็น] ยินยอมตามข้อกำหนดในการให้บริการ';
+  String get consentTerms => '[จำเป็น] ยอมรับข้อกำหนดในการให้บริการ';
 
   @override
   String get consentPrivacyCollect =>
-      '[จำเป็น] ยินยอมให้เก็บรวบรวมและใช้ข้อมูลส่วนบุคคล (รวมถึงเสียงที่บันทึก)';
+      '[จำเป็น] ยินยอมให้เก็บรวบรวมและใช้ข้อมูลส่วนบุคคล (รวมถึงการบันทึกเสียง)';
 
   @override
   String get consentOverseasTransfer =>
@@ -3162,26 +3162,26 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get consentCollectItems =>
-      'ข้อมูลที่เก็บรวบรวม: อีเมล, ค่าระบุตัวตนของบัญชีโซเชียล, เสียงที่บันทึกจากการโทรและการฝึกออกเสียง, ข้อความจากการรู้จำเสียงพูด, ประวัติการเรียน, ข้อมูลอุปกรณ์';
+      'ข้อมูลที่เก็บรวบรวม: อีเมล, ค่าระบุตัวตนบัญชีโซเชียล, การบันทึกเสียงจากการโทรและการฝึกออกเสียง, ข้อความจากการรู้จำเสียง, ประวัติการเรียน, ข้อมูลอุปกรณ์';
 
   @override
   String get consentCollectPurpose =>
-      'วัตถุประสงค์การใช้: การสนทนาด้วยเสียงกับ AI, การวิเคราะห์การออกเสียงและสำเนียง, การให้บริการประวัติการเรียน, การจัดการสมาชิก';
+      'วัตถุประสงค์การใช้: การสนทนาด้วยเสียงกับ AI, การวิเคราะห์การออกเสียงและสำเนียง, การให้ประวัติการเรียน, การจัดการสมาชิก';
 
   @override
   String get consentCollectRetention =>
-      'ระยะเวลาเก็บรักษา: จนกว่าจะลบบัญชี ส่วนข้อมูลที่กฎหมายกำหนดให้เก็บ จะเก็บไว้จนครบระยะเวลาที่กฎหมายกำหนด';
+      'ระยะเวลาเก็บรักษา: จนกว่าจะลบบัญชี ส่วนบันทึกที่กฎหมายกำหนดให้เก็บ จะเก็บไว้จนครบระยะเวลาตามกฎหมาย';
 
   @override
   String get consentCollectRefuse =>
-      'คุณสามารถปฏิเสธการให้ความยินยอมได้ หากปฏิเสธ จะไม่สามารถสมัครสมาชิกและใช้บริการได้';
+      'คุณปฏิเสธการให้ความยินยอมได้ หากปฏิเสธ คุณจะลงทะเบียนเป็นสมาชิกและใช้บริการไม่ได้';
 
   @override
   String get consentTransferSheetTitle => 'การโอนข้อมูลส่วนบุคคลไปต่างประเทศ';
 
   @override
   String get consentTransferRefuse =>
-      'คุณสามารถปฏิเสธการโอนข้อมูลไปต่างประเทศได้ หากปฏิเสธ จะไม่สามารถใช้การสนทนาด้วยเสียงกับ AI และท้าทายการออกเสียงได้ จึงไม่สามารถสมัครต่อได้ คุณสามารถขอให้ลบข้อมูลที่โอนไปแล้วได้ทาง contact@beavertalk.im';
+      'คุณปฏิเสธการโอนไปต่างประเทศได้ หากปฏิเสธ คุณจะใช้การสนทนาด้วยเสียงกับ AI และท้าทายการออกเสียงไม่ได้ จึงลงทะเบียนต่อไม่ได้ หากต้องการขอลบข้อมูลที่โอนไปแล้ว โปรดติดต่อ contact@beavertalk.im';
 
   @override
   String get consentTransferColRecipient => 'ผู้รับโอน';
@@ -3190,58 +3190,58 @@ class AppLocalizationsTh extends AppLocalizations {
   String get consentTransferColCountry => 'ประเทศ';
 
   @override
-  String get consentTransferColItems => 'ข้อมูล';
+  String get consentTransferColItems => 'รายการ';
 
   @override
   String get consentTransferColPurpose => 'วัตถุประสงค์';
 
   @override
-  String get consentTransferColWhen => 'เวลาและวิธีการ';
+  String get consentTransferColWhen => 'ช่วงเวลาและวิธีการ';
 
   @override
   String get consentTransferColRetention => 'ระยะเวลาเก็บรักษา';
 
   @override
-  String get consentLeaveTitle => 'หากไม่ยินยอม คุณจะออกจากระบบ';
+  String get consentLeaveTitle => 'หากไม่ยินยอม คุณจะถูกออกจากระบบ';
 
   @override
   String get consentLeaveLogout => 'ออกจากระบบ';
 
   @override
-  String get consentLeaveStay => 'ยินยอมต่อ';
+  String get consentLeaveStay => 'กลับไปให้ความยินยอม';
 
   @override
   String get consentSubmitFailed => 'บันทึกความยินยอมไม่สำเร็จ โปรดลองอีกครั้ง';
 
   @override
-  String get consentTransferRow1Country => 'สหรัฐอเมริกา และประเทศอื่นๆ';
+  String get consentTransferRow1Country => 'สหรัฐอเมริกาและประเทศอื่นๆ';
 
   @override
   String get consentTransferRow1Items =>
-      'เสียงที่บันทึกจากการโทร, ข้อความที่แปลงจากเสียง, สรุปการโทรทำการบ้าน';
+      'การบันทึกเสียงการโทร, ข้อความที่แปลงจากเสียง, สรุปการโทรทำการบ้าน, ข้อความบทเรียน, ผลการออกเสียง';
 
   @override
   String get consentTransferRow1Purpose =>
-      'การสนทนาด้วยเสียงกับ AI, การสรุปและแปลการโทร';
+      'สนทนาด้วยเสียงกับ AI, สรุปและแปลการโทร, แปลข้อความบทเรียน, ชื่อการ์ดประวัติการโทร, เคล็ดลับโค้ชการออกเสียง';
 
   @override
-  String get consentTransferRow1When => 'ส่งผ่านเครือข่ายขณะใช้งาน';
+  String get consentTransferRow1When => 'ส่งผ่านเครือข่ายเมื่อใช้ฟีเจอร์';
 
   @override
   String get consentTransferRow1Retention =>
       'ลบทันทีเมื่อบรรลุวัตถุประสงค์ของการประมวลผล';
 
   @override
-  String get consentTransferRow2Country => 'สหรัฐอเมริกา และประเทศอื่นๆ';
+  String get consentTransferRow2Country => 'สหรัฐอเมริกาและประเทศอื่นๆ';
 
   @override
-  String get consentTransferRow2Items => 'เสียงจากท้าทายการออกเสียง';
+  String get consentTransferRow2Items => 'เสียงในท้าทายการออกเสียง';
 
   @override
-  String get consentTransferRow2Purpose => 'การรู้จำเสียงพูด (STT)';
+  String get consentTransferRow2Purpose => 'การรู้จำเสียง (STT)';
 
   @override
-  String get consentTransferRow2When => 'ส่งผ่านเครือข่ายขณะใช้งาน';
+  String get consentTransferRow2When => 'ส่งผ่านเครือข่ายเมื่อใช้ฟีเจอร์';
 
   @override
   String get consentTransferRow2Retention =>
@@ -3258,7 +3258,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get consentTransferRow3Purpose => 'การวิเคราะห์สถิติการใช้งาน';
 
   @override
-  String get consentTransferRow3When => 'ส่งผ่านเครือข่ายขณะใช้งาน';
+  String get consentTransferRow3When => 'ส่งผ่านเครือข่ายเมื่อใช้ฟีเจอร์';
 
   @override
   String get consentTransferRow3Retention => '14 เดือนหลังการเก็บรวบรวม';
@@ -3274,7 +3274,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get consentTransferRow4Purpose => 'การแจ้งเตือนแบบพุชของแอป';
 
   @override
-  String get consentTransferRow4When => 'ส่งผ่านเครือข่ายขณะส่งการแจ้งเตือน';
+  String get consentTransferRow4When => 'ส่งผ่านเครือข่ายเมื่อส่งการแจ้งเตือน';
 
   @override
   String get consentTransferRow4Retention =>
@@ -3291,7 +3291,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get consentTransferRow5Purpose => 'การแจ้งเตือนแบบพุชของ iOS';
 
   @override
-  String get consentTransferRow5When => 'ส่งผ่านเครือข่ายขณะส่งการแจ้งเตือน';
+  String get consentTransferRow5When => 'ส่งผ่านเครือข่ายเมื่อส่งการแจ้งเตือน';
 
   @override
   String get consentTransferRow5Retention =>

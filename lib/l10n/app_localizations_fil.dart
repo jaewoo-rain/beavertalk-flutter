@@ -997,7 +997,7 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get loginTermsNoticePrefix =>
-      'Kapag nagpatuloy ka, hihingin namin sa susunod na screen ang iyong pagsang-ayon sa aming ';
+      'Kung magpapatuloy ka, hihingin namin sa susunod na screen ang pagsang-ayon mo sa ';
 
   @override
   String get loginTermsNoticeAnd => ' at ';
@@ -3205,19 +3205,19 @@ class AppLocalizationsFil extends AppLocalizations {
   String get consentAgreeAll => 'Sumang-ayon sa lahat';
 
   @override
-  String get consentAge14 => '[Kinakailangan] Ako ay 14 na taong gulang pataas';
+  String get consentAge14 => '[Kailangan] 14 na taong gulang pataas ako';
 
   @override
   String get consentTerms =>
-      '[Kinakailangan] Pagsang-ayon sa Mga tuntunin ng serbisyo';
+      '[Kailangan] Pagsang-ayon sa Mga tuntunin ng serbisyo';
 
   @override
   String get consentPrivacyCollect =>
-      '[Kinakailangan] Pagsang-ayon sa pangongolekta at paggamit ng personal na impormasyon (kasama ang voice recording)';
+      '[Kailangan] Pagsang-ayon sa pangongolekta at paggamit ng personal na impormasyon (kasama ang mga voice recording)';
 
   @override
   String get consentOverseasTransfer =>
-      '[Kinakailangan] Pagsang-ayon sa paglilipat ng personal na impormasyon sa ibang bansa';
+      '[Kailangan] Pagsang-ayon sa paglilipat ng personal na impormasyon sa ibang bansa';
 
   @override
   String get consentView => 'Tingnan';
@@ -3231,19 +3231,19 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get consentCollectItems =>
-      'Mga kinokolektang item: email, identifier ng social account, voice recording ng mga tawag at pagsasanay sa pagbigkas, text mula sa speech recognition, record ng pag-aaral, impormasyon ng device';
+      'Kinokolektang impormasyon: email, ID ng social account, voice recording ng mga tawag at pagsasanay sa pagbigkas, text mula sa speech recognition, talaan ng pag-aaral, impormasyon ng device';
 
   @override
   String get consentCollectPurpose =>
-      'Layunin ng paggamit: AI voice conversation, pagsusuri ng bigkas at accent, pagbibigay ng record ng pag-aaral, pamamahala ng miyembro';
+      'Layunin: pakikipag-usap sa AI gamit ang boses, pagsusuri ng pagbigkas at accent, pagbibigay ng talaan ng pag-aaral, pamamahala ng miyembro';
 
   @override
   String get consentCollectRetention =>
-      'Panahon ng pag-iingat: hanggang burahin mo ang iyong account; ang mga record na itinakda ng batas ay hanggang sa panahong itinakda nito';
+      'Panahon ng pag-iingat: hanggang burahin mo ang account; ang mga record na itinakda ng batas, hanggang sa panahong itinakda nito';
 
   @override
   String get consentCollectRefuse =>
-      'Maaari kang tumangging sumang-ayon. Kapag tumanggi ka, hindi ka makakapag-sign up at hindi mo magagamit ang serbisyo.';
+      'Maaari kang tumangging pumayag. Kapag tumanggi ka, hindi ka makakapag-sign up at hindi mo magagamit ang serbisyo.';
 
   @override
   String get consentTransferSheetTitle =>
@@ -3251,7 +3251,7 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get consentTransferRefuse =>
-      'Maaari mong tanggihan ang paglilipat sa ibang bansa. Kapag tumanggi ka, hindi mo magagamit ang AI voice conversation at ang Hamon sa Bigkas, kaya hindi matutuloy ang pag-sign up. Maaari mong hilingin sa contact@beavertalk.im ang pagbura ng impormasyong nailipat na.';
+      'Maaari kang tumanggi sa paglilipat sa ibang bansa. Kapag tumanggi ka, hindi mo magagamit ang pakikipag-usap sa AI gamit ang boses at ang Hamon sa Bigkas, kaya hindi matutuloy ang pag-sign up. Maaari kang humiling na burahin ang impormasyong nailipat na sa contact@beavertalk.im.';
 
   @override
   String get consentTransferColRecipient => 'Tatanggap';
@@ -3278,7 +3278,7 @@ class AppLocalizationsFil extends AppLocalizations {
   String get consentLeaveLogout => 'Mag-log out';
 
   @override
-  String get consentLeaveStay => 'Ituloy ang pagsang-ayon';
+  String get consentLeaveStay => 'Bumalik at sumang-ayon';
 
   @override
   String get consentSubmitFailed =>
@@ -3289,11 +3289,11 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get consentTransferRow1Items =>
-      'Voice recording ng tawag, text mula sa speech-to-text, buod ng mga tawag para sa takdang-aralin';
+      'Voice recording ng tawag, text mula sa speech-to-text, buod ng tawag para sa takdang-aralin, teksto ng aralin, resulta ng pagbigkas';
 
   @override
   String get consentTransferRow1Purpose =>
-      'AI voice conversation, buod at pagsasalin ng tawag';
+      'Pakikipag-usap sa AI gamit ang boses, buod at pagsasalin ng tawag, pagsasalin ng teksto ng aralin, pamagat ng mga card ng iyong tawag, mga tip sa pag-coach ng pagbigkas';
 
   @override
   String get consentTransferRow1When =>
@@ -3301,7 +3301,7 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get consentTransferRow1Retention =>
-      'Agad na binubura kapag natupad ang layunin ng pagproseso';
+      'Binubura agad kapag natupad na ang layunin ng pagproseso';
 
   @override
   String get consentTransferRow2Country => 'Estados Unidos at iba pa';
@@ -3318,14 +3318,14 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get consentTransferRow2Retention =>
-      'Agad na binubura kapag natupad ang layunin ng pagproseso';
+      'Binubura agad kapag natupad na ang layunin ng pagproseso';
 
   @override
   String get consentTransferRow3Country => 'Estados Unidos';
 
   @override
   String get consentTransferRow3Items =>
-      'Mga log ng paggamit, app instance ID, numero ng pagkakakilanlan ng miyembro, impormasyon ng device';
+      'Talaan ng paggamit, app instance ID, numero ng pagkakakilanlan ng miyembro, impormasyon ng device';
 
   @override
   String get consentTransferRow3Purpose =>
@@ -3354,7 +3354,7 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get consentTransferRow4Retention =>
-      'Agad na binubura kapag natupad ang layunin ng pagproseso';
+      'Binubura agad kapag natupad na ang layunin ng pagproseso';
 
   @override
   String get consentTransferRow5Country => 'Estados Unidos';
@@ -3372,5 +3372,5 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get consentTransferRow5Retention =>
-      'Agad na binubura kapag natupad ang layunin ng pagproseso';
+      'Binubura agad kapag natupad na ang layunin ng pagproseso';
 }

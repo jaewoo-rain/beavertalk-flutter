@@ -3256,24 +3256,25 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get consentSubtitle =>
-      'Du musst allen Pflichtpunkten zustimmen, um BeaverTalk nutzen zu können.';
+      'Um BeaverTalk zu nutzen, musst du allen erforderlichen Punkten zustimmen.';
 
   @override
   String get consentAgreeAll => 'Allem zustimmen';
 
   @override
-  String get consentAge14 => '[Pflicht] Ich bin mindestens 14 Jahre alt';
+  String get consentAge14 => '[Erforderlich] Ich bin mindestens 14 Jahre alt';
 
   @override
-  String get consentTerms => '[Pflicht] Zustimmung zu den Nutzungsbedingungen';
+  String get consentTerms =>
+      '[Erforderlich] Zustimmung zu den Nutzungsbedingungen';
 
   @override
   String get consentPrivacyCollect =>
-      '[Pflicht] Zustimmung zur Erhebung und Nutzung personenbezogener Daten (inkl. Sprachaufnahmen)';
+      '[Erforderlich] Zustimmung zur Erhebung und Nutzung personenbezogener Daten (einschließlich Sprachaufnahmen)';
 
   @override
   String get consentOverseasTransfer =>
-      '[Pflicht] Zustimmung zur Übermittlung personenbezogener Daten ins Ausland';
+      '[Erforderlich] Zustimmung zur Übermittlung personenbezogener Daten ins Ausland';
 
   @override
   String get consentView => 'Ansehen';
@@ -3287,15 +3288,15 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get consentCollectItems =>
-      'Erhobene Daten: E-Mail-Adresse, Kennung des Social-Login-Kontos, Sprachaufnahmen von Anrufen und Ausspracheübungen, Spracherkennungstexte, Lernverlauf, Geräteinformationen';
+      'Erhobene Daten: E-Mail-Adresse, Kennung des Social-Login-Kontos, Sprachaufnahmen aus Anrufen und Ausspracheübungen, Spracherkennungstexte, Lernverlauf, Geräteinformationen';
 
   @override
   String get consentCollectPurpose =>
-      'Nutzungszweck: KI-Sprachgespräche, Analyse von Aussprache und Akzent, Bereitstellung des Lernverlaufs, Mitgliederverwaltung';
+      'Nutzungszweck: KI-Sprachgespräche, Aussprache- und Akzentanalyse, Bereitstellung des Lernverlaufs, Mitgliederverwaltung';
 
   @override
   String get consentCollectRetention =>
-      'Aufbewahrungsdauer: bis zur Löschung des Kontos; gesetzlich vorgeschriebene Aufzeichnungen bis zum Ablauf der gesetzlichen Frist';
+      'Aufbewahrungsdauer: bis zur Löschung deines Kontos; gesetzlich vorgeschriebene Aufzeichnungen bis zum Ablauf der gesetzlichen Frist';
 
   @override
   String get consentCollectRefuse =>
@@ -3335,7 +3336,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get consentLeaveLogout => 'Abmelden';
 
   @override
-  String get consentLeaveStay => 'Zustimmung fortsetzen';
+  String get consentLeaveStay => 'Zurück und zustimmen';
 
   @override
   String get consentSubmitFailed =>
@@ -3346,15 +3347,15 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get consentTransferRow1Items =>
-      'Sprachaufnahmen von Anrufen, Spracherkennungstexte, Zusammenfassungen von Hausaufgaben-Gesprächen';
+      'Sprachaufnahmen von Anrufen, Sprache-zu-Text-Transkripte, Zusammenfassungen von Aufgabengesprächen, Lektionstexte, Ausspracheergebnisse';
 
   @override
   String get consentTransferRow1Purpose =>
-      'KI-Sprachgespräche, Anrufzusammenfassung und Übersetzung';
+      'KI-Sprachgespräche, Zusammenfassung und Übersetzung von Anrufen, Übersetzung von Lektionstexten, Titel der Karten früherer Anrufe, Tipps zum Aussprache-Coaching';
 
   @override
   String get consentTransferRow1When =>
-      'Übertragung über das Netzwerk bei Nutzung';
+      'Netzwerkübertragung zum Zeitpunkt der Nutzung';
 
   @override
   String get consentTransferRow1Retention =>
@@ -3372,7 +3373,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get consentTransferRow2When =>
-      'Übertragung über das Netzwerk bei Nutzung';
+      'Netzwerkübertragung zum Zeitpunkt der Nutzung';
 
   @override
   String get consentTransferRow2Retention =>
@@ -3386,28 +3387,28 @@ class AppLocalizationsDe extends AppLocalizations {
       'Nutzungsprotokolle, App-Instanz-ID, Mitgliedsnummer, Geräteinformationen';
 
   @override
-  String get consentTransferRow3Purpose => 'Analyse von Nutzungsstatistiken';
+  String get consentTransferRow3Purpose => 'Analyse der Nutzungsstatistik';
 
   @override
   String get consentTransferRow3When =>
-      'Übertragung über das Netzwerk bei Nutzung';
+      'Netzwerkübertragung zum Zeitpunkt der Nutzung';
 
   @override
-  String get consentTransferRow3Retention => '14 Monate nach Erhebung';
+  String get consentTransferRow3Retention => '14 Monate nach der Erhebung';
 
   @override
   String get consentTransferRow4Country => 'USA';
 
   @override
   String get consentTransferRow4Items =>
-      'Push-Benachrichtigungstoken, Inhalt der Benachrichtigung';
+      'Push-Benachrichtigungstoken, Benachrichtigungsinhalte';
 
   @override
   String get consentTransferRow4Purpose => 'App-Push-Benachrichtigungen';
 
   @override
   String get consentTransferRow4When =>
-      'Übertragung über das Netzwerk beim Versand';
+      'Netzwerkübertragung zum Zeitpunkt des Versands';
 
   @override
   String get consentTransferRow4Retention =>
@@ -3418,14 +3419,14 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get consentTransferRow5Items =>
-      'iOS-Push-Benachrichtigungstoken, Inhalt der Benachrichtigung';
+      'iOS-Push-Benachrichtigungstoken, Benachrichtigungsinhalte';
 
   @override
   String get consentTransferRow5Purpose => 'iOS-Push-Benachrichtigungen';
 
   @override
   String get consentTransferRow5When =>
-      'Übertragung über das Netzwerk beim Versand';
+      'Netzwerkübertragung zum Zeitpunkt des Versands';
 
   @override
   String get consentTransferRow5Retention =>

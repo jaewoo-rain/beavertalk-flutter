@@ -958,7 +958,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get signUp => '注册';
 
   @override
-  String get loginTermsNoticePrefix => '继续后，我们将在下一页请你同意';
+  String get loginTermsNoticePrefix => '继续后，我们会在下一页请你同意';
 
   @override
   String get loginTermsNoticeAnd => '和';
@@ -3056,16 +3056,16 @@ class AppLocalizationsZh extends AppLocalizations {
   String get hwPolicyNoticeOk => '确定';
 
   @override
-  String get consentTitle => '请同意以下内容以使用服务';
+  String get consentTitle => '使用服务前，请先同意以下内容';
 
   @override
-  String get consentSubtitle => '你需要同意所有必选项才能使用 BeaverTalk。';
+  String get consentSubtitle => '需同意所有必选项才能使用 BeaverTalk。';
 
   @override
   String get consentAgreeAll => '全部同意';
 
   @override
-  String get consentAge14 => '[必选] 我已年满 14 周岁';
+  String get consentAge14 => '[必选] 我已年满14周岁';
 
   @override
   String get consentTerms => '[必选] 同意服务条款';
@@ -3074,7 +3074,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get consentPrivacyCollect => '[必选] 同意收集和使用个人信息（含语音录音）';
 
   @override
-  String get consentOverseasTransfer => '[必选] 同意个人信息境外转移';
+  String get consentOverseasTransfer => '[必选] 同意个人信息跨境传输';
 
   @override
   String get consentView => '查看';
@@ -3083,27 +3083,27 @@ class AppLocalizationsZh extends AppLocalizations {
   String get consentCta => '同意并开始';
 
   @override
-  String get consentCollectSheetTitle => '个人信息收集与使用';
+  String get consentCollectSheetTitle => '个人信息的收集和使用';
 
   @override
   String get consentCollectItems =>
-      '收集项目：电子邮箱、社交账号标识信息、通话及发音练习的语音录音、语音识别文本、学习记录、设备信息';
+      '收集项目：电子邮箱、社交账号识别信息、通话和发音练习的语音录音、语音识别文本、学习记录、设备信息';
 
   @override
-  String get consentCollectPurpose => '使用目的：AI 语音对话、发音与口音分析、提供学习记录、会员管理';
+  String get consentCollectPurpose => '使用目的：AI 语音对话、发音和口音分析、提供学习记录、会员管理';
 
   @override
-  String get consentCollectRetention => '保留期限：至删除账号为止；法律法规规定须保存的记录，保存至其规定期限';
+  String get consentCollectRetention => '保留期限：至删除账号时为止；法律法规规定保存的记录，保留至该规定期限届满';
 
   @override
   String get consentCollectRefuse => '你可以拒绝同意。拒绝后将无法注册会员和使用服务。';
 
   @override
-  String get consentTransferSheetTitle => '个人信息境外转移';
+  String get consentTransferSheetTitle => '个人信息跨境传输';
 
   @override
   String get consentTransferRefuse =>
-      '你可以拒绝境外转移。拒绝后将无法使用 AI 语音对话和发音挑战，因此无法继续注册。如需删除已转移的信息，可通过 contact@beavertalk.im 提出申请。';
+      '你可以拒绝跨境传输。拒绝后将无法使用 AI 语音对话和发音挑战，因此无法继续注册。如需删除已传输的信息，可通过 contact@beavertalk.im 提出申请。';
 
   @override
   String get consentTransferColRecipient => '接收方';
@@ -3118,34 +3118,35 @@ class AppLocalizationsZh extends AppLocalizations {
   String get consentTransferColPurpose => '目的';
 
   @override
-  String get consentTransferColWhen => '时间与方式';
+  String get consentTransferColWhen => '时间和方式';
 
   @override
   String get consentTransferColRetention => '保留期限';
 
   @override
-  String get consentLeaveTitle => '不同意将会退出登录';
+  String get consentLeaveTitle => '不同意将退出登录';
 
   @override
   String get consentLeaveLogout => '退出登录';
 
   @override
-  String get consentLeaveStay => '继续同意';
+  String get consentLeaveStay => '返回并同意';
 
   @override
-  String get consentSubmitFailed => '无法保存你的同意，请重试。';
+  String get consentSubmitFailed => '无法保存你的同意。请重试。';
 
   @override
   String get consentTransferRow1Country => '美国等';
 
   @override
-  String get consentTransferRow1Items => '通话语音录音、语音转写文本、作业通话摘要';
+  String get consentTransferRow1Items => '通话语音录音、语音转写文本、作业通话摘要、课程文本、发音结果';
 
   @override
-  String get consentTransferRow1Purpose => 'AI 语音对话、通话摘要与翻译';
+  String get consentTransferRow1Purpose =>
+      'AI 语音对话、通话摘要和翻译、课程文本翻译、通话记录卡片标题、发音辅导提示';
 
   @override
-  String get consentTransferRow1When => '使用时通过网络传输';
+  String get consentTransferRow1When => '使用功能时通过网络传输';
 
   @override
   String get consentTransferRow1Retention => '处理目的达成后立即删除';
@@ -3160,7 +3161,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get consentTransferRow2Purpose => '语音识别（STT）';
 
   @override
-  String get consentTransferRow2When => '使用时通过网络传输';
+  String get consentTransferRow2When => '使用功能时通过网络传输';
 
   @override
   String get consentTransferRow2Retention => '处理目的达成后立即删除';
@@ -3175,10 +3176,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get consentTransferRow3Purpose => '使用情况统计分析';
 
   @override
-  String get consentTransferRow3When => '使用时通过网络传输';
+  String get consentTransferRow3When => '使用功能时通过网络传输';
 
   @override
-  String get consentTransferRow3Retention => '收集后 14 个月';
+  String get consentTransferRow3Retention => '收集后14个月';
 
   @override
   String get consentTransferRow4Country => '美国';
@@ -3190,7 +3191,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get consentTransferRow4Purpose => '应用推送通知';
 
   @override
-  String get consentTransferRow4When => '发送时通过网络传输';
+  String get consentTransferRow4When => '发送通知时通过网络传输';
 
   @override
   String get consentTransferRow4Retention => '处理目的达成后立即删除';
@@ -3205,7 +3206,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get consentTransferRow5Purpose => 'iOS 推送通知';
 
   @override
-  String get consentTransferRow5When => '发送时通过网络传输';
+  String get consentTransferRow5When => '发送通知时通过网络传输';
 
   @override
   String get consentTransferRow5Retention => '处理目的达成后立即删除';

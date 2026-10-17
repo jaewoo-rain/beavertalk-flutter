@@ -3069,13 +3069,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get consentTitle => 'サービスのご利用にあたり、同意をお願いします';
 
   @override
-  String get consentSubtitle => 'BeaverTalkを利用するには、すべての必須項目への同意が必要です。';
+  String get consentSubtitle => 'BeaverTalkを使うには、すべての必須項目に同意する必要があります。';
 
   @override
   String get consentAgreeAll => 'すべてに同意';
 
   @override
-  String get consentAge14 => '[必須] 14歳以上です';
+  String get consentAge14 => '[必須] 満14歳以上です';
 
   @override
   String get consentTerms => '[必須] 利用規約への同意';
@@ -3087,7 +3087,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get consentOverseasTransfer => '[必須] 個人情報の国外移転への同意';
 
   @override
-  String get consentView => '見る';
+  String get consentView => '表示';
 
   @override
   String get consentCta => '同意して始める';
@@ -3103,18 +3103,17 @@ class AppLocalizationsJa extends AppLocalizations {
   String get consentCollectPurpose => '利用目的：AI音声会話、発音とアクセントの分析、学習記録の提供、会員管理';
 
   @override
-  String get consentCollectRetention => '保有期間：アカウント削除時まで。法令で保存が定められた記録は、その期間まで';
+  String get consentCollectRetention => '保有期間：アカウント削除まで。法令で保存が定められた記録はその期間まで';
 
   @override
-  String get consentCollectRefuse =>
-      '同意を拒否することができます。拒否した場合、会員登録およびサービスのご利用はできません。';
+  String get consentCollectRefuse => '同意を拒否できます。拒否した場合、会員登録とサービスの利用はできません。';
 
   @override
   String get consentTransferSheetTitle => '個人情報の国外移転';
 
   @override
   String get consentTransferRefuse =>
-      '国外移転を拒否することができます。拒否した場合、AI音声会話と発音チャレンジをご利用いただけないため、登録を進めることができません。すでに移転された情報の削除は、contact@beavertalk.im までご依頼いただけます。';
+      '国外移転を拒否できます。拒否した場合、AI音声会話と発音チャレンジを利用できないため、登録を進めることができません。すでに移転された情報の削除は contact@beavertalk.im までご依頼ください。';
 
   @override
   String get consentTransferColRecipient => '移転先';
@@ -3141,7 +3140,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get consentLeaveLogout => 'ログアウト';
 
   @override
-  String get consentLeaveStay => '同意を続ける';
+  String get consentLeaveStay => '戻って同意する';
 
   @override
   String get consentSubmitFailed => '同意を保存できませんでした。もう一度お試しください。';
@@ -3150,16 +3149,18 @@ class AppLocalizationsJa extends AppLocalizations {
   String get consentTransferRow1Country => '米国など';
 
   @override
-  String get consentTransferRow1Items => '通話の音声録音、音声変換テキスト、課題通話の要約';
+  String get consentTransferRow1Items =>
+      '通話の音声録音、音声変換テキスト、課題通話の要約、レッスンの文言、発音結果';
 
   @override
-  String get consentTransferRow1Purpose => 'AI音声会話、通話の要約と翻訳';
+  String get consentTransferRow1Purpose =>
+      'AI音声会話、通話の要約と翻訳、レッスン文言の翻訳、通話記録カードのタイトル、発音コーチングのヒント';
 
   @override
-  String get consentTransferRow1When => '利用時にネットワーク経由で送信';
+  String get consentTransferRow1When => '利用時にネットワークで送信';
 
   @override
-  String get consentTransferRow1Retention => '処理目的の達成後、直ちに破棄';
+  String get consentTransferRow1Retention => '処理目的の達成後、直ちに削除';
 
   @override
   String get consentTransferRow2Country => '米国など';
@@ -3171,10 +3172,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get consentTransferRow2Purpose => '音声認識（STT）';
 
   @override
-  String get consentTransferRow2When => '利用時にネットワーク経由で送信';
+  String get consentTransferRow2When => '利用時にネットワークで送信';
 
   @override
-  String get consentTransferRow2Retention => '処理目的の達成後、直ちに破棄';
+  String get consentTransferRow2Retention => '処理目的の達成後、直ちに削除';
 
   @override
   String get consentTransferRow3Country => '米国';
@@ -3186,7 +3187,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get consentTransferRow3Purpose => '利用統計の分析';
 
   @override
-  String get consentTransferRow3When => '利用時にネットワーク経由で送信';
+  String get consentTransferRow3When => '利用時にネットワークで送信';
 
   @override
   String get consentTransferRow3Retention => '収集後14か月';
@@ -3201,10 +3202,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get consentTransferRow4Purpose => 'アプリのプッシュ通知';
 
   @override
-  String get consentTransferRow4When => '通知の発信時にネットワーク経由で送信';
+  String get consentTransferRow4When => '通知の送信時にネットワークで送信';
 
   @override
-  String get consentTransferRow4Retention => '処理目的の達成後、直ちに破棄';
+  String get consentTransferRow4Retention => '処理目的の達成後、直ちに削除';
 
   @override
   String get consentTransferRow5Country => '米国';
@@ -3216,8 +3217,8 @@ class AppLocalizationsJa extends AppLocalizations {
   String get consentTransferRow5Purpose => 'iOSプッシュ通知';
 
   @override
-  String get consentTransferRow5When => '通知の発信時にネットワーク経由で送信';
+  String get consentTransferRow5When => '通知の送信時にネットワークで送信';
 
   @override
-  String get consentTransferRow5Retention => '処理目的の達成後、直ちに破棄';
+  String get consentTransferRow5Retention => '処理目的の達成後、直ちに削除';
 }

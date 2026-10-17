@@ -985,13 +985,13 @@ class AppLocalizationsNe extends AppLocalizations {
 
   @override
   String get loginTermsNoticePrefix =>
-      'जारी राख्नुभयो भने, अर्को स्क्रिनमा हामी तपाईंसँग ';
+      'जारी राख्नुभयो भने, अर्को स्क्रिनमा हामी ';
 
   @override
   String get loginTermsNoticeAnd => ' र ';
 
   @override
-  String get loginTermsNoticeSuffix => 'मा सहमति माग्नेछौं।';
+  String get loginTermsNoticeSuffix => ' का लागि तपाईंको सहमति माग्नेछौं।';
 
   @override
   String get loginLogIn => 'लगइन गर्नुहोस्';
@@ -3159,13 +3159,13 @@ class AppLocalizationsNe extends AppLocalizations {
 
   @override
   String get consentSubtitle =>
-      'BeaverTalk प्रयोग गर्न तपाईंले सबै अनिवार्य बुँदाहरूमा सहमति दिनुपर्छ।';
+      'BeaverTalk प्रयोग गर्न सबै अनिवार्य विषयमा सहमति दिनुपर्छ।';
 
   @override
   String get consentAgreeAll => 'सबैमा सहमत';
 
   @override
-  String get consentAge14 => '[अनिवार्य] मेरो उमेर १४ वर्ष वा सोभन्दा माथि छ';
+  String get consentAge14 => '[अनिवार्य] म १४ वर्ष वा सोभन्दा माथिको हुँ';
 
   @override
   String get consentTerms => '[अनिवार्य] सेवाका सर्तहरूमा सहमति';
@@ -3189,26 +3189,26 @@ class AppLocalizationsNe extends AppLocalizations {
 
   @override
   String get consentCollectItems =>
-      'सङ्कलन गरिने विवरण: इमेल, सामाजिक खाताको पहिचान मान, कल र उच्चारण अभ्यासको आवाज रेकर्डिङ, आवाज पहिचानबाट बनेको पाठ, सिकाइ रेकर्ड, डिभाइसको जानकारी';
+      'सङ्कलन गरिने विवरण: इमेल, सामाजिक खाताको पहिचान मान, कल र उच्चारण अभ्यासका आवाज रेकर्डिङ, आवाज पहिचानको टेक्स्ट, सिकाइ रेकर्ड, डिभाइस जानकारी';
 
   @override
   String get consentCollectPurpose =>
-      'प्रयोजन: AI सँग आवाज कुराकानी, उच्चारण र उच्चारण शैली विश्लेषण, सिकाइ रेकर्ड उपलब्ध गराउने, सदस्य व्यवस्थापन';
+      'प्रयोजन: AI आवाज संवाद, उच्चारण र उच्चारण शैली विश्लेषण, सिकाइ रेकर्ड उपलब्ध गराउने, सदस्य व्यवस्थापन';
 
   @override
   String get consentCollectRetention =>
-      'राख्ने अवधि: खाता नमेटाएसम्म; कानूनले तोकेका रेकर्ड सो अवधिसम्म';
+      'राख्ने अवधि: खाता मेटाउँदासम्म; कानुनले राख्ने अवधि तोकेका रेकर्ड सो अवधिसम्म';
 
   @override
   String get consentCollectRefuse =>
-      'तपाईं सहमति अस्वीकार गर्न सक्नुहुन्छ। अस्वीकार गर्नुभयो भने साइन अप गर्न र सेवा प्रयोग गर्न सकिँदैन।';
+      'तपाईं सहमति अस्वीकार गर्न सक्नुहुन्छ। अस्वीकार गरेमा साइन अप गर्न र सेवा प्रयोग गर्न सकिँदैन।';
 
   @override
   String get consentTransferSheetTitle => 'व्यक्तिगत जानकारी विदेश स्थानान्तरण';
 
   @override
   String get consentTransferRefuse =>
-      'तपाईं विदेश स्थानान्तरण अस्वीकार गर्न सक्नुहुन्छ। अस्वीकार गर्नुभयो भने AI सँग आवाज कुराकानी र उच्चारण चुनौती प्रयोग गर्न नसकिने भएकाले साइन अप अघि बढ्दैन। पहिले नै स्थानान्तरण भइसकेको जानकारी मेटाउन contact@beavertalk.im मा अनुरोध गर्न सक्नुहुन्छ।';
+      'तपाईं विदेश स्थानान्तरण अस्वीकार गर्न सक्नुहुन्छ। अस्वीकार गरेमा AI आवाज संवाद र उच्चारण चुनौती प्रयोग गर्न सकिँदैन, त्यसैले साइन अप अगाडि बढ्दैन। पहिले नै स्थानान्तरण भएको जानकारी मेटाउन contact@beavertalk.im मा अनुरोध गर्न सक्नुहुन्छ।';
 
   @override
   String get consentTransferColRecipient => 'प्राप्तकर्ता';
@@ -3229,13 +3229,13 @@ class AppLocalizationsNe extends AppLocalizations {
   String get consentTransferColRetention => 'राख्ने अवधि';
 
   @override
-  String get consentLeaveTitle => 'सहमत नभए तपाईं लगआउट हुनुहुनेछ';
+  String get consentLeaveTitle => 'सहमति नदिनुभए तपाईं लगआउट हुनुहुनेछ';
 
   @override
   String get consentLeaveLogout => 'लगआउट गर्नुहोस्';
 
   @override
-  String get consentLeaveStay => 'सहमति जारी राख्नुहोस्';
+  String get consentLeaveStay => 'फर्केर सहमति दिनुहोस्';
 
   @override
   String get consentSubmitFailed =>
@@ -3246,19 +3246,18 @@ class AppLocalizationsNe extends AppLocalizations {
 
   @override
   String get consentTransferRow1Items =>
-      'कलको आवाज रेकर्डिङ, आवाजबाट रूपान्तरित पाठ, गृहकार्य कलको सारांश';
+      'कलका आवाज रेकर्डिङ, आवाजबाट रूपान्तरित टेक्स्ट, गृहकार्य कलको सारांश, पाठका वाक्यांश, उच्चारण नतिजा';
 
   @override
   String get consentTransferRow1Purpose =>
-      'AI सँग आवाज कुराकानी, कलको सारांश र अनुवाद';
+      'AI भ्वाइस कुराकानी, कलको सारांश र अनुवाद, पाठका वाक्यहरूको अनुवाद, विगतका कल देखाउने कार्डको शीर्षक, उच्चारण कोचिङ सुझाव';
 
   @override
-  String get consentTransferRow1When =>
-      'प्रयोग गर्ने बेला नेटवर्कमार्फत पठाइन्छ';
+  String get consentTransferRow1When => 'प्रयोग गर्दा नेटवर्कमार्फत पठाइन्छ';
 
   @override
   String get consentTransferRow1Retention =>
-      'प्रशोधनको प्रयोजन पूरा हुनेबित्तिकै मेटाइन्छ';
+      'प्रशोधनको प्रयोजन पूरा हुनासाथ मेटाइन्छ';
 
   @override
   String get consentTransferRow2Country => 'संयुक्त राज्य अमेरिका आदि';
@@ -3270,61 +3269,57 @@ class AppLocalizationsNe extends AppLocalizations {
   String get consentTransferRow2Purpose => 'आवाज पहिचान (STT)';
 
   @override
-  String get consentTransferRow2When =>
-      'प्रयोग गर्ने बेला नेटवर्कमार्फत पठाइन्छ';
+  String get consentTransferRow2When => 'प्रयोग गर्दा नेटवर्कमार्फत पठाइन्छ';
 
   @override
   String get consentTransferRow2Retention =>
-      'प्रशोधनको प्रयोजन पूरा हुनेबित्तिकै मेटाइन्छ';
+      'प्रशोधनको प्रयोजन पूरा हुनासाथ मेटाइन्छ';
 
   @override
   String get consentTransferRow3Country => 'संयुक्त राज्य अमेरिका';
 
   @override
   String get consentTransferRow3Items =>
-      'प्रयोग लग, एप इन्स्टेन्स ID, सदस्य पहिचान नम्बर, डिभाइसको जानकारी';
+      'प्रयोग लग, एप इन्स्ट्यान्स ID, सदस्य पहिचान नम्बर, डिभाइस जानकारी';
 
   @override
   String get consentTransferRow3Purpose => 'प्रयोग तथ्याङ्क विश्लेषण';
 
   @override
-  String get consentTransferRow3When =>
-      'प्रयोग गर्ने बेला नेटवर्कमार्फत पठाइन्छ';
+  String get consentTransferRow3When => 'प्रयोग गर्दा नेटवर्कमार्फत पठाइन्छ';
 
   @override
-  String get consentTransferRow3Retention => 'सङ्कलन गरेको १४ महिनापछि';
+  String get consentTransferRow3Retention => 'सङ्कलनपछि १४ महिना';
 
   @override
   String get consentTransferRow4Country => 'संयुक्त राज्य अमेरिका';
 
   @override
-  String get consentTransferRow4Items => 'पुश सूचना टोकन, सूचनाको सामग्री';
+  String get consentTransferRow4Items => 'पुस सूचना टोकन, सूचनाको सामग्री';
 
   @override
-  String get consentTransferRow4Purpose => 'एपको पुश सूचना';
+  String get consentTransferRow4Purpose => 'एप पुस सूचना';
 
   @override
-  String get consentTransferRow4When =>
-      'सूचना पठाउने बेला नेटवर्कमार्फत पठाइन्छ';
+  String get consentTransferRow4When => 'सूचना पठाउँदा नेटवर्कमार्फत पठाइन्छ';
 
   @override
   String get consentTransferRow4Retention =>
-      'प्रशोधनको प्रयोजन पूरा हुनेबित्तिकै मेटाइन्छ';
+      'प्रशोधनको प्रयोजन पूरा हुनासाथ मेटाइन्छ';
 
   @override
   String get consentTransferRow5Country => 'संयुक्त राज्य अमेरिका';
 
   @override
-  String get consentTransferRow5Items => 'iOS पुश सूचना टोकन, सूचनाको सामग्री';
+  String get consentTransferRow5Items => 'iOS पुस सूचना टोकन, सूचनाको सामग्री';
 
   @override
-  String get consentTransferRow5Purpose => 'iOS पुश सूचना';
+  String get consentTransferRow5Purpose => 'iOS पुस सूचना';
 
   @override
-  String get consentTransferRow5When =>
-      'सूचना पठाउने बेला नेटवर्कमार्फत पठाइन्छ';
+  String get consentTransferRow5When => 'सूचना पठाउँदा नेटवर्कमार्फत पठाइन्छ';
 
   @override
   String get consentTransferRow5Retention =>
-      'प्रशोधनको प्रयोजन पूरा हुनेबित्तिकै मेटाइन्छ';
+      'प्रशोधनको प्रयोजन पूरा हुनासाथ मेटाइन्छ';
 }

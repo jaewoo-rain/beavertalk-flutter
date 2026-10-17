@@ -3207,7 +3207,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get consentOverseasTransfer =>
-      '[إلزامي] الموافقة على نقل البيانات الشخصية إلى خارج البلاد';
+      '[إلزامي] الموافقة على نقل البيانات الشخصية إلى الخارج';
 
   @override
   String get consentView => 'عرض';
@@ -3220,30 +3220,29 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get consentCollectItems =>
-      'البيانات المجمّعة: البريد الإلكتروني، ومعرّف حساب التواصل الاجتماعي، والتسجيلات الصوتية للمكالمات وتمارين النطق، ونص التعرّف على الكلام، وسجل التعلّم، ومعلومات الجهاز';
+      'البيانات المجمّعة: البريد الإلكتروني، معرّف حساب التواصل الاجتماعي، التسجيلات الصوتية للمكالمات وتمارين النطق، نصوص التعرّف على الكلام، سجل التعلّم، معلومات الجهاز';
 
   @override
   String get consentCollectPurpose =>
-      'الغرض من الاستخدام: المحادثات الصوتية مع الذكاء الاصطناعي، وتحليل النطق واللكنة، وتوفير سجل التعلّم، وإدارة الأعضاء';
+      'الغرض من الاستخدام: المحادثات الصوتية مع الذكاء الاصطناعي، تحليل النطق واللكنة، توفير سجل التعلّم، إدارة العضوية';
 
   @override
   String get consentCollectRetention =>
-      'مدة الاحتفاظ: حتى حذف الحساب، والسجلات التي يحدد القانون مدة حفظها تُحفظ حتى انتهاء تلك المدة';
+      'مدة الاحتفاظ: حتى حذف الحساب، أما السجلات التي يحدد القانون مدة حفظها فتُحفظ حتى انتهاء تلك المدة';
 
   @override
   String get consentCollectRefuse =>
-      'يحق لك رفض الموافقة. وإذا رفضت، فلن تتمكن من التسجيل أو استخدام الخدمة.';
+      'يمكنك رفض الموافقة. إذا رفضت، فلن تتمكن من التسجيل أو استخدام الخدمة.';
 
   @override
-  String get consentTransferSheetTitle =>
-      'نقل البيانات الشخصية إلى خارج البلاد';
+  String get consentTransferSheetTitle => 'نقل البيانات الشخصية إلى الخارج';
 
   @override
   String get consentTransferRefuse =>
-      'يمكنك رفض النقل إلى خارج البلاد. وإذا رفضت، فلن تتمكن من استخدام المحادثات الصوتية مع الذكاء الاصطناعي وتحدي النطق، ولذلك لا يمكن متابعة التسجيل. ويمكنك طلب حذف البيانات التي نُقلت بالفعل عبر contact@beavertalk.im.';
+      'يمكنك رفض النقل إلى الخارج. إذا رفضت، فلن تتمكن من استخدام المحادثات الصوتية مع الذكاء الاصطناعي وتحدي النطق، ولذلك لا يمكن متابعة التسجيل. يمكنك طلب حذف البيانات التي نُقلت بالفعل عبر contact@beavertalk.im.';
 
   @override
-  String get consentTransferColRecipient => 'المستلم';
+  String get consentTransferColRecipient => 'المستلِم';
 
   @override
   String get consentTransferColCountry => 'الدولة';
@@ -3261,13 +3260,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get consentTransferColRetention => 'مدة الاحتفاظ';
 
   @override
-  String get consentLeaveTitle => 'إذا لم توافق، فسيتم تسجيل خروجك';
+  String get consentLeaveTitle => 'سيتم تسجيل خروجك إذا لم توافق';
 
   @override
   String get consentLeaveLogout => 'تسجيل الخروج';
 
   @override
-  String get consentLeaveStay => 'متابعة الموافقة';
+  String get consentLeaveStay => 'العودة والموافقة';
 
   @override
   String get consentSubmitFailed =>
@@ -3278,14 +3277,14 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get consentTransferRow1Items =>
-      'التسجيلات الصوتية للمكالمات، والنص المحوَّل من الكلام، وملخصات مكالمات الواجبات';
+      'التسجيلات الصوتية للمكالمات، النصوص المحوّلة من الكلام، ملخصات مكالمات الواجب، نصوص الدروس، نتائج النطق';
 
   @override
   String get consentTransferRow1Purpose =>
-      'المحادثات الصوتية مع الذكاء الاصطناعي، وتلخيص المكالمات وترجمتها';
+      'المحادثات الصوتية مع الذكاء الاصطناعي، تلخيص المكالمات وترجمتها، ترجمة نصوص الدروس، عناوين بطاقات المكالمات السابقة، نصائح تدريب النطق';
 
   @override
-  String get consentTransferRow1When => 'الإرسال عبر الشبكة وقت الاستخدام';
+  String get consentTransferRow1When => 'الإرسال عبر الشبكة عند استخدام الميزة';
 
   @override
   String get consentTransferRow1Retention => 'الحذف فور تحقيق غرض المعالجة';
@@ -3300,7 +3299,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get consentTransferRow2Purpose => 'التعرّف على الكلام (STT)';
 
   @override
-  String get consentTransferRow2When => 'الإرسال عبر الشبكة وقت الاستخدام';
+  String get consentTransferRow2When => 'الإرسال عبر الشبكة عند استخدام الميزة';
 
   @override
   String get consentTransferRow2Retention => 'الحذف فور تحقيق غرض المعالجة';
@@ -3310,13 +3309,13 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get consentTransferRow3Items =>
-      'سجلات الاستخدام، ومعرّف مثيل التطبيق (App Instance ID)، ورقم تعريف العضو، ومعلومات الجهاز';
+      'سجلات الاستخدام، معرّف مثيل التطبيق (ID)، رقم تعريف العضو، معلومات الجهاز';
 
   @override
   String get consentTransferRow3Purpose => 'تحليل إحصاءات الاستخدام';
 
   @override
-  String get consentTransferRow3When => 'الإرسال عبر الشبكة وقت الاستخدام';
+  String get consentTransferRow3When => 'الإرسال عبر الشبكة عند استخدام الميزة';
 
   @override
   String get consentTransferRow3Retention => '14 شهرًا بعد الجمع';
@@ -3325,14 +3324,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get consentTransferRow4Country => 'الولايات المتحدة';
 
   @override
-  String get consentTransferRow4Items =>
-      'رمز الإشعارات الفورية، ومحتوى الإشعار';
+  String get consentTransferRow4Items => 'رمز الإشعارات الفورية، محتوى الإشعار';
 
   @override
   String get consentTransferRow4Purpose => 'الإشعارات الفورية للتطبيق';
 
   @override
-  String get consentTransferRow4When => 'الإرسال عبر الشبكة وقت إرسال الإشعار';
+  String get consentTransferRow4When => 'الإرسال عبر الشبكة عند إرسال الإشعار';
 
   @override
   String get consentTransferRow4Retention => 'الحذف فور تحقيق غرض المعالجة';
@@ -3342,13 +3340,13 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get consentTransferRow5Items =>
-      'رمز الإشعارات الفورية لنظام iOS، ومحتوى الإشعار';
+      'رمز الإشعارات الفورية لـ iOS، محتوى الإشعار';
 
   @override
-  String get consentTransferRow5Purpose => 'الإشعارات الفورية لنظام iOS';
+  String get consentTransferRow5Purpose => 'الإشعارات الفورية لـ iOS';
 
   @override
-  String get consentTransferRow5When => 'الإرسال عبر الشبكة وقت إرسال الإشعار';
+  String get consentTransferRow5When => 'الإرسال عبر الشبكة عند إرسال الإشعار';
 
   @override
   String get consentTransferRow5Retention => 'الحذف فور تحقيق غرض المعالجة';

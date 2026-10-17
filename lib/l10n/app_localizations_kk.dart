@@ -3160,20 +3160,20 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get consentSubtitle =>
-      'BeaverTalk қолданбасын пайдалану үшін барлық міндетті тармақтарға келісуіңіз қажет.';
+      'BeaverTalk-ты пайдалану үшін барлық міндетті тармақпен келісуіңіз керек.';
 
   @override
-  String get consentAgreeAll => 'Барлығына келісемін';
+  String get consentAgreeAll => 'Барлығымен келісемін';
 
   @override
-  String get consentAge14 => '[Міндетті] Мен 14 жастамын немесе одан үлкенмін';
+  String get consentAge14 => '[Міндетті] 14 жасқа толдым';
 
   @override
-  String get consentTerms => '[Міндетті] Пайдалану шарттарына келісім';
+  String get consentTerms => '[Міндетті] Пайдалану шарттарымен келісу';
 
   @override
   String get consentPrivacyCollect =>
-      '[Міндетті] Жеке деректерді жинауға және пайдалануға келісім (дауыс жазбаларын қоса алғанда)';
+      '[Міндетті] Жеке деректерді жинауға және пайдалануға келісім (дауыс жазбаларын қоса)';
 
   @override
   String get consentOverseasTransfer =>
@@ -3190,15 +3190,15 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get consentCollectItems =>
-      'Жиналатын деректер: электрондық пошта, әлеуметтік желі аккаунтының идентификаторы, қоңыраулар мен айтылым жаттығуларының дауыс жазбалары, дауысты тану мәтіні, оқу тарихы, құрылғы ақпараты';
+      'Жиналатын деректер: электрондық пошта, әлеуметтік желідегі есептік жазба идентификаторы, қоңыраулар мен айтылым жаттығуларының дауыс жазбалары, дауыс тану мәтіні, оқу тарихы, құрылғы туралы ақпарат';
 
   @override
   String get consentCollectPurpose =>
-      'Пайдалану мақсаты: AI-мен дауыстық сөйлесу, айтылым мен акцентті талдау, оқу тарихын ұсыну, мүшелікті басқару';
+      'Пайдалану мақсаты: AI-мен дауыстық сөйлесу, айтылым мен екпінді талдау, оқу тарихын ұсыну, мүшелерді басқару';
 
   @override
   String get consentCollectRetention =>
-      'Сақтау мерзімі: есептік жазбаңызды жойғанға дейін; заңнама сақтауды белгілеген жазбалар — сол мерзім аяқталғанға дейін';
+      'Сақтау мерзімі: есептік жазба жойылғанға дейін; заңда сақтау белгіленген жазбалар — сол мерзім біткенге дейін';
 
   @override
   String get consentCollectRefuse =>
@@ -3209,7 +3209,7 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get consentTransferRefuse =>
-      'Шетелге беруден бас тарта аласыз. Бас тартсаңыз, AI-мен дауыстық сөйлесу мен Айтылым сынағын пайдалана алмайсыз, сондықтан тіркелу жалғаспайды. Бұрын берілген деректерді жоюды contact@beavertalk.im мекенжайы арқылы сұрай аласыз.';
+      'Шетелге беруден бас тарта аласыз. Бас тартсаңыз, AI-мен дауыстық сөйлесу мен Айтылым сынағын пайдалана алмайсыз, сондықтан тіркелу жалғаспайды. Бұрын берілген деректерді жоюды contact@beavertalk.im арқылы сұрай аласыз.';
 
   @override
   String get consentTransferColRecipient => 'Алушы';
@@ -3221,7 +3221,7 @@ class AppLocalizationsKk extends AppLocalizations {
   String get consentTransferColItems => 'Деректер';
 
   @override
-  String get consentTransferColPurpose => 'Мақсаты';
+  String get consentTransferColPurpose => 'Мақсат';
 
   @override
   String get consentTransferColWhen => 'Уақыты мен тәсілі';
@@ -3230,67 +3230,67 @@ class AppLocalizationsKk extends AppLocalizations {
   String get consentTransferColRetention => 'Сақтау мерзімі';
 
   @override
-  String get consentLeaveTitle => 'Келіспесеңіз, аккаунттан шығасыз';
+  String get consentLeaveTitle => 'Келіспесеңіз, жүйеден шығасыз';
 
   @override
   String get consentLeaveLogout => 'Шығу';
 
   @override
-  String get consentLeaveStay => 'Келісуді жалғастыру';
+  String get consentLeaveStay => 'Оралып, келісу';
 
   @override
   String get consentSubmitFailed =>
-      'Келісімді сақтау мүмкін болмады. Қайта көріңіз.';
+      'Келісіміңізді сақтау мүмкін болмады. Қайта көріңіз.';
 
   @override
   String get consentTransferRow1Country => 'АҚШ және басқа елдер';
 
   @override
   String get consentTransferRow1Items =>
-      'Қоңырау дауыс жазбалары, дауыстан түрлендірілген мәтін, үй тапсырмасы қоңырауларының қысқаша мазмұны';
+      'Қоңырау дауыс жазбалары, дауыс тану мәтіні, тапсырма қоңырауының түйіні, сабақ мәтіні, айтылым нәтижелері';
 
   @override
   String get consentTransferRow1Purpose =>
-      'AI-мен дауыстық сөйлесу, қоңырау мазмұнын қысқарту және аудару';
+      'AI-мен дауыстық сөйлесу, қоңырау түйіні мен аудармасы, сабақ мәтінін аудару, қоңыраулар тарихы карталарының атаулары, айтылым бойынша коучинг кеңестері';
 
   @override
   String get consentTransferRow1When =>
-      'Пайдалану сәтінде желі арқылы жіберіледі';
+      'Функцияны пайдаланған сәтте желі арқылы жіберіледі';
 
   @override
   String get consentTransferRow1Retention =>
-      'Өңдеу мақсаты орындалғанда бірден жойылады';
+      'Өңдеу мақсаты орындалған соң бірден жойылады';
 
   @override
   String get consentTransferRow2Country => 'АҚШ және басқа елдер';
 
   @override
-  String get consentTransferRow2Items => 'Айтылым сынағындағы дауыс';
+  String get consentTransferRow2Items => 'Айтылым сынағының дауысы';
 
   @override
-  String get consentTransferRow2Purpose => 'Дауысты тану (STT)';
+  String get consentTransferRow2Purpose => 'Дауыс тану (STT)';
 
   @override
   String get consentTransferRow2When =>
-      'Пайдалану сәтінде желі арқылы жіберіледі';
+      'Функцияны пайдаланған сәтте желі арқылы жіберіледі';
 
   @override
   String get consentTransferRow2Retention =>
-      'Өңдеу мақсаты орындалғанда бірден жойылады';
+      'Өңдеу мақсаты орындалған соң бірден жойылады';
 
   @override
   String get consentTransferRow3Country => 'АҚШ';
 
   @override
   String get consentTransferRow3Items =>
-      'Пайдалану журналы, қолданба данасының ID, мүшенің сәйкестендіру нөмірі, құрылғы ақпараты';
+      'Пайдалану жазбалары, қолданба данасының ID-і, мүшенің сәйкестендіру нөмірі, құрылғы туралы ақпарат';
 
   @override
   String get consentTransferRow3Purpose => 'Пайдалану статистикасын талдау';
 
   @override
   String get consentTransferRow3When =>
-      'Пайдалану сәтінде желі арқылы жіберіледі';
+      'Функцияны пайдаланған сәтте желі арқылы жіберіледі';
 
   @override
   String get consentTransferRow3Retention => 'Жиналғаннан кейін 14 ай';
@@ -3311,7 +3311,7 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get consentTransferRow4Retention =>
-      'Өңдеу мақсаты орындалғанда бірден жойылады';
+      'Өңдеу мақсаты орындалған соң бірден жойылады';
 
   @override
   String get consentTransferRow5Country => 'АҚШ';
@@ -3329,5 +3329,5 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get consentTransferRow5Retention =>
-      'Өңдеу мақсаты орындалғанда бірден жойылады';
+      'Өңдеу мақсаты орындалған соң бірден жойылады';
 }

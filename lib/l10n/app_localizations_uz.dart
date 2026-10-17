@@ -998,7 +998,7 @@ class AppLocalizationsUz extends AppLocalizations {
   String get loginTermsNoticeAnd => ' va ';
 
   @override
-  String get loginTermsNoticeSuffix => 'ga roziligingizni soʻraymiz.';
+  String get loginTermsNoticeSuffix => 'ga rozilik berishingiz soʻraladi.';
 
   @override
   String get loginLogIn => 'Kirish';
@@ -3182,13 +3182,13 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get consentSubtitle =>
-      'BeaverTalk ilovasidan foydalanish uchun barcha majburiy bandlarga rozilik bildirishingiz kerak.';
+      'BeaverTalk\'dan foydalanish uchun barcha majburiy bandlarga rozilik berishingiz kerak.';
 
   @override
   String get consentAgreeAll => 'Barchasiga roziman';
 
   @override
-  String get consentAge14 => '[Majburiy] Men 14 yosh yoki undan kattaman';
+  String get consentAge14 => '[Majburiy] Men 14 yoshda yoki undan kattaman';
 
   @override
   String get consentTerms => '[Majburiy] Foydalanish shartlariga rozilik';
@@ -3213,7 +3213,7 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get consentCollectItems =>
-      'Yigʻiladigan maʼlumotlar: email, ijtimoiy tarmoq hisobi identifikatori, qoʻngʻiroqlar va talaffuz mashqlari ovoz yozuvlari, nutqni aniqlash matni, oʻquv tarixi, qurilma maʼlumotlari';
+      'Yigʻiladigan maʼlumotlar: email, ijtimoiy tarmoq hisobi identifikatori, qoʻngʻiroq va talaffuz mashqlaridagi ovoz yozuvlari, nutqni aniqlash matnlari, oʻquv tarixi, qurilma maʼlumotlari';
 
   @override
   String get consentCollectPurpose =>
@@ -3221,11 +3221,11 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get consentCollectRetention =>
-      'Saqlash muddati: hisobingizni oʻchirguningizcha; qonunda belgilangan yozuvlar shu muddat tugaguncha';
+      'Saqlash muddati: hisob oʻchirilgunga qadar; qonunda saqlash muddati belgilangan yozuvlar shu muddat tugaguncha';
 
   @override
   String get consentCollectRefuse =>
-      'Rozilik berishdan bosh tortishingiz mumkin. Bosh tortsangiz, roʻyxatdan oʻtish va xizmatdan foydalanish imkonsiz boʻladi.';
+      'Rozilik berishni rad etishingiz mumkin. Rad etsangiz, roʻyxatdan oʻta olmaysiz va xizmatdan foydalana olmaysiz.';
 
   @override
   String get consentTransferSheetTitle =>
@@ -3233,7 +3233,7 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get consentTransferRefuse =>
-      'Xorijga uzatishdan bosh tortishingiz mumkin. Bosh tortsangiz, AI bilan ovozli suhbat va Talaffuz sinovidan foydalana olmaysiz, shu sababli roʻyxatdan oʻtish davom etmaydi. Allaqachon uzatilgan maʼlumotlarni oʻchirishni contact@beavertalk.im orqali soʻrashingiz mumkin.';
+      'Xorijga uzatishni rad etishingiz mumkin. Rad etsangiz, AI bilan ovozli suhbat va Talaffuz sinovidan foydalana olmaysiz, shu sababli roʻyxatdan oʻtish davom etmaydi. Allaqachon uzatilgan maʼlumotlarni oʻchirishni contact@beavertalk.im orqali soʻrashingiz mumkin.';
 
   @override
   String get consentTransferColRecipient => 'Qabul qiluvchi';
@@ -3254,49 +3254,49 @@ class AppLocalizationsUz extends AppLocalizations {
   String get consentTransferColRetention => 'Saqlash muddati';
 
   @override
-  String get consentLeaveTitle => 'Rozi boʻlmasangiz, hisobdan chiqasiz';
+  String get consentLeaveTitle => 'Rozilik bermasangiz, hisobdan chiqasiz';
 
   @override
   String get consentLeaveLogout => 'Chiqish';
 
   @override
-  String get consentLeaveStay => 'Rozilikni davom ettirish';
+  String get consentLeaveStay => 'Qaytib rozilik berish';
 
   @override
   String get consentSubmitFailed =>
-      'Roziligingizni saqlab boʻlmadi. Iltimos, qayta urinib koʻring.';
+      'Roziligingizni saqlab boʻlmadi. Qayta urinib koʻring.';
 
   @override
-  String get consentTransferRow1Country => 'AQSH va boshqalar';
+  String get consentTransferRow1Country => 'AQSH va boshqa davlatlar';
 
   @override
   String get consentTransferRow1Items =>
-      'Qoʻngʻiroq ovoz yozuvlari, nutqdan oʻgirilgan matn, uy vazifasi qoʻngʻiroqlari xulosasi';
+      'Qoʻngʻiroq ovoz yozuvlari, nutqdan oʻgirilgan matnlar, vazifa qoʻngʻirogʻi xulosalari, dars matnlari, talaffuz natijalari';
 
   @override
   String get consentTransferRow1Purpose =>
-      'AI bilan ovozli suhbat, qoʻngʻiroq xulosasi va tarjima';
+      'AI bilan ovozli suhbat, qoʻngʻiroq xulosasi va tarjimasi, dars matni tarjimasi, qoʻngʻiroqlar tarixi kartochkasi sarlavhalari, talaffuz boʻyicha murabbiy maslahatlari';
 
   @override
   String get consentTransferRow1When =>
-      'Foydalanish vaqtida tarmoq orqali uzatiladi';
+      'Funksiyadan foydalanilganda tarmoq orqali uzatiladi';
 
   @override
   String get consentTransferRow1Retention =>
       'Ishlov berish maqsadiga erishilgach darhol oʻchiriladi';
 
   @override
-  String get consentTransferRow2Country => 'AQSH va boshqalar';
+  String get consentTransferRow2Country => 'AQSH va boshqa davlatlar';
 
   @override
-  String get consentTransferRow2Items => 'Talaffuz sinovi ovozi';
+  String get consentTransferRow2Items => 'Talaffuz sinovidagi ovoz';
 
   @override
   String get consentTransferRow2Purpose => 'Nutqni aniqlash (STT)';
 
   @override
   String get consentTransferRow2When =>
-      'Foydalanish vaqtida tarmoq orqali uzatiladi';
+      'Funksiyadan foydalanilganda tarmoq orqali uzatiladi';
 
   @override
   String get consentTransferRow2Retention =>
@@ -3307,14 +3307,15 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get consentTransferRow3Items =>
-      'Foydalanish tarixi, ilova nusxasi ID, aʼzo identifikatsiya raqami, qurilma maʼlumotlari';
+      'Foydalanish jurnallari, ilova nusxasi ID, aʼzo identifikatsiya raqami, qurilma maʼlumotlari';
 
   @override
-  String get consentTransferRow3Purpose => 'Foydalanish statistikasi tahlili';
+  String get consentTransferRow3Purpose =>
+      'Foydalanish statistikasini tahlil qilish';
 
   @override
   String get consentTransferRow3When =>
-      'Foydalanish vaqtida tarmoq orqali uzatiladi';
+      'Funksiyadan foydalanilganda tarmoq orqali uzatiladi';
 
   @override
   String get consentTransferRow3Retention => 'Yigʻilgandan keyin 14 oy';
@@ -3331,7 +3332,7 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get consentTransferRow4When =>
-      'Yuborish vaqtida tarmoq orqali uzatiladi';
+      'Bildirishnoma yuborilganda tarmoq orqali uzatiladi';
 
   @override
   String get consentTransferRow4Retention =>
@@ -3349,7 +3350,7 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get consentTransferRow5When =>
-      'Yuborish vaqtida tarmoq orqali uzatiladi';
+      'Bildirishnoma yuborilganda tarmoq orqali uzatiladi';
 
   @override
   String get consentTransferRow5Retention =>
