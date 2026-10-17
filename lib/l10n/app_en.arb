@@ -2483,7 +2483,7 @@
   "@consentCollectRefuse": {"description": "Item 3 sheet: right to refuse."},
   "consentTransferSheetTitle": "Transfer of personal information abroad",
   "@consentTransferSheetTitle": {"description": "Item 4 summary sheet title."},
-  "consentTransferRefuse": "You may refuse this transfer. If you do, AI voice calls and the pronunciation challenge are unavailable, so sign-up cannot continue. To delete data already transferred, contact admin@beavertalk.im.",
+  "consentTransferRefuse": "You may refuse this transfer. If you do, AI voice calls and the pronunciation challenge are unavailable, so sign-up cannot continue. To delete data already transferred, contact contact@beavertalk.im.",
   "@consentTransferRefuse": {"description": "Item 4 sheet footer. Keep the email address as is."},
   "consentTransferColRecipient": "Recipient",
   "@consentTransferColRecipient": {"description": "Transfer row label."},

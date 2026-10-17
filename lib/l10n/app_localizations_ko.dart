@@ -3113,7 +3113,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get consentTransferRefuse =>
-      '국외 이전을 거부할 수 있습니다. 거부하면 AI 음성 대화와 발음 챌린지를 쓸 수 없어 가입이 진행되지 않습니다. 이미 이전된 정보의 삭제는 admin@beavertalk.im 으로 요청할 수 있습니다.';
+      '국외 이전을 거부할 수 있습니다. 거부하면 AI 음성 대화와 발음 챌린지를 쓸 수 없어 가입이 진행되지 않습니다. 이미 이전된 정보의 삭제는 contact@beavertalk.im 으로 요청할 수 있습니다.';
 
   @override
   String get consentTransferColRecipient => '이전받는 자';

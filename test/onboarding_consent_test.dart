@@ -256,9 +256,9 @@ void main() {
       await _frames(tester);
       expect(find.textContaining('Google LLC'), findsNWidgets(4));
       expect(find.textContaining('Apple Inc.'), findsOneWidget);
-      await tester.scrollUntilVisible(find.textContaining('admin@beavertalk.im'), 200,
+      await tester.scrollUntilVisible(find.textContaining('contact@beavertalk.im'), 200,
           scrollable: find.byType(Scrollable).last);
-      expect(find.textContaining('admin@beavertalk.im'), findsOneWidget);
+      expect(find.textContaining('contact@beavertalk.im'), findsOneWidget);
     });
   });
 

@@ -5875,7 +5875,7 @@ abstract class AppLocalizations {
   /// Item 4 sheet footer. Keep the email address as is.
   ///
   /// In en, this message translates to:
-  /// **'You may refuse this transfer. If you do, AI voice calls and the pronunciation challenge are unavailable, so sign-up cannot continue. To delete data already transferred, contact admin@beavertalk.im.'**
+  /// **'You may refuse this transfer. If you do, AI voice calls and the pronunciation challenge are unavailable, so sign-up cannot continue. To delete data already transferred, contact contact@beavertalk.im.'**
   String get consentTransferRefuse;
 
   /// Transfer row label.

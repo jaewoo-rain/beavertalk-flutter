@@ -3237,7 +3237,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get consentTransferRefuse =>
-      'You may refuse this transfer. If you do, AI voice calls and the pronunciation challenge are unavailable, so sign-up cannot continue. To delete data already transferred, contact admin@beavertalk.im.';
+      'You may refuse this transfer. If you do, AI voice calls and the pronunciation challenge are unavailable, so sign-up cannot continue. To delete data already transferred, contact contact@beavertalk.im.';
 
   @override
   String get consentTransferColRecipient => 'Recipient';
