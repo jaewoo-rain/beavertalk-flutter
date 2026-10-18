@@ -113,6 +113,7 @@ void main() {
       await tester.pump();
       final btn = tester.getRect(find.byType(Button));
       expect(812 - btn.bottom, inset + 24);
+      expect(btn.width, greaterThan(300), reason: '버튼은 전폭(글자 폭으로 줄지 않음)');
     });
   }
 }
