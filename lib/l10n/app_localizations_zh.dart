@@ -2141,6 +2141,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get callRoleplayInfoA11y => '查看情境和角色';
 
   @override
+  String get callInfoA11y => 'See call info';
+
+  @override
+  String get callInfoFreeTalkBody =>
+      'Talk freely. The longer your sentences, the more your Korean speaking will improve.';
+
+  @override
   String get fcEndedTitle => '免费通话已结束';
 
   @override

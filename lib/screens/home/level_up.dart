@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
+import '../../components/chrome/bottom_cta_bar.dart';
 import '../../components/atoms/button.dart';
 import '../../features/auth/domain/repositories/auth_repository.dart';
 import '../../l10n/app_localizations.dart';
@@ -94,16 +95,17 @@ class LevelUpScreen extends StatelessWidget {
                 );
               }),
             ),
-            ContentColumn(
-              padding: const EdgeInsets.only(top: AppSpacing.s12),
-              child: Button(
-                type: BtnType.primaryFill,
-                size: BtnSize.s60,
-                text: l10n.confirm,
-                onPressed: onConfirm,
-              ),
-            ),
           ],
+        ),
+        // 하단 확인 버튼 — 공통 BottomCtaBar(위 12 · 아래 OS 인셋 위 24)로 둔다(PM-DEC-798).
+        // 예전엔 본문 끝에 맨 ContentColumn 만 두어 안전영역 경계에 그대로 붙었다(사용자 「여백없이 바닥에 붙어있다」).
+        bottomBar: BottomCtaBar(
+          child: Button(
+            type: BtnType.primaryFill,
+            size: BtnSize.s60,
+            text: l10n.confirm,
+            onPressed: onConfirm,
+          ),
         ),
       ),
     );

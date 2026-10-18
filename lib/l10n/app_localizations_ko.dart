@@ -2150,6 +2150,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get callRoleplayInfoA11y => '상황과 역할 보기';
 
   @override
+  String get callInfoA11y => '이번 통화 안내 보기';
+
+  @override
+  String get callInfoFreeTalkBody =>
+      '자유롭게 대화해보세요. 문장을 길게 말할수록 나의 한국어 말하기 실력이 늘 거예요.';
+
+  @override
   String get fcEndedTitle => '무료 통화가 끝났어요';
 
   @override

@@ -19,13 +19,14 @@ import '../../components/chrome/status_bar.dart';
 import '../../components/molecules/call_lock.dart';
 import '../../components/molecules/hint_card.dart';
 import '../../components/molecules/tooltip_bubble.dart';
-import '../../components/organisms/bottom_sheet_call_lesson_hint.dart';
+import '../../components/organisms/bottom_sheet_call_info.dart';
 import '../../components/organisms/dialog_basic.dart';
 import '../../core/analytics/app_analytics.dart';
 import '../../features/auth/presentation/providers/my_profile_provider.dart';
 import '../../features/bookmark/presentation/providers/bookmark_providers.dart';
 import '../../features/bookmark/presentation/providers/bookmark_toggle_controller.dart';
 import '../../features/character/presentation/providers/character_providers.dart';
+import '../../features/classroom/presentation/assignment_display.dart';
 import '../../features/classroom/presentation/classroom_providers.dart';
 import '../../features/incoming_call/services/lockscreen_call_service.dart';
 import '../../features/normalcall/domain/entities/call_allowance.dart';
@@ -769,6 +770,15 @@ class _CallScreenState extends ConsumerState<CallScreen> {
         normalCallControllerProvider.select((s) => s.homeworkRoleplay));
     final homeworkExpression = ref.watch(
         normalCallControllerProvider.select((s) => s.homeworkExpression));
+    final assignmentId =
+        ref.watch(normalCallControllerProvider.select((s) => s.assignmentId));
+    // 통화 i 안내(PM-DEC-760 · 04_통화 정본) — 코스·숙제 통화 5유형 모두. 일반·레벨테스트는 없다.
+    final callInfoType = callInfoTypeFor(
+      course: course,
+      homeworkRoleplay: homeworkRoleplay,
+      homeworkExpression: homeworkExpression,
+      assignmentId: assignmentId,
+    );
     final hintsAvailable =
         course != CallCourse.expression && !homeworkExpression;
     // ⭐ 회화학습(freetalk)은 문장 힌트 카드 대신 **시트만** 연다(사용자 10-10 「회화학습에서는 시트만
@@ -902,18 +912,19 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                 ],
               ),
             ),
-                // 역할극 숙제만 왼쪽 i(PM-DEC-623 · `6737:17630`) — 잠금 버튼과 좌우 대칭.
-                // 서버 `homework_roleplay` 를 받기 전·역할극이 아니면 없다. 잠금 막이 위를 덮어 잠금 중엔 안 눌린다.
-                if (homeworkRoleplay != null)
+                // 왼쪽 i(PM-DEC-760 · `6737:17630`) — 코스·숙제 통화 5유형 모두 · 잠금 버튼과 좌우 대칭.
+                // 일반·레벨테스트 통화는 없다. 잠금 막이 위를 덮어 잠금 중엔 안 눌린다.
+                if (callInfoType != null)
                   PositionedDirectional(
                     top: 14,
                     start: 14,
                     child: CallInfoButton(
-                      semanticLabel: l10n.callRoleplayInfoA11y,
-                      onPressed: () => _showRoleplayInfoSheet(
-                        homeworkRoleplay,
-                        partnerName: selectedChar?.name,
+                      semanticLabel: l10n.callInfoA11y,
+                      onPressed: () => _showCallInfoSheet(
+                        callInfoType,
                         partnerImage: partnerImage,
+                        homeworkRoleplay: homeworkRoleplay,
+                        assignmentId: assignmentId,
                       ),
                     ),
                   ),
@@ -1247,7 +1258,10 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                         onChanged: !hintsAvailable
                             ? (_) => _showHintLocked()
                             : lessonHintSheet
-                                ? (_) => _showLessonHintSheet(partnerImage)
+                                ? (_) => _showCallInfoSheet(
+                                      CallInfoType.conversation,
+                                      partnerImage: partnerImage,
+                                    )
                                 : (v) => ref
                                     .read(normalCallControllerProvider.notifier)
                                     .setHintOn(v),
@@ -1361,31 +1375,22 @@ class _CallScreenState extends ConsumerState<CallScreen> {
     );
   }
 
-  /// 회화학습 힌트 시트(`BottomSheet/CallLessonHint`) — 이번 차시 상황·상대역 + 그 레벨 차시 목록.
+  /// 통화 i 안내 시트(`BottomSheet/CallInfo` · PM-DEC-760·793) — 유형별 내용 · 딤 탭·아래로 내리기·닫기로 닫힌다.
   ///
-  /// 값은 서버가 준다: 상황·상대역 = `GET /cur/me` lesson(상대역은 PM-DEC-485 서버 추가분 —
-  /// 구서버면 null 이라 상대 줄이 숨는다), 목록 = `GET /cur/lessons?level=`. 시트 안에서 지켜보므로
-  /// 늦게 와도 열린 시트가 채워진다. 닫기는 막 탭·아래로 끌기.
-  /// 역할극 숙제 i 안내 시트(PM-DEC-623 A안) — 힌트 시트와 같은 틀 · 딤 탭·아래로 내려 닫는다.
-  Future<void> _showRoleplayInfoSheet(
-    HomeworkRoleplay roleplay, {
-    required String? partnerName,
+  /// 회화학습 힌트 버튼도 이 시트를 연다(첫 탭 「이번 대화」). 값은 서버가 준다 — 표현학습·회화학습 =
+  /// `GET /cur/me` lesson · `GET /cur/lessons/{no}/items` · `GET /cur/lessons?level=`, 숙제 = 과제 목록·과제 항목.
+  /// 시트 안에서 지켜보므로 늦게 와도 열린 시트가 채워진다. 통화는 계속된다.
+  Future<void> _showCallInfoSheet(
+    CallInfoType type, {
     required ImageProvider? partnerImage,
+    HomeworkRoleplay? homeworkRoleplay,
+    int? assignmentId,
   }) {
-    return showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      barrierColor: context.c.materialDim,
-      builder: (_) => BottomSheetCallRoleplayInfo(
-        roleplay: roleplay,
-        partnerName: partnerName,
-        partnerImage: partnerImage,
-      ),
-    );
-  }
-
-  Future<void> _showLessonHintSheet(ImageProvider? partnerImage) {
+    final locale = Localizations.localeOf(context).languageCode;
+    // 숙제 표현 항목은 시트를 열 때 한 번만 받는다.
+    final homeworkItems = type == CallInfoType.homework && assignmentId != null
+        ? ref.read(classroomRepositoryProvider).assignmentItems(assignmentId, locale: locale)
+        : null;
     return showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
@@ -1393,25 +1398,121 @@ class _CallScreenState extends ConsumerState<CallScreen> {
       barrierColor: context.c.materialDim,
       builder: (sheetContext) => Consumer(
         builder: (context, ref, _) {
-          final me = ref.watch(curMeProvider);
-          final lesson = me.valueOrNull?.lesson;
-          final level = lesson?.levelNo ?? 0;
-          final lessons = level > 0 ? ref.watch(curLessonsProvider(level)) : null;
-          return BottomSheetCallLessonHint(
-            situation: lesson?.situation,
-            situationTranslation: lesson?.situationTranslation,
-            partner: lesson?.partner,
-            partnerTranslation: lesson?.partnerTranslation,
-            partnerImage: partnerImage,
-            levelNo: level,
-            currentNo: lesson?.no ?? 0,
-            lessons: lessons?.valueOrNull,
-            lessonsError: me.hasError || (lessons?.hasError ?? false),
-          );
+          final l10n = AppLocalizations.of(context);
+          switch (type) {
+            case CallInfoType.free:
+              return const BottomSheetCallInfo(type: CallInfoType.free);
+            case CallInfoType.homework:
+            case CallInfoType.roleplay:
+              final a = assignmentId == null
+                  ? null
+                  : ref.watch(myAssignmentsProvider).valueOrNull
+                      ?.where((x) => x.assignmentId == assignmentId)
+                      .firstOrNull;
+              final title = a != null
+                  ? assignmentTitleOf(a, l10n.hwChapterLabel)
+                  : homeworkRoleplay?.topic;
+              if (type == CallInfoType.roleplay) {
+                return BottomSheetCallInfo(
+                  type: CallInfoType.roleplay,
+                  title: title,
+                  situation: homeworkRoleplay?.scene,
+                  situationTranslation: homeworkRoleplay?.situationTranslation,
+                  partner: homeworkRoleplay?.aiRole,
+                  partnerTranslation: homeworkRoleplay?.aiRoleTranslation,
+                  partnerImage: partnerImage,
+                  me: homeworkRoleplay?.learnerRole,
+                  meTranslation: homeworkRoleplay?.learnerRoleTranslation,
+                );
+              }
+              return FutureBuilder(
+                future: homeworkItems,
+                builder: (context, snap) => BottomSheetCallInfo(
+                  type: CallInfoType.homework,
+                  title: title,
+                  expressions: snap.data?.items
+                      .map((i) => CallInfoExpression(
+                            id: i.itemId,
+                            surface: i.readable,
+                            meaning: i.readableMeaning,
+                          ))
+                      .toList(),
+                  expressionsError: snap.hasError,
+                  onPlay: assignmentId == null
+                      ? null
+                      : (e) => _playInfoTts(() => ref
+                          .read(classroomRepositoryProvider)
+                          .itemTtsUrl(assignmentId: assignmentId, itemId: e.id)),
+                ),
+              );
+            case CallInfoType.expression:
+            case CallInfoType.conversation:
+              final me = ref.watch(curMeProvider);
+              final lesson = me.valueOrNull?.lesson;
+              final level = lesson?.levelNo ?? 0;
+              final no = lesson?.no ?? 0;
+              final lessons = level > 0 ? ref.watch(curLessonsProvider(level)) : null;
+              final items = type == CallInfoType.expression && no > 0
+                  ? ref.watch(curLessonItemsProvider(no))
+                  : null;
+              // 제목 = 주제 · 레벨1 6차시는 주제가 없어 상황을 쓴다(명세 7-1).
+              final hasTopic = (lesson?.topic ?? '').isNotEmpty;
+              return BottomSheetCallInfo(
+                type: type,
+                initialTab: 0,
+                title: hasTopic ? lesson?.topic : lesson?.situation,
+                titleTranslation: hasTopic ? lesson?.topicTranslation : lesson?.situationTranslation,
+                expressions: items?.valueOrNull
+                    ?.map((i) => CallInfoExpression(id: i.itemId, surface: i.surface, meaning: i.meaning))
+                    .toList(),
+                expressionsError: me.hasError || (items?.hasError ?? false),
+                onPlay: (e) => _playInfoTts(
+                  () => ref.read(normalcallRepositoryProvider).curItemTtsUrl(e.id),
+                ),
+                situation: (lesson?.situation ?? '').isNotEmpty ? lesson?.situation : lesson?.topic,
+                situationTranslation: lesson?.situationTranslation,
+                partner: lesson?.partner,
+                partnerTranslation: lesson?.partnerTranslation,
+                partnerImage: partnerImage,
+                me: lesson?.learnerRole,
+                meTranslation: lesson?.learnerRoleTranslation,
+                levelNo: level,
+                currentNo: no,
+                lessons: lessons?.valueOrNull,
+                lessonsError: me.hasError || (lessons?.hasError ?? false),
+              );
+          }
         },
       ),
     );
   }
+
+  /// i 시트 표현 행 소리 — URL 을 받아 힌트 재생기로 튼다. 못 받거나 못 틀면 예외(시트가 그 행 버튼을 비활성으로).
+  Future<void> _playInfoTts(Future<String?> Function() url) async {
+    final u = await url();
+    if (u == null || u.isEmpty) throw StateError('tts url 없음');
+    await _hintPlayer.playUrl(u);
+  }
+}
+
+/// 통화 i 안내 시트 유형(명세 4절). 일반·레벨테스트 통화는 null(i 버튼 없음).
+///
+/// 역할극 숙제는 서버 `homework_roleplay` 를 받은 뒤에야 안다 — 그 전 숙제 통화는 표현학습 숙제일 때만 i 를 보인다.
+/// ⚠ 코드의 `freetalk` 가 회화학습, `chat` 이 자유대화다.
+CallInfoType? callInfoTypeFor({
+  required CallCourse? course,
+  required HomeworkRoleplay? homeworkRoleplay,
+  required bool homeworkExpression,
+  required int? assignmentId,
+}) {
+  if (homeworkRoleplay != null) return CallInfoType.roleplay;
+  if (assignmentId != null) return homeworkExpression ? CallInfoType.homework : null;
+  return switch (course) {
+    CallCourse.expression => CallInfoType.expression,
+    CallCourse.freetalk => CallInfoType.conversation,
+    CallCourse.chat => CallInfoType.free,
+    _ => null,
+  };
 }
 
 /// 원형 스틸 아바타 — Free·Pro 의 아바타 표현.

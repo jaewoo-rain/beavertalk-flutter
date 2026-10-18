@@ -2209,6 +2209,13 @@ class AppLocalizationsKk extends AppLocalizations {
   String get callRoleplayInfoA11y => 'Жағдай мен рөлдерді көру';
 
   @override
+  String get callInfoA11y => 'See call info';
+
+  @override
+  String get callInfoFreeTalkBody =>
+      'Talk freely. The longer your sentences, the more your Korean speaking will improve.';
+
+  @override
   String get fcEndedTitle => 'Тегін қоңырауыңыз аяқталды';
 
   @override

@@ -2233,6 +2233,13 @@ class AppLocalizationsPt extends AppLocalizations {
   String get callRoleplayInfoA11y => 'Ver a situação e os papéis';
 
   @override
+  String get callInfoA11y => 'See call info';
+
+  @override
+  String get callInfoFreeTalkBody =>
+      'Talk freely. The longer your sentences, the more your Korean speaking will improve.';
+
+  @override
   String get fcEndedTitle => 'Sua ligação grátis terminou';
 
   @override

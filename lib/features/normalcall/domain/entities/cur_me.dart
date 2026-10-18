@@ -132,6 +132,8 @@ class CurLesson {
     this.partner,
     this.partnerTranslation,
     this.topicTranslation,
+    this.learnerRole,
+    this.learnerRoleTranslation,
   });
 
   final int no;
@@ -161,6 +163,12 @@ class CurLesson {
   /// 원문을 싣는다. 구서버는 키가 없어 null — 화면은 [topic] 으로 폴백한다.
   final String? topicTranslation;
 
+  /// 학습자 역할(`cur_lesson.learner_role` · PM-DEC-785) — 회화학습 i 시트 나 줄. 없으면 줄을 숨긴다.
+  final String? learnerRole;
+
+  /// [learnerRole] 의 회원 모국어 번역. 서버는 번역이 없거나 ko 회원이면 null 을 준다 — 줄을 숨긴다.
+  final String? learnerRoleTranslation;
+
   factory CurLesson.fromJson(Map<String, dynamic> json) => CurLesson(
         no: (json['no'] as num?)?.toInt() ?? 0,
         code: (json['code'] as String?) ?? '',
@@ -171,6 +179,44 @@ class CurLesson {
         partner: _text(json['partner']),
         partnerTranslation: _text(json['partner_translation']),
         topicTranslation: _text(json['topic_translation']),
+        learnerRole: _text(json['learner_role']),
+        learnerRoleTranslation: _text(json['learner_role_translation']),
+      );
+}
+
+/// `GET /cur/lessons/{no}/items` 한 줄(PM-DEC-780) — 통화 i 시트 표현 행.
+///
+/// 서버가 문형(grammar)·은퇴 항목을 빼고 seq 순으로 준다. 뜻은 회원 모국어 → en 순이다(지금은 en 만 있다).
+class CurLessonItem {
+  const CurLessonItem({
+    required this.itemId,
+    required this.seq,
+    required this.surface,
+    this.meaning,
+    this.meaningLocale,
+    this.role = '',
+  });
+
+  final int itemId;
+  final int seq;
+  final String surface;
+
+  /// 뜻 한 줄. 없으면 뜻 줄만 숨긴다.
+  final String? meaning;
+
+  /// [meaning] 이 실제로 어느 언어인지(예 `en`).
+  final String? meaningLocale;
+
+  /// chunk · must · support · core.
+  final String role;
+
+  factory CurLessonItem.fromJson(Map<String, dynamic> json) => CurLessonItem(
+        itemId: (json['item_id'] as num?)?.toInt() ?? 0,
+        seq: (json['seq'] as num?)?.toInt() ?? 0,
+        surface: (json['surface'] as String?) ?? '',
+        meaning: _text(json['meaning']),
+        meaningLocale: _text(json['meaning_locale']),
+        role: (json['role'] as String?) ?? '',
       );
 }
 

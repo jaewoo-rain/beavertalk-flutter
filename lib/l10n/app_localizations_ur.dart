@@ -2212,6 +2212,13 @@ class AppLocalizationsUr extends AppLocalizations {
   String get callRoleplayInfoA11y => 'صورتِ حال اور کردار دیکھیں';
 
   @override
+  String get callInfoA11y => 'See call info';
+
+  @override
+  String get callInfoFreeTalkBody =>
+      'Talk freely. The longer your sentences, the more your Korean speaking will improve.';
+
+  @override
   String get fcEndedTitle => 'آپ کی مفت کال ختم ہو گئی';
 
   @override

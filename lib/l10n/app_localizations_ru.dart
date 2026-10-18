@@ -2226,6 +2226,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get callRoleplayInfoA11y => 'Посмотреть ситуацию и роли';
 
   @override
+  String get callInfoA11y => 'See call info';
+
+  @override
+  String get callInfoFreeTalkBody =>
+      'Talk freely. The longer your sentences, the more your Korean speaking will improve.';
+
+  @override
   String get fcEndedTitle => 'Бесплатный звонок завершён';
 
   @override

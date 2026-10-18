@@ -2223,6 +2223,13 @@ class AppLocalizationsMy extends AppLocalizations {
   String get callRoleplayInfoA11y => 'အခြေအနေနှင့် အခန်းကဏ္ဍများကို ကြည့်ရန်';
 
   @override
+  String get callInfoA11y => 'See call info';
+
+  @override
+  String get callInfoFreeTalkBody =>
+      'Talk freely. The longer your sentences, the more your Korean speaking will improve.';
+
+  @override
   String get fcEndedTitle => 'သင့်အခမဲ့ခေါ်ဆိုမှု ပြီးဆုံးသွားပါပြီ';
 
   @override
