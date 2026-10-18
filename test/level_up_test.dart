@@ -1,3 +1,4 @@
+import 'package:beavertalk/components/atoms/button.dart';
 import 'package:beavertalk/features/auth/domain/entities/level_summary.dart';
 import 'package:beavertalk/features/auth/domain/repositories/auth_repository.dart';
 import 'package:beavertalk/l10n/app_localizations.dart';
@@ -95,4 +96,23 @@ void main() {
       expect(taps, ['confirm']);
     });
   });
+
+  // PM-DEC-798 — 확인 버튼이 바닥(안전영역 경계)에 붙지 않는다: OS 인셋 + 24.
+  for (final inset in [0.0, 34.0, 48.0]) {
+    testWidgets('하단 여백 — 아래 인셋 $inset 이면 버튼 아래 = 인셋 + 24', (tester) async {
+      tester.view.physicalSize = const Size(375, 812);
+      tester.view.devicePixelRatio = 1.0;
+      tester.view.padding = FakeViewPadding(bottom: inset);
+      tester.view.viewPadding = FakeViewPadding(bottom: inset);
+      addTearDown(tester.view.reset);
+      await tester.pumpWidget(MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: LevelUpScreen(level: 3, onConfirm: () {}),
+      ));
+      await tester.pump();
+      final btn = tester.getRect(find.byType(Button));
+      expect(812 - btn.bottom, inset + 24);
+    });
+  }
 }
