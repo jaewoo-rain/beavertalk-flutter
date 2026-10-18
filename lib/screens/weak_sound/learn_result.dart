@@ -122,12 +122,14 @@ class LearnResultScreen extends ConsumerWidget {
                 ),
               SafeArea(
                 top: false,
+                // 아래 = OS 인셋 위 24(BottomCtaBar 와 같은 규칙 · PM-DEC-798) — 예전 8 은 바닥에 붙어 보였다.
+                minimum: const EdgeInsets.only(bottom: AppSpacing.s24),
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(
                     AppSpacing.s20,
                     AppSpacing.s8,
                     AppSpacing.s20,
-                    AppSpacing.s8,
+                    0,
                   ),
                   // 버튼 쌍 세로(09-24 사장님 확정) — E5 · E8 · 17 모두 「다시 평가하기」 위 ·
                   // 「목록으로」 아래, 각자 전폭 · 간격 12.

@@ -137,12 +137,14 @@ class LearnScaffold extends ConsumerWidget {
               if (footer != null && async.valueOrNull != null)
                 SafeArea(
                   top: false,
+                  // 아래 = OS 인셋 위 24(BottomCtaBar 와 같은 규칙 · PM-DEC-798) — 예전 8 은 바닥에 붙어 보였다.
+                  minimum: const EdgeInsets.only(bottom: AppSpacing.s24),
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(
                       AppSpacing.s20,
                       AppSpacing.s8,
                       AppSpacing.s20,
-                      AppSpacing.s8,
+                      0,
                     ),
                     // 전폭이다. Padding 은 자식을 늘려 주지 않아서, 감싸지 않으면
                     // 버튼이 글자 폭(Hug)으로 쪼그라든다(실기기 확인 2026-09-21).
