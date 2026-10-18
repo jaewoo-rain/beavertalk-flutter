@@ -62,6 +62,7 @@ class SentenceScore {
     this.kind,
     this.sentenceId,
     this.totalScore,
+    this.attempted,
   });
 
   /// From `{sentence, pronunciation, fluency, rhythm, kind?}`.
@@ -73,6 +74,7 @@ class SentenceScore {
         kind: j['kind'] as String?,
         sentenceId: j['sentence_id'] == null ? null : _asInt(j['sentence_id']),
         totalScore: _asScore(j['total_score']),
+        attempted: j['attempted'] is bool ? j['attempted'] as bool : null,
       );
 
   /// `null` = 기본 문장 · `'native'` = 현지인 표현 짝(서버 `SentenceScoreOut.kind`).
@@ -80,6 +82,11 @@ class SentenceScore {
 
   /// 전체 항목 계약의 실제 ID·총점. 구형 서버에서 부재하면 null을 유지한다.
   final int? sentenceId, totalScore;
+
+  /// 이 문장을 녹음했나(서버 `SentenceScoreOut.attempted` · PM-DEC-761). 채점을 못 해도(스텁 ·
+  /// NPU low_speech) true 다 — 점수 null 만으로는 «안 함» 과 «채점 못 함» 을 못 가른다.
+  /// 구형 서버는 키가 없다 → null(점수로만 판정하던 종전 규칙을 쓴다).
+  final bool? attempted;
 
   /// The Korean sentence practiced.
   final String sentence;
@@ -244,15 +251,21 @@ class LearningSummary {
   /// Sentences passed, out of [total].
   final int passed, total;
 
-  /// 이 통화 학습을 끝까지 마쳤나 — 현지인 표현을 포함한 모든 항목에 점수가 있다.
+  /// 이 통화 학습을 끝까지 마쳤나 — 현지인 표현을 포함한 모든 항목을 녹음했다.
+  ///
+  /// PM-DEC-761(call 2022): 14문장을 다 읽었는데 12개가 채점 못 함(점수 null)이라 «안 끝남» 으로 보고
+  /// 「발음 학습하기」를 다시 띄웠다. 서버가 attempted 를 주면 그걸로 본다 · 없으면(구형 서버) 점수로 본다.
   ///
   /// 점수는 서버가 문장별 평가를 그대로 읽어 준다. 복습하지 않은 문장은 null 이다. 학습 흐름은
   /// 채점이 끝나야 다음 문장으로 넘어가므로(건너뛰기 없음), 중간에 나가면 뒤 문장이 null 로 남는다.
   /// 서버 값이라 재설치·기기 변경에도 같다.
   bool get learningFinished {
     return sentences.isNotEmpty &&
-        sentences.every((s) => s.pronunciation != null &&
-            s.pronunciation! >= 0 && s.pronunciation! <= 100);
+        sentences.every((s) =>
+            s.attempted == true ||
+            (s.pronunciation != null &&
+                s.pronunciation! >= 0 &&
+                s.pronunciation! <= 100));
   }
 
   /// When the session happened — the head's meta line (`3569:15082`).
