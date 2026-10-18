@@ -23,7 +23,8 @@ Future<void> _pump(WidgetTester tester, double inset, Widget child) async {
 }
 
 void main() {
-  for (final (inset, want) in [(0.0, 24.0), (34.0, 34.0), (48.0, 48.0)]) {
+  // PM-DEC-803 — max(floor, 인셋 + 12) · 인셋 0 은 floor 그대로.
+  for (final (inset, want) in [(0.0, 24.0), (34.0, 46.0), (48.0, 60.0)]) {
     testWidgets('SheetBottomInset — 인셋 $inset → 아래 $want', (tester) async {
       await _pump(tester, inset, const SheetBottomInset(child: SizedBox(key: Key('c'), height: 10, width: 10)));
       expect(812 - tester.getRect(find.byKey(const Key('c'))).bottom, want);
@@ -36,7 +37,7 @@ void main() {
     expect(812 - tester.getRect(find.byKey(const Key('c'))).bottom, 34 + 24);
   });
 
-  for (final (inset, want) in [(0.0, 34.0), (34.0, 34.0), (48.0, 48.0)]) {
+  for (final (inset, want) in [(0.0, 34.0), (34.0, 46.0), (48.0, 60.0)]) {
     testWidgets('통화 i 시트 — 인셋 $inset → 카드 아래 여백 $want', (tester) async {
       await _pump(tester, inset, const BottomSheetCallInfo(type: CallInfoType.free));
       final sheet = tester.getRect(find.byType(BottomSheetCallInfo));
