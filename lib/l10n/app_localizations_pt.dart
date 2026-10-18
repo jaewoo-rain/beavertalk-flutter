@@ -997,10 +997,10 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get loginTermsNoticePrefix =>
-      'Ao continuar, você concorda com nossos ';
+      'Se você continuar, na próxima tela pediremos que você concorde com os ';
 
   @override
-  String get loginTermsNoticeAnd => ' e ';
+  String get loginTermsNoticeAnd => ' e com a ';
 
   @override
   String get loginTermsNoticeSuffix => '.';
@@ -3200,4 +3200,182 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get hwPolicyNoticeOk => 'OK';
+
+  @override
+  String get consentTitle => 'Dê seu consentimento para usar o serviço';
+
+  @override
+  String get consentSubtitle =>
+      'Você precisa concordar com todos os itens obrigatórios para usar o BeaverTalk.';
+
+  @override
+  String get consentAgreeAll => 'Concordar com tudo';
+
+  @override
+  String get consentAge14 => '[Obrigatório] Tenho 14 anos ou mais';
+
+  @override
+  String get consentTerms =>
+      '[Obrigatório] Concordância com os Termos de serviço';
+
+  @override
+  String get consentPrivacyCollect =>
+      '[Obrigatório] Consentimento para coleta e uso de dados pessoais (incluindo gravações de voz)';
+
+  @override
+  String get consentOverseasTransfer =>
+      '[Obrigatório] Consentimento para transferência internacional de dados pessoais';
+
+  @override
+  String get consentView => 'Ver';
+
+  @override
+  String get consentCta => 'Concordar e começar';
+
+  @override
+  String get consentCollectSheetTitle => 'Coleta e uso de dados pessoais';
+
+  @override
+  String get consentCollectItems =>
+      'Itens coletados: e-mail, identificador da conta de rede social, gravações de voz das ligações e da prática de pronúncia, texto do reconhecimento de fala, histórico de aprendizado, informações do dispositivo';
+
+  @override
+  String get consentCollectPurpose =>
+      'Finalidade de uso: conversas por voz com IA, análise de pronúncia e sotaque, fornecimento do histórico de aprendizado, gestão de membros';
+
+  @override
+  String get consentCollectRetention =>
+      'Período de retenção: até a exclusão da conta; registros com prazo de retenção definido por lei, até o fim desse prazo';
+
+  @override
+  String get consentCollectRefuse =>
+      'Você pode recusar o consentimento. Se recusar, não será possível se cadastrar nem usar o serviço.';
+
+  @override
+  String get consentTransferSheetTitle =>
+      'Transferência internacional de dados pessoais';
+
+  @override
+  String get consentTransferRefuse =>
+      'Você pode recusar a transferência internacional. Se recusar, não poderá usar as conversas de voz com IA nem o Desafio de Pronúncia e, por isso, o cadastro não poderá prosseguir. A exclusão de dados já transferidos pode ser solicitada pelo e-mail contact@beavertalk.im.';
+
+  @override
+  String get consentTransferColRecipient => 'Destinatário';
+
+  @override
+  String get consentTransferColCountry => 'País';
+
+  @override
+  String get consentTransferColItems => 'Itens';
+
+  @override
+  String get consentTransferColPurpose => 'Finalidade';
+
+  @override
+  String get consentTransferColWhen => 'Quando e como';
+
+  @override
+  String get consentTransferColRetention => 'Retenção';
+
+  @override
+  String get consentLeaveTitle => 'Se não concordar, você sairá da conta';
+
+  @override
+  String get consentLeaveLogout => 'Sair';
+
+  @override
+  String get consentLeaveStay => 'Voltar e concordar';
+
+  @override
+  String get consentSubmitFailed =>
+      'Não foi possível salvar seu consentimento. Tente novamente.';
+
+  @override
+  String get consentTransferRow1Country => 'Estados Unidos e outros';
+
+  @override
+  String get consentTransferRow1Items =>
+      'Gravações de voz das ligações, texto do reconhecimento de fala, resumos das ligações de tarefa, textos das lições, resultados de pronúncia';
+
+  @override
+  String get consentTransferRow1Purpose =>
+      'Conversas por voz com IA, resumo e tradução das ligações, tradução dos textos das lições, títulos dos cartões de ligação, dicas de treino de pronúncia';
+
+  @override
+  String get consentTransferRow1When =>
+      'Enviados pela rede quando você usa o recurso';
+
+  @override
+  String get consentTransferRow1Retention =>
+      'Excluídos assim que a finalidade do tratamento for atingida';
+
+  @override
+  String get consentTransferRow2Country => 'Estados Unidos e outros';
+
+  @override
+  String get consentTransferRow2Items => 'Voz do Desafio de Pronúncia';
+
+  @override
+  String get consentTransferRow2Purpose => 'Reconhecimento de fala (STT)';
+
+  @override
+  String get consentTransferRow2When =>
+      'Enviados pela rede quando você usa o recurso';
+
+  @override
+  String get consentTransferRow2Retention =>
+      'Excluídos assim que a finalidade do tratamento for atingida';
+
+  @override
+  String get consentTransferRow3Country => 'Estados Unidos';
+
+  @override
+  String get consentTransferRow3Items =>
+      'Registros de uso, ID da instância do app, número de identificação do membro, informações do dispositivo';
+
+  @override
+  String get consentTransferRow3Purpose => 'Análise de estatísticas de uso';
+
+  @override
+  String get consentTransferRow3When =>
+      'Enviados pela rede quando você usa o recurso';
+
+  @override
+  String get consentTransferRow3Retention => '14 meses após a coleta';
+
+  @override
+  String get consentTransferRow4Country => 'Estados Unidos';
+
+  @override
+  String get consentTransferRow4Items =>
+      'Token de notificação push, conteúdo da notificação';
+
+  @override
+  String get consentTransferRow4Purpose => 'Notificações push do app';
+
+  @override
+  String get consentTransferRow4When =>
+      'Enviados pela rede no momento do envio da notificação';
+
+  @override
+  String get consentTransferRow4Retention =>
+      'Excluídos assim que a finalidade do tratamento for atingida';
+
+  @override
+  String get consentTransferRow5Country => 'Estados Unidos';
+
+  @override
+  String get consentTransferRow5Items =>
+      'Token de notificação push do iOS, conteúdo da notificação';
+
+  @override
+  String get consentTransferRow5Purpose => 'Notificações push do iOS';
+
+  @override
+  String get consentTransferRow5When =>
+      'Enviados pela rede no momento do envio da notificação';
+
+  @override
+  String get consentTransferRow5Retention =>
+      'Excluídos assim que a finalidade do tratamento for atingida';
 }

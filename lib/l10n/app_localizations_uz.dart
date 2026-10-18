@@ -992,13 +992,13 @@ class AppLocalizationsUz extends AppLocalizations {
   String get signUp => 'Roʻyxatdan oʻtish';
 
   @override
-  String get loginTermsNoticePrefix => 'Davom etish orqali siz bizning ';
+  String get loginTermsNoticePrefix => 'Davom etsangiz, keyingi ekranda ';
 
   @override
   String get loginTermsNoticeAnd => ' va ';
 
   @override
-  String get loginTermsNoticeSuffix => 'ga rozilik bildirasiz.';
+  String get loginTermsNoticeSuffix => 'ga rozilik berishingiz soʻraladi.';
 
   @override
   String get loginLogIn => 'Kirish';
@@ -3176,4 +3176,183 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get hwPolicyNoticeOk => 'OK';
+
+  @override
+  String get consentTitle => 'Xizmatdan foydalanish uchun rozilik bering';
+
+  @override
+  String get consentSubtitle =>
+      'BeaverTalk\'dan foydalanish uchun barcha majburiy bandlarga rozilik berishingiz kerak.';
+
+  @override
+  String get consentAgreeAll => 'Barchasiga roziman';
+
+  @override
+  String get consentAge14 => '[Majburiy] Men 14 yoshda yoki undan kattaman';
+
+  @override
+  String get consentTerms => '[Majburiy] Foydalanish shartlariga rozilik';
+
+  @override
+  String get consentPrivacyCollect =>
+      '[Majburiy] Shaxsiy maʼlumotlarni yigʻish va foydalanishga rozilik (ovoz yozuvlari bilan birga)';
+
+  @override
+  String get consentOverseasTransfer =>
+      '[Majburiy] Shaxsiy maʼlumotlarni xorijga uzatishga rozilik';
+
+  @override
+  String get consentView => 'Koʻrish';
+
+  @override
+  String get consentCta => 'Rozi boʻlib boshlash';
+
+  @override
+  String get consentCollectSheetTitle =>
+      'Shaxsiy maʼlumotlarni yigʻish va foydalanish';
+
+  @override
+  String get consentCollectItems =>
+      'Yigʻiladigan maʼlumotlar: email, ijtimoiy tarmoq hisobi identifikatori, qoʻngʻiroq va talaffuz mashqlaridagi ovoz yozuvlari, nutqni aniqlash matnlari, oʻquv tarixi, qurilma maʼlumotlari';
+
+  @override
+  String get consentCollectPurpose =>
+      'Foydalanish maqsadi: AI bilan ovozli suhbat, talaffuz va aksent tahlili, oʻquv tarixini taqdim etish, aʼzolarni boshqarish';
+
+  @override
+  String get consentCollectRetention =>
+      'Saqlash muddati: hisob oʻchirilgunga qadar; qonunda saqlash muddati belgilangan yozuvlar shu muddat tugaguncha';
+
+  @override
+  String get consentCollectRefuse =>
+      'Rozilik berishni rad etishingiz mumkin. Rad etsangiz, roʻyxatdan oʻta olmaysiz va xizmatdan foydalana olmaysiz.';
+
+  @override
+  String get consentTransferSheetTitle =>
+      'Shaxsiy maʼlumotlarni xorijga uzatish';
+
+  @override
+  String get consentTransferRefuse =>
+      'Xorijga uzatishni rad etishingiz mumkin. Rad etsangiz, AI bilan ovozli suhbat va Talaffuz sinovidan foydalana olmaysiz, shu sababli roʻyxatdan oʻtish davom etmaydi. Allaqachon uzatilgan maʼlumotlarni oʻchirishni contact@beavertalk.im orqali soʻrashingiz mumkin.';
+
+  @override
+  String get consentTransferColRecipient => 'Qabul qiluvchi';
+
+  @override
+  String get consentTransferColCountry => 'Davlat';
+
+  @override
+  String get consentTransferColItems => 'Maʼlumotlar';
+
+  @override
+  String get consentTransferColPurpose => 'Maqsad';
+
+  @override
+  String get consentTransferColWhen => 'Vaqti va usuli';
+
+  @override
+  String get consentTransferColRetention => 'Saqlash muddati';
+
+  @override
+  String get consentLeaveTitle => 'Rozilik bermasangiz, hisobdan chiqasiz';
+
+  @override
+  String get consentLeaveLogout => 'Chiqish';
+
+  @override
+  String get consentLeaveStay => 'Qaytib rozilik berish';
+
+  @override
+  String get consentSubmitFailed =>
+      'Roziligingizni saqlab boʻlmadi. Qayta urinib koʻring.';
+
+  @override
+  String get consentTransferRow1Country => 'AQSH va boshqa davlatlar';
+
+  @override
+  String get consentTransferRow1Items =>
+      'Qoʻngʻiroq ovoz yozuvlari, nutqdan oʻgirilgan matnlar, vazifa qoʻngʻirogʻi xulosalari, dars matnlari, talaffuz natijalari';
+
+  @override
+  String get consentTransferRow1Purpose =>
+      'AI bilan ovozli suhbat, qoʻngʻiroq xulosasi va tarjimasi, dars matni tarjimasi, qoʻngʻiroqlar tarixi kartochkasi sarlavhalari, talaffuz boʻyicha murabbiy maslahatlari';
+
+  @override
+  String get consentTransferRow1When =>
+      'Funksiyadan foydalanilganda tarmoq orqali uzatiladi';
+
+  @override
+  String get consentTransferRow1Retention =>
+      'Ishlov berish maqsadiga erishilgach darhol oʻchiriladi';
+
+  @override
+  String get consentTransferRow2Country => 'AQSH va boshqa davlatlar';
+
+  @override
+  String get consentTransferRow2Items => 'Talaffuz sinovidagi ovoz';
+
+  @override
+  String get consentTransferRow2Purpose => 'Nutqni aniqlash (STT)';
+
+  @override
+  String get consentTransferRow2When =>
+      'Funksiyadan foydalanilganda tarmoq orqali uzatiladi';
+
+  @override
+  String get consentTransferRow2Retention =>
+      'Ishlov berish maqsadiga erishilgach darhol oʻchiriladi';
+
+  @override
+  String get consentTransferRow3Country => 'AQSH';
+
+  @override
+  String get consentTransferRow3Items =>
+      'Foydalanish jurnallari, ilova nusxasi ID, aʼzo identifikatsiya raqami, qurilma maʼlumotlari';
+
+  @override
+  String get consentTransferRow3Purpose =>
+      'Foydalanish statistikasini tahlil qilish';
+
+  @override
+  String get consentTransferRow3When =>
+      'Funksiyadan foydalanilganda tarmoq orqali uzatiladi';
+
+  @override
+  String get consentTransferRow3Retention => 'Yigʻilgandan keyin 14 oy';
+
+  @override
+  String get consentTransferRow4Country => 'AQSH';
+
+  @override
+  String get consentTransferRow4Items =>
+      'Push-bildirishnoma tokeni, bildirishnoma mazmuni';
+
+  @override
+  String get consentTransferRow4Purpose => 'Ilova push-bildirishnomalari';
+
+  @override
+  String get consentTransferRow4When =>
+      'Bildirishnoma yuborilganda tarmoq orqali uzatiladi';
+
+  @override
+  String get consentTransferRow4Retention =>
+      'Ishlov berish maqsadiga erishilgach darhol oʻchiriladi';
+
+  @override
+  String get consentTransferRow5Country => 'AQSH';
+
+  @override
+  String get consentTransferRow5Items =>
+      'iOS push-bildirishnoma tokeni, bildirishnoma mazmuni';
+
+  @override
+  String get consentTransferRow5Purpose => 'iOS push-bildirishnomalari';
+
+  @override
+  String get consentTransferRow5When =>
+      'Bildirishnoma yuborilganda tarmoq orqali uzatiladi';
+
+  @override
+  String get consentTransferRow5Retention =>
+      'Ishlov berish maqsadiga erishilgach darhol oʻchiriladi';
 }

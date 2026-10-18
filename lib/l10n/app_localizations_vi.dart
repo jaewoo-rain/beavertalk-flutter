@@ -984,7 +984,8 @@ class AppLocalizationsVi extends AppLocalizations {
   String get signUp => 'Đăng ký';
 
   @override
-  String get loginTermsNoticePrefix => 'Bằng cách tiếp tục, bạn đồng ý với ';
+  String get loginTermsNoticePrefix =>
+      'Nếu tiếp tục, ở màn hình tiếp theo chúng tôi sẽ đề nghị bạn đồng ý với ';
 
   @override
   String get loginTermsNoticeAnd => ' và ';
@@ -3154,4 +3155,177 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get hwPolicyNoticeOk => 'OK';
+
+  @override
+  String get consentTitle => 'Vui lòng đồng ý để sử dụng dịch vụ';
+
+  @override
+  String get consentSubtitle =>
+      'Bạn cần đồng ý với tất cả các mục bắt buộc để sử dụng BeaverTalk.';
+
+  @override
+  String get consentAgreeAll => 'Đồng ý tất cả';
+
+  @override
+  String get consentAge14 => '[Bắt buộc] Tôi từ đủ 14 tuổi trở lên';
+
+  @override
+  String get consentTerms => '[Bắt buộc] Đồng ý với Điều khoản dịch vụ';
+
+  @override
+  String get consentPrivacyCollect =>
+      '[Bắt buộc] Đồng ý thu thập và sử dụng thông tin cá nhân (bao gồm bản ghi âm giọng nói)';
+
+  @override
+  String get consentOverseasTransfer =>
+      '[Bắt buộc] Đồng ý chuyển thông tin cá nhân ra nước ngoài';
+
+  @override
+  String get consentView => 'Xem';
+
+  @override
+  String get consentCta => 'Đồng ý và bắt đầu';
+
+  @override
+  String get consentCollectSheetTitle =>
+      'Thu thập và sử dụng thông tin cá nhân';
+
+  @override
+  String get consentCollectItems =>
+      'Mục thu thập: email, giá trị định danh tài khoản mạng xã hội, bản ghi âm giọng nói từ cuộc gọi và luyện phát âm, văn bản nhận dạng giọng nói, lịch sử học tập, thông tin thiết bị';
+
+  @override
+  String get consentCollectPurpose =>
+      'Mục đích sử dụng: trò chuyện bằng giọng nói với AI, phân tích phát âm và giọng, cung cấp lịch sử học tập, quản lý thành viên';
+
+  @override
+  String get consentCollectRetention =>
+      'Thời gian lưu giữ: đến khi xóa tài khoản; hồ sơ mà pháp luật quy định phải lưu giữ thì lưu đến hết thời hạn đó';
+
+  @override
+  String get consentCollectRefuse =>
+      'Bạn có thể từ chối đồng ý. Nếu từ chối, bạn sẽ không thể tạo tài khoản và sử dụng dịch vụ.';
+
+  @override
+  String get consentTransferSheetTitle =>
+      'Chuyển thông tin cá nhân ra nước ngoài';
+
+  @override
+  String get consentTransferRefuse =>
+      'Bạn có thể từ chối việc chuyển ra nước ngoài. Nếu từ chối, bạn không thể dùng trò chuyện bằng giọng nói với AI và Thử thách phát âm nên không thể tiếp tục tạo tài khoản. Để yêu cầu xóa thông tin đã được chuyển, hãy liên hệ contact@beavertalk.im.';
+
+  @override
+  String get consentTransferColRecipient => 'Bên nhận';
+
+  @override
+  String get consentTransferColCountry => 'Quốc gia';
+
+  @override
+  String get consentTransferColItems => 'Mục';
+
+  @override
+  String get consentTransferColPurpose => 'Mục đích';
+
+  @override
+  String get consentTransferColWhen => 'Thời điểm và cách thức';
+
+  @override
+  String get consentTransferColRetention => 'Thời gian lưu giữ';
+
+  @override
+  String get consentLeaveTitle => 'Nếu không đồng ý, bạn sẽ bị đăng xuất';
+
+  @override
+  String get consentLeaveLogout => 'Đăng xuất';
+
+  @override
+  String get consentLeaveStay => 'Quay lại và đồng ý';
+
+  @override
+  String get consentSubmitFailed =>
+      'Không thể lưu sự đồng ý của bạn. Vui lòng thử lại.';
+
+  @override
+  String get consentTransferRow1Country => 'Hoa Kỳ và các nước khác';
+
+  @override
+  String get consentTransferRow1Items =>
+      'Bản ghi âm cuộc gọi, văn bản chuyển từ giọng nói, tóm tắt cuộc gọi bài tập, nội dung bài học, kết quả phát âm';
+
+  @override
+  String get consentTransferRow1Purpose =>
+      'Trò chuyện bằng giọng nói với AI, tóm tắt và dịch cuộc gọi, dịch nội dung bài học, tiêu đề thẻ lịch sử cuộc gọi, mẹo hướng dẫn phát âm';
+
+  @override
+  String get consentTransferRow1When => 'Truyền qua mạng khi sử dụng tính năng';
+
+  @override
+  String get consentTransferRow1Retention =>
+      'Xóa ngay khi đạt được mục đích xử lý';
+
+  @override
+  String get consentTransferRow2Country => 'Hoa Kỳ và các nước khác';
+
+  @override
+  String get consentTransferRow2Items => 'Giọng nói trong Thử thách phát âm';
+
+  @override
+  String get consentTransferRow2Purpose => 'Nhận dạng giọng nói (STT)';
+
+  @override
+  String get consentTransferRow2When => 'Truyền qua mạng khi sử dụng tính năng';
+
+  @override
+  String get consentTransferRow2Retention =>
+      'Xóa ngay khi đạt được mục đích xử lý';
+
+  @override
+  String get consentTransferRow3Country => 'Hoa Kỳ';
+
+  @override
+  String get consentTransferRow3Items =>
+      'Nhật ký sử dụng, ID phiên bản ứng dụng, mã số thành viên, thông tin thiết bị';
+
+  @override
+  String get consentTransferRow3Purpose => 'Phân tích thống kê sử dụng';
+
+  @override
+  String get consentTransferRow3When => 'Truyền qua mạng khi sử dụng tính năng';
+
+  @override
+  String get consentTransferRow3Retention => '14 tháng sau khi thu thập';
+
+  @override
+  String get consentTransferRow4Country => 'Hoa Kỳ';
+
+  @override
+  String get consentTransferRow4Items =>
+      'Token thông báo đẩy, nội dung thông báo';
+
+  @override
+  String get consentTransferRow4Purpose => 'Thông báo đẩy của ứng dụng';
+
+  @override
+  String get consentTransferRow4When => 'Truyền qua mạng khi gửi thông báo';
+
+  @override
+  String get consentTransferRow4Retention =>
+      'Xóa ngay khi đạt được mục đích xử lý';
+
+  @override
+  String get consentTransferRow5Country => 'Hoa Kỳ';
+
+  @override
+  String get consentTransferRow5Items =>
+      'Token thông báo đẩy iOS, nội dung thông báo';
+
+  @override
+  String get consentTransferRow5Purpose => 'Thông báo đẩy iOS';
+
+  @override
+  String get consentTransferRow5When => 'Truyền qua mạng khi gửi thông báo';
+
+  @override
+  String get consentTransferRow5Retention =>
+      'Xóa ngay khi đạt được mục đích xử lý';
 }

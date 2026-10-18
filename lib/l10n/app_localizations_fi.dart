@@ -990,7 +990,8 @@ class AppLocalizationsFi extends AppLocalizations {
   String get signUp => 'Rekisteröidy';
 
   @override
-  String get loginTermsNoticePrefix => 'Jatkamalla hyväksyt ';
+  String get loginTermsNoticePrefix =>
+      'Jos jatkat, sinua pyydetään seuraavassa näkymässä hyväksymään ';
 
   @override
   String get loginTermsNoticeAnd => ' ja ';
@@ -3184,4 +3185,180 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get hwPolicyNoticeOk => 'OK';
+
+  @override
+  String get consentTitle => 'Anna suostumuksesi, jotta voit käyttää palvelua';
+
+  @override
+  String get consentSubtitle =>
+      'Sinun on hyväksyttävä kaikki pakolliset kohdat, jotta voit käyttää BeaverTalkia.';
+
+  @override
+  String get consentAgreeAll => 'Hyväksy kaikki';
+
+  @override
+  String get consentAge14 => '[Pakollinen] Olen vähintään 14-vuotias';
+
+  @override
+  String get consentTerms => '[Pakollinen] Käyttöehtojen hyväksyminen';
+
+  @override
+  String get consentPrivacyCollect =>
+      '[Pakollinen] Suostumus henkilötietojen keräämiseen ja käyttöön (mukaan lukien äänitallenteet)';
+
+  @override
+  String get consentOverseasTransfer =>
+      '[Pakollinen] Suostumus henkilötietojen siirtoon ulkomaille';
+
+  @override
+  String get consentView => 'Näytä';
+
+  @override
+  String get consentCta => 'Hyväksy ja aloita';
+
+  @override
+  String get consentCollectSheetTitle => 'Henkilötietojen kerääminen ja käyttö';
+
+  @override
+  String get consentCollectItems =>
+      'Kerättävät tiedot: sähköposti, sosiaalisen kirjautumistilin tunniste, puheluiden ja ääntämisharjoitusten äänitallenteet, puheentunnistuksen tekstit, oppimishistoria, laitetiedot';
+
+  @override
+  String get consentCollectPurpose =>
+      'Käyttötarkoitus: äänikeskustelut tekoälyn kanssa, ääntämisen ja aksentin analyysi, oppimishistorian tarjoaminen, jäsenhallinta';
+
+  @override
+  String get consentCollectRetention =>
+      'Säilytysaika: tilin poistamiseen asti; tiedot, joiden säilyttämistä laki edellyttää, lakisääteisen ajan loppuun';
+
+  @override
+  String get consentCollectRefuse =>
+      'Voit kieltäytyä antamasta suostumusta. Jos kieltäydyt, et voi rekisteröityä etkä käyttää palvelua.';
+
+  @override
+  String get consentTransferSheetTitle => 'Henkilötietojen siirto ulkomaille';
+
+  @override
+  String get consentTransferRefuse =>
+      'Voit kieltäytyä siirrosta ulkomaille. Jos kieltäydyt, et voi käyttää äänikeskusteluja tekoälyn kanssa etkä Ääntämishaastetta, joten rekisteröityminen ei voi jatkua. Jo siirrettyjen tietojen poistamista voit pyytää osoitteesta contact@beavertalk.im.';
+
+  @override
+  String get consentTransferColRecipient => 'Vastaanottaja';
+
+  @override
+  String get consentTransferColCountry => 'Maa';
+
+  @override
+  String get consentTransferColItems => 'Tiedot';
+
+  @override
+  String get consentTransferColPurpose => 'Tarkoitus';
+
+  @override
+  String get consentTransferColWhen => 'Ajankohta ja tapa';
+
+  @override
+  String get consentTransferColRetention => 'Säilytysaika';
+
+  @override
+  String get consentLeaveTitle => 'Jos et hyväksy, sinut kirjataan ulos';
+
+  @override
+  String get consentLeaveLogout => 'Kirjaudu ulos';
+
+  @override
+  String get consentLeaveStay => 'Palaa ja hyväksy';
+
+  @override
+  String get consentSubmitFailed =>
+      'Suostumustasi ei voitu tallentaa. Yritä uudelleen.';
+
+  @override
+  String get consentTransferRow1Country => 'Yhdysvallat ja muut';
+
+  @override
+  String get consentTransferRow1Items =>
+      'Puheluiden äänitallenteet, puheesta muunnetut tekstit, tehtäväpuheluiden tiivistelmät, oppituntien tekstit, ääntämistulokset';
+
+  @override
+  String get consentTransferRow1Purpose =>
+      'Äänikeskustelut tekoälyn kanssa, puheluiden tiivistelmät ja käännökset, oppituntien tekstien käännökset, puheluhistorian korttien otsikot, ääntämisvalmennuksen vinkit';
+
+  @override
+  String get consentTransferRow1When =>
+      'Siirto verkon kautta käytön yhteydessä';
+
+  @override
+  String get consentTransferRow1Retention =>
+      'Poisto heti, kun käsittelyn tarkoitus on täyttynyt';
+
+  @override
+  String get consentTransferRow2Country => 'Yhdysvallat ja muut';
+
+  @override
+  String get consentTransferRow2Items => 'Ääntämishaasteen ääni';
+
+  @override
+  String get consentTransferRow2Purpose => 'Puheentunnistus (STT)';
+
+  @override
+  String get consentTransferRow2When =>
+      'Siirto verkon kautta käytön yhteydessä';
+
+  @override
+  String get consentTransferRow2Retention =>
+      'Poisto heti, kun käsittelyn tarkoitus on täyttynyt';
+
+  @override
+  String get consentTransferRow3Country => 'Yhdysvallat';
+
+  @override
+  String get consentTransferRow3Items =>
+      'Käyttölokit, sovellusinstanssin ID, jäsenen tunnistenumero, laitetiedot';
+
+  @override
+  String get consentTransferRow3Purpose => 'Käyttötilastojen analysointi';
+
+  @override
+  String get consentTransferRow3When =>
+      'Siirto verkon kautta käytön yhteydessä';
+
+  @override
+  String get consentTransferRow3Retention => '14 kuukautta keräämisestä';
+
+  @override
+  String get consentTransferRow4Country => 'Yhdysvallat';
+
+  @override
+  String get consentTransferRow4Items =>
+      'Push-ilmoitusten tunniste, ilmoitusten sisältö';
+
+  @override
+  String get consentTransferRow4Purpose => 'Sovelluksen push-ilmoitukset';
+
+  @override
+  String get consentTransferRow4When =>
+      'Siirto verkon kautta ilmoitusta lähetettäessä';
+
+  @override
+  String get consentTransferRow4Retention =>
+      'Poisto heti, kun käsittelyn tarkoitus on täyttynyt';
+
+  @override
+  String get consentTransferRow5Country => 'Yhdysvallat';
+
+  @override
+  String get consentTransferRow5Items =>
+      'iOS-push-ilmoitusten tunniste, ilmoitusten sisältö';
+
+  @override
+  String get consentTransferRow5Purpose => 'iOS-push-ilmoitukset';
+
+  @override
+  String get consentTransferRow5When =>
+      'Siirto verkon kautta ilmoitusta lähetettäessä';
+
+  @override
+  String get consentTransferRow5Retention =>
+      'Poisto heti, kun käsittelyn tarkoitus on täyttynyt';
 }

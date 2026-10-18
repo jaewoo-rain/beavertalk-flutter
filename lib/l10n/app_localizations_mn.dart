@@ -983,13 +983,13 @@ class AppLocalizationsMn extends AppLocalizations {
   String get signUp => 'Бүртгүүлэх';
 
   @override
-  String get loginTermsNoticePrefix => 'Үргэлжлүүлснээр та манай ';
+  String get loginTermsNoticePrefix => 'Үргэлжлүүлбэл дараагийн дэлгэц дээр ';
 
   @override
   String get loginTermsNoticeAnd => ' болон ';
 
   @override
-  String get loginTermsNoticeSuffix => '-г зөвшөөрч байна.';
+  String get loginTermsNoticeSuffix => '-д зөвшөөрөл өгөхийг танаас хүснэ.';
 
   @override
   String get loginLogIn => 'Нэвтрэх';
@@ -3151,4 +3151,178 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get hwPolicyNoticeOk => 'Ойлголоо';
+
+  @override
+  String get consentTitle => 'Үйлчилгээг ашиглахын тулд зөвшөөрөл өгнө үү';
+
+  @override
+  String get consentSubtitle =>
+      'BeaverTalk-ийг ашиглахын тулд заавал шаардлагатай бүх зүйлийг зөвшөөрөх ёстой.';
+
+  @override
+  String get consentAgreeAll => 'Бүгдийг зөвшөөрөх';
+
+  @override
+  String get consentAge14 => '[Заавал] Би 14 ба түүнээс дээш настай';
+
+  @override
+  String get consentTerms => '[Заавал] Үйлчилгээний нөхцөлийг зөвшөөрөх';
+
+  @override
+  String get consentPrivacyCollect =>
+      '[Заавал] Хувийн мэдээлэл цуглуулах, ашиглахыг зөвшөөрөх (дуу хоолойн бичлэг орно)';
+
+  @override
+  String get consentOverseasTransfer =>
+      '[Заавал] Хувийн мэдээллийг гадаад улс руу шилжүүлэхийг зөвшөөрөх';
+
+  @override
+  String get consentView => 'Харах';
+
+  @override
+  String get consentCta => 'Зөвшөөрч эхлэх';
+
+  @override
+  String get consentCollectSheetTitle => 'Хувийн мэдээлэл цуглуулах, ашиглах';
+
+  @override
+  String get consentCollectItems =>
+      'Цуглуулах мэдээлэл: имэйл, сошиал бүртгэлийн танигч, дуут дуудлага болон дуудлага зөв гаргах дасгалын дуу хоолойн бичлэг, дуу хоолойг таньсан текст, суралцсан түүх, төхөөрөмжийн мэдээлэл';
+
+  @override
+  String get consentCollectPurpose =>
+      'Ашиглах зорилго: AI-тай дуут яриа, авиа дуудлага ба аялгууны шинжилгээ, суралцсан түүхийг хүргэх, гишүүдийн бүртгэлийг удирдах';
+
+  @override
+  String get consentCollectRetention =>
+      'Хадгалах хугацаа: бүртгэлээ устгах хүртэл; хуульд хадгалах хугацаа заасан бичлэгийг тухайн хугацаа дуустал';
+
+  @override
+  String get consentCollectRefuse =>
+      'Та зөвшөөрөхөөс татгалзаж болно. Татгалзвал бүртгүүлэх болон үйлчилгээг ашиглах боломжгүй.';
+
+  @override
+  String get consentTransferSheetTitle =>
+      'Хувийн мэдээллийг гадаад улс руу шилжүүлэх';
+
+  @override
+  String get consentTransferRefuse =>
+      'Та гадаад улс руу шилжүүлэхээс татгалзаж болно. Татгалзвал AI-тай дуут харилцан яриа болон Дуудлагын сорилтыг ашиглах боломжгүй тул бүртгэл үргэлжлэхгүй. Аль хэдийн шилжүүлсэн мэдээллийг устгуулах хүсэлтээ contact@beavertalk.im хаягаар илгээж болно.';
+
+  @override
+  String get consentTransferColRecipient => 'Хүлээн авагч';
+
+  @override
+  String get consentTransferColCountry => 'Улс';
+
+  @override
+  String get consentTransferColItems => 'Мэдээлэл';
+
+  @override
+  String get consentTransferColPurpose => 'Зорилго';
+
+  @override
+  String get consentTransferColWhen => 'Хэзээ, хэрхэн';
+
+  @override
+  String get consentTransferColRetention => 'Хадгалах хугацаа';
+
+  @override
+  String get consentLeaveTitle => 'Зөвшөөрөхгүй бол системээс гарна';
+
+  @override
+  String get consentLeaveLogout => 'Гарах';
+
+  @override
+  String get consentLeaveStay => 'Буцаж зөвшөөрөх';
+
+  @override
+  String get consentSubmitFailed =>
+      'Зөвшөөрлийг хадгалж чадсангүй. Дахин оролдоно уу.';
+
+  @override
+  String get consentTransferRow1Country => 'АНУ болон бусад';
+
+  @override
+  String get consentTransferRow1Items =>
+      'Дуут дуудлагын бичлэг, дуу хоолойг хөрвүүлсэн текст, даалгаврын дуудлагын хураангуй, хичээлийн текст, дуудлага зөв гаргалтын үр дүн';
+
+  @override
+  String get consentTransferRow1Purpose =>
+      'AI-тай дуут харилцан яриа, дуут дуудлагын хураангуй ба орчуулга, хичээлийн текстийн орчуулга, дуут дуудлагын картын гарчиг, дуудлага зөв гаргах зөвлөгөө';
+
+  @override
+  String get consentTransferRow1When => 'Ашиглах үед сүлжээгээр дамжуулна';
+
+  @override
+  String get consentTransferRow1Retention =>
+      'Боловсруулах зорилго биелмэгц шууд устгана';
+
+  @override
+  String get consentTransferRow2Country => 'АНУ болон бусад';
+
+  @override
+  String get consentTransferRow2Items => 'Дуудлагын сорилтын дуу хоолой';
+
+  @override
+  String get consentTransferRow2Purpose => 'Дуу хоолой таних (STT)';
+
+  @override
+  String get consentTransferRow2When => 'Ашиглах үед сүлжээгээр дамжуулна';
+
+  @override
+  String get consentTransferRow2Retention =>
+      'Боловсруулах зорилго биелмэгц шууд устгана';
+
+  @override
+  String get consentTransferRow3Country => 'АНУ';
+
+  @override
+  String get consentTransferRow3Items =>
+      'Ашиглалтын бүртгэл, аппын инстанцын ID, гишүүний таних дугаар, төхөөрөмжийн мэдээлэл';
+
+  @override
+  String get consentTransferRow3Purpose => 'Ашиглалтын статистик шинжилгээ';
+
+  @override
+  String get consentTransferRow3When => 'Ашиглах үед сүлжээгээр дамжуулна';
+
+  @override
+  String get consentTransferRow3Retention => 'Цуглуулснаас хойш 14 сар';
+
+  @override
+  String get consentTransferRow4Country => 'АНУ';
+
+  @override
+  String get consentTransferRow4Items =>
+      'Push мэдэгдлийн токен, мэдэгдлийн агуулга';
+
+  @override
+  String get consentTransferRow4Purpose => 'Аппын push мэдэгдэл';
+
+  @override
+  String get consentTransferRow4When =>
+      'Мэдэгдэл илгээх үед сүлжээгээр дамжуулна';
+
+  @override
+  String get consentTransferRow4Retention =>
+      'Боловсруулах зорилго биелмэгц шууд устгана';
+
+  @override
+  String get consentTransferRow5Country => 'АНУ';
+
+  @override
+  String get consentTransferRow5Items =>
+      'iOS push мэдэгдлийн токен, мэдэгдлийн агуулга';
+
+  @override
+  String get consentTransferRow5Purpose => 'iOS push мэдэгдэл';
+
+  @override
+  String get consentTransferRow5When =>
+      'Мэдэгдэл илгээх үед сүлжээгээр дамжуулна';
+
+  @override
+  String get consentTransferRow5Retention =>
+      'Боловсруулах зорилго биелмэгц шууд устгана';
 }

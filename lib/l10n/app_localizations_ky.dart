@@ -988,13 +988,13 @@ class AppLocalizationsKy extends AppLocalizations {
   String get signUp => 'Катталуу';
 
   @override
-  String get loginTermsNoticePrefix => 'Улантуу менен сиз биздин ';
+  String get loginTermsNoticePrefix => 'Улантсаңыз, кийинки экранда ';
 
   @override
   String get loginTermsNoticeAnd => ' жана ';
 
   @override
-  String get loginTermsNoticeSuffix => '.';
+  String get loginTermsNoticeSuffix => ' боюнча макулдугуңузду сурайбыз.';
 
   @override
   String get loginLogIn => 'Кирүү';
@@ -3160,4 +3160,182 @@ class AppLocalizationsKy extends AppLocalizations {
 
   @override
   String get hwPolicyNoticeOk => 'Макул';
+
+  @override
+  String get consentTitle => 'Кызматты колдонуу үчүн макулдук бериңиз';
+
+  @override
+  String get consentSubtitle =>
+      'BeaverTalk кызматын колдонуу үчүн бардык милдеттүү пункттарга макул болушуңуз керек.';
+
+  @override
+  String get consentAgreeAll => 'Баарына макулмун';
+
+  @override
+  String get consentAge14 => '[Милдеттүү] Мен 14 жаштамын же андан улуумун';
+
+  @override
+  String get consentTerms => '[Милдеттүү] Кызмат көрсөтүү шарттарына макулдук';
+
+  @override
+  String get consentPrivacyCollect =>
+      '[Милдеттүү] Жеке маалыматтарды чогултууга жана колдонууга макулдук (үн жазууларын кошо алганда)';
+
+  @override
+  String get consentOverseasTransfer =>
+      '[Милдеттүү] Жеке маалыматтарды чет өлкөгө өткөрүүгө макулдук';
+
+  @override
+  String get consentView => 'Көрүү';
+
+  @override
+  String get consentCta => 'Макул болуп баштоо';
+
+  @override
+  String get consentCollectSheetTitle =>
+      'Жеке маалыматтарды чогултуу жана колдонуу';
+
+  @override
+  String get consentCollectItems =>
+      'Чогултулуучу маалыматтар: электрондук почта, социалдык аккаунттун идентификатору, чалуулардын жана айтылыш машыгуусунун үн жазуулары, үн таануу тексти, окуу тарыхы, түзмөк тууралуу маалымат';
+
+  @override
+  String get consentCollectPurpose =>
+      'Колдонуу максаты: AI менен үн аркылуу сүйлөшүү, айтылыш жана акцент талдоосу, окуу тарыхын берүү, мүчөлөрдү башкаруу';
+
+  @override
+  String get consentCollectRetention =>
+      'Сактоо мөөнөтү: аккаунт өчүрүлгөнгө чейин; мыйзам менен сактоо мөөнөтү белгиленген жазуулар ошол мөөнөт бүткөнгө чейин';
+
+  @override
+  String get consentCollectRefuse =>
+      'Макулдук берүүдөн баш тарта аласыз. Баш тартсаңыз, катталуу жана кызматты колдонуу мүмкүн болбойт.';
+
+  @override
+  String get consentTransferSheetTitle =>
+      'Жеке маалыматтарды чет өлкөгө өткөрүү';
+
+  @override
+  String get consentTransferRefuse =>
+      'Чет өлкөгө өткөрүүдөн баш тарта аласыз. Баш тартсаңыз, AI менен үн аркылуу сүйлөшүүнү жана Айтылыш чакырыгын колдоно албайсыз, ошондуктан катталуу улантылбайт. Мурда өткөрүлгөн маалыматтарды өчүрүүнү contact@beavertalk.im дареги аркылуу сурай аласыз.';
+
+  @override
+  String get consentTransferColRecipient => 'Алуучу';
+
+  @override
+  String get consentTransferColCountry => 'Өлкө';
+
+  @override
+  String get consentTransferColItems => 'Маалыматтар';
+
+  @override
+  String get consentTransferColPurpose => 'Максат';
+
+  @override
+  String get consentTransferColWhen => 'Убактысы жана ыкмасы';
+
+  @override
+  String get consentTransferColRetention => 'Сактоо мөөнөтү';
+
+  @override
+  String get consentLeaveTitle => 'Макул болбосоңуз, аккаунттан чыгасыз';
+
+  @override
+  String get consentLeaveLogout => 'Чыгуу';
+
+  @override
+  String get consentLeaveStay => 'Кайтып макул болуу';
+
+  @override
+  String get consentSubmitFailed =>
+      'Макулдугуңузду сактай алган жокпуз. Кайра аракет кылыңыз.';
+
+  @override
+  String get consentTransferRow1Country => 'АКШ жана башка өлкөлөр';
+
+  @override
+  String get consentTransferRow1Items =>
+      'Чалуулардын үн жазуулары, үн таануу тексти, тапшырма чалууларынын корутундусу, сабак тексттери, айтылыш жыйынтыктары';
+
+  @override
+  String get consentTransferRow1Purpose =>
+      'AI менен үн аркылуу сүйлөшүү, чалуулардын корутундусу жана котормосу, сабак тексттеринин котормосу, мурунку чалуулар карталарынын аталыштары, айтылыш боюнча машыктыруу кеңештери';
+
+  @override
+  String get consentTransferRow1When =>
+      'Колдонуу учурунда тармак аркылуу жөнөтүлөт';
+
+  @override
+  String get consentTransferRow1Retention =>
+      'Иштетүү максатына жеткенде дароо өчүрүлөт';
+
+  @override
+  String get consentTransferRow2Country => 'АКШ жана башка өлкөлөр';
+
+  @override
+  String get consentTransferRow2Items => 'Айтылыш чакырыгындагы үн';
+
+  @override
+  String get consentTransferRow2Purpose => 'Үн таануу (STT)';
+
+  @override
+  String get consentTransferRow2When =>
+      'Колдонуу учурунда тармак аркылуу жөнөтүлөт';
+
+  @override
+  String get consentTransferRow2Retention =>
+      'Иштетүү максатына жеткенде дароо өчүрүлөт';
+
+  @override
+  String get consentTransferRow3Country => 'АКШ';
+
+  @override
+  String get consentTransferRow3Items =>
+      'Колдонуу жазуулары, колдонмо нускасынын ID, мүчөнүн идентификациялык номери, түзмөк тууралуу маалымат';
+
+  @override
+  String get consentTransferRow3Purpose => 'Колдонуу статистикасын талдоо';
+
+  @override
+  String get consentTransferRow3When =>
+      'Колдонуу учурунда тармак аркылуу жөнөтүлөт';
+
+  @override
+  String get consentTransferRow3Retention => 'Чогултулгандан кийин 14 ай';
+
+  @override
+  String get consentTransferRow4Country => 'АКШ';
+
+  @override
+  String get consentTransferRow4Items =>
+      'Push-билдирме токени, билдирменин мазмуну';
+
+  @override
+  String get consentTransferRow4Purpose => 'Колдонмонун push-билдирмелери';
+
+  @override
+  String get consentTransferRow4When =>
+      'Билдирме жөнөтүлгөн учурда тармак аркылуу жөнөтүлөт';
+
+  @override
+  String get consentTransferRow4Retention =>
+      'Иштетүү максатына жеткенде дароо өчүрүлөт';
+
+  @override
+  String get consentTransferRow5Country => 'АКШ';
+
+  @override
+  String get consentTransferRow5Items =>
+      'iOS push-билдирме токени, билдирменин мазмуну';
+
+  @override
+  String get consentTransferRow5Purpose => 'iOS push-билдирмелери';
+
+  @override
+  String get consentTransferRow5When =>
+      'Билдирме жөнөтүлгөн учурда тармак аркылуу жөнөтүлөт';
+
+  @override
+  String get consentTransferRow5Retention =>
+      'Иштетүү максатына жеткенде дароо өчүрүлөт';
 }

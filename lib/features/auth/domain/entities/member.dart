@@ -15,6 +15,8 @@ class Member {
     this.onboardingCompleted = false,
     this.reasons,
     this.createdAt,
+    this.consentRequired = false,
+    this.consentVersions = const {},
   });
 
   /// Server primary key.
@@ -66,4 +68,12 @@ class Member {
   /// The server has always sent this (`MemberRead.created_at`); the client
   /// simply never read it, which is why that row was missing.
   final DateTime? createdAt;
+
+  /// 가입 동의가 필요한가(서버 `consent_required` · PM-DEC-735·736). true 면 AuthGate 가 홈·온보딩 전에
+  /// 동의 화면을 띄우고, 예약 전화 수락도 통화를 열지 않는다. 구서버는 키가 없다 → false(화면 없음).
+  final bool consentRequired;
+
+  /// 동의 화면이 보낼 현행 문서 버전(항목 코드 → 버전 · 서버 `consent_versions`). 앱은 버전을 정하지 않는다 —
+  /// 받은 값을 그대로 `POST /members/me/consents` 에 싣는다(문서가 바뀌면 서버 값만 바뀐다).
+  final Map<String, String> consentVersions;
 }

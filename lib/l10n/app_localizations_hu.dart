@@ -997,13 +997,14 @@ class AppLocalizationsHu extends AppLocalizations {
   String get signUp => 'Regisztráció';
 
   @override
-  String get loginTermsNoticePrefix => 'A folytatással elfogadod a ';
+  String get loginTermsNoticePrefix =>
+      'Ha folytatod, a következő képernyőn kérjük a ';
 
   @override
   String get loginTermsNoticeAnd => ' és az ';
 
   @override
-  String get loginTermsNoticeSuffix => ' feltételeit.';
+  String get loginTermsNoticeSuffix => ' elfogadását.';
 
   @override
   String get loginLogIn => 'Bejelentkezés';
@@ -3176,4 +3177,183 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get hwPolicyNoticeOk => 'Rendben';
+
+  @override
+  String get consentTitle =>
+      'A szolgáltatás használatához kérjük, add meg a hozzájárulásodat';
+
+  @override
+  String get consentSubtitle =>
+      'A BeaverTalk használatához minden kötelező pontot el kell fogadnod.';
+
+  @override
+  String get consentAgreeAll => 'Mindet elfogadom';
+
+  @override
+  String get consentAge14 => '[Kötelező] Legalább 14 éves vagyok';
+
+  @override
+  String get consentTerms => '[Kötelező] A Felhasználási feltételek elfogadása';
+
+  @override
+  String get consentPrivacyCollect =>
+      '[Kötelező] Hozzájárulás a személyes adatok gyűjtéséhez és felhasználásához (hangfelvételekkel együtt)';
+
+  @override
+  String get consentOverseasTransfer =>
+      '[Kötelező] Hozzájárulás a személyes adatok külföldre továbbításához';
+
+  @override
+  String get consentView => 'Megtekintés';
+
+  @override
+  String get consentCta => 'Elfogadom és kezdem';
+
+  @override
+  String get consentCollectSheetTitle =>
+      'Személyes adatok gyűjtése és felhasználása';
+
+  @override
+  String get consentCollectItems =>
+      'Gyűjtött adatok: e-mail-cím, közösségi fiók azonosítója, a hívások és a kiejtésgyakorlás hangfelvételei, beszédfelismeréssel készült szöveg, tanulási előzmények, eszközadatok';
+
+  @override
+  String get consentCollectPurpose =>
+      'Felhasználási cél: AI-hangbeszélgetés, kiejtés- és akcentuselemzés, a tanulási előzmények biztosítása, tagkezelés';
+
+  @override
+  String get consentCollectRetention =>
+      'Megőrzési idő: a fiók törléséig; a jogszabály által előírt nyilvántartásokat az ott meghatározott ideig';
+
+  @override
+  String get consentCollectRefuse =>
+      'Megtagadhatod a hozzájárulást. Ha megtagadod, nem tudsz regisztrálni, és nem használhatod a szolgáltatást.';
+
+  @override
+  String get consentTransferSheetTitle =>
+      'Személyes adatok külföldre továbbítása';
+
+  @override
+  String get consentTransferRefuse =>
+      'Megtagadhatod a külföldre továbbítást. Ha megtagadod, nem használhatod az AI-hangbeszélgetést és a Kiejtési kihívást, így a regisztráció nem folytatható. A már továbbított adatok törlését a contact@beavertalk.im címen kérheted.';
+
+  @override
+  String get consentTransferColRecipient => 'Címzett';
+
+  @override
+  String get consentTransferColCountry => 'Ország';
+
+  @override
+  String get consentTransferColItems => 'Adatok';
+
+  @override
+  String get consentTransferColPurpose => 'Cél';
+
+  @override
+  String get consentTransferColWhen => 'Időpont és mód';
+
+  @override
+  String get consentTransferColRetention => 'Megőrzési idő';
+
+  @override
+  String get consentLeaveTitle => 'Ha nem fogadod el, kijelentkeztetünk';
+
+  @override
+  String get consentLeaveLogout => 'Kijelentkezés';
+
+  @override
+  String get consentLeaveStay => 'Vissza az elfogadáshoz';
+
+  @override
+  String get consentSubmitFailed =>
+      'Nem sikerült menteni a hozzájárulásodat. Kérjük, próbáld újra.';
+
+  @override
+  String get consentTransferRow1Country => 'Egyesült Államok és más országok';
+
+  @override
+  String get consentTransferRow1Items =>
+      'Hívások hangfelvételei, beszédfelismeréssel készült szöveg, feladathívások összefoglalói, leckeszövegek, kiejtési eredmények';
+
+  @override
+  String get consentTransferRow1Purpose =>
+      'AI-hangbeszélgetés, hívások összefoglalása és fordítása, leckeszövegek fordítása, a korábbi hívásokat mutató kártyák címei, kiejtésfejlesztési tippek';
+
+  @override
+  String get consentTransferRow1When =>
+      'Hálózaton továbbítva a funkció használatakor';
+
+  @override
+  String get consentTransferRow1Retention =>
+      'Az adatkezelési cél teljesülésekor azonnal törlődik';
+
+  @override
+  String get consentTransferRow2Country => 'Egyesült Államok és más országok';
+
+  @override
+  String get consentTransferRow2Items => 'A Kiejtési kihívás hanganyaga';
+
+  @override
+  String get consentTransferRow2Purpose => 'Beszédfelismerés (STT)';
+
+  @override
+  String get consentTransferRow2When =>
+      'Hálózaton továbbítva a funkció használatakor';
+
+  @override
+  String get consentTransferRow2Retention =>
+      'Az adatkezelési cél teljesülésekor azonnal törlődik';
+
+  @override
+  String get consentTransferRow3Country => 'Egyesült Államok';
+
+  @override
+  String get consentTransferRow3Items =>
+      'Használati naplók, alkalmazáspéldány-ID, tagazonosító szám, eszközadatok';
+
+  @override
+  String get consentTransferRow3Purpose => 'Használati statisztikák elemzése';
+
+  @override
+  String get consentTransferRow3When =>
+      'Hálózaton továbbítva a funkció használatakor';
+
+  @override
+  String get consentTransferRow3Retention => 'A gyűjtéstől számított 14 hónap';
+
+  @override
+  String get consentTransferRow4Country => 'Egyesült Államok';
+
+  @override
+  String get consentTransferRow4Items =>
+      'Push-értesítési token, az értesítés tartalma';
+
+  @override
+  String get consentTransferRow4Purpose => 'Az alkalmazás push-értesítései';
+
+  @override
+  String get consentTransferRow4When =>
+      'Hálózaton továbbítva az értesítés küldésekor';
+
+  @override
+  String get consentTransferRow4Retention =>
+      'Az adatkezelési cél teljesülésekor azonnal törlődik';
+
+  @override
+  String get consentTransferRow5Country => 'Egyesült Államok';
+
+  @override
+  String get consentTransferRow5Items =>
+      'iOS push-értesítési token, az értesítés tartalma';
+
+  @override
+  String get consentTransferRow5Purpose => 'iOS push-értesítések';
+
+  @override
+  String get consentTransferRow5When =>
+      'Hálózaton továbbítva az értesítés küldésekor';
+
+  @override
+  String get consentTransferRow5Retention =>
+      'Az adatkezelési cél teljesülésekor azonnal törlődik';
 }

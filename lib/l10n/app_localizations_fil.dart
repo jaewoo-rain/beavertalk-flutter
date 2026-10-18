@@ -997,7 +997,7 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get loginTermsNoticePrefix =>
-      'Sa pagpapatuloy, sumasang-ayon ka sa aming ';
+      'Kung magpapatuloy ka, hihingin namin sa susunod na screen ang pagsang-ayon mo sa ';
 
   @override
   String get loginTermsNoticeAnd => ' at ';
@@ -3193,4 +3193,184 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get hwPolicyNoticeOk => 'OK';
+
+  @override
+  String get consentTitle => 'Mangyaring sumang-ayon para magamit ang serbisyo';
+
+  @override
+  String get consentSubtitle =>
+      'Kailangan mong sumang-ayon sa lahat ng kinakailangang item para magamit ang BeaverTalk.';
+
+  @override
+  String get consentAgreeAll => 'Sumang-ayon sa lahat';
+
+  @override
+  String get consentAge14 => '[Kailangan] 14 na taong gulang pataas ako';
+
+  @override
+  String get consentTerms =>
+      '[Kailangan] Pagsang-ayon sa Mga tuntunin ng serbisyo';
+
+  @override
+  String get consentPrivacyCollect =>
+      '[Kailangan] Pagsang-ayon sa pangongolekta at paggamit ng personal na impormasyon (kasama ang mga voice recording)';
+
+  @override
+  String get consentOverseasTransfer =>
+      '[Kailangan] Pagsang-ayon sa paglilipat ng personal na impormasyon sa ibang bansa';
+
+  @override
+  String get consentView => 'Tingnan';
+
+  @override
+  String get consentCta => 'Sumang-ayon at magsimula';
+
+  @override
+  String get consentCollectSheetTitle =>
+      'Pangongolekta at paggamit ng personal na impormasyon';
+
+  @override
+  String get consentCollectItems =>
+      'Kinokolektang impormasyon: email, ID ng social account, voice recording ng mga tawag at pagsasanay sa pagbigkas, text mula sa speech recognition, talaan ng pag-aaral, impormasyon ng device';
+
+  @override
+  String get consentCollectPurpose =>
+      'Layunin: pakikipag-usap sa AI gamit ang boses, pagsusuri ng pagbigkas at accent, pagbibigay ng talaan ng pag-aaral, pamamahala ng miyembro';
+
+  @override
+  String get consentCollectRetention =>
+      'Panahon ng pag-iingat: hanggang burahin mo ang account; ang mga record na itinakda ng batas, hanggang sa panahong itinakda nito';
+
+  @override
+  String get consentCollectRefuse =>
+      'Maaari kang tumangging pumayag. Kapag tumanggi ka, hindi ka makakapag-sign up at hindi mo magagamit ang serbisyo.';
+
+  @override
+  String get consentTransferSheetTitle =>
+      'Paglilipat ng personal na impormasyon sa ibang bansa';
+
+  @override
+  String get consentTransferRefuse =>
+      'Maaari kang tumanggi sa paglilipat sa ibang bansa. Kapag tumanggi ka, hindi mo magagamit ang pakikipag-usap sa AI gamit ang boses at ang Hamon sa Bigkas, kaya hindi matutuloy ang pag-sign up. Maaari kang humiling na burahin ang impormasyong nailipat na sa contact@beavertalk.im.';
+
+  @override
+  String get consentTransferColRecipient => 'Tatanggap';
+
+  @override
+  String get consentTransferColCountry => 'Bansa';
+
+  @override
+  String get consentTransferColItems => 'Mga item';
+
+  @override
+  String get consentTransferColPurpose => 'Layunin';
+
+  @override
+  String get consentTransferColWhen => 'Kailan at paano';
+
+  @override
+  String get consentTransferColRetention => 'Panahon ng pag-iingat';
+
+  @override
+  String get consentLeaveTitle => 'Mala-log out ka kapag hindi ka sumang-ayon';
+
+  @override
+  String get consentLeaveLogout => 'Mag-log out';
+
+  @override
+  String get consentLeaveStay => 'Bumalik at sumang-ayon';
+
+  @override
+  String get consentSubmitFailed =>
+      'Hindi na-save ang iyong pagsang-ayon. Pakisubukan muli.';
+
+  @override
+  String get consentTransferRow1Country => 'Estados Unidos at iba pa';
+
+  @override
+  String get consentTransferRow1Items =>
+      'Voice recording ng tawag, text mula sa speech-to-text, buod ng tawag para sa takdang-aralin, teksto ng aralin, resulta ng pagbigkas';
+
+  @override
+  String get consentTransferRow1Purpose =>
+      'Pakikipag-usap sa AI gamit ang boses, buod at pagsasalin ng tawag, pagsasalin ng teksto ng aralin, pamagat ng mga card ng iyong tawag, mga tip sa pag-coach ng pagbigkas';
+
+  @override
+  String get consentTransferRow1When =>
+      'Ipinapadala sa network sa oras ng paggamit';
+
+  @override
+  String get consentTransferRow1Retention =>
+      'Binubura agad kapag natupad na ang layunin ng pagproseso';
+
+  @override
+  String get consentTransferRow2Country => 'Estados Unidos at iba pa';
+
+  @override
+  String get consentTransferRow2Items => 'Boses sa Hamon sa Bigkas';
+
+  @override
+  String get consentTransferRow2Purpose => 'Speech recognition (STT)';
+
+  @override
+  String get consentTransferRow2When =>
+      'Ipinapadala sa network sa oras ng paggamit';
+
+  @override
+  String get consentTransferRow2Retention =>
+      'Binubura agad kapag natupad na ang layunin ng pagproseso';
+
+  @override
+  String get consentTransferRow3Country => 'Estados Unidos';
+
+  @override
+  String get consentTransferRow3Items =>
+      'Talaan ng paggamit, app instance ID, numero ng pagkakakilanlan ng miyembro, impormasyon ng device';
+
+  @override
+  String get consentTransferRow3Purpose =>
+      'Pagsusuri ng istatistika ng paggamit';
+
+  @override
+  String get consentTransferRow3When =>
+      'Ipinapadala sa network sa oras ng paggamit';
+
+  @override
+  String get consentTransferRow3Retention => '14 na buwan pagkatapos makolekta';
+
+  @override
+  String get consentTransferRow4Country => 'Estados Unidos';
+
+  @override
+  String get consentTransferRow4Items =>
+      'Push notification token, nilalaman ng notification';
+
+  @override
+  String get consentTransferRow4Purpose => 'Push notification ng app';
+
+  @override
+  String get consentTransferRow4When =>
+      'Ipinapadala sa network sa oras ng pagpapadala ng notification';
+
+  @override
+  String get consentTransferRow4Retention =>
+      'Binubura agad kapag natupad na ang layunin ng pagproseso';
+
+  @override
+  String get consentTransferRow5Country => 'Estados Unidos';
+
+  @override
+  String get consentTransferRow5Items =>
+      'iOS push notification token, nilalaman ng notification';
+
+  @override
+  String get consentTransferRow5Purpose => 'iOS push notification';
+
+  @override
+  String get consentTransferRow5When =>
+      'Ipinapadala sa network sa oras ng pagpapadala ng notification';
+
+  @override
+  String get consentTransferRow5Retention =>
+      'Binubura agad kapag natupad na ang layunin ng pagproseso';
 }

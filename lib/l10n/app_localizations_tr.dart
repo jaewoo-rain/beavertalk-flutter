@@ -982,13 +982,13 @@ class AppLocalizationsTr extends AppLocalizations {
   String get signUp => 'Kaydol';
 
   @override
-  String get loginTermsNoticePrefix => 'Devam ederek ';
+  String get loginTermsNoticePrefix => 'Devam ederseniz bir sonraki ekranda ';
 
   @override
   String get loginTermsNoticeAnd => ' ve ';
 
   @override
-  String get loginTermsNoticeSuffix => '\'nı kabul etmiş olursunuz.';
+  String get loginTermsNoticeSuffix => ' için onayınız istenecek.';
 
   @override
   String get loginLogIn => 'Giriş yap';
@@ -3151,4 +3151,182 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get hwPolicyNoticeOk => 'Tamam';
+
+  @override
+  String get consentTitle => 'Hizmeti kullanmak için lütfen onay verin';
+
+  @override
+  String get consentSubtitle =>
+      'BeaverTalk\'u kullanmak için tüm zorunlu maddeleri onaylamanız gerekir.';
+
+  @override
+  String get consentAgreeAll => 'Tümünü onayla';
+
+  @override
+  String get consentAge14 => '[Zorunlu] 14 yaşında veya daha büyüğüm';
+
+  @override
+  String get consentTerms => '[Zorunlu] Kullanım şartlarına onay';
+
+  @override
+  String get consentPrivacyCollect =>
+      '[Zorunlu] Kişisel verilerin toplanması ve kullanılmasına onay (ses kayıtları dahil)';
+
+  @override
+  String get consentOverseasTransfer =>
+      '[Zorunlu] Kişisel verilerin yurt dışına aktarılmasına onay';
+
+  @override
+  String get consentView => 'Görüntüle';
+
+  @override
+  String get consentCta => 'Onayla ve başla';
+
+  @override
+  String get consentCollectSheetTitle =>
+      'Kişisel verilerin toplanması ve kullanılması';
+
+  @override
+  String get consentCollectItems =>
+      'Toplanan veriler: e-posta, sosyal hesap tanımlayıcısı, görüşme ve telaffuz pratiği ses kayıtları, konuşma tanıma metinleri, öğrenme geçmişi, cihaz bilgileri';
+
+  @override
+  String get consentCollectPurpose =>
+      'Kullanım amacı: yapay zeka ile sesli sohbet, telaffuz ve aksan analizi, öğrenme geçmişinin sunulması, üyelik yönetimi';
+
+  @override
+  String get consentCollectRetention =>
+      'Saklama süresi: hesabınızı silene kadar; mevzuatın saklanmasını öngördüğü kayıtlar ise o süre dolana kadar';
+
+  @override
+  String get consentCollectRefuse =>
+      'Onay vermeyi reddedebilirsiniz. Reddederseniz üye olamaz ve hizmeti kullanamazsınız.';
+
+  @override
+  String get consentTransferSheetTitle =>
+      'Kişisel verilerin yurt dışına aktarılması';
+
+  @override
+  String get consentTransferRefuse =>
+      'Yurt dışına aktarımı reddedebilirsiniz. Reddederseniz yapay zeka ile sesli sohbet ve Telaffuz Mücadelesi kullanılamaz, bu nedenle kayıt işlemi devam edemez. Daha önce aktarılmış verilerin silinmesini contact@beavertalk.im adresinden talep edebilirsiniz.';
+
+  @override
+  String get consentTransferColRecipient => 'Alıcı';
+
+  @override
+  String get consentTransferColCountry => 'Ülke';
+
+  @override
+  String get consentTransferColItems => 'Veriler';
+
+  @override
+  String get consentTransferColPurpose => 'Amaç';
+
+  @override
+  String get consentTransferColWhen => 'Zaman ve yöntem';
+
+  @override
+  String get consentTransferColRetention => 'Saklama süresi';
+
+  @override
+  String get consentLeaveTitle => 'Onay vermezseniz oturumunuz kapatılır';
+
+  @override
+  String get consentLeaveLogout => 'Çıkış yap';
+
+  @override
+  String get consentLeaveStay => 'Geri dön ve onayla';
+
+  @override
+  String get consentSubmitFailed =>
+      'Onayınız kaydedilemedi. Lütfen tekrar deneyin.';
+
+  @override
+  String get consentTransferRow1Country => 'ABD ve diğer ülkeler';
+
+  @override
+  String get consentTransferRow1Items =>
+      'Görüşme ses kayıtları, konuşmadan dönüştürülen metinler, ödev görüşmesi özetleri, ders metinleri, telaffuz sonuçları';
+
+  @override
+  String get consentTransferRow1Purpose =>
+      'Yapay zeka ile sesli sohbet, arama özetleri ve çevirisi, ders metni çevirisi, görüşme kartı başlıkları, telaffuz koçluğu ipuçları';
+
+  @override
+  String get consentTransferRow1When =>
+      'Özellik kullanıldığında ağ üzerinden aktarılır';
+
+  @override
+  String get consentTransferRow1Retention =>
+      'İşleme amacına ulaşıldığında hemen silinir';
+
+  @override
+  String get consentTransferRow2Country => 'ABD ve diğer ülkeler';
+
+  @override
+  String get consentTransferRow2Items => 'Telaffuz Mücadelesi ses kayıtları';
+
+  @override
+  String get consentTransferRow2Purpose => 'Konuşma tanıma (STT)';
+
+  @override
+  String get consentTransferRow2When =>
+      'Özellik kullanıldığında ağ üzerinden aktarılır';
+
+  @override
+  String get consentTransferRow2Retention =>
+      'İşleme amacına ulaşıldığında hemen silinir';
+
+  @override
+  String get consentTransferRow3Country => 'ABD';
+
+  @override
+  String get consentTransferRow3Items =>
+      'Kullanım kayıtları, uygulama örneği ID\'si, üye kimlik numarası, cihaz bilgileri';
+
+  @override
+  String get consentTransferRow3Purpose => 'Kullanım istatistikleri analizi';
+
+  @override
+  String get consentTransferRow3When =>
+      'Özellik kullanıldığında ağ üzerinden aktarılır';
+
+  @override
+  String get consentTransferRow3Retention => 'Toplandıktan sonra 14 ay';
+
+  @override
+  String get consentTransferRow4Country => 'ABD';
+
+  @override
+  String get consentTransferRow4Items =>
+      'Anlık bildirim belirteci, bildirim içeriği';
+
+  @override
+  String get consentTransferRow4Purpose => 'Uygulama anlık bildirimleri';
+
+  @override
+  String get consentTransferRow4When =>
+      'Bildirim gönderildiğinde ağ üzerinden aktarılır';
+
+  @override
+  String get consentTransferRow4Retention =>
+      'İşleme amacına ulaşıldığında hemen silinir';
+
+  @override
+  String get consentTransferRow5Country => 'ABD';
+
+  @override
+  String get consentTransferRow5Items =>
+      'iOS anlık bildirim belirteci, bildirim içeriği';
+
+  @override
+  String get consentTransferRow5Purpose => 'iOS anlık bildirimleri';
+
+  @override
+  String get consentTransferRow5When =>
+      'Bildirim gönderildiğinde ağ üzerinden aktarılır';
+
+  @override
+  String get consentTransferRow5Retention =>
+      'İşleme amacına ulaşıldığında hemen silinir';
 }

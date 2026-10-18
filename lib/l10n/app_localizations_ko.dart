@@ -961,13 +961,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get signUp => '회원가입';
 
   @override
-  String get loginTermsNoticePrefix => '계속 진행하면 ';
+  String get loginTermsNoticePrefix => '계속하면 다음 화면에서 ';
 
   @override
-  String get loginTermsNoticeAnd => ' 및 ';
+  String get loginTermsNoticeAnd => '과 ';
 
   @override
-  String get loginTermsNoticeSuffix => '에 동의하게 됩니다.';
+  String get loginTermsNoticeSuffix => ' 동의를 받습니다.';
 
   @override
   String get loginLogIn => '로그인';
@@ -3063,4 +3063,162 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get hwPolicyNoticeOk => '확인';
+
+  @override
+  String get consentTitle => '서비스 이용을 위해 동의해 주세요';
+
+  @override
+  String get consentSubtitle => '필수 항목에 모두 동의해야 비버톡을 쓸 수 있어요.';
+
+  @override
+  String get consentAgreeAll => '전체 동의';
+
+  @override
+  String get consentAge14 => '[필수] 만 14세 이상입니다';
+
+  @override
+  String get consentTerms => '[필수] 이용약관 동의';
+
+  @override
+  String get consentPrivacyCollect => '[필수] 개인정보 수집·이용 동의 (음성 녹음 포함)';
+
+  @override
+  String get consentOverseasTransfer => '[필수] 개인정보 국외 이전 동의';
+
+  @override
+  String get consentView => '보기';
+
+  @override
+  String get consentCta => '동의하고 시작';
+
+  @override
+  String get consentCollectSheetTitle => '개인정보 수집·이용';
+
+  @override
+  String get consentCollectItems =>
+      '수집 항목: 이메일, 소셜 계정 식별값, 통화와 발음 연습 음성 녹음, 음성 인식 텍스트, 학습 기록, 기기 정보';
+
+  @override
+  String get consentCollectPurpose =>
+      '이용 목적: AI 음성 대화, 발음과 억양 분석, 학습 기록 제공, 회원 관리';
+
+  @override
+  String get consentCollectRetention => '보유 기간: 회원 탈퇴 시까지, 법령이 정한 기록은 그 기간까지';
+
+  @override
+  String get consentCollectRefuse => '동의를 거부할 수 있어요. 거부하면 회원가입과 서비스 이용이 불가해요.';
+
+  @override
+  String get consentTransferSheetTitle => '개인정보 국외 이전';
+
+  @override
+  String get consentTransferRefuse =>
+      '국외 이전을 거부할 수 있습니다. 거부하면 AI 음성 대화와 발음 챌린지를 쓸 수 없어 가입이 진행되지 않습니다. 이미 이전된 정보의 삭제는 contact@beavertalk.im 으로 요청할 수 있습니다.';
+
+  @override
+  String get consentTransferColRecipient => '이전받는 자';
+
+  @override
+  String get consentTransferColCountry => '국가';
+
+  @override
+  String get consentTransferColItems => '항목';
+
+  @override
+  String get consentTransferColPurpose => '목적';
+
+  @override
+  String get consentTransferColWhen => '시기와 방법';
+
+  @override
+  String get consentTransferColRetention => '보유 기간';
+
+  @override
+  String get consentLeaveTitle => '동의하지 않으면 로그아웃돼요';
+
+  @override
+  String get consentLeaveLogout => '로그아웃';
+
+  @override
+  String get consentLeaveStay => '돌아가서 동의하기';
+
+  @override
+  String get consentSubmitFailed => '동의를 저장하지 못했어요. 다시 시도해 주세요.';
+
+  @override
+  String get consentTransferRow1Country => '미국 등';
+
+  @override
+  String get consentTransferRow1Items =>
+      '통화 음성 녹음, 음성 변환 텍스트, 과제 통화 요약, 차시 문구, 발음 결과';
+
+  @override
+  String get consentTransferRow1Purpose =>
+      'AI 음성 대화, 통화 요약과 번역, 차시 문구 번역, 통화 카드 제목, 발음 코칭 팁';
+
+  @override
+  String get consentTransferRow1When => '이용 시점 네트워크 전송';
+
+  @override
+  String get consentTransferRow1Retention => '처리 목적 달성 즉시';
+
+  @override
+  String get consentTransferRow2Country => '미국 등';
+
+  @override
+  String get consentTransferRow2Items => '발음 챌린지 음성';
+
+  @override
+  String get consentTransferRow2Purpose => '음성 인식(STT)';
+
+  @override
+  String get consentTransferRow2When => '이용 시점 네트워크 전송';
+
+  @override
+  String get consentTransferRow2Retention => '처리 목적 달성 즉시';
+
+  @override
+  String get consentTransferRow3Country => '미국';
+
+  @override
+  String get consentTransferRow3Items => '이용 기록, 앱 인스턴스 ID, 회원 식별번호, 기기 정보';
+
+  @override
+  String get consentTransferRow3Purpose => '이용 통계 분석';
+
+  @override
+  String get consentTransferRow3When => '이용 시점 네트워크 전송';
+
+  @override
+  String get consentTransferRow3Retention => '수집 후 14개월';
+
+  @override
+  String get consentTransferRow4Country => '미국';
+
+  @override
+  String get consentTransferRow4Items => '푸시 알림 토큰, 알림 내용';
+
+  @override
+  String get consentTransferRow4Purpose => '앱 푸시 알림';
+
+  @override
+  String get consentTransferRow4When => '발송 시점 네트워크 전송';
+
+  @override
+  String get consentTransferRow4Retention => '처리 목적 달성 즉시';
+
+  @override
+  String get consentTransferRow5Country => '미국';
+
+  @override
+  String get consentTransferRow5Items => 'iOS 푸시 알림 토큰, 알림 내용';
+
+  @override
+  String get consentTransferRow5Purpose => 'iOS 푸시 알림';
+
+  @override
+  String get consentTransferRow5When => '발송 시점 네트워크 전송';
+
+  @override
+  String get consentTransferRow5Retention => '처리 목적 달성 즉시';
 }

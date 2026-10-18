@@ -17,6 +17,8 @@ class MemberDto {
     this.onboardingCompleted = false,
     this.reasons,
     this.createdAt,
+    this.consentRequired = false,
+    this.consentVersions = const {},
   });
 
   final int memberId;
@@ -40,8 +42,15 @@ class MemberDto {
   /// `MemberRead.created_at` — present since the endpoint shipped.
   final DateTime? createdAt;
 
+  /// `MemberRead.consent_required`(PM-DEC-735·736). 구서버는 키가 없다 → false.
+  final bool consentRequired;
+
+  /// `MemberRead.consent_versions` — 항목 코드 → 현행 문서 버전. 구서버는 키가 없다 → 빈 맵.
+  final Map<String, String> consentVersions;
+
   factory MemberDto.fromJson(Map<String, dynamic> json) {
     final rawReasons = json['reasons'];
+    final rawVersions = json['consent_versions'];
     return MemberDto(
       memberId: json['member_id'] as int,
       email: json['email'] as String?,
@@ -60,6 +69,13 @@ class MemberDto {
           : null,
       createdAt: DateTime.tryParse(json['created_at'] as String? ?? '')
           ?.toLocal(),
+      consentRequired: json['consent_required'] as bool? ?? false,
+      consentVersions: rawVersions is Map
+          ? {
+              for (final e in rawVersions.entries)
+                e.key.toString(): e.value.toString(),
+            }
+          : const {},
     );
   }
 
@@ -79,5 +95,7 @@ class MemberDto {
         onboardingCompleted: onboardingCompleted,
         reasons: reasons,
         createdAt: createdAt,
+        consentRequired: consentRequired,
+        consentVersions: consentVersions,
       );
 }

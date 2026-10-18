@@ -995,10 +995,11 @@ class AppLocalizationsAr extends AppLocalizations {
   String get signUp => 'إنشاء حساب';
 
   @override
-  String get loginTermsNoticePrefix => 'بالمتابعة، فإنك توافق على ';
+  String get loginTermsNoticePrefix =>
+      'إذا تابعت، فسنطلب منك في الشاشة التالية الموافقة على ';
 
   @override
-  String get loginTermsNoticeAnd => ' و ';
+  String get loginTermsNoticeAnd => ' و';
 
   @override
   String get loginTermsNoticeSuffix => '.';
@@ -3183,4 +3184,170 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get hwPolicyNoticeOk => 'حسنًا';
+
+  @override
+  String get consentTitle => 'يرجى الموافقة لاستخدام الخدمة';
+
+  @override
+  String get consentSubtitle =>
+      'يجب الموافقة على جميع البنود الإلزامية لاستخدام BeaverTalk.';
+
+  @override
+  String get consentAgreeAll => 'الموافقة على الكل';
+
+  @override
+  String get consentAge14 => '[إلزامي] عمري 14 عامًا أو أكثر';
+
+  @override
+  String get consentTerms => '[إلزامي] الموافقة على شروط الخدمة';
+
+  @override
+  String get consentPrivacyCollect =>
+      '[إلزامي] الموافقة على جمع البيانات الشخصية واستخدامها (بما في ذلك التسجيلات الصوتية)';
+
+  @override
+  String get consentOverseasTransfer =>
+      '[إلزامي] الموافقة على نقل البيانات الشخصية إلى الخارج';
+
+  @override
+  String get consentView => 'عرض';
+
+  @override
+  String get consentCta => 'الموافقة والبدء';
+
+  @override
+  String get consentCollectSheetTitle => 'جمع البيانات الشخصية واستخدامها';
+
+  @override
+  String get consentCollectItems =>
+      'البيانات المجمّعة: البريد الإلكتروني، معرّف حساب التواصل الاجتماعي، التسجيلات الصوتية للمكالمات وتمارين النطق، نصوص التعرّف على الكلام، سجل التعلّم، معلومات الجهاز';
+
+  @override
+  String get consentCollectPurpose =>
+      'الغرض من الاستخدام: المحادثات الصوتية مع الذكاء الاصطناعي، تحليل النطق واللكنة، توفير سجل التعلّم، إدارة العضوية';
+
+  @override
+  String get consentCollectRetention =>
+      'مدة الاحتفاظ: حتى حذف الحساب، أما السجلات التي يحدد القانون مدة حفظها فتُحفظ حتى انتهاء تلك المدة';
+
+  @override
+  String get consentCollectRefuse =>
+      'يمكنك رفض الموافقة. إذا رفضت، فلن تتمكن من التسجيل أو استخدام الخدمة.';
+
+  @override
+  String get consentTransferSheetTitle => 'نقل البيانات الشخصية إلى الخارج';
+
+  @override
+  String get consentTransferRefuse =>
+      'يمكنك رفض النقل إلى الخارج. إذا رفضت، فلن تتمكن من استخدام المحادثات الصوتية مع الذكاء الاصطناعي وتحدي النطق، ولذلك لا يمكن متابعة التسجيل. يمكنك طلب حذف البيانات التي نُقلت بالفعل عبر contact@beavertalk.im.';
+
+  @override
+  String get consentTransferColRecipient => 'المستلِم';
+
+  @override
+  String get consentTransferColCountry => 'الدولة';
+
+  @override
+  String get consentTransferColItems => 'البيانات';
+
+  @override
+  String get consentTransferColPurpose => 'الغرض';
+
+  @override
+  String get consentTransferColWhen => 'التوقيت والطريقة';
+
+  @override
+  String get consentTransferColRetention => 'مدة الاحتفاظ';
+
+  @override
+  String get consentLeaveTitle => 'سيتم تسجيل خروجك إذا لم توافق';
+
+  @override
+  String get consentLeaveLogout => 'تسجيل الخروج';
+
+  @override
+  String get consentLeaveStay => 'العودة والموافقة';
+
+  @override
+  String get consentSubmitFailed =>
+      'تعذّر حفظ موافقتك. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get consentTransferRow1Country => 'الولايات المتحدة وغيرها';
+
+  @override
+  String get consentTransferRow1Items =>
+      'التسجيلات الصوتية للمكالمات، النصوص المحوّلة من الكلام، ملخصات مكالمات الواجب، نصوص الدروس، نتائج النطق';
+
+  @override
+  String get consentTransferRow1Purpose =>
+      'المحادثات الصوتية مع الذكاء الاصطناعي، تلخيص المكالمات وترجمتها، ترجمة نصوص الدروس، عناوين بطاقات المكالمات السابقة، نصائح تدريب النطق';
+
+  @override
+  String get consentTransferRow1When => 'الإرسال عبر الشبكة عند استخدام الميزة';
+
+  @override
+  String get consentTransferRow1Retention => 'الحذف فور تحقيق غرض المعالجة';
+
+  @override
+  String get consentTransferRow2Country => 'الولايات المتحدة وغيرها';
+
+  @override
+  String get consentTransferRow2Items => 'صوت تحدي النطق';
+
+  @override
+  String get consentTransferRow2Purpose => 'التعرّف على الكلام (STT)';
+
+  @override
+  String get consentTransferRow2When => 'الإرسال عبر الشبكة عند استخدام الميزة';
+
+  @override
+  String get consentTransferRow2Retention => 'الحذف فور تحقيق غرض المعالجة';
+
+  @override
+  String get consentTransferRow3Country => 'الولايات المتحدة';
+
+  @override
+  String get consentTransferRow3Items =>
+      'سجلات الاستخدام، معرّف مثيل التطبيق (ID)، رقم تعريف العضو، معلومات الجهاز';
+
+  @override
+  String get consentTransferRow3Purpose => 'تحليل إحصاءات الاستخدام';
+
+  @override
+  String get consentTransferRow3When => 'الإرسال عبر الشبكة عند استخدام الميزة';
+
+  @override
+  String get consentTransferRow3Retention => '14 شهرًا بعد الجمع';
+
+  @override
+  String get consentTransferRow4Country => 'الولايات المتحدة';
+
+  @override
+  String get consentTransferRow4Items => 'رمز الإشعارات الفورية، محتوى الإشعار';
+
+  @override
+  String get consentTransferRow4Purpose => 'الإشعارات الفورية للتطبيق';
+
+  @override
+  String get consentTransferRow4When => 'الإرسال عبر الشبكة عند إرسال الإشعار';
+
+  @override
+  String get consentTransferRow4Retention => 'الحذف فور تحقيق غرض المعالجة';
+
+  @override
+  String get consentTransferRow5Country => 'الولايات المتحدة';
+
+  @override
+  String get consentTransferRow5Items =>
+      'رمز الإشعارات الفورية لـ iOS، محتوى الإشعار';
+
+  @override
+  String get consentTransferRow5Purpose => 'الإشعارات الفورية لـ iOS';
+
+  @override
+  String get consentTransferRow5When => 'الإرسال عبر الشبكة عند إرسال الإشعار';
+
+  @override
+  String get consentTransferRow5Retention => 'الحذف فور تحقيق غرض المعالجة';
 }

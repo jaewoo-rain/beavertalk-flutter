@@ -994,13 +994,13 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get loginTermsNoticePrefix =>
-      'Dengan meneruskan, anda bersetuju dengan ';
+      'Jika anda meneruskan, kami akan meminta persetujuan anda terhadap ';
 
   @override
   String get loginTermsNoticeAnd => ' dan ';
 
   @override
-  String get loginTermsNoticeSuffix => '.';
+  String get loginTermsNoticeSuffix => ' pada skrin seterusnya.';
 
   @override
   String get loginLogIn => 'Log masuk';
@@ -3180,4 +3180,183 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get hwPolicyNoticeOk => 'OK';
+
+  @override
+  String get consentTitle =>
+      'Sila beri persetujuan untuk menggunakan perkhidmatan';
+
+  @override
+  String get consentSubtitle =>
+      'Anda perlu bersetuju dengan semua perkara wajib untuk menggunakan BeaverTalk.';
+
+  @override
+  String get consentAgreeAll => 'Setuju semua';
+
+  @override
+  String get consentAge14 => '[Wajib] Saya berumur 14 tahun ke atas';
+
+  @override
+  String get consentTerms => '[Wajib] Persetujuan Terma perkhidmatan';
+
+  @override
+  String get consentPrivacyCollect =>
+      '[Wajib] Persetujuan pengumpulan dan penggunaan maklumat peribadi (termasuk rakaman suara)';
+
+  @override
+  String get consentOverseasTransfer =>
+      '[Wajib] Persetujuan pemindahan maklumat peribadi ke luar negara';
+
+  @override
+  String get consentView => 'Lihat';
+
+  @override
+  String get consentCta => 'Setuju dan mula';
+
+  @override
+  String get consentCollectSheetTitle =>
+      'Pengumpulan dan penggunaan maklumat peribadi';
+
+  @override
+  String get consentCollectItems =>
+      'Perkara yang dikumpul: e-mel, pengecam akaun sosial, rakaman suara panggilan dan latihan sebutan, teks pengecaman suara, rekod pembelajaran, maklumat peranti';
+
+  @override
+  String get consentCollectPurpose =>
+      'Tujuan penggunaan: perbualan suara AI, analisis sebutan dan loghat, penyediaan rekod pembelajaran, pengurusan ahli';
+
+  @override
+  String get consentCollectRetention =>
+      'Tempoh simpanan: sehingga akaun dipadam; rekod yang tempoh simpanannya ditetapkan oleh undang-undang disimpan sehingga tamat tempoh tersebut';
+
+  @override
+  String get consentCollectRefuse =>
+      'Anda boleh menolak persetujuan. Jika anda menolak, anda tidak boleh mendaftar atau menggunakan perkhidmatan.';
+
+  @override
+  String get consentTransferSheetTitle =>
+      'Pemindahan maklumat peribadi ke luar negara';
+
+  @override
+  String get consentTransferRefuse =>
+      'Anda boleh menolak pemindahan ke luar negara. Jika anda menolak, perbualan suara AI dan Cabaran Sebutan tidak dapat digunakan, jadi pendaftaran tidak dapat diteruskan. Pemadaman maklumat yang telah dipindahkan boleh diminta melalui contact@beavertalk.im.';
+
+  @override
+  String get consentTransferColRecipient => 'Penerima';
+
+  @override
+  String get consentTransferColCountry => 'Negara';
+
+  @override
+  String get consentTransferColItems => 'Perkara';
+
+  @override
+  String get consentTransferColPurpose => 'Tujuan';
+
+  @override
+  String get consentTransferColWhen => 'Masa dan cara';
+
+  @override
+  String get consentTransferColRetention => 'Tempoh simpanan';
+
+  @override
+  String get consentLeaveTitle => 'Anda akan dilog keluar jika tidak bersetuju';
+
+  @override
+  String get consentLeaveLogout => 'Log keluar';
+
+  @override
+  String get consentLeaveStay => 'Kembali dan setuju';
+
+  @override
+  String get consentSubmitFailed =>
+      'Persetujuan anda tidak dapat disimpan. Sila cuba lagi.';
+
+  @override
+  String get consentTransferRow1Country => 'Amerika Syarikat dan lain-lain';
+
+  @override
+  String get consentTransferRow1Items =>
+      'Rakaman suara panggilan, teks pengecaman suara, ringkasan panggilan tugasan, teks pelajaran, keputusan sebutan';
+
+  @override
+  String get consentTransferRow1Purpose =>
+      'Perbualan suara AI, ringkasan dan terjemahan panggilan, terjemahan teks pelajaran, tajuk kad rekod panggilan, tip bimbingan sebutan';
+
+  @override
+  String get consentTransferRow1When =>
+      'Dihantar melalui rangkaian semasa penggunaan';
+
+  @override
+  String get consentTransferRow1Retention =>
+      'Dipadam sebaik sahaja tujuan pemprosesan tercapai';
+
+  @override
+  String get consentTransferRow2Country => 'Amerika Syarikat dan lain-lain';
+
+  @override
+  String get consentTransferRow2Items => 'Suara Cabaran Sebutan';
+
+  @override
+  String get consentTransferRow2Purpose => 'Pengecaman suara (STT)';
+
+  @override
+  String get consentTransferRow2When =>
+      'Dihantar melalui rangkaian semasa penggunaan';
+
+  @override
+  String get consentTransferRow2Retention =>
+      'Dipadam sebaik sahaja tujuan pemprosesan tercapai';
+
+  @override
+  String get consentTransferRow3Country => 'Amerika Syarikat';
+
+  @override
+  String get consentTransferRow3Items =>
+      'Rekod penggunaan, ID tika apl, nombor pengenalan ahli, maklumat peranti';
+
+  @override
+  String get consentTransferRow3Purpose => 'Analisis statistik penggunaan';
+
+  @override
+  String get consentTransferRow3When =>
+      'Dihantar melalui rangkaian semasa penggunaan';
+
+  @override
+  String get consentTransferRow3Retention => '14 bulan selepas pengumpulan';
+
+  @override
+  String get consentTransferRow4Country => 'Amerika Syarikat';
+
+  @override
+  String get consentTransferRow4Items =>
+      'Token pemberitahuan push, kandungan pemberitahuan';
+
+  @override
+  String get consentTransferRow4Purpose => 'Pemberitahuan push apl';
+
+  @override
+  String get consentTransferRow4When =>
+      'Dihantar melalui rangkaian semasa pemberitahuan dihantar';
+
+  @override
+  String get consentTransferRow4Retention =>
+      'Dipadam sebaik sahaja tujuan pemprosesan tercapai';
+
+  @override
+  String get consentTransferRow5Country => 'Amerika Syarikat';
+
+  @override
+  String get consentTransferRow5Items =>
+      'Token pemberitahuan push iOS, kandungan pemberitahuan';
+
+  @override
+  String get consentTransferRow5Purpose => 'Pemberitahuan push iOS';
+
+  @override
+  String get consentTransferRow5When =>
+      'Dihantar melalui rangkaian semasa pemberitahuan dihantar';
+
+  @override
+  String get consentTransferRow5Retention =>
+      'Dipadam sebaik sahaja tujuan pemprosesan tercapai';
 }
