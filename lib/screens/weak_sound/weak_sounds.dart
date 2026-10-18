@@ -82,11 +82,12 @@ class _Body extends ConsumerWidget {
     return RefreshIndicator(
       onRefresh: () async => ref.invalidate(weakSoundListProvider),
       child: ListView(
-        padding: const EdgeInsets.fromLTRB(
+        // 바깥 SafeArea 가 bottom:false 라 목록 끝에 OS 인셋을 더한다(PM-DEC-798).
+        padding: EdgeInsets.fromLTRB(
           AppSpacing.s20,
           AppSpacing.s16,
           AppSpacing.s20,
-          AppSpacing.s40,
+          AppSpacing.s40 + MediaQuery.paddingOf(context).bottom,
         ),
         children: [
           if (list.national.country != null)

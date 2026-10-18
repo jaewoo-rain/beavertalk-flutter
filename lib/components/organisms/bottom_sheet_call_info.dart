@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import '../chrome/sheet_bottom_inset.dart';
 import 'package:flutter/material.dart';
 
 import '../../features/normalcall/domain/entities/cur_me.dart';
@@ -162,7 +163,8 @@ class _BottomSheetCallInfoState extends State<BottomSheetCallInfo> {
         color: c.backgroundNormalNormal,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(AppSpacing.s20)),
       ),
-      padding: const EdgeInsets.only(top: AppSpacing.s4, bottom: _sheetBottom),
+      // 아래 = max(34, OS 인셋) — 3버튼 내비(48)에서 행이 내비 뒤로 숨지 않게(PM-DEC-798).
+      padding: EdgeInsets.only(top: AppSpacing.s4, bottom: SheetBottomInset.of(context, floor: _sheetBottom)),
       child: Column(
         mainAxisSize: lessonsTab ? MainAxisSize.max : MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
