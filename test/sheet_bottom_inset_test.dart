@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:beavertalk/components/chrome/sheet_bottom_inset.dart';
+import 'package:beavertalk/components/organisms/bottom_sheet.dart' as sheet;
 import 'package:beavertalk/components/organisms/bottom_sheet_call_info.dart';
 import 'package:beavertalk/l10n/app_localizations.dart';
 import 'package:beavertalk/l10n/app_localizations_en.dart';
@@ -45,5 +46,24 @@ void main() {
       // 카드 안쪽 16 + 시트 아래 여백
       expect(sheet.bottom - body.bottom, want + 16);
     });
+  }
+
+  // 공용 BottomSheet(확인·선택 시트들 · PM-DEC-803) — 아래 = max(24, 인셋 + 12).
+  for (final (inset, want) in [(0.0, 24.0), (34.0, 46.0), (48.0, 60.0)]) {
+    for (final layout in sheet.BottomSheetLayout.values) {
+      testWidgets('공용 BottomSheet $layout — 인셋 $inset → 버튼 아래 $want', (tester) async {
+        await _pump(tester, inset, sheet.BottomSheet(
+          layout: layout,
+          primaryAction: sheet.SheetAction(label: 'OK', onPressed: () {}),
+          secondaryAction: sheet.SheetAction(label: 'Cancel', onPressed: () {}),
+          child: const Text('body'),
+        ));
+        final s = tester.getRect(find.byType(sheet.BottomSheet));
+        final ok = tester.getRect(find.text('OK'));
+        // 시트 아래 ↔ 맨 아래 버튼 글자 아래 = 아래 여백 + (버튼 높이 − 글자 높이)/2 → 버튼 상자로 잰다
+        final btn = tester.getRect(find.ancestor(of: find.text('OK'), matching: find.byWidgetPredicate((w) => w.runtimeType.toString() == 'Button')).first);
+        expect(s.bottom - btn.bottom, want, reason: 'ok=$ok');
+      });
+    }
   }
 }
