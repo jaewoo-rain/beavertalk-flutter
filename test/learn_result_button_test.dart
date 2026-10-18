@@ -42,6 +42,33 @@ LearningSummary _summary(List<SentenceScore> sentences) => LearningSummary(
     );
 
 void main() {
+  group('판정 — 서버 attempted(PM-DEC-761 · call 2022)', () {
+    SentenceScore a(int? score, bool? attempted) => SentenceScore(
+          sentence: '문장',
+          pronunciation: score,
+          fluency: score,
+          rhythm: score,
+          attempted: attempted,
+        );
+    test('녹음했지만 채점 못 한 문장(스텁 · low_speech)도 마친 것으로 센다', () {
+      // 14문장 중 12개가 점수 null 이었다 — 종전 규칙이면 «안 끝남» → 「발음 학습하기」가 다시 떴다.
+      expect(_summary([a(98, true), a(null, true), a(null, true)]).learningFinished, isTrue);
+    });
+    test('녹음하지 않은 문장이 하나라도 있으면 안 끝남', () {
+      expect(_summary([a(98, true), a(null, false)]).learningFinished, isFalse);
+    });
+    test('구형 서버(attempted 키 없음)는 종전처럼 점수로 판정', () {
+      expect(_summary([a(80, null), a(null, null)]).learningFinished, isFalse);
+      expect(_summary([a(80, null), a(60, null)]).learningFinished, isTrue);
+    });
+    test('attempted 를 읽고, 키가 없거나 bool 이 아니면 null', () {
+      expect(SentenceScore.fromJson({'sentence': 'a', 'attempted': true}).attempted, isTrue);
+      expect(SentenceScore.fromJson({'sentence': 'a', 'attempted': false}).attempted, isFalse);
+      expect(SentenceScore.fromJson({'sentence': 'a'}).attempted, isNull);
+      expect(SentenceScore.fromJson({'sentence': 'a', 'attempted': 1}).attempted, isNull);
+    });
+  });
+
   group('판정 — 현지인 표현 포함 모든 항목에 점수', () {
     test('전부 채점 → 마침', () {
       expect(_summary([_s(80), _s(60)]).learningFinished, isTrue);
