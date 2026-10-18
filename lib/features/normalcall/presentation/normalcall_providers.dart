@@ -136,10 +136,17 @@ final curMeProvider = FutureProvider.autoDispose<CurMe>((ref) async {
 void invalidateMemberLanguageData(void Function(ProviderOrFamily) invalidate) {
   invalidate(curMeProvider);
   invalidate(curLessonsProvider);
+  invalidate(curLessonItemsProvider);
 }
 
 /// 그 레벨 차시 목록 — 회화학습 힌트 시트 「차시 목록」 탭(2026-10-10 PM-DEC-485).
 final curLessonsProvider =
     FutureProvider.autoDispose.family<List<CurLessonRow>, int>((ref, level) {
   return ref.watch(normalcallRepositoryProvider).getCurLessons(level: level);
+});
+
+/// 그 차시 표현 목록 — 통화 i 시트 「이번 대화」 표현 행(PM-DEC-780).
+final curLessonItemsProvider =
+    FutureProvider.autoDispose.family<List<CurLessonItem>, int>((ref, no) {
+  return ref.watch(normalcallRepositoryProvider).getCurLessonItems(no);
 });

@@ -2220,6 +2220,13 @@ class AppLocalizationsId extends AppLocalizations {
   String get callRoleplayInfoA11y => 'Lihat situasi dan peran';
 
   @override
+  String get callInfoA11y => 'See call info';
+
+  @override
+  String get callInfoFreeTalkBody =>
+      'Talk freely. The longer your sentences, the more your Korean speaking will improve.';
+
+  @override
   String get fcEndedTitle => 'Panggilan gratis kamu sudah berakhir';
 
   @override

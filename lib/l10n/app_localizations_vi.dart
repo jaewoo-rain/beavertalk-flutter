@@ -2210,6 +2210,13 @@ class AppLocalizationsVi extends AppLocalizations {
   String get callRoleplayInfoA11y => 'Xem tình huống và vai trò';
 
   @override
+  String get callInfoA11y => 'See call info';
+
+  @override
+  String get callInfoFreeTalkBody =>
+      'Talk freely. The longer your sentences, the more your Korean speaking will improve.';
+
+  @override
   String get fcEndedTitle => 'Cuộc gọi miễn phí đã kết thúc';
 
   @override

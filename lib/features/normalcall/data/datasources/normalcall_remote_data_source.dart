@@ -140,6 +140,23 @@ class NormalcallRemoteDataSource {
     ];
   }
 
+  /// `GET /cur/lessons/{no}/items` — 차시 표현 목록(통화 i 시트 · PM-DEC-780).
+  Future<List<CurLessonItem>> getCurLessonItems(int no) async {
+    final res = await _dio.get<Map<String, dynamic>>(ApiEndpoints.curLessonItems(no));
+    final raw = res.data?['items'];
+    return [
+      for (final r in raw is List ? raw : const [])
+        if (r is Map<String, dynamic>) CurLessonItem.fromJson(r),
+    ];
+  }
+
+  /// `POST /cur/items/{id}/tts` — 그 항목 소리의 재생 URL(PM-DEC-796). 서버가 못 만들면 예외.
+  Future<String?> curItemTtsUrl(int itemId) async {
+    final res = await _dio.post<Map<String, dynamic>>(ApiEndpoints.curItemTts(itemId));
+    final url = res.data?['voice_url'];
+    return url is String && url.isNotEmpty ? url : null;
+  }
+
   /// `POST /__dev/cur-reset` — 내 커리큘럼 2단계 진도 백지화(dev 도구).
   ///
   /// ⚠ **루트 경로**다. `/api/v1` 아래가 아니라 `Env.apiRootUrl` 로 절대 URL 을 만들어

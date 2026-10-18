@@ -19,7 +19,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:beavertalk/components/molecules/hint_card.dart';
 import 'package:beavertalk/components/molecules/tooltip_bubble.dart';
-import 'package:beavertalk/components/organisms/bottom_sheet_call_lesson_hint.dart';
+import 'package:beavertalk/components/organisms/bottom_sheet_call_info.dart';
 import 'package:beavertalk/features/normalcall/domain/entities/call_course.dart';
 import 'package:beavertalk/features/normalcall/domain/entities/call_hint.dart';
 import 'package:beavertalk/features/normalcall/domain/entities/cur_me.dart';
@@ -70,6 +70,7 @@ Future<_StubCallController> _pump(
   bool partner = true,
   bool homeworkExpression = false,
   HomeworkRoleplay? homeworkRoleplay,
+  int? assignmentId,
 }) async {
   tester.view.physicalSize = const Size(375, 812);
   tester.view.devicePixelRatio = 1.0;
@@ -82,6 +83,7 @@ Future<_StubCallController> _pump(
     course: course,
     homeworkExpression: homeworkExpression,
     homeworkRoleplay: homeworkRoleplay,
+    assignmentId: assignmentId,
   );
   final controller = _StubCallController(state);
   await tester.pumpWidget(const SizedBox.shrink());
@@ -98,15 +100,22 @@ Future<_StubCallController> _pump(
                 'level_no': 2,
                 'situation': '처음 만난 반 친구와 이름을 묻고 답하기',
                 'situation_translation': 'Ask and answer names with a new classmate',
+                'topic': '인사와 소개',
+                'topic_translation': 'Greetings and introductions',
                 if (partner) 'partner': '한국어 수업에서 처음 만난 반 친구',
                 if (partner)
                   'partner_translation': 'A classmate you just met in Korean class',
+                if (partner) 'learner_role': '이름을 묻는 학생',
               },
               'status': 'expression_done',
             })),
         curLessonsProvider.overrideWith((ref, level) async => [
               for (var no = 4; no <= 7; no++)
                 CurLessonRow(no: no, code: 'A1-T01-$no', levelNo: level, situation: '상황 $no'),
+            ]),
+        curLessonItemsProvider.overrideWith((ref, no) async => const [
+              CurLessonItem(itemId: 11, seq: 1, surface: '안녕하세요', meaning: 'Hello.', role: 'chunk'),
+              CurLessonItem(itemId: 12, seq: 2, surface: '반갑습니다', role: 'chunk'),
             ]),
       ],
       child: MaterialApp(
@@ -235,32 +244,39 @@ void main() {
 
     await tester.tap(_hintToggle);
     await _flush(tester);
-    expect(find.byType(BottomSheetCallLessonHint), findsOneWidget);
+    // PM-DEC-760·793 — 힌트 버튼도 통화 i 시트(회화학습 · 첫 탭 이번 대화)를 연다.
+    expect(find.byType(BottomSheetCallInfo), findsOneWidget);
     expect(_bubble, findsNothing);
     expect(controller.hintOnCalls, isEmpty, reason: '시트를 여는 버튼이지 토글이 아니다');
 
-    // 「이번 대화」 — 상황·번역·상대역·번역이 /cur/me 값 그대로.
+    // 「이번 대화」 — 제목 = 주제 + 번역 · 상황·상대·나 행(라벨 없음) · 값은 /cur/me 그대로.
+    final l10n = AppLocalizations.of(tester.element(find.byType(BottomSheetCallInfo)));
+    expect(find.text('인사와 소개'), findsOneWidget);
+    expect(find.text('Greetings and introductions'), findsOneWidget);
     expect(find.text('처음 만난 반 친구와 이름을 묻고 답하기'), findsOneWidget);
     expect(find.text('Ask and answer names with a new classmate'), findsOneWidget);
     expect(find.text('한국어 수업에서 처음 만난 반 친구'), findsOneWidget);
     expect(find.text('A classmate you just met in Korean class'), findsOneWidget);
+    expect(find.text('이름을 묻는 학생'), findsOneWidget, reason: '나 행(PM-DEC-785)');
+    expect(find.text(l10n.callHintSituation), findsNothing, reason: '라벨 없음(PM-DEC-793)');
+    expect(find.text(l10n.callHintPartner), findsNothing);
 
-    // 「차시 목록」 — 레벨명 A1(level_no 2) · 현재 차시만 「지금 대화」.
-    final l10n = AppLocalizations.of(tester.element(find.byType(BottomSheetCallLessonHint)));
+    // 「차시 목록」 — 레벨명 A1(level_no 2) · 지금 차시만 강조 · 배지 없음.
     await tester.tap(find.text(l10n.callHintTabLessons));
     await _flush(tester);
     expect(find.text('A1'), findsOneWidget);
     expect(find.text('5'), findsOneWidget, reason: '번호는 DB cur_lesson.no 그대로');
-    expect(find.text(l10n.callHintNowBadge), findsOneWidget);
+    expect(find.text(l10n.callHintNowBadge), findsNothing, reason: '「지금 대화」 배지 없음(PM-DEC-793)');
   });
 
   testWidgets('course=freetalk · 구서버(partner 없음) — 상대 줄을 숨긴다', (tester) async {
     await _pump(tester, course: CallCourse.freetalk, partner: false);
     await tester.tap(_hintToggle);
     await _flush(tester);
-    final l10n = AppLocalizations.of(tester.element(find.byType(BottomSheetCallLessonHint)));
+    expect(find.byType(BottomSheetCallInfo), findsOneWidget);
     expect(find.text('처음 만난 반 친구와 이름을 묻고 답하기'), findsOneWidget);
-    expect(find.text(l10n.callHintPartner), findsNothing);
+    expect(find.text('한국어 수업에서 처음 만난 반 친구'), findsNothing, reason: '상대 행 숨김');
+    expect(find.text('이름을 묻는 학생'), findsNothing, reason: 'learner_role 없음 → 나 행 숨김');
   });
 
   testWidgets('course=auto(call_started 전) — 가리지 않는다. 깜빡임 방지', (tester) async {
@@ -306,14 +322,51 @@ void main() {
     expect(find.byType(HintCard), findsOneWidget);
   });
 
-  // PM-DEC-622·623·624 — 역할극 숙제 GNB 왼쪽 i 안내.
+  // PM-DEC-760 — 코스·숙제 통화 5유형 모두 GNB 왼쪽 i 안내(역할극 전용 → 전 유형).
   Finder infoButton(BuildContext ctx) =>
-      find.bySemanticsLabel(AppLocalizations.of(ctx).callRoleplayInfoA11y);
+      find.bySemanticsLabel(AppLocalizations.of(ctx).callInfoA11y);
 
-  testWidgets('homework_roleplay 를 받기 전·일반 통화 — i 버튼 없음', (tester) async {
+  testWidgets('일반 통화(course 없음 · 숙제 아님) — i 버튼 없음', (tester) async {
     await _pump(tester);
     final ctx = tester.element(find.byType(CallScreen));
     expect(infoButton(ctx), findsNothing);
+  });
+
+  for (final (name, course, hwExpr, aid) in <(String, CallCourse?, bool, int?)>[
+    ('표현학습', CallCourse.expression, false, null),
+    ('회화학습', CallCourse.freetalk, false, null),
+    ('자유대화', CallCourse.chat, false, null),
+    ('표현학습 숙제', null, true, 7),
+  ]) {
+    testWidgets('$name — i 버튼이 있다', (tester) async {
+      await _pump(tester, course: course, homeworkExpression: hwExpr, assignmentId: aid);
+      final ctx = tester.element(find.byType(CallScreen));
+      expect(infoButton(ctx), findsOneWidget);
+    });
+  }
+
+  testWidgets('표현학습 — i → 표현 행(뜻 en · 없으면 뜻 줄 없음)과 차시 탭', (tester) async {
+    await _pump(tester, course: CallCourse.expression);
+    final ctx = tester.element(find.byType(CallScreen));
+    await tester.tap(infoButton(ctx));
+    await _flush(tester);
+    await _flush(tester);   // /cur/me 뒤에 차시 표현 목록(family)을 받는다 — 두 단계라 한 번 더 흘린다
+    expect(find.byType(BottomSheetCallInfo), findsOneWidget);
+    expect(find.text('인사와 소개'), findsOneWidget);
+    expect(find.text('안녕하세요'), findsOneWidget);
+    expect(find.text('Hello.'), findsOneWidget);
+    expect(find.text('반갑습니다'), findsOneWidget);
+    expect(find.text(AppLocalizations.of(ctx).callHintTabLessons), findsOneWidget);
+  });
+
+  testWidgets('자유대화 — i → 「자유 대화」 카드 · 탭 없음', (tester) async {
+    await _pump(tester, course: CallCourse.chat);
+    final ctx = tester.element(find.byType(CallScreen));
+    final l10n = AppLocalizations.of(ctx);
+    await tester.tap(infoButton(ctx));
+    await _flush(tester);
+    expect(find.text(l10n.callInfoFreeTalkBody), findsOneWidget);
+    expect(find.text(l10n.callHintTabLessons), findsNothing);
   });
 
   testWidgets('역할극 숙제 — i 버튼 · 시트에 상황·상대·나와 번역이 보이고 힌트는 그대로', (tester) async {
@@ -331,13 +384,13 @@ void main() {
     expect(find.byType(HintCard), findsOneWidget, reason: '힌트는 살린다(PM-DEC-622)');
     await tester.tap(infoButton(ctx));
     await _flush(tester);
-    expect(find.byType(BottomSheetCallRoleplayInfo), findsOneWidget);
-    expect(find.text(l10n.callHintSituation), findsOneWidget);
+    expect(find.byType(BottomSheetCallInfo), findsOneWidget);
+    expect(find.text(l10n.callHintSituation), findsNothing, reason: '라벨 없음(PM-DEC-793)');
     expect(find.text('공원에서 처음 만난 사람에게 사진을 부탁한다'), findsOneWidget);
     expect(find.text('Ask a stranger in the park to take a photo'), findsOneWidget);
     expect(find.text('공원에서 만난 친절한 사람'), findsOneWidget);
     expect(find.text('A kind person you meet in the park'), findsOneWidget);
-    expect(find.text(l10n.callRoleplayMe), findsOneWidget);
+    expect(find.text(l10n.callRoleplayMe), findsNothing, reason: '나 라벨 없음 · 값만');
     expect(find.text('사진을 부탁하는 관광객'), findsOneWidget);
   });
 
@@ -351,7 +404,8 @@ void main() {
     final l10n = AppLocalizations.of(ctx);
     await tester.tap(infoButton(ctx));
     await _flush(tester);
-    expect(find.text('공원 산책과 사진'), findsOneWidget);
+    // 과제 목록이 없으면 제목 자리는 주제 · 상황이 없으면 상황 행도 주제 → 두 곳.
+    expect(find.text('공원 산책과 사진'), findsNWidgets(2));
     expect(find.text(l10n.callRoleplayMe), findsNothing);
   });
 

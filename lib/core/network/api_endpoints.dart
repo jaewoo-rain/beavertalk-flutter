@@ -94,6 +94,12 @@ abstract final class ApiEndpoints {
   /// 차시 목록(no 순) + 내 상태 — `?level=` 로 한 레벨만. 회화학습 힌트 시트 「차시 목록」.
   static const curLessons = '/cur/lessons';
 
+  /// 차시 표현 목록(PM-DEC-780) — 통화 i 시트 「이번 대화」 표현 행.
+  static String curLessonItems(int no) => '/cur/lessons/$no/items';
+
+  /// 차시 표현 항목 소리(PM-DEC-796) — 서명한 재생 URL. 같은 항목은 서버가 한 번만 합성한다.
+  static String curItemTts(int itemId) => '/cur/items/$itemId/tts';
+
   // ── Dev tools (루트 경로 — `/api/v1` 밖) ──
   /// 커리큘럼 2단계 진도 백지화. ⚠ `Env.apiRootUrl` 에 붙인다 — `/api/v1` 아래가 아니다.
   /// `CurrentAdmin` 전용: user 계정은 403 `ADMIN_ONLY`.

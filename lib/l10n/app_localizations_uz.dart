@@ -2225,6 +2225,13 @@ class AppLocalizationsUz extends AppLocalizations {
   String get callRoleplayInfoA11y => 'Vaziyat va rollarni ko\'rish';
 
   @override
+  String get callInfoA11y => 'See call info';
+
+  @override
+  String get callInfoFreeTalkBody =>
+      'Talk freely. The longer your sentences, the more your Korean speaking will improve.';
+
+  @override
   String get fcEndedTitle => 'Bepul qo\'ng\'irog\'ingiz tugadi';
 
   @override

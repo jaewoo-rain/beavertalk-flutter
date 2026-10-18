@@ -2230,6 +2230,13 @@ class AppLocalizationsHu extends AppLocalizations {
   String get callRoleplayInfoA11y => 'Helyzet és szerepek megtekintése';
 
   @override
+  String get callInfoA11y => 'See call info';
+
+  @override
+  String get callInfoFreeTalkBody =>
+      'Talk freely. The longer your sentences, the more your Korean speaking will improve.';
+
+  @override
   String get fcEndedTitle => 'A díjmentes hívásod véget ért';
 
   @override

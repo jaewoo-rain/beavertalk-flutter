@@ -2149,6 +2149,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get callRoleplayInfoA11y => '状況と役割を見る';
 
   @override
+  String get callInfoA11y => 'See call info';
+
+  @override
+  String get callInfoFreeTalkBody =>
+      'Talk freely. The longer your sentences, the more your Korean speaking will improve.';
+
+  @override
   String get fcEndedTitle => '無料通話が終了しました';
 
   @override

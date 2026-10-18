@@ -46,6 +46,12 @@ abstract interface class NormalcallRepository {
   /// `GET /cur/lessons?level=` — 그 레벨 차시 목록(회화학습 힌트 시트 「차시 목록」).
   Future<List<CurLessonRow>> getCurLessons({int? level});
 
+  /// `GET /cur/lessons/{no}/items` — 차시 표현 목록(통화 i 시트 · PM-DEC-780).
+  Future<List<CurLessonItem>> getCurLessonItems(int no);
+
+  /// `POST /cur/items/{id}/tts` — 그 항목 소리의 재생 URL(PM-DEC-796).
+  Future<String?> curItemTtsUrl(int itemId);
+
   /// `POST /__dev/cur-reset` — 내 진도를 지우고 차시 1 로(dev 도구, admin 전용).
   Future<CurResetResult> resetCurriculum();
 

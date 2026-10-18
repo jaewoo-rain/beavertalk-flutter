@@ -4090,6 +4090,18 @@ abstract class AppLocalizations {
   /// **'See situation and roles'**
   String get callRoleplayInfoA11y;
 
+  /// Accessibility label of the i button on every course call (expression, conversation, free talk, homework): opens the call info sheet. Replaces callRoleplayInfoA11y.
+  ///
+  /// In en, this message translates to:
+  /// **'See call info'**
+  String get callInfoA11y;
+
+  /// Call info sheet on a free talk call - the one-line guide under the Free talk label.
+  ///
+  /// In en, this message translates to:
+  /// **'Talk freely. The longer your sentences, the more your Korean speaking will improve.'**
+  String get callInfoFreeTalkBody;
+
   /// Title of the sheet shown when a FREE member hits the 5-minute call limit. The call is over; there is no extend option.
   ///
   /// In en, this message translates to:

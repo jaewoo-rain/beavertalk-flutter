@@ -1511,6 +1511,14 @@
   "@callRoleplayInfoA11y": {
     "description": "Accessibility label of the i button on a roleplay homework call: opens the situation and roles sheet."
   },
+  "callInfoA11y": "See call info",
+  "@callInfoA11y": {
+    "description": "Accessibility label of the i button on every course call (expression, conversation, free talk, homework): opens the call info sheet. Replaces callRoleplayInfoA11y."
+  },
+  "callInfoFreeTalkBody": "Talk freely. The longer your sentences, the more your Korean speaking will improve.",
+  "@callInfoFreeTalkBody": {
+    "description": "Call info sheet on a free talk call - the one-line guide under the Free talk label."
+  },
   "fcEndedTitle": "Your free call has ended",
   "@fcEndedTitle": {
     "description": "Title of the sheet shown when a FREE member hits the 5-minute call limit. The call is over; there is no extend option."
