@@ -146,7 +146,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
     return AppScaffold(
       background: context.c.backgroundNormalNormal,
       // Figma horizontal screen padding is 40px (buttons are 295 wide,
-      // centered in the 375 frame). The 76px top matches the design's
+      // centered in the 375 frame). (옛 값) The 76px top matched the design's
       // vertical position: the (empty/hidden) 56px GNB + 20px body inset,
       // so the avatar lands at screen y≈120 as in node 2117:19693.
       // 로그인만 여백이 40이다(버튼 295가 375 안에 중앙 정렬). 넓어지면 여백이
@@ -154,7 +154,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
       body: ContentColumn(
         gutter: AppSpacing.s40,
         padding: const EdgeInsets.only(
-          top: 76, // Figma top offset (no AppSpacing token)
+          // 바닥 고정 영역(회원가입·약관)이 생겨 76 이면 실기기(411×882dp)에서 이메일 버튼이
+          // 스크롤 끝에 잘렸다(PM-DEC-848). 위는 최소 24 만 두고 남는 높이는 가운데 정렬이 나눈다.
+          top: AppSpacing.s24,
           bottom: AppSpacing.s24,
         ),
         child: Column(
