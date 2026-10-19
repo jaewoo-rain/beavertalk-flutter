@@ -960,13 +960,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get signUp => '新規登録';
 
   @override
-  String get loginTermsNoticePrefix => '続行すると、次の画面で';
+  String get loginTermsNoticePrefix => '続行すると、';
 
   @override
   String get loginTermsNoticeAnd => 'と';
 
   @override
-  String get loginTermsNoticeSuffix => 'への同意をお願いします。';
+  String get loginTermsNoticeSuffix => 'に同意したものとみなされます。';
 
   @override
   String get loginLogIn => 'ログイン';

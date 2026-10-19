@@ -294,7 +294,7 @@
   "loginOrDivider": "o",
   "loginNoAccount": "¿No tienes una cuenta?",
   "signUp": "Registrarse",
-  "loginTermsNoticePrefix": "Si continúas, en la siguiente pantalla te pediremos que aceptes los ",
+  "loginTermsNoticePrefix": "Al continuar, aceptas los ",
   "loginTermsNoticeAnd": " y la ",
   "loginTermsNoticeSuffix": ".",
   "loginLogIn": "Iniciar sesión",

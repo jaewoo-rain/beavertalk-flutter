@@ -983,13 +983,13 @@ class AppLocalizationsMn extends AppLocalizations {
   String get signUp => 'Бүртгүүлэх';
 
   @override
-  String get loginTermsNoticePrefix => 'Үргэлжлүүлбэл дараагийн дэлгэц дээр ';
+  String get loginTermsNoticePrefix => 'Үргэлжлүүлснээр та ';
 
   @override
   String get loginTermsNoticeAnd => ' болон ';
 
   @override
-  String get loginTermsNoticeSuffix => '-д зөвшөөрөл өгөхийг танаас хүснэ.';
+  String get loginTermsNoticeSuffix => '-д зөвшөөрсөнд тооцогдоно.';
 
   @override
   String get loginLogIn => 'Нэвтрэх';

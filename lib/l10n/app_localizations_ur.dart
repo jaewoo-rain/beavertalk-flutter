@@ -987,13 +987,13 @@ class AppLocalizationsUr extends AppLocalizations {
   String get signUp => 'سائن اپ کریں';
 
   @override
-  String get loginTermsNoticePrefix => 'جاری رکھنے پر اگلی اسکرین پر آپ سے ';
+  String get loginTermsNoticePrefix => 'جاری رکھنے پر آپ ';
 
   @override
   String get loginTermsNoticeAnd => ' اور ';
 
   @override
-  String get loginTermsNoticeSuffix => ' پر رضامندی لی جائے گی۔';
+  String get loginTermsNoticeSuffix => ' سے اتفاق کرتے ہیں۔';
 
   @override
   String get loginLogIn => 'لاگ ان';

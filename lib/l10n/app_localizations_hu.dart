@@ -997,14 +997,13 @@ class AppLocalizationsHu extends AppLocalizations {
   String get signUp => 'Regisztráció';
 
   @override
-  String get loginTermsNoticePrefix =>
-      'Ha folytatod, a következő képernyőn kérjük a ';
+  String get loginTermsNoticePrefix => 'Ha folytatod, elfogadod a ';
 
   @override
   String get loginTermsNoticeAnd => ' és az ';
 
   @override
-  String get loginTermsNoticeSuffix => ' elfogadását.';
+  String get loginTermsNoticeSuffix => ' rendelkezéseit.';
 
   @override
   String get loginLogIn => 'Bejelentkezés';

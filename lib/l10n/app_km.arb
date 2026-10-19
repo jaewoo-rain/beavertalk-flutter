@@ -294,7 +294,7 @@
   "loginOrDivider": "ឬ",
   "loginNoAccount": "មិនទាន់មានគណនីមែនទេ?",
   "signUp": "ចុះឈ្មោះ",
-  "loginTermsNoticePrefix": "ប្រសិនបើអ្នកបន្ត នៅអេក្រង់បន្ទាប់ យើងនឹងសុំការយល់ព្រមរបស់អ្នកលើ ",
+  "loginTermsNoticePrefix": "ប្រសិនបើអ្នកបន្ត មានន័យថាអ្នកយល់ព្រមលើ ",
   "loginTermsNoticeAnd": " និង ",
   "loginTermsNoticeSuffix": "។",
   "loginLogIn": "ចូល",

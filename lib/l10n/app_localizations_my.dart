@@ -991,14 +991,13 @@ class AppLocalizationsMy extends AppLocalizations {
   String get signUp => 'အကောင့်ဖွင့်ရန်';
 
   @override
-  String get loginTermsNoticePrefix => 'ဆက်လုပ်ပါက နောက်မျက်နှာပြင်တွင် ';
+  String get loginTermsNoticePrefix => 'ဆက်လုပ်ခြင်းဖြင့် ';
 
   @override
   String get loginTermsNoticeAnd => ' နှင့် ';
 
   @override
-  String get loginTermsNoticeSuffix =>
-      ' အတွက် သင့်သဘောတူညီချက်ကို တောင်းခံပါမည်။';
+  String get loginTermsNoticeSuffix => ' တို့ကို သင် သဘောတူသည်ဟု မှတ်ယူပါမည်။';
 
   @override
   String get loginLogIn => 'လော့ဂ်အင်ဝင်ရန်';

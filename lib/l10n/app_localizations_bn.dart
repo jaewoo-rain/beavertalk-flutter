@@ -984,14 +984,13 @@ class AppLocalizationsBn extends AppLocalizations {
   String get signUp => 'সাইন আপ করুন';
 
   @override
-  String get loginTermsNoticePrefix =>
-      'চালিয়ে গেলে, পরের স্ক্রিনে আমরা আপনার কাছে ';
+  String get loginTermsNoticePrefix => 'চালিয়ে গেলে, আপনি ';
 
   @override
   String get loginTermsNoticeAnd => ' এবং ';
 
   @override
-  String get loginTermsNoticeSuffix => '-তে সম্মতি চাইব।';
+  String get loginTermsNoticeSuffix => 'তে সম্মত হচ্ছেন।';
 
   @override
   String get loginLogIn => 'লগ ইন করুন';

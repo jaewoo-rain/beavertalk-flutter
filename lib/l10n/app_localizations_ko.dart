@@ -961,13 +961,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get signUp => '회원가입';
 
   @override
-  String get loginTermsNoticePrefix => '계속하면 다음 화면에서 ';
+  String get loginTermsNoticePrefix => '계속하면 ';
 
   @override
   String get loginTermsNoticeAnd => '과 ';
 
   @override
-  String get loginTermsNoticeSuffix => ' 동의를 받습니다.';
+  String get loginTermsNoticeSuffix => '에 동의하게 됩니다.';
 
   @override
   String get loginLogIn => '로그인';

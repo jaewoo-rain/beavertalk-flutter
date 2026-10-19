@@ -985,7 +985,7 @@ class AppLocalizationsKm extends AppLocalizations {
 
   @override
   String get loginTermsNoticePrefix =>
-      'ប្រសិនបើអ្នកបន្ត នៅអេក្រង់បន្ទាប់ យើងនឹងសុំការយល់ព្រមរបស់អ្នកលើ ';
+      'ប្រសិនបើអ្នកបន្ត មានន័យថាអ្នកយល់ព្រមលើ ';
 
   @override
   String get loginTermsNoticeAnd => ' និង ';

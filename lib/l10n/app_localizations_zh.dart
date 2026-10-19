@@ -958,7 +958,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get signUp => '注册';
 
   @override
-  String get loginTermsNoticePrefix => '继续后，我们会在下一页请你同意';
+  String get loginTermsNoticePrefix => '继续即表示你同意';
 
   @override
   String get loginTermsNoticeAnd => '和';

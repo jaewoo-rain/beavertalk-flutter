@@ -984,14 +984,13 @@ class AppLocalizationsNe extends AppLocalizations {
   String get signUp => 'साइन अप गर्नुहोस्';
 
   @override
-  String get loginTermsNoticePrefix =>
-      'जारी राख्नुभयो भने, अर्को स्क्रिनमा हामी ';
+  String get loginTermsNoticePrefix => 'जारी राख्नुभयो भने, तपाईं ';
 
   @override
   String get loginTermsNoticeAnd => ' र ';
 
   @override
-  String get loginTermsNoticeSuffix => ' का लागि तपाईंको सहमति माग्नेछौं।';
+  String get loginTermsNoticeSuffix => 'मा सहमत हुनुहुन्छ।';
 
   @override
   String get loginLogIn => 'लगइन गर्नुहोस्';

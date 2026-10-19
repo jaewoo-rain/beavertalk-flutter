@@ -981,13 +981,14 @@ class AppLocalizationsKk extends AppLocalizations {
   String get signUp => 'Тіркелу';
 
   @override
-  String get loginTermsNoticePrefix => 'Жалғастырсаңыз, келесі экранда ';
+  String get loginTermsNoticePrefix => 'Жалғастырсаңыз, ';
 
   @override
   String get loginTermsNoticeAnd => ' және ';
 
   @override
-  String get loginTermsNoticeSuffix => ' бойынша келісіміңізді сұраймыз.';
+  String get loginTermsNoticeSuffix =>
+      ' талаптарымен келіскен болып саналасыз.';
 
   @override
   String get loginLogIn => 'Кіру';

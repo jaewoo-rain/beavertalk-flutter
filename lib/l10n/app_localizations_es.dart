@@ -1009,8 +1009,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get signUp => 'Registrarse';
 
   @override
-  String get loginTermsNoticePrefix =>
-      'Si continúas, en la siguiente pantalla te pediremos que aceptes los ';
+  String get loginTermsNoticePrefix => 'Al continuar, aceptas los ';
 
   @override
   String get loginTermsNoticeAnd => ' y la ';

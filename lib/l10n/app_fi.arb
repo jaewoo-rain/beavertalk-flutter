@@ -294,7 +294,7 @@
   "loginOrDivider": "tai",
   "loginNoAccount": "Eikö sinulla ole tiliä?",
   "signUp": "Rekisteröidy",
-  "loginTermsNoticePrefix": "Jos jatkat, sinua pyydetään seuraavassa näkymässä hyväksymään ",
+  "loginTermsNoticePrefix": "Jatkamalla hyväksyt seuraavat asiakirjat: ",
   "loginTermsNoticeAnd": " ja ",
   "loginTermsNoticeSuffix": ".",
   "loginLogIn": "Kirjaudu sisään",

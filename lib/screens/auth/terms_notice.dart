@@ -5,8 +5,8 @@ import '../../l10n/app_localizations.dart';
 import '../../theme/app_color_tokens.dart';
 import '../../theme/app_typography.dart';
 
-/// 로그인·이메일 가입 화면 하단 안내 — 가입 동의는 이 안내와 링크한 약관·처리방침으로 받는다
-/// (별도 동의 화면 없음 · 10-19 사용자 지시 · 문구는 `loginTermsNotice*`).
+/// 로그인(간편 로그인 버튼 위)·이메일 가입 화면 안내 — 계속하면 링크한 약관·처리방침에 동의한 것으로 본다
+/// (별도 동의 화면 없음 · PM-DEC-816·818·827 · 문구는 `loginTermsNotice*`).
 ///
 /// Bottom consent notice with tappable, underlined "Terms of Service" and
 /// "Privacy Policy" links (Figma `hit/terms` / `hit/privacy` over node

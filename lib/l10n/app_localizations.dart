@@ -1915,7 +1915,7 @@ abstract class AppLocalizations {
   /// No description provided for @loginTermsNoticePrefix.
   ///
   /// In en, this message translates to:
-  /// **'If you continue, we\'ll ask you to agree to the '**
+  /// **'By continuing, you agree to the '**
   String get loginTermsNoticePrefix;
 
   /// No description provided for @loginTermsNoticeAnd.
@@ -1927,7 +1927,7 @@ abstract class AppLocalizations {
   /// No description provided for @loginTermsNoticeSuffix.
   ///
   /// In en, this message translates to:
-  /// **' on the next screen.'**
+  /// **'.'**
   String get loginTermsNoticeSuffix;
 
   /// No description provided for @loginLogIn.

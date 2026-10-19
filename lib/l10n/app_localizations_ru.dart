@@ -994,7 +994,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get loginTermsNoticePrefix =>
-      'Если вы продолжите, на следующем экране мы запросим ваше согласие с документами «';
+      'Продолжая, вы соглашаетесь с документами «';
 
   @override
   String get loginTermsNoticeAnd => '» и «';

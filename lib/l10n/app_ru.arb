@@ -294,7 +294,7 @@
   "loginOrDivider": "или",
   "loginNoAccount": "Нет аккаунта?",
   "signUp": "Зарегистрироваться",
-  "loginTermsNoticePrefix": "Если вы продолжите, на следующем экране мы запросим ваше согласие с документами «",
+  "loginTermsNoticePrefix": "Продолжая, вы соглашаетесь с документами «",
   "loginTermsNoticeAnd": "» и «",
   "loginTermsNoticeSuffix": "».",
   "loginLogIn": "Войти",

@@ -989,8 +989,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get signUp => 'Daftar';
 
   @override
-  String get loginTermsNoticePrefix =>
-      'Jika kamu melanjutkan, di layar berikutnya kami akan meminta persetujuanmu atas ';
+  String get loginTermsNoticePrefix => 'Dengan melanjutkan, kamu menyetujui ';
 
   @override
   String get loginTermsNoticeAnd => ' dan ';

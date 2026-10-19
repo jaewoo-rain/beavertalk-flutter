@@ -977,13 +977,13 @@ class AppLocalizationsTh extends AppLocalizations {
   String get signUp => 'สมัครสมาชิก';
 
   @override
-  String get loginTermsNoticePrefix => 'หากดำเนินการต่อ เราจะขอให้คุณยอมรับ';
+  String get loginTermsNoticePrefix => 'หากดำเนินการต่อ ถือว่าคุณยอมรับ';
 
   @override
   String get loginTermsNoticeAnd => ' และ ';
 
   @override
-  String get loginTermsNoticeSuffix => ' ในหน้าจอถัดไป';
+  String get loginTermsNoticeSuffix => '';
 
   @override
   String get loginLogIn => 'เข้าสู่ระบบ';

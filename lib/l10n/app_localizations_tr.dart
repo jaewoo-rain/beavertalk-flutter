@@ -982,13 +982,13 @@ class AppLocalizationsTr extends AppLocalizations {
   String get signUp => 'Kaydol';
 
   @override
-  String get loginTermsNoticePrefix => 'Devam ederseniz bir sonraki ekranda ';
+  String get loginTermsNoticePrefix => 'Devam ederek ';
 
   @override
   String get loginTermsNoticeAnd => ' ve ';
 
   @override
-  String get loginTermsNoticeSuffix => ' için onayınız istenecek.';
+  String get loginTermsNoticeSuffix => ' metinlerini kabul etmiş sayılırsınız.';
 
   @override
   String get loginLogIn => 'Giriş yap';

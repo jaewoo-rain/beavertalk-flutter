@@ -991,7 +991,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get loginTermsNoticePrefix =>
-      'Jos jatkat, sinua pyydetään seuraavassa näkymässä hyväksymään ';
+      'Jatkamalla hyväksyt seuraavat asiakirjat: ';
 
   @override
   String get loginTermsNoticeAnd => ' ja ';

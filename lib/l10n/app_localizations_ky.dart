@@ -988,13 +988,13 @@ class AppLocalizationsKy extends AppLocalizations {
   String get signUp => 'Катталуу';
 
   @override
-  String get loginTermsNoticePrefix => 'Улантсаңыз, кийинки экранда ';
+  String get loginTermsNoticePrefix => 'Улантсаңыз, ';
 
   @override
   String get loginTermsNoticeAnd => ' жана ';
 
   @override
-  String get loginTermsNoticeSuffix => ' боюнча макулдугуңузду сурайбыз.';
+  String get loginTermsNoticeSuffix => ' менен макул болдуңуз деп эсептелет.';
 
   @override
   String get loginLogIn => 'Кирүү';

@@ -996,11 +996,10 @@ class AppLocalizationsPt extends AppLocalizations {
   String get signUp => 'Cadastre-se';
 
   @override
-  String get loginTermsNoticePrefix =>
-      'Se você continuar, na próxima tela pediremos que você concorde com os ';
+  String get loginTermsNoticePrefix => 'Ao continuar, você concorda com os ';
 
   @override
-  String get loginTermsNoticeAnd => ' e com a ';
+  String get loginTermsNoticeAnd => ' e a ';
 
   @override
   String get loginTermsNoticeSuffix => '.';

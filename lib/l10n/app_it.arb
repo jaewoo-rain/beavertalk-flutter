@@ -294,7 +294,7 @@
   "loginOrDivider": "oppure",
   "loginNoAccount": "Non hai un account?",
   "signUp": "Registrati",
-  "loginTermsNoticePrefix": "Se continui, nella schermata successiva ti chiederemo di accettare i ",
+  "loginTermsNoticePrefix": "Continuando, accetti i ",
   "loginTermsNoticeAnd": " e l'",
   "loginTermsNoticeSuffix": ".",
   "loginLogIn": "Accedi",

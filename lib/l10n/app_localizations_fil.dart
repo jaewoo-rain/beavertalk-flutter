@@ -997,7 +997,7 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get loginTermsNoticePrefix =>
-      'Kung magpapatuloy ka, hihingin namin sa susunod na screen ang pagsang-ayon mo sa ';
+      'Kung magpapatuloy ka, sumasang-ayon ka sa ';
 
   @override
   String get loginTermsNoticeAnd => ' at ';

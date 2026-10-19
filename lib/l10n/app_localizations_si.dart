@@ -986,14 +986,13 @@ class AppLocalizationsSi extends AppLocalizations {
   String get signUp => 'ලියාපදිංචි වන්න';
 
   @override
-  String get loginTermsNoticePrefix =>
-      'ඔබ ඉදිරියට ගියහොත්, ඊළඟ තිරයේදී අපි ඔබෙන් ';
+  String get loginTermsNoticePrefix => 'ඉදිරියට යාමෙන්, ඔබ ';
 
   @override
   String get loginTermsNoticeAnd => ' සහ ';
 
   @override
-  String get loginTermsNoticeSuffix => ' සඳහා එකඟතාව ඉල්ලන්නෙමු.';
+  String get loginTermsNoticeSuffix => ' සඳහා එකඟ වේ.';
 
   @override
   String get loginLogIn => 'ලොග් වන්න';

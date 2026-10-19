@@ -983,13 +983,13 @@ class AppLocalizationsHi extends AppLocalizations {
   String get signUp => 'साइन अप करें';
 
   @override
-  String get loginTermsNoticePrefix => 'जारी रखने पर, अगली स्क्रीन पर आपसे ';
+  String get loginTermsNoticePrefix => 'जारी रखने पर, आप ';
 
   @override
   String get loginTermsNoticeAnd => ' और ';
 
   @override
-  String get loginTermsNoticeSuffix => ' के लिए सहमति ली जाएगी।';
+  String get loginTermsNoticeSuffix => ' स्वीकार करते हैं।';
 
   @override
   String get loginLogIn => 'लॉग इन करें';

@@ -1003,14 +1003,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get signUp => 'Registrieren';
 
   @override
-  String get loginTermsNoticePrefix =>
-      'Wenn du fortfährst, bitten wir dich auf dem nächsten Bildschirm, den ';
+  String get loginTermsNoticePrefix => 'Wenn du fortfährst, stimmst du den ';
 
   @override
   String get loginTermsNoticeAnd => ' und der ';
 
   @override
-  String get loginTermsNoticeSuffix => ' zuzustimmen.';
+  String get loginTermsNoticeSuffix => ' zu.';
 
   @override
   String get loginLogIn => 'Anmelden';

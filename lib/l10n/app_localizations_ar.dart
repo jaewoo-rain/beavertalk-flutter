@@ -995,8 +995,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get signUp => 'إنشاء حساب';
 
   @override
-  String get loginTermsNoticePrefix =>
-      'إذا تابعت، فسنطلب منك في الشاشة التالية الموافقة على ';
+  String get loginTermsNoticePrefix => 'إذا تابعت، فإنك توافق على ';
 
   @override
   String get loginTermsNoticeAnd => ' و';

@@ -294,7 +294,7 @@
   "loginOrDivider": "أو",
   "loginNoAccount": "ليس لديك حساب؟",
   "signUp": "إنشاء حساب",
-  "loginTermsNoticePrefix": "إذا تابعت، فسنطلب منك في الشاشة التالية الموافقة على ",
+  "loginTermsNoticePrefix": "إذا تابعت، فإنك توافق على ",
   "loginTermsNoticeAnd": " و",
   "loginTermsNoticeSuffix": ".",
   "loginLogIn": "تسجيل الدخول",

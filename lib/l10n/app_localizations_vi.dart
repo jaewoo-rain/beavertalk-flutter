@@ -984,14 +984,13 @@ class AppLocalizationsVi extends AppLocalizations {
   String get signUp => 'Đăng ký';
 
   @override
-  String get loginTermsNoticePrefix =>
-      'Nếu tiếp tục, ở màn hình tiếp theo chúng tôi sẽ đề nghị bạn đồng ý với ';
+  String get loginTermsNoticePrefix => 'Bằng việc tiếp tục, bạn đồng ý với ';
 
   @override
   String get loginTermsNoticeAnd => ' và ';
 
   @override
-  String get loginTermsNoticeSuffix => '.';
+  String get loginTermsNoticeSuffix => ' của chúng tôi.';
 
   @override
   String get loginLogIn => 'Đăng nhập';

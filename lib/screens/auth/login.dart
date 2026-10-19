@@ -169,8 +169,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                 children: [
                   // ── Brand block: circular beaver avatar + wordmark ──────────
                   const _LogoBlock(),
-                  // Figma: wordmark bottom → first social button ≈ 46px.
-                  const SizedBox(height: 46), // Figma 46px gap (no AppSpacing token)
+                  // Figma: wordmark bottom → first social button ≈ 46px — 그 사이에 약관 안내를 둔다.
+                  const SizedBox(height: AppSpacing.s24),
+                  // ── Terms notice — 간편 로그인 버튼 바로 위(PM-DEC-818·827) ─────
+                  // 계속하면 약관·처리방침에 동의한 것으로 본다 — 버튼을 누르기 전에 스크롤 없이 보여야 한다.
+                  SizedBox(
+                    width: double.infinity,
+                    child: TermsNotice(onTerms: _goTerms, onPrivacy: _goPrivacy),
+                  ),
+                  const SizedBox(height: AppSpacing.s16),
                   // ── Social sign-in buttons ──────────────────────────────────
                   Button(
                     type: BtnType.secondaryFill,
@@ -223,12 +230,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                   ),
                   // Figma: email button → signup prompt = 16px.
                   const SizedBox(height: AppSpacing.s16),
-                  // ── Signup prompt + terms notice ────────────────────────────
-                  _SignupPrompt(
-                    onSignup: _goSignup,
-                    onTerms: _goTerms,
-                    onPrivacy: _goPrivacy,
-                  ),
+                  // ── Signup prompt ──────────────────────────────────────────
+                  _SignupPrompt(onSignup: _goSignup),
                 ],
               ),
             ),
@@ -290,22 +293,12 @@ class _OrDivider extends StatelessWidget {
   }
 }
 
-/// "Don't have an account? Sign up" row plus the terms/privacy notice.
+/// "Don't have an account? Sign up" row.
 class _SignupPrompt extends StatelessWidget {
-  const _SignupPrompt({
-    required this.onSignup,
-    required this.onTerms,
-    required this.onPrivacy,
-  });
+  const _SignupPrompt({required this.onSignup});
 
   /// Tapped when "Sign up" is pressed.
   final VoidCallback onSignup;
-
-  /// Tapped on the "Terms of Service" link in the consent notice.
-  final VoidCallback onTerms;
-
-  /// Tapped on the "Privacy Policy" link in the consent notice.
-  final VoidCallback onPrivacy;
 
   @override
   Widget build(BuildContext context) {
@@ -332,13 +325,6 @@ class _SignupPrompt extends StatelessWidget {
               ),
             ),
           ],
-        ),
-        // Figma: signup link row → terms notice = 16px.
-        const SizedBox(height: AppSpacing.s16),
-        // Figma left-aligns the terms notice across the full 295px width.
-        SizedBox(
-          width: double.infinity,
-          child: TermsNotice(onTerms: onTerms, onPrivacy: onPrivacy),
         ),
       ],
     );

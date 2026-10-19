@@ -994,13 +994,13 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get loginTermsNoticePrefix =>
-      'Jika anda meneruskan, kami akan meminta persetujuan anda terhadap ';
+      'Dengan meneruskan, anda bersetuju dengan ';
 
   @override
   String get loginTermsNoticeAnd => ' dan ';
 
   @override
-  String get loginTermsNoticeSuffix => ' pada skrin seterusnya.';
+  String get loginTermsNoticeSuffix => ' kami.';
 
   @override
   String get loginLogIn => 'Log masuk';

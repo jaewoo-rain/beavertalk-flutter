@@ -996,14 +996,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get signUp => 'Sign up';
 
   @override
-  String get loginTermsNoticePrefix =>
-      'If you continue, we\'ll ask you to agree to the ';
+  String get loginTermsNoticePrefix => 'By continuing, you agree to the ';
 
   @override
   String get loginTermsNoticeAnd => ' and ';
 
   @override
-  String get loginTermsNoticeSuffix => ' on the next screen.';
+  String get loginTermsNoticeSuffix => '.';
 
   @override
   String get loginLogIn => 'Log in';

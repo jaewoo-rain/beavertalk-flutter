@@ -992,13 +992,13 @@ class AppLocalizationsUz extends AppLocalizations {
   String get signUp => 'Roʻyxatdan oʻtish';
 
   @override
-  String get loginTermsNoticePrefix => 'Davom etsangiz, keyingi ekranda ';
+  String get loginTermsNoticePrefix => 'Davom etsangiz, ';
 
   @override
   String get loginTermsNoticeAnd => ' va ';
 
   @override
-  String get loginTermsNoticeSuffix => 'ga rozilik berishingiz soʻraladi.';
+  String get loginTermsNoticeSuffix => 'ga rozilik bildirgan hisoblanasiz.';
 
   @override
   String get loginLogIn => 'Kirish';
