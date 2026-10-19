@@ -14,6 +14,7 @@ import '../../features/subscription/domain/iap_service.dart';
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_color_tokens.dart';
 import '../../theme/app_typography.dart';
+import '../../components/chrome/sheet_bottom_inset.dart';
 
 /// 윈백 오퍼 시트 — Figma `BottomSheet/Winback`(`6438:4129`) · 모바일 `screen/winback_offer`
 /// (`6192:30463`) · 태블릿 `6268:44613`.
@@ -125,9 +126,7 @@ class WinbackOfferSheet extends StatelessWidget {
             ),
           ),
           // 실제 OS 제스처 바 여백(정본의 HomeIndicator 34 자리 — 공용 시트와 같은 처리).
-          const SafeArea(
-            top: false,
-            minimum: EdgeInsets.only(bottom: 24),
+          const SheetBottomInset(
             child: SizedBox.shrink(),
           ),
         ],

@@ -13,6 +13,7 @@ import '../../l10n/app_localizations.dart';
 import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
+import '../../components/chrome/sheet_bottom_inset.dart';
 
 /// `depth/edit_nickname_depth3` (`4514:5281`) — the nickname editor reached
 /// from the Account card.
@@ -162,9 +163,7 @@ class _EditNicknameScreenState extends ConsumerState<EditNicknameScreen> {
               ),
             ),
           ),
-          const SafeArea(
-            top: false,
-            minimum: EdgeInsets.only(bottom: AppSpacing.s24),
+          const SheetBottomInset(
             child: SizedBox.shrink(),
           ),
         ],

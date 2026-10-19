@@ -2,21 +2,19 @@ import 'package:flutter/material.dart';
 
 import '../../app/adaptive.dart';
 import '../../theme/app_spacing.dart';
+import 'sheet_bottom_inset.dart';
 
 /// Shared bottom-CTA container that gives every screen ONE consistent bottom
 /// inset for its pinned control cluster (button, mic, playback row, …).
 ///
-/// The bottom inset is derived once, here, instead of each screen re-deriving
-/// it: [SafeArea] (`top: false`) honours the OS gesture-bar / home-indicator
-/// inset on native, and its `minimum` bottom of [AppSpacing.s24] guarantees a
-/// 24px floor on web/desktop (where `viewPadding.bottom == 0` and there is no
-/// OS inset to honour). This is exactly what screens used to hand-roll as
-/// `s24 + (viewPadding.bottom == 0 ? HomeIndicator.height : 0)` — but without
-/// double-counting the now-removed fake home-indicator chrome.
+/// The bottom inset is derived once, by [SheetBottomInset]: measured from the
+/// screen bottom it is `max(34, OS inset + 12)` (PM-DEC-807), and it subtracts
+/// whatever an outer [SafeArea] (e.g. AppScaffold's) already added, so it
+/// never double-pads. The old `SafeArea(minimum: 24)` here sat inside
+/// AppScaffold's SafeArea and became `inset + 24` (58 on iPhone).
 ///
 /// The horizontal/top padding (`20 / 12 / 20 / 0`) matches the design's
-/// standard CTA gutter; the bottom is left to [SafeArea] so it never
-/// double-pads.
+/// standard CTA gutter.
 ///
 /// 좌우 여백은 폭을 따라 자란다. 도킹 위치는 그대로 하단이고 **버튼 폭만**
 /// 본문 컬럼(600)에 맞춘다 — 정본 규격의 「810 전폭 버튼은 쓰지 않는다」가
@@ -30,9 +28,7 @@ class BottomCtaBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      top: false,
-      minimum: const EdgeInsets.only(bottom: AppSpacing.s24),
+    return SheetBottomInset(
       child: Padding(
         padding: const EdgeInsets.only(top: AppSpacing.s12),
         child: ContentColumn(child: child),

@@ -119,9 +119,6 @@ const double kCallInfoSheetMaxHeight = 612;
 /// 맨 위 줄 높이(손잡이 + 닫기).
 const double _topBarHeight = 44;
 
-/// 시트 아래 여백(홈 인디케이터) — Figma 34(간격 변수 없음).
-const double _sheetBottom = 34;
-
 class _BottomSheetCallInfoState extends State<BottomSheetCallInfo> {
   late int _tab = widget.hasTabs ? widget.initialTab : 0;
 
@@ -164,7 +161,7 @@ class _BottomSheetCallInfoState extends State<BottomSheetCallInfo> {
         borderRadius: const BorderRadius.vertical(top: Radius.circular(AppSpacing.s20)),
       ),
       // 아래 = max(34, OS 인셋) — 3버튼 내비(48)에서 행이 내비 뒤로 숨지 않게(PM-DEC-798).
-      padding: EdgeInsets.only(top: AppSpacing.s4, bottom: SheetBottomInset.of(context, floor: _sheetBottom)),
+      padding: EdgeInsets.only(top: AppSpacing.s4, bottom: SheetBottomInset.of(context)),
       child: Column(
         mainAxisSize: lessonsTab ? MainAxisSize.max : MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,

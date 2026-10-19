@@ -97,7 +97,7 @@ class LevelUpScreen extends StatelessWidget {
             ),
           ],
         ),
-        // 하단 확인 버튼 — 공통 BottomCtaBar(위 12 · 아래 OS 인셋 위 24)로 둔다(PM-DEC-798).
+        // 하단 확인 버튼 — 공통 BottomCtaBar(위 12 · 아래 max(34, OS 인셋 + 12))로 둔다(PM-DEC-798·807).
         // 예전엔 본문 끝에 맨 ContentColumn 만 두어 안전영역 경계에 그대로 붙었다(사용자 「여백없이 바닥에 붙어있다」).
         bottomBar: BottomCtaBar(
           // 전폭 — BottomCtaBar 안 Padding 은 자식을 늘리지 않아 감싸지 않으면 글자 폭으로 줄어든다.

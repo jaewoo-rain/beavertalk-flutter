@@ -6,11 +6,11 @@ import '../../l10n/app_localizations.dart';
 import '../../theme/app_color_tokens.dart';
 import '../icons/app_icons.dart';
 import '../../theme/app_radius.dart';
-import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 import '../atoms/button.dart';
 import '../atoms/dim.dart';
 import '../molecules/country_select.dart';
+import '../chrome/sheet_bottom_inset.dart';
 
 /// Shared flag rendering for a country/language row. Uses [CountryFlag] SVG
 /// assets (ISO 3166-1 alpha-2) so flags render identically on every platform —
@@ -241,9 +241,7 @@ class BottomSheetCountrySelect extends StatelessWidget {
         // Bottom safe-area inset — clears the real OS gesture bar (replaces the
         // former embedded fake HomeIndicator).
         if (showHomeIndicator)
-          const SafeArea(
-            top: false,
-            minimum: EdgeInsets.only(bottom: AppSpacing.s24),
+          const SheetBottomInset(
             child: SizedBox.shrink(),
           ),
       ],

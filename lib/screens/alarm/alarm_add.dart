@@ -196,8 +196,8 @@ class _SheetMessage extends StatelessWidget {
       width: double.infinity,
       color: context.c.backgroundElevatedAlternative,
       child: ContentColumn(
-        // 시트 맨 아래 띠 — 아래 = max(32, OS 인셋)(PM-DEC-798).
-        padding: EdgeInsets.only(top: 32, bottom: SheetBottomInset.of(context, floor: 32)),
+        // 시트 맨 아래 띠 — 아래 여백은 공통 규칙(SheetBottomInset · PM-DEC-807).
+        padding: EdgeInsets.only(top: 32, bottom: SheetBottomInset.of(context)),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [

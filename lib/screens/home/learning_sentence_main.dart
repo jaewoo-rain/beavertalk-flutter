@@ -4,6 +4,7 @@ import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
+import '../../components/chrome/sheet_bottom_inset.dart';
 import '../../components/molecules/pronunciation_result.dart';
 import '../../components/organisms/gnb.dart';
 import '../../l10n/app_localizations.dart';
@@ -105,12 +106,9 @@ class _LearningSentenceMainScreenState extends State<LearningSentenceMainScreen>
             ),
           ),
           ContentColumn(
-            // Bottom is the literal home-indicator gap (34), not an
-            // AppSpacing token — this screen has no trailing SafeArea /
-            // BottomCtaBar (unlike its learning_intro/learning_next
-            // siblings), so it would otherwise sit flush against the
-            // physical bottom edge on devices with viewPadding.bottom == 0.
-            padding: const EdgeInsets.only(top: AppSpacing.s12, bottom: 34),
+            // 아래 여백은 공통 규칙(SheetBottomInset · max(34, 인셋 + 12) · PM-DEC-807).
+            // 예전 고정 34 는 바깥 SafeArea 위에 더해져 iPhone 에서 68 이었다.
+            padding: EdgeInsets.only(top: AppSpacing.s12, bottom: SheetBottomInset.of(context)),
             child: SizedBox(
               width: double.infinity,
               child: Button(

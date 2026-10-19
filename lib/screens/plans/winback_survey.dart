@@ -7,6 +7,7 @@ import '../../l10n/app_localizations.dart';
 import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
+import '../../components/chrome/sheet_bottom_inset.dart';
 
 /// 윈백 설문 사유 — 화면의 다섯 줄과 같은 순서.
 enum WinbackReason { expensive, unused, missing, otherApp, other }
@@ -155,9 +156,7 @@ class _WinbackSurveyScreenState extends State<WinbackSurveyScreen> {
               ),
             ),
           ),
-          const SafeArea(
-            top: false,
-            minimum: EdgeInsets.only(bottom: AppSpacing.s24),
+          const SheetBottomInset(
             child: SizedBox.shrink(),
           ),
         ],

@@ -97,9 +97,9 @@ void main() {
     });
   });
 
-  // PM-DEC-798 — 확인 버튼이 바닥(안전영역 경계)에 붙지 않는다: OS 인셋 + 24.
-  for (final inset in [0.0, 34.0, 48.0]) {
-    testWidgets('하단 여백 — 아래 인셋 $inset 이면 버튼 아래 = 인셋 + 24', (tester) async {
+  // PM-DEC-798·807 — 확인 버튼 아래 = max(34, OS 인셋 + 12)(시트와 같은 규칙 · 옛 인셋 + 24 아님).
+  for (final (inset, want) in [(0.0, 34.0), (34.0, 46.0), (48.0, 60.0)]) {
+    testWidgets('하단 여백 — 아래 인셋 $inset 이면 버튼 아래 = $want', (tester) async {
       tester.view.physicalSize = const Size(375, 812);
       tester.view.devicePixelRatio = 1.0;
       tester.view.padding = FakeViewPadding(bottom: inset);
@@ -112,7 +112,7 @@ void main() {
       ));
       await tester.pump();
       final btn = tester.getRect(find.byType(Button));
-      expect(812 - btn.bottom, inset + 24);
+      expect(812 - btn.bottom, want);
       expect(btn.width, greaterThan(300), reason: '버튼은 전폭(글자 폭으로 줄지 않음)');
     });
   }

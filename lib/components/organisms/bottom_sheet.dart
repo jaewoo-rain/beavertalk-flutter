@@ -128,8 +128,7 @@ class BottomSheet extends StatelessWidget {
             padding: const EdgeInsets.only(top: _footerTop),
             child: _footer(context),
           ),
-          // 아래 여백 = max(24, OS 인셋 + 12)(PM-DEC-803 · 09-26 규칙 max(인셋, 24) 수정) — 3버튼 내비(48)에서
-          // 버튼이 내비에 닿아 보이던 것. 인셋 0 기기는 24 그대로. 공통 규칙은 SheetBottomInset 한 곳에 둔다.
+          // 아래 여백 = max(34, OS 인셋 + 12)(PM-DEC-807) — 공통 규칙은 SheetBottomInset 한 곳에 둔다.
           SizedBox(height: SheetBottomInset.of(context)),
         ],
       ),
