@@ -10,6 +10,7 @@ import '../../domain/entities/sound_lesson.dart';
 import '../weak_sound_providers.dart';
 import 'learn_header.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../../components/chrome/sheet_bottom_inset.dart';
 
 /// 학습 4단계가 공유하는 껍데기 — 고정 헤더 + 스크롤 본문 + 고정 푸터.
 ///
@@ -135,10 +136,8 @@ class LearnScaffold extends ConsumerWidget {
                 ),
               ),
               if (footer != null && async.valueOrNull != null)
-                SafeArea(
-                  top: false,
+                SheetBottomInset(
                   // 아래 = OS 인셋 위 24(BottomCtaBar 와 같은 규칙 · PM-DEC-798) — 예전 8 은 바닥에 붙어 보였다.
-                  minimum: const EdgeInsets.only(bottom: AppSpacing.s24),
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(
                       AppSpacing.s20,

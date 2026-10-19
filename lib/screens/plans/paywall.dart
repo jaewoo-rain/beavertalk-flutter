@@ -23,6 +23,7 @@ import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 import '../overlays/subscription_overlays.dart';
+import '../../components/chrome/sheet_bottom_inset.dart';
 
 /// Which paywall this is.
 ///
@@ -229,9 +230,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
             ),
           ),
           _stickyCta(l10n, c),
-          const SafeArea(
-            top: false,
-            minimum: EdgeInsets.only(bottom: AppSpacing.s24),
+          const SheetBottomInset(
             child: SizedBox.shrink(),
           ),
         ],

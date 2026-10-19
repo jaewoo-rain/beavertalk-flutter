@@ -7,6 +7,7 @@ import '../../../theme/app_color_tokens.dart';
 import '../../../theme/app_spacing.dart';
 import '../../../theme/app_typography.dart';
 import '../domain/phoneme_diagram.dart';
+import '../../../components/chrome/sheet_bottom_inset.dart';
 
 /// 발음 교정 시트에 실을 내용 한 벌.
 ///
@@ -127,9 +128,7 @@ class _ArticulationSheet extends StatelessWidget {
           ],
           const SizedBox(height: AppSpacing.s20),
           _actions(context, l10n),
-          const SafeArea(
-            top: false,
-            minimum: EdgeInsets.only(bottom: AppSpacing.s24),
+          const SheetBottomInset(
             child: SizedBox.shrink(),
           ),
         ],

@@ -20,6 +20,7 @@ import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 import '../../theme/score_band.dart';
 import '../../l10n/app_localizations.dart';
+import '../../components/chrome/sheet_bottom_inset.dart';
 
 /// 학습 결과 — Figma `17 · learn/result` (`6118:12274`), 예외는 E5(하락)·E8(첫 측정).
 ///
@@ -120,10 +121,8 @@ class LearnResultScreen extends ConsumerWidget {
                     ),
                   ),
                 ),
-              SafeArea(
-                top: false,
+              SheetBottomInset(
                 // 아래 = OS 인셋 위 24(BottomCtaBar 와 같은 규칙 · PM-DEC-798) — 예전 8 은 바닥에 붙어 보였다.
-                minimum: const EdgeInsets.only(bottom: AppSpacing.s24),
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(
                     AppSpacing.s20,

@@ -12,6 +12,7 @@ import '../../../theme/app_radius.dart';
 import '../../../theme/app_spacing.dart';
 import '../../../theme/app_typography.dart';
 import 'assignment_badge.dart';
+import '../../../components/chrome/sheet_bottom_inset.dart';
 
 // 숙제 탭 개편(2026-10-12 확정) 목록 부품 — Figma `8ZSZBmb5wFi6OMZhx8SBaN`
 // 목록 `6677:18145` · 상세 머리 `6692:17037`.
@@ -160,9 +161,7 @@ class _ClassPickerSheet extends StatelessWidget {
         color: c.backgroundElevatedAlternative,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      child: SafeArea(
-        top: false,
-        minimum: const EdgeInsets.only(bottom: AppSpacing.s24),
+      child: SheetBottomInset(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,

@@ -13,6 +13,7 @@ import '../../l10n/app_localizations.dart';
 import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
+import '../../components/chrome/sheet_bottom_inset.dart';
 
 /// 마이페이지 › 설정 › Account 「Nationality」 → 국적 변경 화면. Figma `depth/mypage_nationality`
 /// (`6645:59501` · 변경 후 `6648:16757` · 미선택 `6645:59517` · 태블릿 `6645:59766`).
@@ -159,9 +160,7 @@ class _MyPageNationalityScreenState
               ),
             ),
           ),
-          const SafeArea(
-            top: false,
-            minimum: EdgeInsets.only(bottom: AppSpacing.s24),
+          const SheetBottomInset(
             child: SizedBox.shrink(),
           ),
         ],

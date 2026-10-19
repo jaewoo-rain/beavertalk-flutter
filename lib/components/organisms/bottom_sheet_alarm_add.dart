@@ -11,6 +11,7 @@ import '../layout/need_based_rows.dart';
 import '../../features/alarm/domain/entities/alarm.dart';
 import '../molecules/card_call_mode.dart';
 import 'bottom_sheet_alarm_repeat.dart';
+import '../chrome/sheet_bottom_inset.dart';
 
 /// 알람 추가·편집 시트 — Figma `BottomSheet/AlarmAdd` (`screen/etc_alarm__add`
 /// `6222:20710` · 반복 펼침 `6180:4764` · 상대 펼침 `6180:4865`).
@@ -164,9 +165,7 @@ class _BottomSheetAlarmAddState extends State<BottomSheetAlarmAdd> {
         // Figma 시트 위 모서리 24(= AppRadius.lg) — 반복 선택 화면도 같은 면을 쓴다(09-24 대조).
         borderRadius: const BorderRadius.vertical(top: Radius.circular(AppRadius.lg)),
       ),
-      child: SafeArea(
-        top: false,
-        minimum: const EdgeInsets.only(bottom: 24),
+      child: SheetBottomInset(
         child: ContentColumn(
           gutter: 16,
           padding: const EdgeInsets.only(top: 8),

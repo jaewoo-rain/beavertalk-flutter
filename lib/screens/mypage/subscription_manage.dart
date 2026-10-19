@@ -26,6 +26,7 @@ import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 import '../../components/layout/need_based_rows.dart';
+import '../../components/chrome/sheet_bottom_inset.dart';
 
 /// Subscription management — the eight state screens of spec §4-1, rendered
 /// from one widget because they are one screen with state-driven parts.
@@ -800,9 +801,7 @@ class _TrialExpiredNotice extends StatelessWidget {
               ),
             ),
           ),
-          const SafeArea(
-            top: false,
-            minimum: EdgeInsets.only(bottom: AppSpacing.s24),
+          const SheetBottomInset(
             child: SizedBox.shrink(),
           ),
         ],

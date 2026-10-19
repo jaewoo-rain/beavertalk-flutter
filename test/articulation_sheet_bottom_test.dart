@@ -10,7 +10,7 @@ import 'package:flutter_test/flutter_test.dart';
 ///
 /// 예전에는 `SafeArea` 가 시트 **바깥**을 감싸 시트 전체가 기기 하단 인셋만큼 바닥에서
 /// 떴고(그 아래로 어둡게 비침), 안쪽 하단은 20 이었다. 정본은 시트 면이 화면 바닥에
-/// 닿고, 맨 아래 버튼 ↔ 바닥 = max(인셋, 24)(Figma 34 = 인셋 34 기기).
+/// 닿고, 맨 아래 버튼 ↔ 바닥 = max(34, 인셋 + 12)(PM-DEC-807).
 void main() {
   Future<void> open(WidgetTester tester, {required double inset}) async {
     tester.view.physicalSize = const Size(375, 812);
@@ -50,16 +50,16 @@ void main() {
       .map((e) => tester.getRect(find.byWidget(e.widget)).bottom)
       .reduce((a, b) => a > b ? a : b);
 
-  testWidgets('인셋 34 기기: 시트 면이 바닥에 닿고 버튼 아래 34', (tester) async {
+  testWidgets('인셋 34 기기: 시트 면이 바닥에 닿고 버튼 아래 46', (tester) async {
     await open(tester, inset: 34);
     final sheet = tester.getRect(find.byType(BottomSheet));
     expect(sheet.bottom, 812, reason: '시트가 바닥에서 떠 있다(바깥 SafeArea)');
-    expect(812 - buttonsBottom(tester), 34);
+    expect(812 - buttonsBottom(tester), 46);
   });
 
-  testWidgets('인셋 0 기기: 버튼 아래 최소 24', (tester) async {
+  testWidgets('인셋 0 기기: 버튼 아래 34', (tester) async {
     await open(tester, inset: 0);
     expect(tester.getRect(find.byType(BottomSheet)).bottom, 812);
-    expect(812 - buttonsBottom(tester), 24);
+    expect(812 - buttonsBottom(tester), 34);
   });
 }

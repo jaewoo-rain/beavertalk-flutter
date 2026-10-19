@@ -7,6 +7,7 @@ import '../../theme/app_typography.dart';
 import '../atoms/button.dart';
 import '../icons/app_icons.dart';
 import 'bottom_sheet.dart' show SheetAction;
+import '../chrome/sheet_bottom_inset.dart';
 
 /// Which management action a [SubscriptionActionSheet] presents — the three
 /// `BottomSheet-Subscription` variants the redesign added (spec §3-2, measured
@@ -231,9 +232,7 @@ class SubscriptionActionSheet extends StatelessWidget {
               ),
             ),
           ),
-          const SafeArea(
-            top: false,
-            minimum: EdgeInsets.only(bottom: AppSpacing.s24),
+          const SheetBottomInset(
             child: SizedBox.shrink(),
           ),
         ],

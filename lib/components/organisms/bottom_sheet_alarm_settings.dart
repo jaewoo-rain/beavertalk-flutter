@@ -13,6 +13,7 @@ import '../atoms/day_chip.dart';
 import '../atoms/dim.dart';
 import '../molecules/avatar_card.dart';
 import '../molecules/card_alarm.dart';
+import '../chrome/sheet_bottom_inset.dart';
 
 /// AM / PM選択 value for [BottomSheetAlarmSettings].
 enum Meridiem {
@@ -484,9 +485,7 @@ class BottomSheetAlarmSettings extends StatelessWidget {
         ),
         // Bottom safe-area inset — clears the real OS gesture bar (replaces the
         // former embedded fake HomeIndicator).
-        const SafeArea(
-          top: false,
-          minimum: EdgeInsets.only(bottom: AppSpacing.s24),
+        const SheetBottomInset(
           child: SizedBox.shrink(),
         ),
       ],

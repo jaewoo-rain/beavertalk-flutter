@@ -8,6 +8,7 @@ import '../icons/app_icons.dart';
 import '../molecules/benefit_row.dart';
 import 'bottom_sheet.dart' show SheetAction;
 import '../layout/need_based_rows.dart';
+import '../chrome/sheet_bottom_inset.dart';
 
 /// Content form of a [BottomSheetContent] — the Figma `content=*` variant
 /// (`BottomSheet-Content` `4399:2039`).
@@ -324,9 +325,7 @@ class BottomSheetContent extends StatelessWidget {
             ),
           // Bottom safe-area inset — clears the OS gesture bar, replacing the
           // design frame's fake HomeIndicator (same trade as `BottomSheet`).
-          const SafeArea(
-            top: false,
-            minimum: EdgeInsets.only(bottom: 24),
+          const SheetBottomInset(
             child: SizedBox.shrink(),
           ),
         ],

@@ -1,4 +1,4 @@
-// PM-DEC-798 — 바텀시트 아래 여백은 OS 인셋을 한 번만 세고 floor 보다 작으면 floor.
+// PM-DEC-798·807 — 바텀시트·하단 버튼 아래 여백은 화면 바닥에서 max(34, OS 인셋 + 12) 하나다.
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -24,19 +24,22 @@ Future<void> _pump(WidgetTester tester, double inset, Widget child) async {
 }
 
 void main() {
-  // PM-DEC-803 — max(floor, 인셋 + 12) · 인셋 0 은 floor 그대로.
-  for (final (inset, want) in [(0.0, 24.0), (34.0, 46.0), (48.0, 60.0)]) {
+  // PM-DEC-807 — max(34, 인셋 + 12) · 인셋 0 은 34.
+  for (final (inset, want) in [(0.0, 34.0), (34.0, 46.0), (48.0, 60.0)]) {
     testWidgets('SheetBottomInset — 인셋 $inset → 아래 $want', (tester) async {
       await _pump(tester, inset, const SheetBottomInset(child: SizedBox(key: Key('c'), height: 10, width: 10)));
       expect(812 - tester.getRect(find.byKey(const Key('c'))).bottom, want);
     });
   }
 
-  testWidgets('위쪽 SafeArea 가 인셋을 먹었으면 floor 만(이중 여백 없음)', (tester) async {
-    await _pump(tester, 34, const SafeArea(child: Align(alignment: Alignment.bottomCenter,
-        child: SheetBottomInset(child: SizedBox(key: Key('c'), height: 10, width: 10)))));
-    expect(812 - tester.getRect(find.byKey(const Key('c'))).bottom, 34 + 24);
-  });
+  // 위쪽 SafeArea 가 인셋을 먼저 넣어도(AppScaffold 안 BottomCtaBar) 화면 바닥에서 잰 값은 같다 — 옛 「인셋 + 24」(58) 없음.
+  for (final (inset, want) in [(0.0, 34.0), (34.0, 46.0), (48.0, 60.0)]) {
+    testWidgets('위쪽 SafeArea 안 — 인셋 $inset → 아래 $want(이중 여백 없음)', (tester) async {
+      await _pump(tester, inset, const SafeArea(child: Align(alignment: Alignment.bottomCenter,
+          child: SheetBottomInset(child: SizedBox(key: Key('c'), height: 10, width: 10)))));
+      expect(812 - tester.getRect(find.byKey(const Key('c'))).bottom, want);
+    });
+  }
 
   for (final (inset, want) in [(0.0, 34.0), (34.0, 46.0), (48.0, 60.0)]) {
     testWidgets('통화 i 시트 — 인셋 $inset → 카드 아래 여백 $want', (tester) async {
@@ -48,8 +51,8 @@ void main() {
     });
   }
 
-  // 공용 BottomSheet(확인·선택 시트들 · PM-DEC-803) — 아래 = max(24, 인셋 + 12).
-  for (final (inset, want) in [(0.0, 24.0), (34.0, 46.0), (48.0, 60.0)]) {
+  // 공용 BottomSheet(확인·선택 시트들 · PM-DEC-807) — 아래 = max(34, 인셋 + 12).
+  for (final (inset, want) in [(0.0, 34.0), (34.0, 46.0), (48.0, 60.0)]) {
     for (final layout in sheet.BottomSheetLayout.values) {
       testWidgets('공용 BottomSheet $layout — 인셋 $inset → 버튼 아래 $want', (tester) async {
         await _pump(tester, inset, sheet.BottomSheet(

@@ -25,6 +25,7 @@ import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 import '../overlays/subscription_overlays.dart';
 import 'winback_offer_sheet.dart' show openStoreSubscriptions;
+import '../../components/chrome/sheet_bottom_inset.dart';
 
 /// `depth/purchase_processing` (`4514:5654`) — receipt-confirmation limbo.
 ///
@@ -606,9 +607,7 @@ class _PurchaseSuccessScreenState extends State<PurchaseSuccessScreen> {
               ),
             ),
           ),
-          const SafeArea(
-            top: false,
-            minimum: EdgeInsets.only(bottom: AppSpacing.s24),
+          const SheetBottomInset(
             child: SizedBox.shrink(),
           ),
         ],
@@ -695,9 +694,7 @@ class PlansErrorScreen extends StatelessWidget {
               ),
             ),
           ),
-          const SafeArea(
-            top: false,
-            minimum: EdgeInsets.only(bottom: AppSpacing.s24),
+          const SheetBottomInset(
             child: SizedBox.shrink(),
           ),
         ],
