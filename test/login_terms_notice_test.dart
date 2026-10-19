@@ -56,6 +56,11 @@ void main() {
       expect(find.descendant(of: find.byType(SingleChildScrollView), matching: find.byType(TermsNotice)),
           findsNothing);
       expect(notice.top, greaterThanOrEqualTo(scroll.bottom));
+      // 회원가입 줄도 스크롤 밖 바닥에 고정 — 작은 화면에서도 스크롤 없이 보인다(10-19 사용자 확정).
+      final l10n = AppLocalizations.of(tester.element(find.byType(LoginScreen)));
+      final signup = tester.getRect(find.text(l10n.signUp));
+      expect(signup.top, greaterThanOrEqualTo(scroll.bottom));
+      expect(signup.bottom, lessThan(notice.top));
       expect(notice.top, greaterThanOrEqualTo(0));
       expect(notice.bottom, lessThanOrEqualTo(size.height));
     });

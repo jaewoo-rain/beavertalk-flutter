@@ -225,18 +225,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                     leftIcon: MailIcon(size: 24, color: context.c.primaryOnPrimary),
                     onPressed: _emailLogin,
                   ),
-                  // Figma: email button → signup prompt = 16px.
-                  const SizedBox(height: AppSpacing.s16),
-                  // ── Signup prompt ──────────────────────────────────────────
-                  _SignupPrompt(onSignup: _goSignup),
                 ],
               ),
             ),
           ),
         ),
             ),
-            // ── Terms notice — 화면 맨 아래 고정(10-19 사용자 지시 「아래에 내려」) ─────
-            // 계속하면 약관·처리방침에 동의한 것으로 본다 — 스크롤 밖에 두어 언제나 보이게 한다.
+            // ── Signup prompt + terms notice — 화면 맨 아래 고정(10-19 사용자 지시) ─────
+            // 회원가입 줄은 작은 화면에서도 스크롤 없이 보여야 하고, 계속하면 약관·처리방침에
+            // 동의한 것으로 보므로 안내도 스크롤 밖에 두어 언제나 보이게 한다.
+            // Figma: email button → signup prompt = 16px.
+            const SizedBox(height: AppSpacing.s16),
+            _SignupPrompt(onSignup: _goSignup),
             const SizedBox(height: AppSpacing.s16),
             SizedBox(
               width: double.infinity,
