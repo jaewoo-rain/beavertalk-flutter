@@ -20,15 +20,6 @@ abstract interface class AuthRepository {
     String? actualNationality,
   });
 
-  /// 가입 동의 기록(`POST /members/me/consents`). [versions] 는 서버가 준
-  /// `Member.consentVersions` 그대로다. 갱신된 회원을 돌려준다.
-  Future<Member> submitConsents({
-    required Map<String, String> versions,
-    String? appVersion,
-    String? platform,
-    String? locale,
-  });
-
   /// Fetches the currently authenticated member (`GET /members/me`).
   Future<Member> getMe();
 

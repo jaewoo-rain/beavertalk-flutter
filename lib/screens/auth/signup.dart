@@ -180,7 +180,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen>
                       disabled: _submitting || !_canSubmit,
                       onPressed: _signup,
                     ),
-                    // 가입 직후 온보딩 동의 화면을 지난다 — 여기엔 체크를 두지 않고 안내만(명세 §4-6).
+                    // 동의는 이 약관·처리방침 안내로 받는다 — 별도 동의 화면은 없다(10-19 사용자 지시).
                     const SizedBox(height: AppSpacing.s16),
                     TermsNotice(
                       onTerms: () => Navigator.pushNamed(context, Routes.terms),

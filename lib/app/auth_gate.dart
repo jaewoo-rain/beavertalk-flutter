@@ -10,7 +10,6 @@ import '../features/auth/presentation/providers/my_profile_provider.dart';
 import '../l10n/app_localizations.dart';
 import '../screens/auth/login.dart';
 import '../screens/home/home.dart';
-import '../screens/onboarding/onboarding_consent.dart';
 import '../screens/onboarding/onboarding_language.dart';
 
 /// App entry point. Watches [authControllerProvider] and routes:
@@ -105,14 +104,10 @@ class _AuthGateState extends ConsumerState<AuthGate> {
     return _routeFor(profile.requireValue);
   }
 
-  /// 가입 동의가 먼저다(PM-DEC-735·736) — 신규 가입자(이메일·소셜)와 동의 기록이 없는
-  /// 기존 회원(온보딩 완료자 포함) 모두 홈·온보딩 전에 동의 화면을 지난다.
-  /// Onboarding then starts at the native-language step; it pushes
-  /// nationality → name → reason → done.
+  /// Onboarding starts at the native-language step; it pushes
+  /// nationality → name → reason → done. 동의는 가입·로그인 화면의 약관·처리방침
+  /// 안내로 받는다 — 별도 동의 화면은 두지 않는다(10-19 사용자 지시).
   Widget _routeFor(Member member) {
-    if (member.consentRequired) {
-      return OnboardingConsentScreen(member: member);
-    }
     return member.onboardingCompleted
         ? const HomeScreen()
         : const OnboardingLanguageScreen();

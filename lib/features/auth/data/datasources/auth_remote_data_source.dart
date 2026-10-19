@@ -41,29 +41,6 @@ class AuthRemoteDataSource {
     return MemberDto.fromJson(res.data!);
   }
 
-  /// `POST /members/me/consents` (Bearer) — 가입 동의 필수 4항목을 서버가 준 버전으로 기록한다.
-  /// 응답은 갱신된 회원(`consent_required=false`).
-  Future<MemberDto> submitConsents({
-    required Map<String, String> versions,
-    String? appVersion,
-    String? platform,
-    String? locale,
-  }) async {
-    final res = await _dio.post<Map<String, dynamic>>(
-      ApiEndpoints.membersMeConsents,
-      data: {
-        'items': [
-          for (final e in versions.entries)
-            {'item': e.key, 'version': e.value},
-        ],
-        'app_version': ?appVersion,
-        'platform': ?platform,
-        'locale': ?locale,
-      },
-    );
-    return MemberDto.fromJson(res.data!);
-  }
-
   /// `GET /members/me` — Bearer-protected, returns the current member.
   /// On first call for a new Supabase user the backend find-or-creates them.
   Future<MemberDto> getMe() async {
