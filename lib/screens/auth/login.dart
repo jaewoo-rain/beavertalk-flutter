@@ -157,6 +157,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
           top: 76, // Figma top offset (no AppSpacing token)
           bottom: AppSpacing.s24,
         ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(
         // 남는 높이가 있으면(태블릿) 블록 전체를 세로 가운데에 둔다 — 위에 붙으면 아래 절반이
         // 비었다(10-10 사용자 지시). 폰은 내용이 화면보다 길어 스크롤되므로 위치가 그대로다.
         child: LayoutBuilder(
@@ -169,15 +173,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                 children: [
                   // ── Brand block: circular beaver avatar + wordmark ──────────
                   const _LogoBlock(),
-                  // Figma: wordmark bottom → first social button ≈ 46px — 그 사이에 약관 안내를 둔다.
-                  const SizedBox(height: AppSpacing.s24),
-                  // ── Terms notice — 간편 로그인 버튼 바로 위(PM-DEC-818·827) ─────
-                  // 계속하면 약관·처리방침에 동의한 것으로 본다 — 버튼을 누르기 전에 스크롤 없이 보여야 한다.
-                  SizedBox(
-                    width: double.infinity,
-                    child: TermsNotice(onTerms: _goTerms, onPrivacy: _goPrivacy),
-                  ),
-                  const SizedBox(height: AppSpacing.s16),
+                  // Figma: wordmark bottom → first social button ≈ 46px.
+                  const SizedBox(height: 46), // Figma gap (no AppSpacing token)
                   // ── Social sign-in buttons ──────────────────────────────────
                   Button(
                     type: BtnType.secondaryFill,
@@ -236,6 +233,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
               ),
             ),
           ),
+        ),
+            ),
+            // ── Terms notice — 화면 맨 아래 고정(10-19 사용자 지시 「아래에 내려」) ─────
+            // 계속하면 약관·처리방침에 동의한 것으로 본다 — 스크롤 밖에 두어 언제나 보이게 한다.
+            const SizedBox(height: AppSpacing.s16),
+            SizedBox(
+              width: double.infinity,
+              child: TermsNotice(onTerms: _goTerms, onPrivacy: _goPrivacy),
+            ),
+          ],
         ),
       ),
     );

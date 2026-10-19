@@ -1,5 +1,5 @@
-// 로그인 약관 안내(PM-DEC-818·827·837) — 계속하면 동의한 것으로 보므로, 간편 로그인 버튼 바로 위에
-// 스크롤 없이 전체 문구가 보여야 한다(375×812).
+// 로그인 약관 안내(PM-DEC-818·827·837 · 10-19 사용자 지시 「아래에 내려」) — 화면 맨 아래(가입 안내 밑)에
+// 스크롤 밖에 고정한다 — 계속하면 동의한 것으로 보므로 스크롤 없이 전체 문구가 보여야 한다(375×812).
 
 import 'package:beavertalk/features/auth/presentation/providers/auth_controller.dart';
 import 'package:beavertalk/features/auth/presentation/providers/language_sheet_provider.dart';
@@ -24,8 +24,8 @@ class _Shown extends LanguageSheetShownNotifier {
   bool build() => true;
 }
 
-Future<void> _pump(WidgetTester tester, Locale locale) async {
-  tester.view.physicalSize = const Size(375, 812);
+Future<void> _pump(WidgetTester tester, Locale locale, [Size size = const Size(375, 812)]) async {
+  tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1.0;
   addTearDown(tester.view.reset);
   await tester.pumpWidget(ProviderScope(
@@ -45,15 +45,19 @@ Future<void> _pump(WidgetTester tester, Locale locale) async {
 }
 
 void main() {
-  for (final locale in const [Locale('ko'), Locale('en')]) {
-    testWidgets('${locale.languageCode}: 안내가 간편 로그인 버튼 위 · 화면 안에 전부 보임', (tester) async {
-      await _pump(tester, locale);
-      final l10n = AppLocalizations.of(tester.element(find.byType(LoginScreen)));
+  for (final (locale, size) in const [
+    (Locale('ko'), Size(375, 812)), (Locale('en'), Size(375, 812)),
+    (Locale('ko'), Size(360, 640)), (Locale('en'), Size(360, 640)),
+  ]) {
+    testWidgets('${locale.languageCode} ${size.width.toInt()}×${size.height.toInt()}: 안내가 스크롤 영역 아래 고정 · 화면 안에 전부 보임', (tester) async {
+      await _pump(tester, locale, size);
       final notice = tester.getRect(find.byType(TermsNotice));
-      final kakao = tester.getRect(find.text(l10n.loginContinueWithKakao));
-      expect(notice.bottom, lessThan(kakao.top));
+      final scroll = tester.getRect(find.byType(SingleChildScrollView));
+      expect(find.descendant(of: find.byType(SingleChildScrollView), matching: find.byType(TermsNotice)),
+          findsNothing);
+      expect(notice.top, greaterThanOrEqualTo(scroll.bottom));
       expect(notice.top, greaterThanOrEqualTo(0));
-      expect(notice.bottom, lessThanOrEqualTo(812));
+      expect(notice.bottom, lessThanOrEqualTo(size.height));
     });
   }
 
