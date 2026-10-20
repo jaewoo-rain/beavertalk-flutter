@@ -1,7 +1,8 @@
 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<!-- Figma `info` (6738:1510), Size=24 variant (6738:1498). alert(4395:1387) bar/dot flipped vertically. PM-DEC-623. -->
+<!-- Figma `info` (6738:1510), Size=24 variant (6738:1498). 2026-10-20 교체: 원 테두리 i · 채움 도형 · 선 2(=크기/12) · lightbulb·subtitle 규격. -->
 <g id="info">
-<circle id="dot" cx="12" cy="5.04" r="1" fill="#111111"/>
-<path id="bar" d="M12 10.08V18.96" stroke="#111111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="ring" fill-rule="evenodd" clip-rule="evenodd" d="M12 2a10 10 0 1 0 0 20a10 10 0 1 0 0-20zM12 4a8 8 0 1 1 0 16a8 8 0 1 1 0-16z" fill="#111111"/>
+<rect id="bar" x="11" y="11" width="2" height="6" fill="#111111"/>
+<rect id="dot" x="11" y="7" width="2" height="2" fill="#111111"/>
 </g>
 </svg>

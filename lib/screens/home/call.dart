@@ -13,7 +13,7 @@ import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
 import '../../components/atoms/call_toggle_button.dart';
 import '../../components/atoms/skeleton.dart';
-import '../../features/normalcall/presentation/widgets/script_card.dart';
+import '../../features/normalcall/presentation/widgets/script_band.dart';
 import '../../components/atoms/speaking_equalizer.dart';
 import '../../components/icons/app_icons.dart';
 import '../../components/chrome/home_indicator.dart';
@@ -208,8 +208,17 @@ class _CallScreenState extends ConsumerState<CallScreen> {
     _hideHintLocked();
   }
 
+  // PM-DEC-893 — 대본 읽기 통화(서버가 script_* 를 보낼 때)면 자막 자리를 띠로 바꾸고 자막·힌트 버튼을 잠근다.
+  void _onScriptBand() {
+    final on = ScriptBand.state.value != null;
+    if (on != _scriptMode && mounted) setState(() => _scriptMode = on);
+  }
+
+  bool _scriptMode = false;
+
   @override
   void dispose() {
+    ScriptBand.state.removeListener(_onScriptBand);
     GestureBinding.instance.pointerRouter.removeGlobalRoute(_onGlobalPointer);
     _hintLockedTimer?.cancel();
     // 통화가 끝나도 플레이어가 열려 있으면 오디오 세션을 계속 붙들고 있다.
@@ -347,6 +356,8 @@ class _CallScreenState extends ConsumerState<CallScreen> {
   @override
   void initState() {
     super.initState();
+    ScriptBand.reset(); // 새 통화 화면 — 지난 통화 띠를 지운다
+    ScriptBand.state.addListener(_onScriptBand);
     GestureBinding.instance.pointerRouter.addGlobalRoute(_onGlobalPointer);
     // Catch up on a transition that landed before this screen mounted. `ref.listen`
     // only fires on *change*, so a call that ended during the route push would
@@ -1108,6 +1119,16 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                       // `reverse: true` 라 내용이 칸을 넘으면 **아래쪽부터**
                       // 보인다. 힌트 카드가 맨 아래라, 넘칠 때 잘리는 쪽은
                       // 카드가 아니라 자막 윗줄이어야 한다 — 종전은 반대였다.
+                      if (_scriptMode)
+                        // 대본 읽기 자막 띠(PM-DEC-893) — 화면 전체 폭 · 힌트 카드 없음.
+                        ConstrainedBox(
+                          constraints: BoxConstraints(maxHeight: captionMax),
+                          child: const SingleChildScrollView(
+                            reverse: true,
+                            child: ScriptBand(),
+                          ),
+                        )
+                      else
                       ConstrainedBox(
                         constraints: BoxConstraints(maxHeight: captionMax),
                         child: SingleChildScrollView(
@@ -1218,8 +1239,6 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                 },
               ),
             ),
-            // 대본 읽기 시제품 카드(PM-DEC-877) — 서버가 script_line 을 보낼 때만 보인다.
-            const ScriptCard(),
             // Footer — Figma `footer/main_call`(`5958:17701`). 실측 2026-09-13.
             //
             // **한 줄이다.** 종전엔 토글 3개를 오른쪽에 몰고 종료 버튼을 32 아래
@@ -1243,7 +1262,9 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                   // 레이아웃을 먹지 않으니 네 버튼의 간격은 그대로다. 위치는 시안
                   // 실측: 말풍선 x20 · 버튼 x32 → 시작 −12, 버튼 위 6 → 아래 56+6.
                   // 방향성([PositionedDirectional])이라 RTL 에서도 버튼을 가리킨다.
-                  Stack(
+                  _ScriptLocked(
+                    locked: _scriptMode,
+                    child: Stack(
                     key: _hintButtonKey,
                     clipBehavior: Clip.none,
                     children: [
@@ -1305,9 +1326,12 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                       ),
                     ],
                   ),
-                  CallToggleButton(
+                  ),
+                  _ScriptLocked(
+                    locked: _scriptMode,
+                    child: CallToggleButton(
                     icon: AppIcons.cc,
-                    active: subtitleOn,
+                    active: subtitleOn && !_scriptMode,
                     // 실측(`4986:19722`)은 **`Label/Neutral`** 면 + 흰 글리프다
                     // (Light #505050 · Dark #777C89). 민트가 아니다 — 자막은
                     // 힌트처럼 강조할 기능이 아니라 **켜짐만 보이면 되는** 토글
@@ -1320,6 +1344,7 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                     onChanged: (v) => ref
                         .read(normalCallControllerProvider.notifier)
                         .setSubtitleOn(v),
+                  ),
                   ),
                   _MicToggleButton(
                     muted: micMuted,
@@ -1763,4 +1788,17 @@ class _SlashPainter extends CustomPainter {
   @override
   bool shouldRepaint(_SlashPainter old) =>
       old.color != color || old.progress != progress;
+}
+
+/// 대본 읽기 통화의 자막·힌트 버튼(PM-DEC-893 · 사용자 결정) — 자리는 그대로, 투명도 0.4 · 눌러도 반응 없음.
+class _ScriptLocked extends StatelessWidget {
+  const _ScriptLocked({required this.locked, required this.child});
+
+  final bool locked;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => locked
+      ? IgnorePointer(child: Opacity(opacity: 0.4, child: child))
+      : child;
 }
