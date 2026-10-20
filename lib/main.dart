@@ -16,6 +16,7 @@ import 'core/device/client_info.dart';
 import 'core/i18n/locale_controller.dart';
 import 'core/i18n/server_messages.dart';
 import 'core/network/supabase_config.dart';
+import 'core/network/test_server.dart';
 import 'features/subscription/presentation/providers/subscription_state_providers.dart';
 import 'l10n/app_localizations.dart';
 import 'theme/app_color_tokens.dart';
@@ -52,6 +53,9 @@ Future<void> main() async {
     // No .env bundled / parse error → fall through to dart-define/platform
     // and the public Supabase fallback constants.
   }
+  // 시험 빌드 전용 서버 선택(PM-DEC-875) — `.env` 에 TEST_SERVERS 가 있을 때만. 운영 빌드는 지나간다.
+  final testServers = TestServer.options();
+  if (testServers.isNotEmpty) await TestServer.pick(testServers);
   // Supabase persists + auto-refreshes its own session; the backend verifies
   // the issued access token. URL/key are public (env-or-fallback).
   await Supabase.initialize(

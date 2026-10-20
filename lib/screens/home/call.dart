@@ -12,6 +12,7 @@ import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
 import '../../components/atoms/call_toggle_button.dart';
 import '../../components/atoms/skeleton.dart';
+import '../../core/network/test_server.dart';
 import '../../components/atoms/speaking_equalizer.dart';
 import '../../components/icons/app_icons.dart';
 import '../../components/chrome/home_indicator.dart';
@@ -852,6 +853,18 @@ class _CallScreenState extends ConsumerState<CallScreen> {
         // Stack 으로 감싸고 막을 맨 위에 둔다.
         body: Stack(
           children: [
+            // 시험 빌드 전용(PM-DEC-875) — 고른 시험 서버 이름. 운영 빌드는 null 이라 안 그린다.
+            if (TestServer.name != null)
+              Positioned(
+                top: 0,
+                left: 8,
+                child: IgnorePointer(
+                  child: Text(
+                    '시험 서버: ${TestServer.name}',
+                    style: AppType.caption2.r.copyWith(color: context.c.labelAlternative),
+                  ),
+                ),
+              ),
             Column(
           children: [
             // Header — connected dot + name + live timer. 오른쪽 끝에 잠금 버튼
