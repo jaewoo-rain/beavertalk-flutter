@@ -13,6 +13,7 @@ import '../../components/atoms/button.dart';
 import '../../components/atoms/call_toggle_button.dart';
 import '../../components/atoms/skeleton.dart';
 import '../../core/network/test_server.dart';
+import '../../features/normalcall/presentation/widgets/script_card.dart';
 import '../../components/atoms/speaking_equalizer.dart';
 import '../../components/icons/app_icons.dart';
 import '../../components/chrome/home_indicator.dart';
@@ -1226,6 +1227,8 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                 },
               ),
             ),
+            // 대본 읽기 시제품 카드(PM-DEC-877) — 서버가 script_line 을 보낼 때만 보인다.
+            const ScriptCard(),
             // Footer — Figma `footer/main_call`(`5958:17701`). 실측 2026-09-13.
             //
             // **한 줄이다.** 종전엔 토글 3개를 오른쪽에 몰고 종료 버튼을 32 아래
