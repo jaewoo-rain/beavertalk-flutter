@@ -5240,6 +5240,7 @@ class NormalCallController extends Notifier<CallState> {
       case 'script_beaver':
       case 'script_line':
       case 'script_say':
+      case 'script_turn':
       case 'script_result':
       case 'script_end':
         ScriptBand.apply(msg);

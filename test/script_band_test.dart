@@ -38,7 +38,10 @@ void main() {
     await tester.pump();
     expect(find.text(k('아니요, 괜찮아요.')), findsOneWidget);
     expect(find.text("No, it's fine."), findsOneWidget);
-    expect(bandColor(tester), c.accentBackgroundRed.withValues(alpha: 0.8));
+    expect(bandColor(tester), c.labelAlternative.withValues(alpha: 0.8)); // 준비 회색(아직 말하지 않음)
+    ScriptBand.apply({'type': 'script_turn', 'n': 3});
+    await tester.pump();
+    expect(bandColor(tester), c.accentBackgroundRed.withValues(alpha: 0.8)); // 지금 말하세요
 
     ScriptBand.apply({'type': 'script_say', 'kind': 'angry', 'text': "That's not it. Read it again.", 'sec': 0.5});
     await tester.pump();
@@ -48,8 +51,19 @@ void main() {
 
     ScriptBand.apply({'type': 'script_line', 'n': 3, 'total': 11, 'ko': '아니요, 괜찮아요.', 'roman': 'Aniyo, gwaenchanayo.',
         'en': "No, it's fine.", 'attempt': 2});
+    ScriptBand.apply({'type': 'script_turn', 'n': 3});
     await tester.pump();
     expect(bandColor(tester), c.accentBackgroundRed.withValues(alpha: 0.9));
+  });
+
+  testWidgets('script_turn 이 안 오면 3초 뒤 빨강으로 바꾼다', (tester) async {
+    await pump(tester);
+    final c = AppColorTokens.light;
+    ScriptBand.apply({'type': 'script_line', 'n': 1, 'total': 11, 'ko': '와, 맛있겠네요.', 'roman': '', 'en': 'Wow.', 'attempt': 1});
+    await tester.pump();
+    expect(bandColor(tester), c.labelAlternative.withValues(alpha: 0.8));
+    await tester.pump(const Duration(seconds: 3));
+    expect(bandColor(tester), c.accentBackgroundRed.withValues(alpha: 0.8));
   });
 
   testWidgets('영어 클립은 sec 뒤 직전 줄로 돌아간다 · end 는 그대로', (tester) async {
@@ -62,6 +76,8 @@ void main() {
     expect(find.text(k('와, 맛있겠네요.')), findsOneWidget);
     ScriptBand.apply({'type': 'script_say', 'kind': 'end', 'text': 'All done!', 'sec': 0.3});
     await tester.pump(const Duration(milliseconds: 400));
+    expect(find.text('All done!'), findsOneWidget);
+    await tester.pump(const Duration(seconds: 3)); // 말할 차례 대체 타이머를 흘려 보낸다(영어 클립이 떠 있으면 띠는 그대로)
     expect(find.text('All done!'), findsOneWidget);
   });
 

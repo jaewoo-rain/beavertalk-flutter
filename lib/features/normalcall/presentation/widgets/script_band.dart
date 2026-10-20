@@ -10,7 +10,8 @@ import '../../../../theme/app_typography.dart';
 /// 원래 자막 자리에 화면 전체 폭 띠 하나를 그린다. 바바가 말하면 파랑, 학습자 차례면 빨강이다.
 /// 서버(시험 서버 scriptrd)가 클립 재생 시작 시각에 맞춰 보내는 메시지로만 그린다.
 /// - `script_beaver` — 바바 줄(뜻 · 한국어 · 로마자)
-/// - `script_line` — 학습자 줄. `attempt` 2 면 다시 읽기(바탕 투명도 0.9)
+/// - `script_line` — 학습자 줄. 먼저 회색(준비 · 아직 말하지 않음)으로 보인다. `attempt` 2 면 다시 읽기(빨강 0.9)
+/// - `script_turn` — 지금 말할 차례(서버가 듣기 시작) → 빨강. 신호가 늦으면 [_turnFallback] 뒤 빨강으로 바꾼다
 /// - `script_say` — 바바 영어 클립 문장. `sec` 뒤 직전 줄로 돌아간다(`end` 는 그대로 둔다)
 ///
 /// 운영 서버는 이 메시지를 보내지 않으므로 운영 통화에서는 [state] 가 늘 null 이다.
@@ -22,11 +23,17 @@ class ScriptBand extends StatelessWidget {
 
   static ScriptBandState? _line;
   static Timer? _sayTimer;
+  static Timer? _turnTimer;
+
+  /// `script_turn` 이 안 오면 회색 줄을 이만큼 뒤 빨강으로 바꾼다(요청서 §2 「신호 없으면 재생 끝에 빨강」).
+  static const _turnFallback = Duration(seconds: 3);
 
   /// 새 통화 화면 — 지난 통화의 띠를 지운다.
   static void reset() {
     _sayTimer?.cancel();
     _sayTimer = null;
+    _turnTimer?.cancel();
+    _turnTimer = null;
     _line = null;
     state.value = null;
   }
@@ -38,14 +45,19 @@ class ScriptBand extends StatelessWidget {
     if (type == 'script_beaver' || type == 'script_line') {
       final beaver = type == 'script_beaver';
       _sayTimer?.cancel();
+      _turnTimer?.cancel();
       _line = ScriptBandState(
         beaver: beaver,
         ko: s('ko'),
         roman: s('roman'),
         gloss: beaver ? s('gloss') : s('en'),
         retry: !beaver && ((msg['attempt'] as num?)?.toInt() ?? 1) >= 2,
+        ready: !beaver,
       );
       state.value = _line;
+      if (!beaver) _turnTimer = Timer(_turnFallback, _speakNow);
+    } else if (type == 'script_turn') {
+      _speakNow();
     } else if (type == 'script_say') {
       _sayTimer?.cancel();
       state.value = ScriptBandState.say(s('text'));
@@ -59,6 +71,15 @@ class ScriptBand extends StatelessWidget {
     // script_result · script_end 는 소리(클립)가 상태를 보여 준다 — 띠는 위 세 메시지로만 바뀐다.
   }
 
+  /// 회색(준비) 줄 → 빨강(지금 말하세요).
+  static void _speakNow() {
+    _turnTimer?.cancel();
+    final l = _line;
+    if (l == null || l.beaver || !l.ready) return;
+    _line = l.speaking();
+    if (state.value?.sayText == null) state.value = _line;
+  }
+
   /// 한국어를 어절 중간에서 끊지 않게 글자 사이에 WORD JOINER 를 넣는다(요청서 §3 「좋/아해요」 금지).
   static String keepWords(String text) =>
       text.split(' ').map((w) => w.split('').join('⁠')).join(' ');
@@ -70,7 +91,8 @@ class ScriptBand extends StatelessWidget {
       builder: (context, s, _) {
         if (s == null) return const SizedBox.shrink();
         final c = context.c;
-        final base = s.beaver ? c.accentForegroundBlue : c.accentBackgroundRed;
+        // 바바 파랑 · 내 줄 준비 회색(Label/Alternative) · 말할 차례 빨강(PM-DEC-895 · 정본 05 6823:24807)
+        final base = s.beaver ? c.accentForegroundBlue : (s.ready ? c.labelAlternative : c.accentBackgroundRed);
         final white = c.staticWhite;
         return Column(
           mainAxisSize: MainAxisSize.min,
@@ -86,7 +108,7 @@ class ScriptBand extends StatelessWidget {
             Container(
               key: const ValueKey('script-band'),
               width: double.infinity,
-              color: base.withValues(alpha: s.retry ? 0.9 : 0.8),
+              color: base.withValues(alpha: s.retry && !s.ready ? 0.9 : 0.8),
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
               child: s.sayText != null
                   ? Text(s.sayText!,
@@ -118,6 +140,7 @@ class ScriptBandState {
     required this.roman,
     required this.gloss,
     this.retry = false,
+    this.ready = false,
   }) : sayText = null;
 
   /// 바바 영어 클립 문장(01) — 파랑 띠 · 뜻 없음.
@@ -127,6 +150,7 @@ class ScriptBandState {
         roman = '',
         gloss = '',
         retry = false,
+        ready = false,
         sayText = text;
 
   final bool beaver;
@@ -136,5 +160,11 @@ class ScriptBandState {
 
   /// 1회 틀린 뒤 같은 줄(04) — 바탕 투명도 0.9.
   final bool retry;
+
+  /// 내 줄 준비(회색 · 아직 말하지 않음). `script_turn` 에서 false(빨강)가 된다.
+  final bool ready;
   final String? sayText;
+
+  ScriptBandState speaking() =>
+      ScriptBandState(beaver: beaver, ko: ko, roman: roman, gloss: gloss, retry: retry);
 }
