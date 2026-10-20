@@ -23,6 +23,7 @@ import '../../components/organisms/dialog_basic.dart';
 import '../../components/organisms/dialog_share_profile.dart';
 import '../../components/organisms/gnb.dart';
 import '../../core/error/app_exception.dart';
+import '../../core/network/test_server.dart';
 import '../../core/i18n/country_names.dart';
 import '../../features/auth/domain/entities/accent_breakdown.dart';
 import '../../features/auth/domain/entities/level_summary.dart';
@@ -171,7 +172,8 @@ class MyPageScreen extends ConsumerWidget {
                   const SizedBox(height: AppSpacing.s24),
                   // 숙제 진입점 — 형제 지표 카드 뒤 마지막 자리(Figma 실측).
                   const HomeworkClassCard(),
-                  if (kDebugMode) ...[
+                  // 시험 빌드(TestServer · PM-DEC-875)도 그린다 — admin plan_override(premium) 영상통화 시험용. 운영 릴리스는 그대로 없음.
+                  if (kDebugMode || TestServer.name != null) ...[
                     const SizedBox(height: AppSpacing.s24),
                     _devToolsCard(context),
                   ],
