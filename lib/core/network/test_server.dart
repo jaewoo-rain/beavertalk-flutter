@@ -4,11 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-typedef TestServerOption = ({String name, String url});
+/// [course] 는 홈 통화 버튼이 걸 코스(wire 값 · 비면 앱 기본). [url] 이 `-` 면 「준비 중」(누를 수 없음).
+typedef TestServerOption = ({String name, String url, String? course});
 
 /// 시험 빌드 전용 서버 선택(PM-DEC-875).
 ///
-/// `.env` 에 `TEST_SERVERS=이름|URL;이름|URL` 이 있을 때만 켜진다 — 운영 빌드 `.env` 에는
+/// `.env` 에 `TEST_SERVERS=이름|URL|코스;이름|URL|코스` 가 있을 때만 켜진다 — 운영 빌드 `.env` 에는
 /// 이 키가 없어 [options] 가 비고, 앱은 지금과 똑같이 뜬다.
 /// 고른 URL 은 `API_BASE_URL` 자리에 덮어쓴다. dio·WS 주소가 만들어지기 전(앱 시작)에만 고르므로
 /// 서버를 바꾸려면 앱을 껐다 켠다.
@@ -18,6 +19,9 @@ abstract final class TestServer {
   /// 고른 서버 이름. 시험 빌드가 아니면 null — 통화 화면 표시도 이걸로 가린다.
   static String? name;
 
+  /// 고른 선택지의 코스(wire 값). 홈 통화 버튼이 이 코스로 바로 건다(PM-DEC-882). null 이면 앱 기본.
+  static String? course;
+
   static List<TestServerOption> options() {
     if (!dotenv.isInitialized) return const [];
     final raw = dotenv.maybeGet('TEST_SERVERS')?.trim() ?? '';
@@ -26,8 +30,11 @@ abstract final class TestServer {
       for (final part in raw.split(';'))
         if (part.contains('|'))
           (
-            name: part.substring(0, part.indexOf('|')).trim(),
-            url: part.substring(part.indexOf('|') + 1).trim(),
+            name: part.split('|')[0].trim(),
+            url: part.split('|')[1].trim(),
+            course: part.split('|').length > 2 && part.split('|')[2].trim().isNotEmpty
+                ? part.split('|')[2].trim()
+                : null,
           ),
     ];
   }
@@ -47,6 +54,7 @@ abstract final class TestServer {
     await prefs.setString(_prefKey, s.name);
     dotenv.env['API_BASE_URL'] = s.url;
     name = s.name;
+    course = s.course;
   }
 }
 
@@ -78,8 +86,11 @@ class _PickerApp extends StatelessWidget {
                       minimumSize: const Size.fromHeight(56),
                       backgroundColor: s.name == last ? null : Colors.blueGrey,
                     ),
-                    onPressed: () => onPick(s),
-                    child: Text(s.name == last ? '${s.name}  (지난번)' : s.name, style: const TextStyle(fontSize: 17)),
+                    onPressed: s.url == '-' ? null : () => onPick(s),
+                    child: Text(
+                      s.url == '-' ? '${s.name}  (준비 중)' : (s.name == last ? '${s.name}  (지난번)' : s.name),
+                      style: const TextStyle(fontSize: 17),
+                    ),
                   ),
                   const SizedBox(height: 12),
                 ],

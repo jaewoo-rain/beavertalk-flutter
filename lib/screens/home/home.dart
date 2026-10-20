@@ -11,6 +11,7 @@ import '../../components/molecules/hero_avatar.dart';
 import '../../components/organisms/home_gnb.dart';
 import '../../components/organisms/home_header_mode.dart';
 import '../../core/error/app_exception.dart';
+import '../../core/network/test_server.dart';
 import '../../features/normalcall/domain/entities/call_course.dart';
 import '../../features/normalcall/presentation/normalcall_controller.dart';
 import '../../features/normalcall/presentation/normalcall_providers.dart';
@@ -60,9 +61,11 @@ class HomeScreen extends ConsumerWidget {
   /// ⭐ **대화 모드는 `chat` 으로 건다**(사장님 정의 2026-09-22: 학습 = 커리큘럼,
   ///   대화 = 제한 없는 자유 대화). 진도 게이트가 없다 — [CallCourse.chat] 참조.
   Future<void> _startCall(BuildContext context, WidgetRef ref) async {
-    final course = ref.read(homeModeProvider) == HomeMode.talk
-        ? CallCourse.chat
-        : CallCourse.auto;
+    // 시험 빌드(PM-DEC-882) — 고른 시험 서버의 코스로 바로 건다. 운영 빌드는 TestServer.course 가 null.
+    final course = CallCourse.fromWire(TestServer.course) ??
+        (ref.read(homeModeProvider) == HomeMode.talk
+            ? CallCourse.chat
+            : CallCourse.auto);
     final status = await Permission.microphone.request();
     if (!context.mounted) return;
     if (!status.isGranted) {
