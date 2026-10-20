@@ -63,6 +63,7 @@ import 'cascade_experiment.dart'
         CascadeMicToFile,
         CallPlaybackGainOff;
 import 'normalcall_providers.dart';
+import 'widgets/script_card.dart';
 
 /// `call_ended.call_id` 정규화 — **빈 값은 없는 것**이다.
 ///
@@ -5235,6 +5236,12 @@ class NormalCallController extends Notifier<CallState> {
           _log('stt_rollover: reason=$reason '
               '${gap is int ? 'gap=${gap}ms' : ''} — 다음 턴부터 새 스트림');
         }
+      // 대본 읽기 시제품(PM-DEC-877 · 시험 서버) — 카드 상태만 갱신한다. 운영 서버는 이 메시지를 보내지 않는다.
+      case 'script_line':
+      case 'script_result':
+      case 'script_end':
+        ScriptCard.apply(msg);
+
       case '__test_cancel_report':
         // dev 왕복 계측 회신(가짜 비버 취소). 앱 UI 는 없다 — 로그로만 받는다.
         _log('__test_cancel_report: $msg');
