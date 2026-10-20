@@ -531,6 +531,13 @@ class MyPageScreen extends ConsumerWidget {
                   Expanded(
                     child: _devCallCell(context, plan, CallCourse.freetalk),
                   ),
+                  // 시험 빌드 전용(PM-DEC-873) — 자유대화(chat)도 플랜을 골라 건다. 디버그 행렬 시험은 그대로 2칸.
+                  if (TestServer.name != null) ...[
+                    const SizedBox(width: AppSpacing.s8),
+                    Expanded(
+                      child: _devCallCell(context, plan, CallCourse.chat),
+                    ),
+                  ],
                 ],
               ),
             ],
