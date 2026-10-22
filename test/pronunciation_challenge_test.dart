@@ -200,6 +200,28 @@ void main() {
       expect(e.backlog, 0, reason: 'grace must not count as a miss yet');
     });
 
+    test('PM-DEC-1017(G) — after the round ends, only lateJudge lets the last word count', () {
+      final e = _seededEngine();
+      e.start();
+      final c = ChallengeCard(
+        id: 1,
+        word: '사과',
+        k: GameConfig.kMiss,
+        state: CardState.grace,
+        graceLeft: GameConfig.graceSec,
+      );
+      e.cards
+        ..clear()
+        ..add(c);
+      e.endGame();
+      expect(e.tryPassToken('사과'), isFalse, reason: 'ended round rejects speech by default');
+      e.lateJudge = true; // the screen opens this while waiting for STT's last final
+      expect(e.tryPassToken('사과'), isTrue);
+      expect(c.state, CardState.pass);
+      e.lateJudge = false;
+      expect(e.running, isFalse, reason: 'lateJudge never restarts the round');
+    });
+
     test('a grace word still passes, at the late-point ratio', () {
       final e = _seededEngine();
       e.start();

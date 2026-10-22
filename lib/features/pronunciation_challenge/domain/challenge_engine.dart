@@ -46,6 +46,12 @@ class ChallengeEngine {
   /// Whether the session is actively running.
   bool running = false;
 
+  /// PM-DEC-951·1017(G) — 판이 끝난 직후 STT 마지막 결과(final)를 기다리는 동안만 켠다.
+  /// 이때 온 말은 판정한다(마지막 말이 버려지지 않게) · 새 카드 생성·시계는 [running] 이 그대로 막는다.
+  bool lateJudge = false;
+
+  bool get _judging => running || lateJudge;
+
   /// Seconds left in the session.
   double sessionLeft = GameConfig.sessionSec.toDouble();
 
@@ -331,7 +337,7 @@ class ChallengeEngine {
   /// 같은 단어가 누적 전사에 거듭 나와도 한 번만 깨지게 하는 것은 호출부
   /// `SttService._matchSpoken`(`_clearedThisStream`)이 맡는다.
   bool tryPassToken(String token) {
-    if (!running) return false;
+    if (!_judging) return false;
     for (final c in _judgeable()) {
       if (wordMatch(token, c.word)) {
         passCard(c);
@@ -346,7 +352,7 @@ class ChallengeEngine {
   /// learned **sentences** (DB-sourced) rather than single nouns — the player
   /// speaks the whole sentence and it clears. Returns whether one passed.
   bool tryPassSentence(String transcript) {
-    if (!running) return false;
+    if (!_judging) return false;
     for (final c in _judgeable()) {
       if (sentenceMatch(transcript, c.word)) {
         passCard(c);

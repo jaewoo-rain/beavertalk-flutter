@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:record/record.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../core/network/ws_connect.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 import '../../../core/network/ws_url.dart';
@@ -155,6 +156,20 @@ class SttService {
   WebSocketChannel? _ws;
   StreamSubscription<dynamic>? _wsSub;
 
+  /// PM-DEC-951·1017(G) — `stop` 을 보낸 뒤 서버의 `done`(마지막 final 까지 보냈다) 또는 소켓 닫힘을 기다린다.
+  Completer<void>? _stopWaiter;
+
+  /// stop 뒤 마지막 결과를 기다리는 상한. 서버 상한(STOP_DRAIN_S 3초)보다 짧게 — 옛 서버는 done 을 안 보내고 바로 닫는다.
+  static const Duration _stopDrainTimeout = Duration(milliseconds: 2500);
+
+  /// 지금 마이크를 서버로 흘리는 중인가(판 끝에 마지막 결과를 기다릴지 정한다).
+  bool get isListening => _active && _ws != null;
+
+  void _completeStop() {
+    final w = _stopWaiter;
+    if (w != null && !w.isCompleted) w.complete();
+  }
+
   bool _disposed = false;
 
   /// True from a successful [startListening] until [stopListening]/[dispose]/a
@@ -301,7 +316,7 @@ class SttService {
         debugPrint('SttService: 세션 토큰 없음 → tap fallback');
         return false;
       }
-      final channel = WebSocketChannel.connect(Uri.parse(pronSttWsUrl(token)));
+      final channel = await connectWithAuth(pronSttWsUrl(token), token);   // PM-DEC-1017
       _ws = channel;
       await channel.ready.timeout(_connectTimeout);
 
@@ -319,9 +334,13 @@ class SttService {
         (dynamic data) => _onWsMessage(data, settle),
         onError: (Object e) {
           debugPrint('STT ws error: $e');
+          _completeStop();
           onClosed();
         },
-        onDone: onClosed,
+        onDone: () {
+          _completeStop();
+          onClosed();
+        },
         cancelOnError: true,
       );
 
@@ -401,6 +420,10 @@ class SttService {
         // client-side silence rollover, which usually fires first).
         if (type == 'final') _rolloverStream();
         break;
+      case 'done':
+        // PM-DEC-1017 — 서버가 stop 뒤 마지막 final 까지 다 보냈다.
+        _completeStop();
+        break;
       case 'error':
         debugPrint('STT server error → tap fallback: ${msg['error']}');
         settle(false);
@@ -471,9 +494,14 @@ class SttService {
     } catch (_) {}
     final ws = _ws;
     if (ws != null) {
+      final waiter = _stopWaiter = Completer<void>();
       try {
         ws.sink.add(jsonEncode(<String, dynamic>{'type': 'stop'}));
+        // PM-DEC-951·1017(G) — 바로 닫지 않는다: 서버가 마지막 final 을 흘리고 done 을 보낼 때까지(상한 2.5초)
+        //   구독을 살려 둔다. 그 final 은 [_onWsMessage] → [_matchSpoken] 으로 평소처럼 판정된다.
+        await waiter.future.timeout(_stopDrainTimeout, onTimeout: () {});
       } catch (_) {}
+      _stopWaiter = null;
     }
     await _teardownWs();
     micLevel.value = 0;

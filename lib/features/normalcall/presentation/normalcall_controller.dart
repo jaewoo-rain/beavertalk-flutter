@@ -29,6 +29,7 @@ import 'package:flutter_sound/flutter_sound.dart';
 //   ⚠ 별칭을 쓴다 — 두 패키지가 `AudioSource`·`Codec` 같은 이름을 겹쳐 갖는다.
 import 'package:record/record.dart' as rec;
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../core/network/ws_connect.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 import '../../../core/analytics/app_analytics.dart';
@@ -1932,7 +1933,7 @@ class NormalCallController extends Notifier<CallState> {
           ? '연결 통로: cascade → ${_channelMode.wsPath} '
               '(마이크 상시개방 · Android 통화용 오디오=항상 켬)'
           : '연결 통로: live → ${_channelMode.wsPath}');
-      final channel = WebSocketChannel.connect(Uri.parse(url));
+      final channel = await connectWithAuth(url, token);   // PM-DEC-1017 — 토큰은 Sec-WebSocket-Protocol(안 되면 쿼리 1회)
       _channel = channel;
       _wsSub = channel.stream.listen(
         _onWsData,
@@ -5596,7 +5597,7 @@ class NormalCallController extends Notifier<CallState> {
     _askedContinueId = carriedCallId;
     try {
       final url = callStreamWsUrl(token: token, cascade: _channelMode.isCascade);
-      final channel = WebSocketChannel.connect(Uri.parse(url));
+      final channel = await connectWithAuth(url, token);   // PM-DEC-1017 — 토큰은 Sec-WebSocket-Protocol(안 되면 쿼리 1회)
       _wsSub = channel.stream.listen(
         _onWsData,
         onDone: _onWsDone,

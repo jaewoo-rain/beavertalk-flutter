@@ -95,6 +95,9 @@ class _PronunciationChallengeScreenState
   /// Whether STT is driving input this round (false → tap fallback active).
   bool _sttActive = false;
 
+  /// PM-DEC-1017(G) — 판 끝에 STT 마지막 결과를 기다리는 중(결과 화면을 잠깐 미룬다 · 상한 2.5초).
+  bool _endingStt = false;
+
   /// Whether the player opted to screen-record this run (start-panel toggle).
   ///
   /// On by default where recording exists at all; forced off elsewhere.
@@ -224,20 +227,37 @@ class _PronunciationChallengeScreenState
 
   /// Detects the running→ended transition to reveal the result panel.
   void _onFrame() {
-    if (_phase == _Phase.playing && !_controller.engine.running) {
+    if (_phase == _Phase.playing && !_controller.engine.running && !_endingStt) {
       _countdownTimer?.cancel();
-      unawaited(_stt.stopListening());
       _sttActive = false;
-      // Finalize the clip (if any) before showing the result panel so the
-      // Share button can offer the MP4.
-      if (_recorder.isRecording) {
-        _recorder.stop().then((path) {
-          if (mounted) setState(() => _videoPath = path);
-        });
+      if (_stt.isListening) {
+        // PM-DEC-951·1017(G) — 결과 화면 전에 마지막 말(final)을 받아 판정한다(상한 2.5초).
+        _endingStt = true;
+        _controller.engine.lateJudge = true;
+        unawaited(_stt.stopListening().whenComplete(() {
+          _controller.engine.lateJudge = false;
+          _endingStt = false;
+          if (mounted) _showResult();
+        }));
+        return;
       }
-      setState(() => _phase = _Phase.result);
-      _logCompleted('game_over');
+      unawaited(_stt.stopListening());
+      _showResult();
     }
+  }
+
+  /// 판 끝 — 녹화 정리 · 결과 화면 · GA4(종전 [_onFrame] 몸통).
+  void _showResult() {
+    if (_phase != _Phase.playing) return;
+    // Finalize the clip (if any) before showing the result panel so the
+    // Share button can offer the MP4.
+    if (_recorder.isRecording) {
+      _recorder.stop().then((path) {
+        if (mounted) setState(() => _videoPath = path);
+      });
+    }
+    setState(() => _phase = _Phase.result);
+    _logCompleted('game_over');
   }
 
   /// GA4 `challenge_completed`. [endedBy] = `game_over`(게임이 스스로 끝남) · `user`(「결과 보기」).
