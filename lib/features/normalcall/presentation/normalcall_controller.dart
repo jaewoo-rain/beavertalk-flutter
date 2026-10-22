@@ -54,7 +54,14 @@ import '../domain/entities/call_hint.dart';
 import '../domain/entities/playback_ledger.dart';
 import '../domain/pcm_gain.dart';
 import 'avatar_assets.dart'
-    show kIdleWait, kIdleListen, kIdleThink, kEmotionExciting, kEmotionLaugh;
+    show
+        kIdleWait,
+        kIdleListen,
+        kIdleThink,
+        kReactCorrect,
+        kReactWrong,
+        kReactWow,
+        kReactComplete;
 import 'cascade_auto_talk.dart';
 import 'cascade_experiment.dart'
     show
@@ -3957,13 +3964,13 @@ class NormalCallController extends Notifier<CallState> {
   int _rxStartMs = 0;
   int _rxId = 0;
 
-  /// 반응 종류 → 반응 클립 감정 코드. 임시 클립(반응클립4종 · 통화용 laugh) — 최종 영상이 오면 여기만 바꾼다.
+  /// 반응 종류 → 반응 클립 감정 코드(shorts 최종 4종 · 없는 캐릭터는 [SyncAvatar] 가 임시 클립으로 내린다).
+  /// ⛔ 자유대화 웃음(laugh) 반응은 없다(PM-DEC-1021) — 서버가 보내지 않고, 오더라도 모르는 종류로 버린다.
   static const Map<String, int> _rxEmotion = {
-    'correct': kEmotionExciting,
-    'wrong': kEmotionLaugh,
-    'pron': kEmotionExciting,
-    'script': kEmotionExciting,
-    'laugh': kEmotionLaugh,
+    'correct': kReactCorrect,
+    'wrong': kReactWrong,
+    'pron': kReactWow,
+    'script': kReactComplete,
   };
 
   /// 서버 `reaction{kind, duration_ms, id}` — 반응 영상+효과음을 그 길이만큼 재생한다.

@@ -14,6 +14,11 @@ import 'avatar_assets.dart'
         kEmotionLaugh,
         kEmotionExciting,
         kEmotionCrying,
+        kReactCorrect,
+        kReactWrong,
+        kReactWow,
+        kReactComplete,
+        kReactionFallback,
         kIdleWait,
         kIdleListen,
         kIdleThink;
@@ -224,6 +229,11 @@ class _SyncAvatarState extends State<SyncAvatar> {
     // 학습 반응 전용(무발화). 통화용 `emo_*` 와 같은 폴더에 공존하는 다른 자산이다.
     kEmotionExciting: 'react_exciting',
     kEmotionCrying: 'react_crying',
+    // 통화 반응 전용(PM-DEC-1019) — [reaction] 으로만 연다. 바바·비비만 있다.
+    kReactCorrect: 'react_call_correct',
+    kReactWrong: 'react_call_wrong',
+    kReactWow: 'react_call_wow',
+    kReactComplete: 'react_call_complete',
   };
 
   /// 대기 클립 3종. **하나의 슬롯**에서 갈아끼운다(디코더 3개 한계).
@@ -1063,7 +1073,13 @@ class _SyncAvatarState extends State<SyncAvatar> {
     await _freeEmoSlot('반응 자리 확보');
     await _flushRetiring('반응 열기');
     final name = _emoAsset[code];
-    final c = name == null ? null : await _open(name, loop: true, play: true);
+    var c = name == null ? null : await _open(name, loop: true, play: true);
+    final fb = kReactionFallback[code];
+    if (c == null && fb != null && _emoAsset[fb] != null) {
+      // 이 캐릭터엔 반응 전용 클립이 없다 — 임시 클립으로(두두·포포·라라).
+      widget.onDiag?.call('vid_rx_fallback', {'code': code, 'to': fb});
+      c = await _open(_emoAsset[fb]!, loop: true, play: true);
+    }
     if (!mounted) {
       await _release(c, '반응 여는 중 unmount');
       return;

@@ -36,6 +36,23 @@ const int kEmotionLaugh = 5;
 const int kEmotionExciting = 6; // 정답 — `react_exciting.mp4`
 const int kEmotionCrying = 7; // 오답 — `react_crying.mp4`
 
+/// ⭐ **통화 반응 전용 4종**(PM-DEC-1019 · 2026-10-22 shorts 제작 1080p · 바바·비비만).
+///
+/// 서버 `reaction` 이벤트가 그 길이만큼 감정 슬롯에 띄운다([SyncAvatar.reaction]). 무발화.
+/// 자산이 없는 캐릭터(두두·포포·라라)는 [kReactionFallback] 의 임시 클립으로 내려간다.
+const int kReactCorrect = 9; // 정답 — `react_call_correct.mp4`(4초)
+const int kReactWrong = 10; // 오답 — `react_call_wrong.mp4`(4초 · 놀림 아닌 귀여운 웃음)
+const int kReactWow = 11; // 발음 감탄 — `react_call_wow.mp4`(3초)
+const int kReactComplete = 12; // 대본 완주 — `react_call_complete.mp4`(4초)
+
+/// 반응 클립이 없는 캐릭터의 대체(통화 밖 반응 클립 · 통화용 laugh).
+const Map<int, int> kReactionFallback = {
+  kReactCorrect: kEmotionExciting,
+  kReactWrong: kEmotionLaugh,
+  kReactWow: kEmotionExciting,
+  kReactComplete: kEmotionExciting,
+};
+
 /// 비버가 말하지 않는 동안의 대기 상태. `idle` **슬롯 하나**에서 갈아끼운다.
 ///
 /// ★왜 나뉘었나 — 이전에는 「사용자가 말하는 중」과 「아무도 말 안 함」이 같은
