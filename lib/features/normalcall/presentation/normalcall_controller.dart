@@ -16,7 +16,7 @@ import 'package:flutter/foundation.dart'
         visibleForTesting,
         TargetPlatform;
 import 'package:flutter/widgets.dart' show AppLifecycleState, WidgetsBinding;
-import 'package:flutter/services.dart' show MethodChannel;
+import 'package:flutter/services.dart' show MethodChannel, rootBundle;
 import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 import 'package:flutter_pcm_sound/flutter_pcm_sound.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -53,7 +53,8 @@ import '../domain/entities/homework_roleplay.dart';
 import '../domain/entities/call_hint.dart';
 import '../domain/entities/playback_ledger.dart';
 import '../domain/pcm_gain.dart';
-import 'avatar_assets.dart' show kIdleWait, kIdleListen, kIdleThink;
+import 'avatar_assets.dart'
+    show kIdleWait, kIdleListen, kIdleThink, kEmotionExciting, kEmotionLaugh;
 import 'cascade_auto_talk.dart';
 import 'cascade_experiment.dart'
     show
@@ -615,6 +616,9 @@ class NormalCallController extends Notifier<CallState> {
   /// 4 angry), classified from the beaver's streamed line so the face reacts to
   /// what it says. Reset to neutral each turn; set sticky within a turn.
   final ValueNotifier<int> avatarEmotion = ValueNotifier<int>(0);
+
+  /// 통화 반응(PM-DEC-1019) — 지금 재생 중인 반응 클립의 감정 코드(0 = 없음). [SyncAvatar.reaction] 이 본다.
+  final ValueNotifier<int> avatarReaction = ValueNotifier<int>(0);
 
   /// 비버가 말하지 않는 동안의 **대기 상태**([kIdleWait]·[kIdleListen]·[kIdleThink]).
   /// 아바타가 `idle` 슬롯에서 무엇을 재생할지 고른다.
@@ -3572,6 +3576,9 @@ class NormalCallController extends Notifier<CallState> {
           '(mic was ${_micGated ? "closed" : "OPEN"})');
     }
     _lastChunkAtMs = nowMs;
+    // PM-DEC-1019 — 비버 소리가 왔다 = 반응 시간이 끝났다(서버가 반응 끝까지 답을 붙잡는다). 남은 반응·효과음을 걷어
+    //   말과 겹치지 않게 한다. 정상이면 이미 끝나 있다 — 여기서 끊기면 `rx_end why=beaver_audio` 로 드러난다.
+    if (avatarReaction.value != 0 || _sfxPcm != null) _endReaction('beaver_audio');
     // Beaver audio is arriving → gate the mic (covers the opening greeting even
     // before/without a turn_start).
     _gateMic();
@@ -3875,8 +3882,12 @@ class NormalCallController extends Notifier<CallState> {
           _ledger.recordFeed(frames: silFrames, server: false);
           final sentAtMs = DateTime.now().millisecondsSinceEpoch;
           final gen = _clearGen; // 오디오 분기와 같은 이유 — 위 주석 참조
+          // PM-DEC-1019 — 반응 효과음은 **무음 자리에** 흘린다. 같은 재생 엔진(통화 스트림)이라 에코 제거가 이 소리도
+          //   안다. 원장은 필러(server:false), 입 모양 봉투·재생 꼬리(_audioTailUntilMs)는 안 건드린다(마이크·립싱크 무관).
           final reported = await FlutterPcmSound.feed(
-            _silenceArray(silFrames),
+            whole < 2 && !_beaverAudioActive && _sfxPcm != null
+                ? _sfxArray(silFrames)
+                : _silenceArray(silFrames),
           );
           if (gen != _clearGen) return;
           _anchorEngine(reported ?? (level + silFrames), sentAtMs);
@@ -3923,6 +3934,116 @@ class NormalCallController extends Notifier<CallState> {
       return PcmArrayInt16.zeros(count: frames);
     }
     return PcmArrayInt16(bytes: ByteData.sublistView(_silenceScratch, 0, want));
+  }
+
+  /// 반응 효과음 다음 [frames] 개(모자라면 뒤를 0 으로). 다 흘리면 [_sfxPcm] 을 비운다.
+  PcmArrayInt16 _sfxArray(int frames) {
+    final src = _sfxPcm!;
+    final want = frames * 2;
+    final out = Uint8List(want);
+    final n = math.min(want, src.length - _sfxPos);
+    if (n > 0) out.setRange(0, n, src, _sfxPos);
+    _sfxPos += n;
+    if (_sfxPos >= src.length) _sfxPcm = null;
+    return PcmArrayInt16(bytes: ByteData.sublistView(out));
+  }
+
+  // ── 통화 반응(PM-DEC-1019) ───────────────────────────────────────────────
+  /// 지금 흘리는 반응 효과음(24kHz·16bit·mono PCM — 헤더 뗀 것)과 위치.
+  Uint8List? _sfxPcm;
+  int _sfxPos = 0;
+  final Map<String, Uint8List> _sfxCache = {};
+  Timer? _rxTimer;
+  int _rxStartMs = 0;
+  int _rxId = 0;
+
+  /// 반응 종류 → 반응 클립 감정 코드. 임시 클립(반응클립4종 · 통화용 laugh) — 최종 영상이 오면 여기만 바꾼다.
+  static const Map<String, int> _rxEmotion = {
+    'correct': kEmotionExciting,
+    'wrong': kEmotionLaugh,
+    'pron': kEmotionExciting,
+    'script': kEmotionExciting,
+    'laugh': kEmotionLaugh,
+  };
+
+  /// 서버 `reaction{kind, duration_ms, id}` — 반응 영상+효과음을 그 길이만큼 재생한다.
+  ///
+  /// ⛔ 겹치지 않는다: 반응 중에 또 오면, 또는 비버 소리가 아직 나는 중이면 버린다(`rx_drop`).
+  ///   서버도 같은 규칙으로 거르므로 정상이면 0건이다 — 생기면 그 줄이 곧 판정 근거다.
+  void _onReaction(Map<String, dynamic> msg) {
+    final kind = (msg['kind'] as String?) ?? '';
+    final raw = msg['duration_ms'];
+    final ms = (raw is int ? raw : 4000).clamp(500, 8000);
+    final id = msg['id'];
+    final code = _rxEmotion[kind];
+    if (code == null) {
+      _dg('rx_drop', {'kind': kind, 'id': id, 'why': 'unknown_kind'});
+      return;
+    }
+    if (avatarReaction.value != 0) {
+      _dg('rx_drop', {'kind': kind, 'id': id, 'why': 'overlap'});
+      _log('reaction 버림 — 반응 중($kind)');
+      return;
+    }
+    if (_beaverAudioActive || !_audioDrained) {
+      _dg('rx_drop', {'kind': kind, 'id': id, 'why': 'beaver_audio'});
+      _log('reaction 버림 — 비버 소리 재생 중($kind)');
+      return;
+    }
+    _rxId = id is int ? id : _rxId + 1;
+    _rxStartMs = DateTime.now().millisecondsSinceEpoch;
+    avatarReaction.value = code;
+    _rxTimer?.cancel();
+    _rxTimer = Timer(Duration(milliseconds: ms), () => _endReaction('done'));
+    _dg('rx_start', {'kind': kind, 'id': _rxId, 'ms': ms});
+    _log('reaction 시작 — $kind ${ms}ms id=$_rxId');
+    unawaited(_loadSfx(kind).then((pcm) {
+      // 불러오는 사이 반응이 끝났으면(짧은 반응·비버 소리) 흘리지 않는다.
+      if (pcm == null || avatarReaction.value != code) return;
+      _sfxPcm = pcm;
+      _sfxPos = 0;
+      unawaited(_pump());
+    }));
+  }
+
+  void _endReaction(String why) {
+    _rxTimer?.cancel();
+    _rxTimer = null;
+    final was = avatarReaction.value;
+    _sfxPcm = null;
+    _sfxPos = 0;
+    if (was == 0) return;
+    avatarReaction.value = 0;
+    final took = DateTime.now().millisecondsSinceEpoch - _rxStartMs;
+    _dg('rx_end', {'id': _rxId, 'why': why, 'ms': took});
+    _log('reaction 끝 — $why ${took}ms');
+  }
+
+  /// `assets/sfx/rx_<kind>.wav`(24kHz·16bit·mono) → PCM. 없거나 형식이 다르면 null(영상만 나간다).
+  Future<Uint8List?> _loadSfx(String kind) async {
+    final hit = _sfxCache[kind];
+    if (hit != null) return hit;
+    try {
+      final bd = await rootBundle.load('assets/sfx/rx_$kind.wav');
+      final b = bd.buffer.asUint8List(bd.offsetInBytes, bd.lengthInBytes);
+      // RIFF 청크를 걸어 'data' 를 찾는다(헤더 길이를 44 로 가정하지 않는다).
+      var i = 12;
+      while (i + 8 <= b.length) {
+        final id = String.fromCharCodes(b.sublist(i, i + 4));
+        final size = ByteData.sublistView(b, i + 4, i + 8).getUint32(0, Endian.little);
+        if (id == 'data') {
+          final end = math.min(b.length, i + 8 + size);
+          final pcm = Uint8List.fromList(b.sublist(i + 8, end - ((end - i - 8) & 1)));
+          _sfxCache[kind] = pcm;
+          return pcm;
+        }
+        i += 8 + size + (size & 1);
+      }
+      _log('⚠ reaction 효과음 data 청크 없음 — rx_$kind.wav');
+    } catch (e) {
+      _log('⚠ reaction 효과음 못 엶 — rx_$kind.wav ($e)');
+    }
+    return null;
   }
 
   PcmArrayInt16 _takeArray(int byteCount) {
@@ -5213,6 +5334,8 @@ class NormalCallController extends Notifier<CallState> {
       // ── 캐스케이드 통로 전용 프레임 ─────────────────────────────────────────
       case 'sentence':
         _onSentenceMarker(msg);
+      case 'reaction':
+        _onReaction(msg);
       case 'ready':
         _applyServerReady(msg);
       case 'beaver_preparing':
@@ -6344,6 +6467,7 @@ class NormalCallController extends Notifier<CallState> {
     avatarSpeaking.value = false;
     avatarLevel.value = 0.0;
     avatarEmotion.value = 0;
+    _endReaction('teardown');
     avatarShape.value = 0.0;
     _listenTimer?.cancel();
     _listenTimer = null;

@@ -61,6 +61,7 @@ class SyncAvatar extends StatefulWidget {
     required this.emotion,
     this.tempo,
     this.idleKind,
+    this.reaction,
     this.autoTempo = false,
     this.silentEmotion = false,
     this.fallback,
@@ -88,6 +89,13 @@ class SyncAvatar extends StatefulWidget {
   /// 사용자가 말하는 동안 [kIdleListen](끄덕임), 응답을 기다리는 동안
   /// [kIdleThink](생각)로 바뀐다. 자산이 없는 캐릭터는 조용히 `idle` 로 폴백한다.
   final ValueListenable<int>? idleKind;
+
+  /// 통화 반응(PM-DEC-1019) — 0 이 아니면 그 감정 클립을 **소리와 무관하게 반복 재생**한다.
+  ///
+  /// 서버가 정답·오답 등에서 보내는 `reaction` 의 화면 몫이다. 길이는 컨트롤러가 재고(0 으로 되돌려 끝낸다),
+  /// 이 위젯은 그동안 감정 슬롯을 차지하고 모델 표정([emotion])은 받지 않는다(반응 중 표정 무시).
+  /// ⛔ 새 디코더를 열지 않는다 — 감정 슬롯 하나를 쓴다(idle + talk + 반응 = 3).
+  final ValueListenable<int>? reaction;
 
   /// 목소리의 음절 리듬을 재서 템포를 **자동으로** 고를지.
   ///
@@ -239,6 +247,7 @@ class _SyncAvatarState extends State<SyncAvatar> {
     widget.speaking.addListener(_onLevel);
     widget.tempo?.addListener(_onTempo);
     widget.idleKind?.addListener(_onIdleKind);
+    widget.reaction?.addListener(_onReaction);
     _talkTempo = widget.tempo?.value ?? kTalkNormal;
     _idleKind = widget.idleKind?.value ?? kIdleWait;
     _load();
@@ -341,7 +350,7 @@ class _SyncAvatarState extends State<SyncAvatar> {
   /// 컨트롤러 자체는 살려 두므로 전환은 opacity + play() 한 번으로 끝난다.
   Future<void> _applyPlayback() async {
     // 무음 감정(학습 반응 밴드)에서는 `_talking` 이 영영 false 다 — 그때도 튼다.
-    final emoAllowed = _talking || widget.silentEmotion;
+    final emoAllowed = _talking || widget.silentEmotion || _rxCode != 0;
     final showEmo = emoAllowed && _emoOpacity > 0 && _emo != null;
     final showTalk = _talking && !showEmo;
     // ⚠ idle 은 감정 밑에서 **계속 돌린다.** 여기서 멈추면 감정이 페이드로 걷힐 때
@@ -646,7 +655,7 @@ class _SyncAvatarState extends State<SyncAvatar> {
     //   ⇒ 발화가 끝나면 감정도 **끝난 것으로 친다.** 감시자를 풀고 자리를 비운다.
     //     ⛔ `silentEmotion`(학습 반응 밴드)은 예외다 — 거기선 `_talking` 이 영영
     //       false 라 이 규칙을 적용하면 감정이 아예 안 뜬다.
-    if (!widget.silentEmotion) {
+    if (!widget.silentEmotion && _rxCode == 0) {
       // ⚠ 계측을 남긴다. 이 자리에서 끝내면 [_armEmoFinish] 의 `vid_emo_end` 가 안 찍혀,
       //   다음에 로그만 보면 «감정이 안 끝났다» 로 보인다(고쳐 놓고 못 알아본다).
       //   `why` 로 두 경로를 가른다 — 'played'(끝까지 재생) vs 'talk_end'(발화가 먼저).
@@ -815,6 +824,11 @@ class _SyncAvatarState extends State<SyncAvatar> {
 
   void _onEmotion() {
     if (!_ready) return;
+    // PM-DEC-1019 — 반응 중엔 모델 표정을 받지 않는다(줄도 세우지 않는다 — 반응 뒤에 묵은 표정이 뜨면 안 된다).
+    if (_rxCode != 0) {
+      widget.onDiag?.call('vid_emo_drop', {'code': widget.emotion.value, 'why': 'reaction'});
+      return;
+    }
     // ⭐⭐ **재생 중이면 덮지 않고 줄을 세운다**(2026-09-01).
     //   `avatarEmotion` 은 값 하나짜리 노티파이어라, 마커가 연달아 오면 뒤엣것이
     //   앞엣것을 덮는다. 여기서 큐로 받아야 **둘 다** 보여줄 수 있다.
@@ -929,6 +943,7 @@ class _SyncAvatarState extends State<SyncAvatar> {
   /// (위젯 값은 이미 큐의 **마지막** 것이라, 그걸 쓰면 중간 감정을 건너뛴다.)
   Future<void> _syncEmotionLayer({int? override}) async {
     if (!_ready) return; // don't contend with the idle/talk decoders warming up
+    if (_rxCode != 0) return; // PM-DEC-1019 — 반응이 감정 슬롯을 쓰는 중
     final code = override ?? widget.emotion.value;
     final name = _emoAsset[code];
     // [SyncAvatar.silentEmotion] 이면 발화 없이도 연다 — 학습 반응 밴드는 무음이다.
@@ -1019,6 +1034,57 @@ class _SyncAvatarState extends State<SyncAvatar> {
     await _applyPlayback();
   }
 
+  /// 지금 재생 중인 반응의 감정 코드(0 = 반응 없음).
+  int _rxCode = 0;
+
+  /// 반응 시작·끝. 시작은 감정 슬롯을 비우고 반응 클립을 **반복**으로 연다(클립 2.25초 < 반응 약 4초 ·
+  /// 첫/끝 프레임이 같은 기본 자세라 이음매가 없다). 끝은 그 클립을 내리고 미뤄 둔 idle·talk 교체를 잇는다.
+  Future<void> _onReaction() async {
+    final code = widget.reaction?.value ?? 0;
+    if (!_ready) {
+      // 클립이 아직 안 열렸다 — 반응 클립을 열 자리가 없다(효과음만 난다).
+      widget.onDiag?.call('vid_rx_skip', {'code': code, 'why': 'not_ready'});
+      return;
+    }
+    if (code == _rxCode) return;
+    if (code == 0) {
+      final was = _rxCode;
+      _rxCode = 0;
+      widget.onDiag?.call('vid_rx_end', {'code': was});
+      if (mounted) setState(() => _emoOpacity = 0);
+      await _freeEmoSlot('반응 끝');
+      await _applyPlayback();
+      await _applyDeferredSwaps();
+      return;
+    }
+    _rxCode = code;
+    _emoQueue.clear();
+    _disarmEmoFinish();
+    await _freeEmoSlot('반응 자리 확보');
+    await _flushRetiring('반응 열기');
+    final name = _emoAsset[code];
+    final c = name == null ? null : await _open(name, loop: true, play: true);
+    if (!mounted) {
+      await _release(c, '반응 여는 중 unmount');
+      return;
+    }
+    if (_rxCode != code) {
+      // 여는 사이 반응이 끝났다(짧은 반응·통화 끝) — 열린 것을 바로 놓는다.
+      await _release(c, '반응 여는 중 끝남');
+      return;
+    }
+    if (c == null) {
+      widget.onDiag?.call('vid_rx_skip', {'code': code, 'why': 'no_asset'});
+      return;
+    }
+    _emoCache[code] = c;
+    _emo = c;
+    _emoCode = code;
+    widget.onDiag?.call('vid_rx', {'code': code});
+    setState(() => _emoOpacity = 1);
+    await _applyPlayback();
+  }
+
   @override
   void dispose() {
     _disarmEmoFinish();
@@ -1027,6 +1093,7 @@ class _SyncAvatarState extends State<SyncAvatar> {
     widget.emotion.removeListener(_onEmotion);
     widget.tempo?.removeListener(_onTempo);
     widget.idleKind?.removeListener(_onIdleKind);
+    widget.reaction?.removeListener(_onReaction);
     _stopTimer?.cancel();
     // ⛔ [_release] 로 해제한다 — 셈이 [_decoders] 하나로 모여야 다음 통화의 시작값이
     //   0 이 된다. 여기서만 `dispose()` 를 직접 부르면 통화를 걸 때마다 셈이 남아

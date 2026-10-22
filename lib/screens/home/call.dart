@@ -1064,6 +1064,7 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                                       speaking: callNotifier.avatarSpeaking,
                                       emotion: callNotifier.avatarEmotion,
                                       idleKind: callNotifier.avatarIdleKind,
+                                      reaction: callNotifier.avatarReaction,
                                       // [계측] 화면은 그대로다 — 영상 쪽에서 일어난
                                       // 일을 통화 계측 스트림에 얹기만 한다.
                                       onDiag: callNotifier.onAvatarDiag,
