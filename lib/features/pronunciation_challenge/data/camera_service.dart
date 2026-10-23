@@ -36,6 +36,13 @@ enum CameraStatus {
 ///
 /// Every failure resolves to [CameraStatus.unavailable]; the game stays
 /// playable on the solid `AppColors.surface` background.
+/// camera 플러그인이 권한 거부 때 쓰는 코드(Android·iOS).
+const Set<String> _deniedCodes = {
+  'CameraAccessDenied',
+  'CameraAccessDeniedWithoutPrompt',
+  'CameraAccessRestricted',
+};
+
 class ChallengeCameraService {
   /// The initialized controller, or `null` until [CameraStatus.ready].
   CameraController? controller;
@@ -46,6 +53,15 @@ class ChallengeCameraService {
   );
 
   bool _disposed = false;
+
+  /// 카메라 권한이 거부됐다 — 이 화면에선 다시 묻지 않는다(PM-DEC-1036).
+  ///
+  /// 왜: 권한 창이 뜨면 앱이 비활성 → 복귀 때 [init] 을 다시 불러 또 묻는 고리가 생겨
+  /// 거부·뒤로가기로도 창을 닫을 수 없었다(빌드 93 · 71 도 같음).
+  bool permissionDenied = false;
+
+  /// [init] 이 진행 중인가 — 권한 창 때문에 생긴 앱 비활성을 화면이 «나감» 으로 보지 않게.
+  bool get initInFlight => _initFuture != null;
 
   /// Guards concurrent [init] calls (e.g. a fast double tap on Start) so we
   /// never build two `CameraController`s and leak one.
@@ -58,6 +74,7 @@ class ChallengeCameraService {
   /// Initializes the front camera preview. Returns `true` on success; `false`
   /// (→ solid backdrop) on any failure. Never throws.
   Future<bool> init() {
+    if (permissionDenied) return Future<bool>.value(false);
     final inFlight = _initFuture;
     if (inFlight != null) return inFlight;
     final future = _initInternal();
@@ -92,6 +109,11 @@ class ChallengeCameraService {
       this.controller = controller;
       status.value = CameraStatus.ready;
       return true;
+    } on CameraException catch (e) {
+      if (_deniedCodes.contains(e.code)) permissionDenied = true;
+      debugPrint('ChallengeCameraService.init failed → solid backdrop: $e');
+      status.value = CameraStatus.unavailable;
+      return false;
     } catch (e) {
       debugPrint('ChallengeCameraService.init failed → solid backdrop: $e');
       status.value = CameraStatus.unavailable;

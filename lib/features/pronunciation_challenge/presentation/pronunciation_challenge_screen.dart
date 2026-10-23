@@ -107,6 +107,9 @@ class _PronunciationChallengeScreenState
   /// capture, so the flag stays false and the toggle is not offered.
   bool _recordEnabled = ChallengeRecorder.isSupported;
 
+  /// 화면 녹화 허용 창이 떠 있는 동안(PM-DEC-1036 — 그 창 때문에 생긴 비활성은 일시정지로 안 친다).
+  bool _recorderStarting = false;
+
   /// Path of the recorded gameplay MP4, when a run was captured. Shared from
   /// the result panel in place of the score-card image.
   String? _videoPath;
@@ -194,6 +197,9 @@ class _PronunciationChallengeScreenState
   /// and the mic stream would go silent anyway — release both cleanly rather
   /// than let them fail mid-operation.
   Future<void> _onAppPaused() async {
+    // PM-DEC-1036 — 우리가 띄운 카메라 권한 창·화면 녹화 허용 창 때문에 생긴 비활성은 «앱을 나감» 이 아니다.
+    //   멈추면 복귀 때 카메라를 다시 init(권한 다시 물음) → 거부해도 또 뜨는 고리가 됐다(빌드 93 · 71 도 같음).
+    if (_camera.initInFlight || _recorderStarting) return;
     // Leaving the app pauses the round. Without this the clock kept running
     // in the background and the player came back to a finished game — the
     // web's equivalent was a hidden tab (기능 변형 note).
@@ -214,6 +220,8 @@ class _PronunciationChallengeScreenState
   /// resume it — treating a failure to restart as an STT failure so tap
   /// input takes back over.
   Future<void> _onAppResumed() async {
+    // PM-DEC-1036 — 권한 창이 닫히며 온 복귀이거나 거부된 카메라면 다시 묻지 않는다([ChallengeCameraService.init]).
+    if (_recorderStarting) return;
     await _camera.init();
     if (!mounted) return;
     if (_phase == _Phase.playing && _sttActiveBeforePause) {
@@ -325,8 +333,12 @@ class _PronunciationChallengeScreenState
     // run is in-frame. Never blocks or fails the game.
     if (_recordEnabled && !_recorder.isRecording) {
       _videoPath = null;
-      await _recorder.start();
+      _recorderStarting = true;
+      final ok = await _recorder.start();
+      _recorderStarting = false;
       if (!mounted) return;
+      // PM-DEC-1036 — 녹화 허용을 취소했거나 못 켜면 이번 화면에선 녹화 없이 간다(다시 묻지 않음).
+      if (!ok) setState(() => _recordEnabled = false);
     }
     // A resume picks the same round back up; only a fresh run resets it.
     if (!resuming) _controller.engine.start();
