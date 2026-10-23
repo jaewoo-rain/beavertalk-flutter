@@ -233,7 +233,6 @@ flutter:
     - assets/avatar/dudu/
     - assets/avatar/popo/
     - assets/avatar/rara/
-    - assets/sfx/
     # API_BASE_URL override (bundled so web builds can read it; optional).
     - .env
 
